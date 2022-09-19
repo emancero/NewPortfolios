@@ -1,12 +1,22 @@
 ﻿create procedure bvq_backoffice.GenerarCompraVentaFlujo as
 begin
+
 	truncate table bvq_backoffice.compra_venta_flujo
+	
 	insert into bvq_backoffice.compra_venta_flujo with (tablock) (cvf_id,htp_id,tiv_id,por_id,htp_tpo_id,compra_htp_id,htp_fecha_operacion,montoOper,valEfeOper,itrans,orig,htp_numeracion,tiv_tipo_base,tfl_fecha_inicio,tfl_fecha_vencimiento,tfl_fecha_vencimiento2
 	,tfl_id,tfl_capital,tfl_amortizacion,def_cobrado,def_int_cobrado,def_cobrado_2,itasa_interes,dias_cupon,base_denominador/*,vencimiento_esperado*/,cupoper_tfl_id,htp_cobra_primer_cupon,htp_libre,tfl_capital_1,tpo_redondear_amortizacion,htp_reportado
 	,tiv_frecuencia,cupoper_tfl_capital,htp_rendimiento_retorno,htp_tir,TFL_PERIODO,tfl_fecha_inicio_orig
+	--ADD: Columnas importantes
+	,tiv_fecha_vencimiento,tiv_tipo_valor,tiv_subtipo,htp_precio_compra,cupoper_tfl_fecha_inicio
+	--ADD: Columnas menores
+	,liq_rendimiento,liq_interes_total,liq_comision_bolsa,liq_comision_casa,liq_id,liq_market,liq_numero_bolsa,tpo_tipo_valoracion
+	--ADD: Columnas que estaban en view CompraVentaFlujo
+	,vencimiento
+	,amortizacion
+	,iamortizacion
 	)
 	select
-	row_number() over (order by op.htp_id,op.tiv_id,tiv.tfl_id) cvf_id,
+	null cvf_id,--/*no se utiliza*/row_number() over (order by op.htp_id,op.tiv_id,tiv.tfl_id) cvf_id,
 	op.htp_id,
 	op.tiv_id,
 	op.por_id,
@@ -63,6 +73,40 @@ begin
 	htp_tir,
 	TFL_PERIODO,
 	tfl_fecha_inicio_orig=tiv.tfl_fecha_inicio
+
+	--ADD: Columnas importantes
+	,
+	op.tiv_fecha_vencimiento, --notar op.
+	op.tiv_tipo_valor,
+	op.tiv_subtipo,
+	htp_precio_compra, --notar htp_
+	--htp_compra,
+	cupoper_tfl_fecha_inicio -- notar tfl_ ... inicio
+	
+	--ADD: Columnas menores ordenadas por tipo de dato
+	,
+	liq_rendimiento,
+	liq_total_interes,
+	round(liq_comision_bolsa*proporcional_htp_liq,2),
+	round(liq_comision_casa*proporcional_htp_liq,2),
+	op.liq_id,
+	liq_market,
+	liq_numero_bolsa,
+	tpo_tipo_valoracion
+
+	--ADD: Columnas que estaban en la vista compraventaflujo
+	,vencimiento=case when def_int_cobrado is null then tfl_fecha_vencimiento else null end
+	--Columna amortizacion: (crítica)
+	,amortizacion=case when isnull(tpo_redondear_amortizacion,1)=1 then
+		round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*tfl_amortizacion,5)
+	else
+		round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*tfl_capital,5)
+		-round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*(tfl_capital-tfl_amortizacion),5)
+	end
+	*isnull(def_cobrado,1)
+	,iAmortizacion=   round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100),3)
+		*isnull(def_cobrado,1)
+
 	from
 	bvq_backoffice.HtpCupon op
 	join bvq_backoffice.titulos_portafolio tpo on htp_tpo_id=tpo.tpo_id

@@ -59,11 +59,13 @@
     <Folder Include="Functions" />
     <Folder Include="Stored Procedures" />
     <Folder Include="Views" />
+    <Folder Include="Change Scripts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Functions\BVQ_BACKOFFICE.tfEstadoDeCuentaPortafolio.UserDefinedFunction.sql" />
     <None Include="Stored Procedures\BVQ_BACKOFFICE.GenerarCompraVentaFlujo.StoredProcedure.sql" />
     <None Include="Views\BVQ_BACKOFFICE.EventoPortafolioCorte.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.CompraVentaFlujo.View.sql" />
+    <None Include="Change Scripts\Campos para GenerarCompraVentaFlujo.sql" />
   </ItemGroup>
 </Project>
