@@ -1,5 +1,8 @@
 ﻿create view bvq_backoffice.EventoPortafolioCorte as
 	select
+	--Cambio: Aumentar campo remaining para detectar inconsistencias con las siguientes versiones
+	remaining=sum(isnull(remaining,0)),
+
 	c.c,
 	cortenum,
 	amortizacion=	-sum(amortizacion-isnull(remaining,0)),
@@ -29,7 +32,7 @@
 	max_comision_casa=	max(case when oper=0 and montooper>0 then liq_comision_casa end),
 	max_bolsa=	max(case when oper=0 and montooper>0 then liq_market end),
 	max_numero_bolsa=	max(case when oper=0 and montooper>0 then liq_numero_bolsa end),
-	max_liq_id=	null,--				max(case when oper=0 and montooper>0 then liq_id end),
+	--(no se utiliza) max_liq_id=					max(case when oper=0 and montooper>0 then liq_id end),
 	pond_precio_compra=			(SUM( case when oper=0 and montooper>0 then abs(montooper)*htp_precio_compra else 0 end)/SUM(case when oper=0 and montooper>0 then abs(montooper) else 1e-5 end)),
 	
 
@@ -56,7 +59,8 @@
 		from bvq_backoffice.compra_venta_flujo where
 		tfl_fecha_vencimiento>=c
 		and htp_tpo_id=e.htp_tpo_id
-		and round(orig*tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100),2)*isnull(def_cobrado,1)>0
+		--CAMBIO: De 2 a 3 (2 decimales causa pérdida de precisión en la comparación con 0)
+		and round(orig*tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100),3)*isnull(def_cobrado,1)>0
 		and tfl_fecha_vencimiento<>'9999-12-31T23:59:59'
 	),
 
@@ -79,17 +83,21 @@
 						and htp_tpo_id=e.htp_tpo_id and c=c.c
 					)
 				end
+	--Cambio: Solo incluir htp no reportados y activos. En ciertas bases causan valores negativos.
 	,(
 		select top 1 htp_precio_compra from bvq_backoffice.historico_titulos_portafolio
-		where htp_tpo_id=e.htp_tpo_id and htp_fecha_operacion<=c and htp_precio_compra<>0 order by htp_fecha_operacion desc,htp_id desc
+		where htp_tpo_id=e.htp_tpo_id and htp_fecha_operacion<=c and htp_precio_compra<>0 
+		and isnull(htp_reportado,0)=0 and htp_estado=352
+		order by htp_fecha_operacion desc,htp_id desc
 	) htp_precio_compra
 	,(
 		select top 1 htp_compra from bvq_backoffice.historico_titulos_portafolio
-		where htp_tpo_id=e.htp_tpo_id and htp_fecha_operacion<=c and htp_precio_compra<>0 order by htp_fecha_operacion desc,htp_id desc
+		where htp_tpo_id=e.htp_tpo_id and htp_fecha_operacion<=c and htp_precio_compra<>0 
+		and isnull(htp_reportado,0)=0 and htp_estado=352
+		order by htp_fecha_operacion desc,htp_id desc
 	) htp_compra
 	,hiperb=(select sum(hiperb) from [BVQ_ADMINISTRACION].[valoracionCostoAmortizado] val where val.htp_tpo_id=e.htp_tpo_id and val.fechaVal=c.c and val.htp_fecha_operacion<=c.c)
 	from bvq_backoffice.EventoPortafolio e
 	join corteslist c on htp_fecha_operacion<=c
 	--where  isnull(htp_reportado,0)=0-- or c>='2016-09-30T23:57:59'
 	group by htp_tpo_id,c,cortenum
-
