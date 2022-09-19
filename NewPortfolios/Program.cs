@@ -4,7 +4,8 @@ using System.Transactions;
 
 string root=@"..\..\..\..\SqlScripts\";
 
-SqlConnection conn = new SqlConnection("server=bvq-gte-em-01;initial catalog=sicavctx;user id=usrsicav;password=$icav2012*;encrypt=false");
+string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
+SqlConnection conn = new SqlConnection(connStr);
 SqlCommand comm = conn.CreateCommand();
 comm.CommandType = System.Data.CommandType.Text;
 conn.Open();
