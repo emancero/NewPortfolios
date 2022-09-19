@@ -3,7 +3,8 @@ begin
 	truncate table bvq_backoffice.compra_venta_flujo
 	insert into bvq_backoffice.compra_venta_flujo with (tablock) (cvf_id,htp_id,tiv_id,por_id,htp_tpo_id,compra_htp_id,htp_fecha_operacion,montoOper,valEfeOper,itrans,orig,htp_numeracion,tiv_tipo_base,tfl_fecha_inicio,tfl_fecha_vencimiento,tfl_fecha_vencimiento2
 	,tfl_id,tfl_capital,tfl_amortizacion,def_cobrado,def_int_cobrado,def_cobrado_2,itasa_interes,dias_cupon,base_denominador/*,vencimiento_esperado*/,cupoper_tfl_id,htp_cobra_primer_cupon,htp_libre,tfl_capital_1,tpo_redondear_amortizacion,htp_reportado
-	,tiv_frecuencia,cupoper_tfl_capital,htp_rendimiento_retorno,htp_tir,TFL_PERIODO,tfl_fecha_inicio_orig)
+	,tiv_frecuencia,cupoper_tfl_capital,htp_rendimiento_retorno,htp_tir,TFL_PERIODO,tfl_fecha_inicio_orig
+	)
 	select
 	row_number() over (order by op.htp_id,op.tiv_id,tiv.tfl_id) cvf_id,
 	op.htp_id,
