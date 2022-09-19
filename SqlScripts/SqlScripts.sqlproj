@@ -64,5 +64,6 @@
     <None Include="Functions\BVQ_BACKOFFICE.tfEstadoDeCuentaPortafolio.UserDefinedFunction.sql" />
     <None Include="Stored Procedures\BVQ_BACKOFFICE.GenerarCompraVentaFlujo.StoredProcedure.sql" />
     <None Include="Views\BVQ_BACKOFFICE.EventoPortafolioCorte.View.sql" />
+    <None Include="Views\BVQ_BACKOFFICE.CompraVentaFlujo.View.sql" />
   </ItemGroup>
 </Project>
