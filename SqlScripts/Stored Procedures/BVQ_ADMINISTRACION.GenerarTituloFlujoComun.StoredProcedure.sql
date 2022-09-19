@@ -1,4 +1,5 @@
 ﻿create procedure bvq_administracion.GenerarTituloFlujoComun as
+/*
 begin
 
 	delete from bvq_administracion.titulo_flujo_comun
@@ -46,3 +47,4 @@ begin
 	tfl_fecha_actualizacion=null
 	from bvq_administracion.titulo_valor tiv,(select max(tfl_id) max_tfl_id from bvq_administracion.titulo_flujo) f
 end
+*/

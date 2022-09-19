@@ -17,4 +17,29 @@ AS
 		TFL_FECHA_FIN_VIGENCIA,
 		TFL_FECHA_REGISTRO,
 		TFL_FECHA_ACTUALIZACION
-	FROM BVQ_ADMINISTRACION.titulo_flujo_comun_raw
+	--FROM BVQ_ADMINISTRACION.titulo_flujo_comun_raw
+		from bvq_administracion.titulo_flujo tfl
+	where tfl_fecha_inicio_vigencia is null
+	and
+	(select top 1 ifprt_fecha from bvq_administracion.inicio_flujo_portafolio)
+	<=tfl_fecha_vencimiento
+	
+	union all
+
+	select
+	max_tfl_id+row_number() over (order by tiv_id),
+	tiv_id,	
+	tiv_codigo,
+	tfl_periodo=null,
+	tfl_capital=0e,
+	tfl_fecha_inicio=isnull(tiv_fecha_vencimiento,0),
+	tfl_interes=null,
+	tfl_amortizacion=0e,
+	tfl_recuperacion=null,
+	tfl_fecha_vencimiento='9999-12-31T23:59:59',
+	tfl_valor_presente=null,
+	tfl_fecha_inicio_vigencia=null,
+	tfl_fecha_fin_vigencia=null,
+	tfl_fecha_registro=null,
+	tfl_fecha_actualizacion=null
+	from bvq_administracion.titulo_valor tiv,(select max(tfl_id) max_tfl_id from bvq_administracion.titulo_flujo) f
