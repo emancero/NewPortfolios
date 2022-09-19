@@ -1,6 +1,4 @@
-﻿exec dropifexists 'bvq_backoffice.tfEstadoDeCuentaPortafolio'
-go
-CREATE function bvq_backoffice.tfEstadoDeCuentaPortafolio(@i_idPortfolio int, @i_fecha datetime)
+﻿CREATE function bvq_backoffice.tfEstadoDeCuentaPortafolio(@i_idPortfolio int, @i_fecha datetime)
 returns @v_tabla table
 (
 	 POR_CODIGO VARCHAR(50)

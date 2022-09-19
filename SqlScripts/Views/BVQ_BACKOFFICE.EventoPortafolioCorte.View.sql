@@ -1,6 +1,4 @@
-﻿exec dropifexists 'bvq_backoffice.EventoPortafolioCorte'
-go
-create view bvq_backoffice.EventoPortafolioCorte as
+﻿create view bvq_backoffice.EventoPortafolioCorte as
 	select
 	c.c,
 	cortenum,
@@ -94,6 +92,4 @@ create view bvq_backoffice.EventoPortafolioCorte as
 	join corteslist c on htp_fecha_operacion<=c
 	--where  isnull(htp_reportado,0)=0-- or c>='2016-09-30T23:57:59'
 	group by htp_tpo_id,c,cortenum
-
-go-- Add your test scenario here --
 

@@ -1,6 +1,4 @@
-﻿exec dropifexists 'bvq_backoffice.GenerarCompraVentaFlujo'
-go
-create procedure bvq_backoffice.GenerarCompraVentaFlujo as
+﻿create procedure bvq_backoffice.GenerarCompraVentaFlujo as
 begin
 	truncate table bvq_backoffice.compra_venta_flujo
 	insert into bvq_backoffice.compra_venta_flujo with (tablock) (cvf_id,htp_id,tiv_id,por_id,htp_tpo_id,compra_htp_id,htp_fecha_operacion,montoOper,valEfeOper,itrans,orig,htp_numeracion,tiv_tipo_base,tfl_fecha_inicio,tfl_fecha_vencimiento,tfl_fecha_vencimiento2
