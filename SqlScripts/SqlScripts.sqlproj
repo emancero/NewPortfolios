@@ -67,5 +67,11 @@
     <None Include="Views\BVQ_BACKOFFICE.EventoPortafolioCorte.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.CompraVentaFlujo.View.sql" />
     <None Include="Change Scripts\Campos para GenerarCompraVentaFlujo.sql" />
+    <None Include="Change Scripts\Tabla titulo_flujo_comun_raw.sql" />
+    <None Include="Views\BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN.View.sql" />
+    <None Include="Stored Procedures\BVQ_ADMINISTRACION.GenerarTituloFlujoComun.StoredProcedure.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
   </ItemGroup>
 </Project>

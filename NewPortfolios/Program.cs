@@ -13,6 +13,17 @@ using (TransactionScope scope = new TransactionScope())
 {
     comm.CommandType = System.Data.CommandType.Text;
 
+
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN_RAW'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new TablaTituloFlujoComunRaw(root)).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new titulo_flujo_comun(root)).GetCode();
+    comm.ExecuteNonQuery();
+
     comm.CommandText = (new CamposParaGcvf(root)).GetCode();
     comm.ExecuteNonQuery();
 
