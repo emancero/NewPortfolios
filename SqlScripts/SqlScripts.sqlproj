@@ -60,6 +60,7 @@
     <Folder Include="Stored Procedures" />
     <Folder Include="Views" />
     <Folder Include="Change Scripts" />
+    <Folder Include="Schemas" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Functions\BVQ_BACKOFFICE.tfEstadoDeCuentaPortafolio.UserDefinedFunction.sql" />
@@ -73,5 +74,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTituloPortafolio.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTitulosPortafolioLiquidacion.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.CancelarMovimientoTituloPortafolio.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.CancelarTituloPortafolio.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarLiquidezPortafolio.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarTituloPortafolio.StoredProcedure.sql" />
+    <Build Include="Schemas\BVQ_BACKOFFICE.sql" />
   </ItemGroup>
 </Project>
