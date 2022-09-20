@@ -45,6 +45,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -73,5 +74,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Change Scripts\Esquema BVQ_BACKOFFICE.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTituloPortafolio.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTitulosPortafolioLiquidacion.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.CancelarMovimientoTituloPortafolio.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.CancelarTituloPortafolio.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarLiquidezPortafolio.StoredProcedure.sql" />
+    <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarTituloPortafolio.StoredProcedure.sql" />
   </ItemGroup>
 </Project>
