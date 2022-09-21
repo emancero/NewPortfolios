@@ -2,11 +2,7 @@
 
 class CompraVentaFlujo
 {
-    public string FilesRoot { get; set; }
-    public CompraVentaFlujo(string filesRoot)
-    {
-        FilesRoot = filesRoot;
-    }
+    public string FilesRoot { get; set; } = @"..\..\..\..\SqlScripts\";
     public string GetCode()
     {
         return File.ReadAllText(FilesRoot

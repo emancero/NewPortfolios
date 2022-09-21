@@ -2,11 +2,7 @@
 
 class titulo_flujo_comun
 {
-    public string FilesRoot { get; set; }
-    public titulo_flujo_comun(string filesRoot)
-    {
-        FilesRoot = filesRoot;
-    }
+    public string FilesRoot { get; set; } = @"..\..\..\..\SqlScripts\";
     public string GetCode()
     {
         return File.ReadAllText(FilesRoot

@@ -2,11 +2,8 @@
 
 class EventoPortafolioCorte
 {
-    public string FilesRoot { get; set; }
-    public EventoPortafolioCorte(string filesRoot)
-    {
-        FilesRoot = filesRoot;
-    }
+    public string FilesRoot { get; set; } = @"..\..\..\..\SqlScripts\";
+
     public string GetCode()
     {
         return File.ReadAllText(FilesRoot

@@ -2,11 +2,7 @@
 
 class CamposParaGcvf
 {
-    public string FilesRoot { get; set; }
-    public CamposParaGcvf(string filesRoot)
-    {
-        FilesRoot = filesRoot;
-    }
+    public string FilesRoot { get; set; } = @"..\..\..\..\SqlScripts\";
     public string GetCode()
     {
         return File.ReadAllText(FilesRoot

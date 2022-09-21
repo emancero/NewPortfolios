@@ -2,11 +2,7 @@
 
 class TablaTituloFlujoComun
 {
-    public string FilesRoot { get; set; }
-    public TablaTituloFlujoComun(string filesRoot)
-    {
-        FilesRoot = filesRoot;
-    }
+    public string FilesRoot { get; set; } = @"..\..\..\..\SqlScripts\";
     public string GetCode()
     {
         return File.ReadAllText(FilesRoot

@@ -2,8 +2,6 @@
 using Microsoft.Data.SqlClient;
 using System.Transactions;
 
-string root=@"..\..\..\..\SqlScripts\";
-
 string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 SqlConnection conn = new SqlConnection(connStr);
 SqlCommand comm = conn.CreateCommand();
@@ -19,33 +17,33 @@ using (TransactionScope scope = new TransactionScope())
 
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN_RAW'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new TablaTituloFlujoComunRaw(root)).GetCode();
+    comm.CommandText = (new TablaTituloFlujoComunRaw()).GetCode();
     comm.ExecuteNonQuery();
 
-    comm.CommandText = (new titulo_flujo_comun(root)).GetCode();
+    comm.CommandText = (new titulo_flujo_comun()).GetCode();
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.GenerarTituloFlujoComun'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GenerarTituloFlujoComun(root)).GetCode();
+    comm.CommandText = (new GenerarTituloFlujoComun()).GetCode();
     comm.ExecuteNonQuery();
 
-    comm.CommandText = (new CamposParaGcvf(root)).GetCode();
+    comm.CommandText = (new CamposParaGcvf()).GetCode();
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarCompraVentaFlujo'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GenerarCompraVentaFlujo(root)).GetCode();
+    comm.CommandText = (new GenerarCompraVentaFlujo()).GetCode();
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.CompraVentaFlujo'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new CompraVentaFlujo(root)).GetCode();
+    comm.CommandText = (new CompraVentaFlujo()).GetCode();
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new EventoPortafolioCorte(root)).GetCode();
+    comm.CommandText = (new EventoPortafolioCorte()).GetCode();
     comm.ExecuteNonQuery();
 
     scope.Complete();
