@@ -36,15 +36,69 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GenerarCompraVentaFlujo()).GetCode();
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new EventoPortafolioCorte()).GetCode();
+    comm.ExecuteNonQuery();
+
+
+    //START Llamadas a GenerarCompraVentaFlujo
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new InsertarTituloPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new ActualizarTituloPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarTitulosPortafolioLiquidacion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new ActualizarTitulosPortafolioLiquidacion()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.CancelarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new CancelarTituloPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.CancelarMovimientoTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new CancelarMovimientoTituloPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new InsertarLiquidezPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ReversarLiquidacion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new ReversarLiquidacion()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ReliquidarReporto'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new ReliquidarReporto()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarRetrasos'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new InsertarRetrasos()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarEstadoCuentaPortafolioVenta'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new ActualizarEstadoCuentaPortafolioVenta()).GetCode();
+    comm.ExecuteNonQuery();
+    //END Llamadas a GenerarCompraVentaFlujo
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.CompraVentaFlujo'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new CompraVentaFlujo()).GetCode();
     comm.ExecuteNonQuery();
 
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new EventoPortafolioCorte()).GetCode();
-    comm.ExecuteNonQuery();
 
     scope.Complete();
 }

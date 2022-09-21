@@ -32,7 +32,7 @@
 	max_comision_casa=	max(case when oper=0 and montooper>0 then liq_comision_casa end),
 	max_bolsa=	max(case when oper=0 and montooper>0 then liq_market end),
 	max_numero_bolsa=	max(case when oper=0 and montooper>0 then liq_numero_bolsa end),
-	--(no se utiliza) max_liq_id=					max(case when oper=0 and montooper>0 then liq_id end),
+	max_liq_id=	null,--					max(case when oper=0 and montooper>0 then liq_id end),
 	pond_precio_compra=			(SUM( case when oper=0 and montooper>0 then abs(montooper)*htp_precio_compra else 0 end)/SUM(case when oper=0 and montooper>0 then abs(montooper) else 1e-5 end)),
 	
 
