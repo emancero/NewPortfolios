@@ -3,12 +3,13 @@ using Microsoft.Data.SqlClient;
 using System.Transactions;
 
 string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
-SqlConnection conn = new SqlConnection(connStr);
-SqlCommand comm = conn.CreateCommand();
-comm.CommandType = System.Data.CommandType.Text;
-conn.Open();
 using (TransactionScope scope = new TransactionScope())
 {
+    SqlConnection conn = new SqlConnection(connStr);
+    SqlCommand comm = conn.CreateCommand();
+    comm.CommandType = System.Data.CommandType.Text;
+    conn.Open();
+
     comm.CommandType = System.Data.CommandType.Text;
 
 
@@ -36,6 +37,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GenerarCompraVentaFlujo()).GetCode();
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.CompraVentaFlujo'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new CompraVentaFlujo()).GetCode();
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new EventoPortafolioCorte()).GetCode();
@@ -51,6 +57,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarTituloPortafolio'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new ActualizarTituloPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "if not exists(select * from information_schema.columns where column_name='CRE_REPORTANTE_TIV_ID' and table_name='CONTRATO_REPORTO')" +
+        "alter table BVQ_BACKOFFICE.CONTRATO_REPORTO ADD CRE_REPORTANTE_TIV_ID INT";
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarTitulosPortafolioLiquidacion'";
@@ -94,12 +104,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     //END Llamadas a GenerarCompraVentaFlujo
 
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.CompraVentaFlujo'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new CompraVentaFlujo()).GetCode();
-    comm.ExecuteNonQuery();
 
-
+    conn.Close();
     scope.Complete();
 }
-conn.Close();
