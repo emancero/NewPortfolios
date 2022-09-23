@@ -65,9 +65,9 @@
 	),
 
 	
-	valpre= case 	when (select isnull(tpo_tipo_valoracion,0) from bvq_backoffice.titulos_portafolio where tpo_id=e.htp_tpo_id)=1
+	valpre= case 	when 1=1--(select isnull(tpo_tipo_valoracion,0) from bvq_backoffice.titulos_portafolio where tpo_id=e.htp_tpo_id)=1
 					then (select sum(valPre-intTrans) from [BVQ_ADMINISTRACION].[valoracionCostoAmortizado] val where val.htp_tpo_id=e.htp_tpo_id and val.fechaVal=c.c and val.htp_fecha_operacion<=c.c) --valoraba títulos que todavía no estaban comprados
-					else (
+					/*else (
 						select sum
 						(
 							(amortizacion+iamortizacion)/
@@ -81,7 +81,7 @@
 							-case when c between cvf.tfl_fecha_inicio and dateadd(d,-1,cvf.tfl_fecha_vencimiento) then dbo.fnDias(cvf.tfl_fecha_inicio,c,cvf.tiv_tipo_base)/dbo.fnDias(tfl_fecha_inicio,cvf.tfl_fecha_vencimiento,cvf.tiv_tipo_base)*iamortizacion else 0 end
 						)from bvq_backoffice.compraventaflujo cvf join corteslist c on tfl_fecha_vencimiento>=c where tfl_capital>0-- where tfl_fecha_vencimiento>=c
 						and htp_tpo_id=e.htp_tpo_id and c=c.c
-					)
+					)*/
 				end
 	--Cambio: Solo incluir htp no reportados y activos. En ciertas bases causan valores negativos.
 	,(
