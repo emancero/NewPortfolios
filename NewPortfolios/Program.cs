@@ -51,6 +51,12 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new EventoPortafolioCorte()).GetCode();
     comm.ExecuteNonQuery();
 
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new ObtenerInfoPortfoliosPorFecha()).GetCode();
+    comm.ExecuteNonQuery();
+
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)
     {

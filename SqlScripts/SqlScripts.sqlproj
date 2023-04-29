@@ -71,6 +71,7 @@
     <None Include="Change Scripts\Tabla titulo_flujo_comun_raw.sql" />
     <None Include="Views\BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN.View.sql" />
     <None Include="Stored Procedures\BVQ_ADMINISTRACION.GenerarTituloFlujoComun.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha.StoredProcedure.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
