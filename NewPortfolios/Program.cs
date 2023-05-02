@@ -56,6 +56,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new ISSPOL_PROGS()).GetCode();
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PortafolioCorte'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.PortafolioCorte","View");
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PortafolioCorteProg'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new PortafolioCorteProg()).GetCode();
