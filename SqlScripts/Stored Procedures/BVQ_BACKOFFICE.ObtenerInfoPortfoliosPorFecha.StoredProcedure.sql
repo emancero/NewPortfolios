@@ -16,7 +16,7 @@ BEGIN
                 truncate table corteslist
                 insert into corteslist values (@i_fechaCorte,1)
                 
-                exec bvq_administracion.generarcompraventacorte
+                --exec bvq_administracion.generarcompraventacorte
                 exec bvq_administracion.generarvectores
 				exec BVQ_ADMINISTRACION.PrepararValoracionLinealCache
 				
