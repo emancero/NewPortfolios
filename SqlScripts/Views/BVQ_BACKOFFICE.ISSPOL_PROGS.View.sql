@@ -6,4 +6,5 @@
 		select 'cxc22ins',1 union
 		select 'cxc12ins',1 union
 		select 'pagares',1 union
-		select 'oblSums',1
+		select 'oblSums',1 union
+		select 'cxcNoMovs',1
