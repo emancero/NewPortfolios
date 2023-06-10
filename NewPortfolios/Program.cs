@@ -13,11 +13,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
 
     #region dematerialize titulo_flujo_comun
-        comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN'";
-        comm.ExecuteNonQuery();
-
-        comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN_RAW'";
-        comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN_RAW'";
+    comm.ExecuteNonQuery();
     if (true)
     {
         comm.CommandText = (new TablaTituloFlujoComunRaw()).GetCode();
@@ -51,6 +50,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new CompraVentaFlujo()).GetCode();
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioAprox'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.EventoPortafolioAprox", "View");
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new EventoPortafolioCorte()).GetCode();
@@ -74,6 +78,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new ObtenerInfoPortfoliosPorFecha()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.GenerarVectores'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_ADMINISTRACION.GenerarVectores", "StoredProcedure");
     comm.ExecuteNonQuery();
 
     #region Llamadas a GenerarCompraVentaFlujo

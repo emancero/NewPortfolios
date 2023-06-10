@@ -110,7 +110,7 @@
 				)
 				/case when tiv.tiv_tipo_renta=153 then 100e else 1e end
 			)
-			,2
+			,100
 		),0
 	),
 	
@@ -169,6 +169,37 @@
 	,htp.grp_id
 	,htp.tpo_cobro_cupon
 	,htp.ult_liq_id
+
+	--campos que identifican algoritmo y si es cxc para el Isspol
+	,IPR_NOMBRE_PROG
+	,IPR_ES_CXC
+
+	--newf
+	,ACEP.ACP_ID
+	,ACEP.ACP_NOMBRE
+	,CAL.CAL_NOMBRE
+	,ENC.ENC_VALOR
+	,HTP.HTP_RENDIMIENTO
+	,TCA.TCA_VALOR
+	--,TIV.TIV_ACTA
+	,TIV.TIV_CLASE
+	,tiv.tiv_codigo_vector
+	,TIV.TIV_MONTO_EMISION
+	,HTP.TPO_CUPON_VECTOR
+	,HTP.TPO_FECHA_SUSC_CONVENIO
+	,HTP.TPO_FECHA_VEN_CONVENIO
+	,HTP.TPO_FKOP
+	,HTP.TPO_INTERVINIENTES
+	,HTP.TPO_MANTIENE_VECTOR_PRECIO
+	,HTP.TPO_OBJETO
+	,HTP.TPO_PRECIO_ULTIMA_COMPRA
+	,HTP.TPO_PROG
+	,HTP.TPO_ACTA
+	,VBA.VBA_PATRIMONIO_TECNICO
+	,TVL_DESCRIPCION
+	,GCXC.GCXC_NOMBRE
+	,HTP.TPO_F1
+	,HTP.TPO_CODIGO_VECTOR
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -287,7 +318,7 @@
 						),
 					htp_precio_compra,
 					arranqueValLineal,
-					lastValDate,
+					t.lastValDate,
 					vpr_precio,
 						e.htp_compra,--htp_compra=max_compra,
 					liq_rendimiento=max_rendimiento,
@@ -316,6 +347,22 @@
 					,tpo.GRP_ID
 					,tpo.tpo_cobro_cupon
 					,ult_liq_id=e.max_liq_id
+
+					--newf
+					,HTP_RENDIMIENTO
+					,TPO.TPO_CUPON_VECTOR
+					,TPO.TPO_FECHA_SUSC_CONVENIO
+					,TPO.TPO_FECHA_VEN_CONVENIO
+					,TPO.TPO_FKOP
+					,TPO.TPO_INTERVINIENTES
+					,TPO.TPO_MANTIENE_VECTOR_PRECIO
+					,TPO.TPO_OBJETO
+					,TPO.TPO_PRECIO_ULTIMA_COMPRA
+					,TPO.TPO_PROG
+					,TPO.TPO_ACTA
+					,TPO.TPO_F1
+					,TPO.TPO_CODIGO_VECTOR
+
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
 
@@ -362,6 +409,23 @@
 	left join  bvq_administracion.item_catalogo itcpais on ems_pais=itcpais.itc_id
 	left join  bvq_administracion.item_catalogo itcsector on ems_sector=itcsector.itc_id
 	inner join bvq_backoffice.portafolio por on por.por_id=htp.por_id
+
+	
+	--joins para campos del Isspol
+	left join bvq_backoffice.aceptante acep on tiv.acp_id=acep.acp_id
+	left join bvq_administracion.variables_balance vba on tiv.tiv_emisor=vba.ems_id and htp.c between vba_fecha_desde and dateadd(s,-1,vba_fecha_hasta)
+	left join (
+		select row_number() over (partition by tiv_id order by tca_fecha_desde desc,tca_id desc) r,tca_valor,cal_id,tiv_id
+		from bvq_administracion.titulos_calificacion tca
+	) tca on tca.r=1 and tca.tiv_id=tiv.tiv_id
+	left join (
+		select row_number() over (partition by enc_numero_emision order by enc_fecha_desde desc,enc_id desc) r,enc_valor,cal_id,enc_numero_corto_emision
+		from bvq_administracion.emision_calificacion enc
+	) enc on enc.r=1 and isnull(tiv.tiv_codigo_titulo_sic,'')<>'' and tiv.tiv_codigo_titulo_sic=enc.enc_numero_corto_emision
+	left join bvq_administracion.calificadoras cal on cal.cal_id=coalesce(tca.cal_id,enc.cal_id)
+	left join BVQ_BACKOFFICE.ISSPOL_PROGS progs	on HTP.TPO_PROG=progs.IPR_NOMBRE_PROG
+	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
+		on tvl_codigo=gcxc.GCXC_CODIGO
 	--left join bvq_prevencion.personacomitente per on por.ctc_id=per.ctc_id
 	/*left join BVQ_BACKOFFICE.AJUSTES_DE_ACCRUAL AJU
 	on HTP.TPO_ID=AJU.AJU_TPO_ID AND c>=AJU_DATE*/
