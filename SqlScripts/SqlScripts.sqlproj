@@ -94,5 +94,6 @@
     <Build Include="Stored Procedures\BVQ_BACKOFFICE.ReliquidarReporto.StoredProcedure.sql" />
     <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarRetrasos.StoredProcedure.sql" />
     <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarEstadoCuentaPortafolioVenta.StoredProcedure.sql" />
+    <Build Include="Schemas\BVQ_ADMINISTRACION.sql" />
   </ItemGroup>
 </Project>
