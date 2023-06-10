@@ -13,13 +13,13 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
 
     #region dematerialize titulo_flujo_comun
-    if (false)
-    {
         comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN'";
         comm.ExecuteNonQuery();
 
         comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN_RAW'";
         comm.ExecuteNonQuery();
+    if (true)
+    {
         comm.CommandText = (new TablaTituloFlujoComunRaw()).GetCode();
         comm.ExecuteNonQuery();
 
@@ -29,6 +29,11 @@ using (TransactionScope scope = new TransactionScope())
         comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.GenerarTituloFlujoComun'";
         comm.ExecuteNonQuery();
         comm.CommandText = (new GenerarTituloFlujoComun()).GetCode();
+        comm.ExecuteNonQuery();
+    }
+    else
+    {
+        comm.CommandText = (new TablaTituloFlujoComun()).GetCode();
         comm.ExecuteNonQuery();
     }
     #endregion
