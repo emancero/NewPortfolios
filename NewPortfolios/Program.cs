@@ -38,6 +38,16 @@ using (TransactionScope scope = new TransactionScope())
     }
     #endregion
 
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TituloFlujoComun'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_ADMINISTRACION.TituloFlujoComun", "View");
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.HtpCupon'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.HtpCupon", "View");
+    comm.ExecuteNonQuery();
+
     comm.CommandText = (new CamposParaGcvf()).GetCode();
     comm.ExecuteNonQuery();
 
@@ -49,6 +59,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.CompraVentaFlujo'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new CompraVentaFlujo()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioAprox'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.EventoPortafolioAprox", "View");
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
@@ -64,11 +79,6 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PortafolioCorte'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.PortafolioCorte","View");
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PortafolioCorteProg'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new PortafolioCorteProg()).GetCode();
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha'";
