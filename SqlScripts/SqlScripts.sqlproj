@@ -75,7 +75,6 @@
     <None Include="Views\BVQ_BACKOFFICE.ISSPOL_PROGS.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.PortafolioCorteProg.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.PortafolioCorte.View.sql" />
-    <None Include="Views\BVQ_BACKOFFICE.EventoPortafolioAprox.View.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
@@ -92,8 +91,5 @@
     <Build Include="Stored Procedures\BVQ_BACKOFFICE.ReliquidarReporto.StoredProcedure.sql" />
     <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarRetrasos.StoredProcedure.sql" />
     <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarEstadoCuentaPortafolioVenta.StoredProcedure.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <PostDeploy Include="Stored Procedures\BVQ_ADMINISTRACION.GenerarVectores.StoredProcedure.sql" />
   </ItemGroup>
 </Project>

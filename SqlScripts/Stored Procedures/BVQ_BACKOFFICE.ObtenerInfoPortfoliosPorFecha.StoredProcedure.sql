@@ -16,9 +16,9 @@ BEGIN
                 truncate table corteslist
                 insert into corteslist values (@i_fechaCorte,1)
                 
-                --exec bvq_administracion.generarcompraventacorte
-                --exec bvq_administracion.generarvectores
-				--exec BVQ_ADMINISTRACION.PrepararValoracionLinealCache
+                exec bvq_administracion.generarcompraventacorte
+                exec bvq_administracion.generarvectores
+				exec BVQ_ADMINISTRACION.PrepararValoracionLinealCache
 				
 				declare @v_portfolio_oc int,@v_renta_fija int
 				
@@ -29,15 +29,7 @@ BEGIN
 												,tiv_tipo_tasa int,tiv_tipo_base int,tiv_tipo_renta int,tiv_valor_nominal float,ems_nombre varchar(200),htp_numeracion varchar(250),sal float,accrual float,tiv_precio float
 												,tfcorte datetime,rendimiento float,max_fecha_compra datetime,max_precio_compra float,vpr_tasa_descuento float, fecha_compra datetime, htp_precio_compra float, valefe float
 												,htp_compra float, latest_inicio datetime, tpo_tipo_valoracion bit, dias_al_corte int, prox_capital datetime, prox_interes datetime  
-                                                ,IPR_ES_CXC bit
-                                                ,TPO_FECHA_VEN_CONVENIO	datetime
-                                                ,TPO_FECHA_SUSC_CONVENIO	datetime
-                                                ,TPO_INTERVINIENTES	varchar(255)
-                                                ,TPO_PRECIO_ULTIMA_COMPRA	float
-                                                ,TPO_CUPON_VECTOR	float
-                                                ,TPO_MANTIENE_VECTOR_PRECIO	bit
-                                                ,TPO_ACTA varchar(10)
-                                                )
+                                                ,IPR_ES_CXC bit)
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
 													,sbp_id int, por_subtipo_nombre varchar(100), por_descripcion varchar(max))
@@ -47,14 +39,7 @@ BEGIN
 						,htp_numeracion,sal,accrual,precio_sin_redondear,tfcorte,coalesce(liq_rendimiento,pond_rendimiento),max_fecha_compra,max_precio_compra,(vpr_tasa_descuento*100.00),fecha_compra,htp_precio_compra
 						,valefe,htp_compra,latest_inicio,tpo_tipo_valoracion,dias_al_corte,prox_capital,prox_interes
                         ,IPR_ES_CXC
-                        ,null
-                        ,null
-                        ,null
-                        ,null
-                        ,null
-                        ,null
-                        ,TPO_ACTA
-				from bvq_backoffice.portafoliocorte
+				from bvq_backoffice.portafoliocorteProg
 		
 				insert into @tbPortafolioComitente
 				select por.ctc_id, ctc_inicial_tipo,identificacion,nombre,por_id,por_codigo,por_tipo,tipo.itc_descripcion,por.sbp_id,sbp.sbp_descripcion,por.por_codigo+': '+ctc.nombre
@@ -96,7 +81,6 @@ BEGIN
                                                ,VALOR_UNITARIO=case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal else 1 end
                                                ,VALOR_NOMINAL=sal*case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal else 1 end
                                                ,IPR_ES_CXC
-                                               ,pcorte.TPO_ACTA
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id
@@ -104,7 +88,6 @@ BEGIN
                                join bvq_administracion.tipo_tasa tta on pcorte.tiv_tipo_tasa=tta.tta_id
                                left join _temp.prop prop on prop.por_id=por.por_id
                 where sal>0 --and prop.por_id is null -- para que no incluya portafolio propio
-                order by tvl_descripcion,ems_nombre,fecha_compra
 				--and por.por_tipo<>@v_portfolio_oc	-- para ocultar portafolios ocultos
                 --order by pcorte.por_codigo,pcorte.tiv_tipo_valor,pcorte.tiv_id
 end
