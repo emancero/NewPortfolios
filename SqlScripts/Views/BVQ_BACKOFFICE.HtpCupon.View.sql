@@ -57,7 +57,7 @@
 		,op.htp_rendimiento_retorno
 		,op.htp_tir
 		,liq.liq_id
-		
+		,RETR.RETR_FECHA_COBRO
 	from bvq_backoffice.historico_titulos_portafolio op
 		--Averiguar si es reporto para utilizar TPR_SALDO como base del proporcional
 		left join BVQ_BACKOFFICE.TITULOS_PORTAFOLIO_REPORTO tpr

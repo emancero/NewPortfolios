@@ -72,7 +72,7 @@
     <None Include="Views\BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN.View.sql" />
     <None Include="Stored Procedures\BVQ_ADMINISTRACION.GenerarTituloFlujoComun.StoredProcedure.sql" />
     <None Include="Stored Procedures\BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha.StoredProcedure.sql" />
-    <None Include="Views\BVQ_BACKOFFICE.ISSPOL_PROGS.View.sql" />
+    <Build Include="Views\BVQ_BACKOFFICE.ISSPOL_PROGS.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.PortafolioCorteProg.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.PortafolioCorte.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.HtpCupon.View.sql" />
