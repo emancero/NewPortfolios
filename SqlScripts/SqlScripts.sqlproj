@@ -83,17 +83,22 @@
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTituloPortafolio.StoredProcedure.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTitulosPortafolioLiquidacion.StoredProcedure.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.CancelarMovimientoTituloPortafolio.StoredProcedure.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.CancelarTituloPortafolio.StoredProcedure.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarLiquidezPortafolio.StoredProcedure.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTitulosPortafolioLiquidacion.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.CancelarMovimientoTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.CancelarTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.InsertarLiquidezPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.InsertarTituloPortafolio.StoredProcedure.sql" />
     <Build Include="Schemas\BVQ_BACKOFFICE.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ReversarLiquidacion.StoredProcedure.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ReliquidarReporto.StoredProcedure.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.InsertarRetrasos.StoredProcedure.sql" />
-    <Build Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarEstadoCuentaPortafolioVenta.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.ReversarLiquidacion.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.ReliquidarReporto.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.InsertarRetrasos.StoredProcedure.sql" />
+    <None Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarEstadoCuentaPortafolioVenta.StoredProcedure.sql" />
     <Build Include="Schemas\BVQ_ADMINISTRACION.sql" />
+    <Build Include="Stored Procedures\GenerarTituloFlujoComun.sql" />
+    <Build Include="Change Scripts\RETRASO.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="SqlScripts.refactorlog" />
   </ItemGroup>
 </Project>
