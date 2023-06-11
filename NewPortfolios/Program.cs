@@ -28,7 +28,7 @@ using (TransactionScope scope = new TransactionScope())
 
         comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.GenerarTituloFlujoComun'";
         comm.ExecuteNonQuery();
-        comm.CommandText = (new GenerarTituloFlujoComun()).GetCode();
+        comm.CommandText = (new GetObjectCode()).GetCode("GenerarTituloFlujoComun", "StoredProcedure",false);
         comm.ExecuteNonQuery();
     }
     else
