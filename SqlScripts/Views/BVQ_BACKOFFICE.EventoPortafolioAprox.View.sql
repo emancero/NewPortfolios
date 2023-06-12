@@ -26,7 +26,9 @@
 	null def_cobrado,
 	cupoper_base_denominador,
 	null tasa_cupon,
-	tfl_fecha_vencimiento2=case when def_int_cobrado is null then cupoper_tfl_fecha_inicio else null end,
+	tfl_fecha_vencimiento2=case when def_int_cobrado is null then coalesce(
+		 CASE WHEN RETR_INTERES=1 THEN RETR_FECHA_COBRO END
+		,cupoper_tfl_fecha_inicio) else null end,
 	liq_numero_bolsa,
 	liq_comision_bolsa=round(proporcional_htp_liq*htpcupon.liq_comision_bolsa,2),
 	liq_comision_casa=round(proporcional_htp_liq*htpcupon.liq_comision_casa,2),

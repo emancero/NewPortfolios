@@ -14,3 +14,5 @@
 
 	,allIAmortizacion=round(orig*tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100),3)
 	from bvq_backoffice.compra_venta_flujo
+	--Solo cupones posteriores a fecha de operación
+	where htp_fecha_operacion<tfl_fecha_vencimiento2

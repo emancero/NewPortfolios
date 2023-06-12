@@ -58,6 +58,8 @@
 		,op.htp_tir
 		,liq.liq_id
 		,RETR.RETR_FECHA_COBRO
+		,RETR.RETR_CAPITAL
+		,RETR.RETR_INTERES
 	from bvq_backoffice.historico_titulos_portafolio op
 		--Averiguar si es reporto para utilizar TPR_SALDO como base del proporcional
 		left join BVQ_BACKOFFICE.TITULOS_PORTAFOLIO_REPORTO tpr
@@ -71,6 +73,7 @@
 	--and htp_fecha_operacion<cupOper.tfl_fecha_vencimiento and htp_fecha_operacion>=cupOper.tfl_fecha_inicio
 	--PV: error con registros con flujos que presentan hora
 	and datediff(dd,cupOper.tfl_fecha_vencimiento,htp_fecha_operacion)<0 and datediff(dd,cupOper.tfl_fecha_inicio,htp_fecha_operacion)>=0
+	left join BVQ_BACKOFFICE.RETRASO RETR ON OP.HTP_TPO_ID=RETR.RETR_TPO_ID AND RETR.RETR_FECHA_ESPERADA=cupOper.TFL_FECHA_INICIO
 	join bvq_administracion.parametro retencionpct on retencionpct.par_codigo='PAR_RET_LIQ_CV'
 	where htp_estado=352
 	and isnull(htp_reportado,0)=0

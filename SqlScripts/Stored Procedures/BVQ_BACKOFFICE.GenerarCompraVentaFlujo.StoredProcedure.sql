@@ -42,7 +42,9 @@ begin
 	tiv.tiv_tipo_base,
 
 	tfl_fecha_inicio=coalesce(retr1.retr_fecha_cobro,tiv.tfl_fecha_inicio),
-	tfl_fecha_vencimiento=coalesce(retr2.retr_fecha_cobro,tiv.tfl_fecha_vencimiento),
+	tfl_fecha_vencimiento=coalesce(
+		CASE WHEN RETR2.RETR_CAPITAL=1 THEN RETR2.RETR_FECHA_COBRO END
+		,tiv.tfl_fecha_vencimiento),
 	tfl_fecha_vencimiento2=tiv.tfl_fecha_vencimiento,
 	--tfl_fecha_vencimiento3=case when def.def_exacto=1 then null else tiv.tfl_fecha_vencimiento end,
 
@@ -95,7 +97,9 @@ begin
 	tpo_tipo_valoracion
 
 	--ADD: Columnas que estaban en la vista compraventaflujo
-	,vencimiento=case when def_int_cobrado is null then tfl_fecha_vencimiento else null end
+	,vencimiento=case when def_int_cobrado is null then coalesce(
+		 CASE WHEN RETR2.RETR_INTERES=1 THEN RETR2.RETR_FECHA_COBRO END
+		,tfl_fecha_vencimiento) else null end
 	--Columna amortizacion: (crítica)
 	,amortizacion=case when isnull(tpo_redondear_amortizacion,1)=1 then
 		round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*tfl_amortizacion,5)
@@ -112,7 +116,9 @@ begin
 	join bvq_backoffice.titulos_portafolio tpo on htp_tpo_id=tpo.tpo_id
 	join bvq_administracion.TituloFlujoComun tiv
 	on op.tiv_id=tiv.tiv_id
-	and htp_fecha_operacion<tiv.tfl_fecha_vencimiento
+	--Quitar filtro de cupones posteriores a fecha de operación
+	--and htp_fecha_operacion<tiv.tfl_fecha_vencimiento
+
 	left join bvq_backoffice.defaults def on op.por_id=def.por_id and op.tiv_id=def.tiv_id
 	and (datediff(m,def.fecha,tiv.tfl_fecha_vencimiento)>=0
 		and def.def_exacto is null or def.def_exacto is not null and def.fecha=tiv.tfl_fecha_vencimiento
