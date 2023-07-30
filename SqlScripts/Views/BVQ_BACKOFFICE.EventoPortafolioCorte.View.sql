@@ -88,19 +88,20 @@
 		select top 1 htp_precio_compra from bvq_backoffice.historico_titulos_portafolio
 		where htp_tpo_id=e.htp_tpo_id and htp_fecha_operacion<=c and htp_precio_compra<>0 
 		and isnull(htp_reportado,0)=0 and htp_estado=352
-		order by htp_fecha_operacion desc,htp_id desc
+		order by htp_fecha_operacion asc,htp_id asc
 	) htp_precio_compra
 	,(
-		select top 1 htp_compra from bvq_backoffice.historico_titulos_portafolio
+		select top 1 htp_compra=sum(htp_compra) from bvq_backoffice.historico_titulos_portafolio
 		where htp_tpo_id=e.htp_tpo_id and htp_fecha_operacion<=c and htp_precio_compra<>0 
 		and isnull(htp_reportado,0)=0 and htp_estado=352
-		order by htp_fecha_operacion desc,htp_id desc
+		group by htp_tpo_id,htp_fecha_operacion
+		order by htp_fecha_operacion asc--,htp_id asc
 	) htp_compra
 	,(
 		select top 1 htp_rendimiento from bvq_backoffice.historico_titulos_portafolio
 		where htp_tpo_id=e.htp_tpo_id and htp_fecha_operacion<=c and htp_precio_compra<>0 
 		and isnull(htp_reportado,0)=0 and htp_estado=352
-		order by htp_fecha_operacion desc,htp_id desc
+		order by htp_fecha_operacion asc,htp_id asc
 	) htp_rendimiento
 	,hiperb=(select sum(hiperb) from [BVQ_ADMINISTRACION].[valoracionCostoAmortizado] val where val.htp_tpo_id=e.htp_tpo_id and val.fechaVal=c.c and val.htp_fecha_operacion<=c.c)
 	from bvq_backoffice.EventoPortafolio e
