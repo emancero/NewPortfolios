@@ -19,15 +19,15 @@ AS
 		TFL_FECHA_ACTUALIZACION
 	--FROM BVQ_ADMINISTRACION.titulo_flujo_comun_raw
 		from bvq_administracion.titulo_flujo tfl
-	where tfl_fecha_inicio_vigencia is null
-	and
-	(select top 1 ifprt_fecha from bvq_administracion.inicio_flujo_portafolio)
-	<=tfl_fecha_vencimiento
+	--where tfl_fecha_inicio_vigencia is null
+	--and
+	--(select top 1 ifprt_fecha from bvq_administracion.inicio_flujo_portafolio)
+	--<=tfl_fecha_vencimiento
 	
 	union all
 
 	select
-	max_tfl_id+row_number() over (order by tiv_id),
+	max_tfl_id+tiv_id,--row_number() over (order by tiv_id),
 	tiv_id,	
 	tiv_codigo,
 	tfl_periodo=null,
