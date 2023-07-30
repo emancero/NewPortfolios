@@ -200,6 +200,9 @@
 	,GCXC.GCXC_NOMBRE
 	,HTP.TPO_F1
 	,HTP.TPO_CODIGO_VECTOR
+	,HTP.TPO_INTERES_TRANSCURRIDO
+	,HTP.TPO_OTROS_COSTOS
+	,HTP.TPO_COMISIONES
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -362,6 +365,9 @@
 					,TPO.TPO_ACTA
 					,TPO.TPO_F1
 					,TPO.TPO_CODIGO_VECTOR
+					,TPO.TPO_INTERES_TRANSCURRIDO
+					,TPO.TPO_OTROS_COSTOS
+					,TPO.TPO_COMISIONES
 
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
