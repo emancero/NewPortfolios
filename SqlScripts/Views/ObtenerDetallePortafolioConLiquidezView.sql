@@ -90,6 +90,7 @@
 	--POR_PUBLIC_2
 	,por_public
 	
+	,evt.TIV_ID
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -191,6 +192,7 @@
 	--POR_PUBLIC_2
 	,por.por_public
 	
+	,TIV_ID=null
 	--cliente.nombre
 	from
 	bvq_backoffice.evento_portafolio evp

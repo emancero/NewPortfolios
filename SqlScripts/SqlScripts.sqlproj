@@ -101,4 +101,10 @@
   <ItemGroup>
     <RefactorLog Include="SqlScripts.refactorlog" />
   </ItemGroup>
+  <ItemGroup>
+    <Build Include="Stored Procedures\PrepararLiquidezCache.sql" />
+    <Build Include="Stored Procedures\ObtenerDetallePortafolioConLiquidez.sql" />
+    <Build Include="Views\ObtenerDetallePortafolioConLiquidezView.sql" />
+    <Build Include="Change Scripts\Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp.sql" />
+  </ItemGroup>
 </Project>

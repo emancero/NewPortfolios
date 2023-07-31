@@ -35,13 +35,14 @@ begin
 	(oper,htp_id,es_vencimiento_interes,fecha,montoOper,vep_valor_efectivo,en_liquidez,por_id,saldo_liquidez,voucher_exists,lip_cliente_id,htp_tpo_id,htp_fecha_operacion,tasa_cupon,porv_retencion,iAmortizacion,nombre,por_codigo,liquidez_descripcion,ems_nombre,grc_codigo,tvl_codigo,tiv_fecha_vencimiento,tiv_tipo_valor,tpo_numeracion,vep_id,vep_cta_id,vep_other_account,amount,account,vep_renovacion,ttl_id,vep_observaciones,ttl_nombre,lip_retencion,com_id,lip_documento,cliente_nombre,htp_numeracion_clean,fecha_compra,por_tipo,tpo_categoria,vep_fecha,com_numero_comprobante,en_espera,evp_id,liq_compra
 	--POR_PUBLIC_2
 	,por_public
+	,TIV_ID
 	)
 	select --* into bvq_backoffice.evtTemp
 	oper,htp_id,es_vencimiento_interes,fecha,montoOper,vep_valor_efectivo,en_liquidez,por_id,saldo_liquidez,voucher_exists,lip_cliente_id,htp_tpo_id,htp_fecha_operacion,tasa_cupon,porv_retencion,iAmortizacion,nombre,por_codigo,liquidez_descripcion,ems_nombre,grc_codigo,tvl_codigo,tiv_fecha_vencimiento,tiv_tipo_valor,tpo_numeracion,vep_id,vep_cta_id,vep_other_account,amount,account,vep_renovacion,ttl_id,vep_observaciones,ttl_nombre,lip_retencion,com_id,lip_documento,cliente_nombre,htp_numeracion_clean,fecha_compra,por_tipo,tpo_categoria,vep_fecha,com_numero_comprobante,en_espera,evp_id,liq_compra
 
 	--POR_PUBLIC_2
 	,por_public
-	
+	,TIV_ID
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
 

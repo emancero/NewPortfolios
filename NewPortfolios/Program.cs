@@ -86,6 +86,24 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new ObtenerInfoPortfoliosPorFecha()).GetCode();
     comm.ExecuteNonQuery();
 
+    comm.CommandText = (new GetObjectCode()).GetCode("Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp", "Change Script",suffix:false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PrepararLiquidezCache'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("PrepararLiquidezCache", "Stored Procedure", suffix:false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidezView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidezView", "View", suffix:false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)
     {

@@ -53,6 +53,7 @@
 		--POR_PUBLIC_2
 		,POR_PUBLIC
 
+		,TIV_ID
 		--,
 		--vep.vep_fecha,
 
@@ -133,6 +134,7 @@
 		--POR_PUBLIC_2
 		,por.por_public
 	
+		,tpo.TIV_ID
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt
