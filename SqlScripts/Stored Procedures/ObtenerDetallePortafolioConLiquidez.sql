@@ -20,6 +20,11 @@ begin
 		return
 	end*/
 
+	--PV: para sacar liquidez de portafolios diferidos
+	declare @tbPortafolio table (por_id int, dif_por_id int, por_public bit)
+	insert into @tbPortafolio
+	select distinct por_id,dif_por_id,por_public from BVQ_BACKOFFICE.PORTAFOLIO where @i_public=1
+	
 	--si solo se solicita un cliente preparar la liquidez
 	if @i_idPortfolio<>-1 and @i_idPortfolio is not null
 		exec bvq_backoffice.PrepararLiquidezCache null
@@ -51,14 +56,16 @@ begin
 	@accSalLiq=saldo_liquidez=case when @prevPorId=por_id then @accSalLiq+(vep_valor_efectivo-isnull(lip_retencion,0))*en_liquidez else (vep_valor_efectivo-isnull(lip_retencion,0))*en_liquidez end
 	,@prevPorId=por_id
 	from bvq_backoffice.evtTemp with(tablockx)
-
+	where (abs(round(amount,2))>0.05e or oper=2)
+	
 	select *,TPO_REESTRUCTURACION=CASE WHEN TPO_NUMERACION='2014-4933' THEN 1 ELSE 0 END
 	from bvq_backoffice.evtTemp where fecha between @i_fechaIni and @i_fechaFin
 	and (@i_client_id=lip_cliente_id or @i_client_id is null)
 	and (@i_idPortfolio=por_id or @i_idPortfolio=-1)
 	--Columna por_public
 	and (@i_public=0 OR por_public=1)
-
+	and (abs(round(amount,2))>0.05e or oper=2)
+	
 	--and por_id in (180,135,181,182,183) --PORTAFOLIOS DE ADVFINSA
 	--obtener saldos iniciales
 	select por_id,saldo_liquidez from(
@@ -66,5 +73,6 @@ begin
 		,por_id,saldo_liquidez
 		from bvq_backoffice.evttemp
 		where fecha<@i_fechaIni
-	) s where rn=1
+		and (abs(round(amount,2))>0.05e or oper=2)
+	) s where rn=1	
 end
