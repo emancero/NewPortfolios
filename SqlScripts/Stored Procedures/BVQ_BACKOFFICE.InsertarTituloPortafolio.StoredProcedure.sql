@@ -86,7 +86,15 @@ BEGIN
 				HTP_NUMERACION = @i_numeracion
 		)
 	begin
-
+			declare @v_fon_id int=(
+				select fon_id from bvq_backoffice.fondo
+				where fon_tiv_id=@i_tiv_id and fon_numeracion=@i_numeracion
+			)
+			if @v_fon_id is null
+			begin
+				insert into bvq_backoffice.fondo(fon_tiv_id,fon_numeracion) values (@i_tiv_id,@i_numeracion)
+				set @v_fon_id=scope_identity()
+			end
 			INSERT INTO [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO]
            (
 			   USR_ID,
@@ -106,7 +114,8 @@ BEGIN
 			   TPO_CATEGORIA,
 			   TPO_RENOVADO_DE,
 			   TPO_COMISION_BOLSA,
-			   TPO_OFERTA_ID
+			   TPO_OFERTA_ID,
+			   FON_ID
            )
 			 VALUES
            (
@@ -127,7 +136,8 @@ BEGIN
 			   @i_categoria,
 			   @i_renovadopor,
 			   @i_comisionBolsa,
-			   @i_oferta_id
+			   @i_oferta_id,
+			   @v_fon_id
            )
 			set @v_tpo_id=scope_identity()
 	end
@@ -257,3 +267,4 @@ BEGIN
 	@i_columIdName = 'HTP_ID',
 	@i_idAfectado = @@IDENTITY;
 END
+
