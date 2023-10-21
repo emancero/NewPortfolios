@@ -55,6 +55,7 @@ BEGIN
                         ,null
                         ,TPO_ACTA
 				from bvq_backoffice.portafoliocorte
+
 		
 				insert into @tbPortafolioComitente
 				select por.ctc_id, ctc_inicial_tipo,identificacion,nombre,por_id,por_codigo,por_tipo,tipo.itc_descripcion,por.sbp_id,sbp.sbp_descripcion,por.por_codigo+': '+ctc.nombre
@@ -94,9 +95,20 @@ BEGIN
                                                ,isnull(por.por_subtipo_nombre,'SIN CLASIFICAR') as SBP_DESCRIPCION
                                                
                                                ,VALOR_UNITARIO=case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal else 1 end
-                                               ,VALOR_NOMINAL=sal*case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal else 1 end
+                                               ,VALOR_NOMINAL=
+                                                    case when pcorte.tvl_codigo='FI'
+                                                        then htp_compra*htp_precio_compra
+                                                    else
+                                                        sal*
+                                                        case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal
+                                                        else 1 end
+                                                    end
                                                ,IPR_ES_CXC
                                                ,pcorte.TPO_ACTA
+                                               ,VALOR_EFECTIVO=
+                                                    pcorte.sal
+                                                    * pcorte.tiv_precio
+                                                    / case when tiv_tipo_renta=154 then 1 else 100 end
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id

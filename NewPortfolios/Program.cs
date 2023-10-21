@@ -13,11 +13,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
 
     #region dematerialize titulo_flujo_comun
-        comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN'";
-        comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN'";
+    comm.ExecuteNonQuery();
 
-        comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN_RAW'";
-        comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN_RAW'";
+    comm.ExecuteNonQuery();
     if (true)
     {
         comm.CommandText = (new TablaTituloFlujoComunRaw()).GetCode();
@@ -28,7 +28,7 @@ using (TransactionScope scope = new TransactionScope())
 
         comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.GenerarTituloFlujoComun'";
         comm.ExecuteNonQuery();
-        comm.CommandText = (new GetObjectCode()).GetCode("GenerarTituloFlujoComun", "StoredProcedure",false);
+        comm.CommandText = (new GetObjectCode()).GetCode("GenerarTituloFlujoComun", "StoredProcedure", false);
         comm.ExecuteNonQuery();
     }
     else
@@ -41,6 +41,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TituloFlujoComun'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("BVQ_ADMINISTRACION.TituloFlujoComun", "View");
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("RETR_CAPITAL y RETR_INTERES", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    ChangeScript(comm,"TPO_F1");
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.HtpCupon'";
@@ -66,6 +71,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.EventoPortafolioAprox", "View");
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("EventoPortafolio", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new EventoPortafolioCorte()).GetCode();
@@ -78,7 +88,7 @@ using (TransactionScope scope = new TransactionScope())
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PortafolioCorte'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.PortafolioCorte","View");
+    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.PortafolioCorte", "View");
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha'";
@@ -86,17 +96,20 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new ObtenerInfoPortfoliosPorFecha()).GetCode();
     comm.ExecuteNonQuery();
 
-    comm.CommandText = (new GetObjectCode()).GetCode("Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp", "Change Script",suffix:false);
+    comm.CommandText = (new GetObjectCode()).GetCode("Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("Campo dias_cupon y TIV_FECHA_EMISION en LIQUIDEZ_CACHE y evtTemp", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PrepararLiquidezCache'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("PrepararLiquidezCache", "Stored Procedure", suffix:false);
+    comm.CommandText = (new GetObjectCode()).GetCode("PrepararLiquidezCache", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidezView'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidezView", "View", suffix:false);
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidezView", "View", suffix: false);
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
@@ -104,13 +117,15 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new InsertarTituloPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)
     {
-        comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
-        comm.ExecuteNonQuery();
-        comm.CommandText = (new InsertarTituloPortafolio()).GetCode();
-        comm.ExecuteNonQuery();
 
         comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarTituloPortafolio'";
         comm.ExecuteNonQuery();
@@ -165,4 +180,9 @@ using (TransactionScope scope = new TransactionScope())
 
     conn.Close();
     scope.Complete();
+}
+
+static void ChangeScript(SqlCommand comm,string fullName)
+{
+    comm.CommandText = (new GetObjectCode()).GetCode(fullName, "Change Script", suffix: false);
 }

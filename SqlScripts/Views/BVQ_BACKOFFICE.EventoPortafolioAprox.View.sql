@@ -64,6 +64,7 @@
 	,tfl_fecha_inicio=null
 	,tfl_periodo=null
 	,liq_id=htpcupon.liq_id
+	,tfl_fecha_inicio_orig=null
 	from bvq_backoffice.htpcupon
 	left join bvq_backoffice.defaults def on htpcupon.por_id=def.por_id and htpcupon.tiv_id=def.tiv_id
 	and datediff(m,def.fecha,htpcupon.cupoper_tfl_fecha_inicio)>=0
@@ -92,7 +93,7 @@
 	def_cobrado,
 	base_denominador,
 	itasa_interes=max(itasa_interes),
-	vencimiento,
+	tfl_fecha_vencimiento2=vencimiento,
 	liq_numero_bolsa=null,
 	liq_comision_bolsa=null,
 	liq_comision_casa=null,
@@ -127,6 +128,7 @@
 	,tfl_fecha_inicio
 	,tfl_periodo
 	,liq_id=null
+	,tfl_fecha_inicio_orig
 	from bvq_backoffice.compraventaflujo
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento
-	group by htp_tpo_id,tfl_id,tfl_fecha_vencimiento,vencimiento,tfl_capital,tfl_amortizacion,def_cobrado,tfl_fecha_inicio,/*retr_fecha_esperada,*/base_denominador,/*itasa_interes,*/tfl_fecha_vencimiento2,dias_cupon,compra_htp_id,isnull(htp_numeracion,''),TFL_PERIODO
+	group by htp_tpo_id,tfl_id,tfl_fecha_vencimiento,vencimiento,tfl_capital,tfl_amortizacion,def_cobrado,tfl_fecha_inicio,/*retr_fecha_esperada,*/base_denominador,/*itasa_interes,*/tfl_fecha_vencimiento2,dias_cupon,compra_htp_id,isnull(htp_numeracion,''),TFL_PERIODO,tfl_fecha_inicio_orig

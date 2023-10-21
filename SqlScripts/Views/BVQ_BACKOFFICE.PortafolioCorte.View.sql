@@ -12,7 +12,10 @@
 	--tfl_fecha_vencimiento,
 	latest_inicio,
 	--latest_vencimiento,
-	dbo.fnDias(latest_inicio,c,case when tiv_accrual_365=1 then 355 else tiv.tiv_tipo_base end)+case when tiv_accrual_365=1 then 1 else 0 end dias_al_corte,
+	dbo.fnDias(latest_inicio,c,case when tiv_accrual_365=1 then 355 else tiv.tiv_tipo_base end)
+	+case when tiv_accrual_365=1 then 1 else 0 end
+	+case when tiv_codigo like 'CEAOBL29%' then 2 else 0 end
+	dias_al_corte,
 	ems_nombre,
 	pais=coalesce(itcpais.itc_valor,'ECUADOR'),
 	sector_general=itcsector.itc_codigo,
@@ -25,7 +28,7 @@
 	tiv.tiv_tipo_base,
 	tiv_tasa_margen,
 	htp_numeracion,
-	case when abs(round(sal,2))<=0.02 then 0 else round(sal,case when c>='2020-04-01' and tiv_tipo_valor=17 then 100 else 2 end) end sal,
+	case when abs(round(sal,2))<=0.02 then 0 else round(sal,case when c>='2020-04-01' and tiv_tipo_valor in (17,10000006) then 100 else 2 end) end sal,
 	sal sal2,
 	salSinCupon,
 	htp.por_id,
@@ -203,6 +206,12 @@
 	,HTP.TPO_INTERES_TRANSCURRIDO
 	,HTP.TPO_OTROS_COSTOS
 	,HTP.TPO_COMISIONES
+	,HTP.TPO_RECURSOS
+	,HTP.TPO_ABONO_INTERES
+	,HTP.TPO_VALNOM_ANTERIOR
+	,HTP.TPO_FECHA_ENCARGO
+	,ems.asi_emi_codemi
+	,HTP.TPO_ORD
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -271,7 +280,7 @@
 							case when exists(select 1 from bvq_administracion.parametro where par_codigo='VALCOMP_SHORT' and c<=(select tpor_tiempo from bvq_backoffice.tiempos_portafolio where tpor_codigo='VALCOMP_SHORT')) then
 								max_precio_compra
 							else
-								(vpr_precio-100.0)/datediff(d,lastValDate,t.tiv_fecha_vencimiento)*datediff(d,c,t.tiv_fecha_vencimiento)+100.0
+								vpr_precio--(vpr_precio-100.0)/datediff(d,lastValDate,t.tiv_fecha_vencimiento)*datediff(d,c,t.tiv_fecha_vencimiento)+100.0
 							end
 						when
 							tpo_categoria_inversion is not null
@@ -368,6 +377,11 @@
 					,TPO.TPO_INTERES_TRANSCURRIDO
 					,TPO.TPO_OTROS_COSTOS
 					,TPO.TPO_COMISIONES
+					,TPO.TPO_RECURSOS
+					,TPO.TPO_ABONO_INTERES
+					,TPO.TPO_VALNOM_ANTERIOR
+					,TPO.TPO_FECHA_ENCARGO
+					,TPO.TPO_ORD
 
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id

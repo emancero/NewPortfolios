@@ -49,6 +49,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_saldoEnFilaAnterior bit
 	,@i_oferta_id int=null
 	,@i_liq_id int=null
+	,@i_recursos int=null
 	,@i_lga_id int		
 AS
 BEGIN

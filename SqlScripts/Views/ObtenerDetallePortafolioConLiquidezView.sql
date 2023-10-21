@@ -91,6 +91,11 @@
 	,por_public
 	
 	,evt.TIV_ID
+	,evt.dias_cupon
+	,evt.TIV_FECHA_EMISION
+	,evt.TFL_FECHA_INICIO
+	,evt.TFL_FECHA_INICIO_ORIG
+
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -193,6 +198,10 @@
 	,por.por_public
 	
 	,TIV_ID=null
+	,dias_cupon=null
+	,TIV_FECHA_EMISION=null
+	,TFL_FECHA_INICIO=null
+	,TFL_FECHA_INICIO_ORIG=null
 	--cliente.nombre
 	from
 	bvq_backoffice.evento_portafolio evp

@@ -54,6 +54,10 @@
 		,POR_PUBLIC
 
 		,TIV_ID
+		,dias_cupon
+		,tiv_fecha_emision
+		,tfl_fecha_inicio
+		,tfl_fecha_inicio_orig
 		--,
 		--vep.vep_fecha,
 
@@ -135,6 +139,11 @@
 		,por.por_public
 	
 		,tpo.TIV_ID
+		,evt.dias_cupon
+		,tiv.tiv_fecha_emision
+		,evt.tfl_fecha_inicio
+		,evt.tfl_fecha_inicio_orig
+
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

@@ -121,7 +121,7 @@ begin
 
 	left join bvq_backoffice.defaults def on op.por_id=def.por_id and op.tiv_id=def.tiv_id
 	and (datediff(m,def.fecha,tiv.tfl_fecha_vencimiento)>=0
-		and def.def_exacto is null or def.def_exacto is not null and def.fecha=tiv.tfl_fecha_vencimiento
+		--and def.def_exacto is null or def.def_exacto is not null and def.fecha=tiv.tfl_fecha_vencimiento
 	)  -- defaults: discriminación de vencimientos
 	left join bvq_backoffice.retraso retr1 on retr1.retr_tpo_id=htp_tpo_id and retr1.retr_fecha_esperada=tiv.tfl_fecha_inicio
 	left join bvq_backoffice.retraso retr2 on retr2.retr_tpo_id=htp_tpo_id and retr2.retr_fecha_esperada=tiv.tfl_fecha_vencimiento

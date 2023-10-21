@@ -78,6 +78,10 @@
     <None Include="Views\BVQ_BACKOFFICE.HtpCupon.View.sql" />
     <None Include="Views\BVQ_ADMINISTRACION.TituloFlujoComun.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.EventoPortafolioAprox.View.sql" />
+    <None Include="Change Scripts\Campo dias_cupon y TIV_FECHA_EMISION en LIQUIDEZ_CACHE y evtTemp.sql" />
+    <None Include="Change Scripts\compra_htp_id en evttemp.sql" />
+    <None Include="Change Scripts\RETR_CAPITAL y RETR_INTERES.sql" />
+    <None Include="Change Scripts\TPO_F1.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
@@ -106,5 +110,6 @@
     <Build Include="Stored Procedures\ObtenerDetallePortafolioConLiquidez.sql" />
     <Build Include="Views\ObtenerDetallePortafolioConLiquidezView.sql" />
     <Build Include="Change Scripts\Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp.sql" />
+    <Build Include="Views\EventoPortafolio.sql" />
   </ItemGroup>
 </Project>
