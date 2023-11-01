@@ -37,10 +37,12 @@ BEGIN
                                                 ,TPO_CUPON_VECTOR	float
                                                 ,TPO_MANTIENE_VECTOR_PRECIO	bit
                                                 ,TPO_ACTA varchar(10)
+                                                ,TPO_COMISIONES float
+                                                ,TPO_INTERES_TRANSCURRIDO float
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
-													,sbp_id int, por_subtipo_nombre varchar(100), por_descripcion varchar(max))
+													,sbp_id int, por_subtipo_nombre varchar(100), por_descripcion varchar(max), por_ord int)
 				
 				insert into @tbPortafolioCorte
 				select	httpo_id,por_id,tiv_id,tiv_codigo,tiv_tipo_valor,tvl_codigo,tvl_generico,tiv_fecha_emision,tiv_fecha_vencimiento,tiv_tipo_tasa,tiv_tipo_base,tiv_tipo_renta,tiv_valor_nominal,ems_nombre
@@ -54,11 +56,13 @@ BEGIN
                         ,null
                         ,null
                         ,TPO_ACTA
+                        ,TPO_COMISIONES
+                        ,TPO_INTERES_TRANSCURRIDO
 				from bvq_backoffice.portafoliocorte
 
 		
 				insert into @tbPortafolioComitente
-				select por.ctc_id, ctc_inicial_tipo,identificacion,nombre,por_id,por_codigo,por_tipo,tipo.itc_descripcion,por.sbp_id,sbp.sbp_descripcion,por.por_codigo+': '+ctc.nombre
+				select por.ctc_id, ctc_inicial_tipo,identificacion,nombre,por_id,por_codigo,por_tipo,tipo.itc_descripcion,por.sbp_id,sbp.sbp_descripcion,por.por_codigo+': '+ctc.nombre,por_ord
 				from bvq_prevencion.personacomitente ctc
 					inner join bvq_backoffice.portafolio por on ctc.ctc_id=por.ctc_id
 					inner join bvq_administracion.item_catalogo tipo on por.por_tipo=tipo.itc_id
@@ -107,8 +111,23 @@ BEGIN
                                                ,pcorte.TPO_ACTA
                                                ,VALOR_EFECTIVO=
                                                     pcorte.sal
-                                                    * pcorte.tiv_precio
+                                                    --precio
+                                                    * (
+                                                        pcorte.htp_precio_compra--tiv_precio
+                                                        +(
+                                                            isnull(TPO_INTERES_TRANSCURRIDO,0)
+                                                            +isnull(TPO_COMISIONES,0)
+                                                        )/htp_compra*100.0
+                                                    )
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
+                                                    --+ isnull(TPO_COMISIONES,0)
+                                               ,TIPO_RENTA=case tiv_tipo_renta when 153 then 'Renta fija' when 154 then 'Renta variable' end
+                                               ,ESTADO = case when isnull(IPR_ES_CXC,0)=0 then 'Vigente' else 'Cuentas por cobrar' end
+                                               /*,VE_AMORTIZADO=isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISIONES],0)/
+                                                    --+ [htp_compra]
+                                                    + sal
+                                                    *[htp_precio_compra]/case when [tiv_tipo_renta]=153 then 100e else 1e end*/
+                                                ,por.Por_ord
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id
