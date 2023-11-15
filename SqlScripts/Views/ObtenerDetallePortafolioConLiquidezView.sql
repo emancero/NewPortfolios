@@ -1,4 +1,6 @@
-﻿create view bvq_backoffice.ObtenerDetallePortafolioConLiquidezView as
+﻿exec dropifexists 'bvq_backoffice.ObtenerDetallePortafolioConLiquidezView'
+go
+create view bvq_backoffice.ObtenerDetallePortafolioConLiquidezView as
 
 	select
 	evt.nombre,
@@ -95,7 +97,7 @@
 	,evt.TIV_FECHA_EMISION
 	,evt.TFL_FECHA_INICIO
 	,evt.TFL_FECHA_INICIO_ORIG
-
+	,EVP_AJUSTE_PROVISION
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -202,6 +204,7 @@
 	,TIV_FECHA_EMISION=null
 	,TFL_FECHA_INICIO=null
 	,TFL_FECHA_INICIO_ORIG=null
+	,EVP_AJUSTE_PROVISION
 	--cliente.nombre
 	from
 	bvq_backoffice.evento_portafolio evp
