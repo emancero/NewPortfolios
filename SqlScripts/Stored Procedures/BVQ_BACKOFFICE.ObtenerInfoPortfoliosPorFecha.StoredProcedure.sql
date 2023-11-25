@@ -26,7 +26,7 @@ BEGIN
 				SELECT @v_renta_fija=ITC_ID FROM BVQ_ADMINISTRACION.ITEM_CATALOGO WHERE ITC_CODIGO = 'REN_FIJA'
 				
 				declare @tbPortafolioCorte table (httpo_id int,por_id int,tiv_id int,tiv_codigo varchar(50),tiv_tipo_valor int,tvl_codigo varchar(20),tvl_generico bit,tiv_fecha_emision datetime,tiv_fecha_vencimiento datetime
-												,tiv_tipo_tasa int,tiv_tipo_base int,tiv_tipo_renta int,tiv_valor_nominal float,ems_nombre varchar(200),htp_numeracion varchar(250),sal float,accrual float,tiv_precio float
+												,tiv_tipo_tasa int,tiv_tasa_interes float,tiv_tipo_base int,tiv_tipo_renta int,tiv_valor_nominal float,ems_nombre varchar(200),htp_numeracion varchar(250),sal float,accrual float,tiv_precio float
 												,tfcorte datetime,rendimiento float,max_fecha_compra datetime,max_precio_compra float,vpr_tasa_descuento float, fecha_compra datetime, htp_precio_compra float, valefe float
 												,htp_compra float, latest_inicio datetime, tpo_tipo_valoracion bit, dias_al_corte int, prox_capital datetime, prox_interes datetime  
                                                 ,IPR_ES_CXC bit
@@ -39,25 +39,27 @@ BEGIN
                                                 ,TPO_ACTA varchar(10)
                                                 ,TPO_COMISIONES float
                                                 ,TPO_INTERES_TRANSCURRIDO float
+												,TPO_COMISION_BOLSA float
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
 													,sbp_id int, por_subtipo_nombre varchar(100), por_descripcion varchar(max), por_ord int)
 				
 				insert into @tbPortafolioCorte
-				select	httpo_id,por_id,tiv_id,tiv_codigo,tiv_tipo_valor,tvl_codigo,tvl_generico,tiv_fecha_emision,tiv_fecha_vencimiento,tiv_tipo_tasa,tiv_tipo_base,tiv_tipo_renta,tiv_valor_nominal,ems_nombre
+				select	httpo_id,por_id,tiv_id,tiv_codigo,tiv_tipo_valor,tvl_codigo,tvl_generico,tiv_fecha_emision,tiv_fecha_vencimiento,tiv_tipo_tasa,tiv_tasa_interes,tiv_tipo_base,tiv_tipo_renta,tiv_valor_nominal,ems_nombre
 						,htp_numeracion,sal,accrual,precio_sin_redondear,tfcorte,coalesce(liq_rendimiento,pond_rendimiento),max_fecha_compra,max_precio_compra,(vpr_tasa_descuento*100.00),fecha_compra,htp_precio_compra
 						,valefe,htp_compra,latest_inicio,tpo_tipo_valoracion,dias_al_corte,prox_capital,prox_interes
                         ,IPR_ES_CXC
                         ,null
                         ,null
                         ,null
-                        ,null
+               ,null
                         ,null
                         ,null
                         ,TPO_ACTA
                         ,TPO_COMISIONES
                         ,TPO_INTERES_TRANSCURRIDO
+						,TPO_COMISION_BOLSA
 				from bvq_backoffice.portafoliocorte
 
 		
@@ -78,6 +80,7 @@ BEGIN
                                                ,pcorte.tiv_precio
                                                ,pcorte.por_id
                                                ,pcorte.tiv_id
+											   ,pcorte.tiv_tasa_interes
 											   ,(CASE WHEN pcorte.tiv_tipo_renta  =  @v_renta_fija THEN pcorte.tiv_fecha_emision else NULL end) as tiv_fecha_emision
                                                ,pcorte.tiv_fecha_vencimiento
                                                ,pcorte.htp_numeracion
@@ -112,11 +115,12 @@ BEGIN
                                                ,VALOR_EFECTIVO=
                                                     pcorte.sal
                                                     --precio
-                                                    * (
+             * (
                                                         pcorte.htp_precio_compra--tiv_precio
                                                         +(
                                                             isnull(TPO_INTERES_TRANSCURRIDO,0)
                                                             +isnull(TPO_COMISIONES,0)
+															+isnull(TPO_COMISION_BOLSA,0)
                                                         )/htp_compra*100.0
                                                     )
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
@@ -128,6 +132,7 @@ BEGIN
                                                     + sal
                                                     *[htp_precio_compra]/case when [tiv_tipo_renta]=153 then 100e else 1e end*/
                                                 ,por.Por_ord
+                                                ,httpo_id
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id
