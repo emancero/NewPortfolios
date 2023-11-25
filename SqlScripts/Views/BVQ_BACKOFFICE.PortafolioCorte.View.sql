@@ -212,13 +212,15 @@
 	,HTP.TPO_FECHA_ENCARGO
 	,ems.asi_emi_codemi
 	,HTP.TPO_ORD
+	,HTP.TPO_COMISION_BOLSA
+	,HTP.TPO_DIVIDENDOS_EN_ACCIONES
 	/*,
 	tpo_categoria_inversion*/
 	from
 	(
 					------------- VALORACIONES ---------------
 					select
-					latest_inicio=latest_vencimiento,
+					latest_inicio=case when datediff(d,fecha_compra,latest_vencimiento)=0 then cupoper_tfl_fecha_inicio else latest_vencimiento end,
 					isnull(tpo_numeracion,'') htp_numeracion,
 					tpo.por_id,
 					tpo.tiv_id,
@@ -382,7 +384,9 @@
 					,TPO.TPO_VALNOM_ANTERIOR
 					,TPO.TPO_FECHA_ENCARGO
 					,TPO.TPO_ORD
-
+					,TPO.TPO_COMISION_BOLSA
+					,TPO.TPO_DIVIDENDOS_EN_ACCIONES
+					
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
 
