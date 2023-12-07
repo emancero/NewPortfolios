@@ -108,7 +108,13 @@ begin
 		-round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*(tfl_capital-tfl_amortizacion),5)
 	end
 	*isnull(def_cobrado,1)
-	,iAmortizacion=   round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100),3)
+	,iAmortizacion=   round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*
+		case when op.tiv_interes_irregular=1 and tfl_interes>0 then
+			tfl_interes
+		else
+			tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100)
+		end
+		,3)
 		*isnull(def_cobrado,1)
 
 	from

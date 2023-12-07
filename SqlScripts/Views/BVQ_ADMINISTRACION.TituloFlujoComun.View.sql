@@ -20,6 +20,7 @@
 	,tiv_subtipo
 	,tiv_frecuencia
 	,tiv_calculo_frecuencia
+	,tiv_interes_irregular
 	from
 	bvq_administracion.titulo_flujo_comun tfl join
 	bvq_administracion.titulo_valor tiv on

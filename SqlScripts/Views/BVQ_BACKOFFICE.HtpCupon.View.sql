@@ -60,6 +60,7 @@
 		,RETR.RETR_FECHA_COBRO
 		,RETR.RETR_CAPITAL
 		,RETR.RETR_INTERES
+		,tiv_interes_irregular
 	from bvq_backoffice.historico_titulos_portafolio op
 		--Averiguar si es reporto para utilizar TPR_SALDO como base del proporcional
 		left join BVQ_BACKOFFICE.TITULOS_PORTAFOLIO_REPORTO tpr
