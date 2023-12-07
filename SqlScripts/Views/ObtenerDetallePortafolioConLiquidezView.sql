@@ -98,6 +98,14 @@ create view bvq_backoffice.ObtenerDetallePortafolioConLiquidezView as
 	,evt.TFL_FECHA_INICIO
 	,evt.TFL_FECHA_INICIO_ORIG
 	,EVP_AJUSTE_PROVISION
+
+	,evt.TPO_FECHA_INGRESO
+	,evt.TPO_RECURSOS
+	,evt.tiv_serie
+	,evt.tiv_numero_emision_seb
+	,evt.TIV_FRECUENCIA
+	,evt.IPR_ES_CXC
+	,fecha_original=evt.fecha
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -206,6 +214,13 @@ create view bvq_backoffice.ObtenerDetallePortafolioConLiquidezView as
 	,TFL_FECHA_INICIO_ORIG=null
 	,EVP_AJUSTE_PROVISION
 	--cliente.nombre
+	,TPO_FECHA_INGRESO=null
+	,TPO_RECURSOS=null
+	,tiv_serie=null
+	,tiv_numero_emision_seb=null
+	,TIV_FRECUENCIA=null
+	,IPR_ES_CXC=null
+	,fecha_original=null
 	from
 	bvq_backoffice.evento_portafolio evp
 

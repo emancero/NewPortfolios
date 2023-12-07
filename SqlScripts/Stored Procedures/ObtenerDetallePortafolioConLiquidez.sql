@@ -42,6 +42,12 @@ begin
 	,TFL_FECHA_INICIO
 	,TFL_FECHA_INICIO_ORIG
 	,EVP_AJUSTE_PROVISION
+	,TPO_FECHA_INGRESO
+	,TPO_RECURSOS
+	,TIV_SERIE
+	,TIV_NUMERO_EMISION_SEB
+	,TIV_FRECUENCIA
+	,IPR_ES_CXC
 	)
 	select --* into bvq_backoffice.evtTemp
 	oper,htp_id,es_vencimiento_interes,fecha,montoOper,vep_valor_efectivo,en_liquidez,por_id,saldo_liquidez,voucher_exists,lip_cliente_id,htp_tpo_id,htp_fecha_operacion,tasa_cupon,porv_retencion,iAmortizacion,nombre,por_codigo,liquidez_descripcion,ems_nombre
@@ -57,6 +63,12 @@ begin
 	,TFL_FECHA_INICIO
 	,TFL_FECHA_INICIO_ORIG
 	,EVP_AJUSTE_PROVISION
+	,TPO_FECHA_INGRESO
+	,TPO_RECURSOS
+	,TIV_SERIE
+	,TIV_NUMERO_EMISION_SEB
+	,TIV_FRECUENCIA
+	,IPR_ES_CXC
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  

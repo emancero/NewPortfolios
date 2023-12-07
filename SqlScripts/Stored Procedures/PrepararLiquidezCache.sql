@@ -58,6 +58,13 @@
 		,tiv_fecha_emision
 		,tfl_fecha_inicio
 		,tfl_fecha_inicio_orig
+
+		,TPO_FECHA_INGRESO
+		,TPO_RECURSOS
+		,TIV_SERIE
+		,tiv_numero_emision_seb
+		,TIV_FRECUENCIA
+		,IPR_ES_CXC
 		--,
 		--vep.vep_fecha,
 
@@ -144,6 +151,12 @@
 		,evt.tfl_fecha_inicio
 		,evt.tfl_fecha_inicio_orig
 
+		,tpo.TPO_FECHA_INGRESO
+		,tpo.TPO_RECURSOS
+		,tiv.TIV_SERIE
+		,tiv.tiv_numero_emision_seb
+		,tiv.TIV_FRECUENCIA
+		,ipr.IPR_ES_CXC
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt
@@ -164,6 +177,7 @@
 			select 0 es_vencimiento_interes union 
 			select 1 es_vencimiento_interes
 		) divven on oper=1 and NOT (iAmortizacion=0 and es_vencimiento_interes=1 or montoOper=0 and es_vencimiento_interes=0)
+		left join bvq_backoffice.isspol_progs ipr on ipr.ipr_nombre_prog=tpo.tpo_prog
 		--join bvq_administracion.parametro retencionpct on retencionpct.par_codigo='PAR_RETENCION_LIQ'
 		--where datediff(d,htp_fecha_operacion,'2017-04-28')=0
 		--fin separador vencimientos
