@@ -1,4 +1,4 @@
-﻿create view bvq_backoffice.PortafolioCorte as
+﻿CREATE view bvq_backoffice.PortafolioCorte as
 	select
 	tva_valor_tasa,
 	arranqueValLineal,
@@ -127,6 +127,7 @@
 	acc,
 	por.ctc_id,
 	por.por_codigo,
+	por.por_siglas,
 	tpo_tipo_valoracion,
 	tpo_categoria,
 	f,
@@ -214,6 +215,7 @@
 	,HTP.TPO_ORD
 	,HTP.TPO_COMISION_BOLSA
 	,HTP.TPO_DIVIDENDOS_EN_ACCIONES
+	,TIV.TIV_SERIE
 	/*,
 	tpo_categoria_inversion*/
 	from
