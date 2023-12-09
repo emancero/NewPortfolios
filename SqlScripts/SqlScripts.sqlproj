@@ -80,6 +80,7 @@
     <None Include="Change Scripts\compra_htp_id en evttemp.sql" />
     <None Include="Change Scripts\RETR_CAPITAL y RETR_INTERES.sql" />
     <None Include="Change Scripts\TPO_F1.sql" />
+    <None Include="Change Scripts\Campo por_siglas.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
