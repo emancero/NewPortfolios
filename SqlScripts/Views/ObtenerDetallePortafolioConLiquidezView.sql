@@ -1,6 +1,4 @@
-﻿exec dropifexists 'bvq_backoffice.ObtenerDetallePortafolioConLiquidezView'
-go
-create view bvq_backoffice.ObtenerDetallePortafolioConLiquidezView as
+﻿create view bvq_backoffice.ObtenerDetallePortafolioConLiquidezView as
 
 	select
 	evt.nombre,
@@ -106,6 +104,7 @@ create view bvq_backoffice.ObtenerDetallePortafolioConLiquidezView as
 	,evt.TIV_FRECUENCIA
 	,evt.IPR_ES_CXC
 	,fecha_original=evt.fecha
+	,evp_valor_efectivo=isnull(evp.evp_pago_efectivo,0)
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -221,6 +220,7 @@ create view bvq_backoffice.ObtenerDetallePortafolioConLiquidezView as
 	,TIV_FRECUENCIA=null
 	,IPR_ES_CXC=null
 	,fecha_original=null
+	,evp_pago_efectivo
 	from
 	bvq_backoffice.evento_portafolio evp
 

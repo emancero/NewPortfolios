@@ -21,6 +21,7 @@ create procedure BVQ_BACKOFFICE.InsertarLiquidezPortafolio(
 	@o_cta_id int out,
 	@o_com_id int out,
 	@i_ajuste_provision float = null,--nuevo campo provision
+	@i_pago_efectivo float=null,--nuevo campo pago_efectivo
 	@i_lga_id int
 ) AS
 begin
@@ -142,12 +143,14 @@ begin
 			,evp_fecha_original
 			,evp_tpo_id
 			,evp_ajuste_provision
+			,evp_pago_efectivo
 		)
 		values(@i_evt_id,@i_por_id,@i_oper_id,@i_es_vencimiento_interes,@i_cobrado,@i_fecha,@o_cta_id,@i_retencion,@i_cuenta,@i_renovacion
 			--evp_change_7
 			,@i_observaciones,@ctl_id,@i_monto
 			--EMN: 12/05/2020 para hacer join por fecha y tpo, y no por evt_id
 			,@fecha_original,@tpo_id,@i_ajuste_provision
+			,@i_pago_efectivo
 		)
 		set @v_evp_id=scope_identity()
 		EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
