@@ -65,6 +65,8 @@
 		,tiv_numero_emision_seb
 		,TIV_FRECUENCIA
 		,IPR_ES_CXC
+		,htp_comision_bolsa
+		,prEfectivo
 		--,
 		--vep.vep_fecha,
 
@@ -157,6 +159,8 @@
 		,tiv.tiv_numero_emision_seb
 		,tiv.TIV_FRECUENCIA
 		,ipr.IPR_ES_CXC
+		,evt.htp_comision_bolsa
+		,evt.prEfectivo
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

@@ -4,6 +4,7 @@
 		montooper-isnull(remaining,0)
 	)
 	,*
+	--htp_comision_bolsa
 	from bvq_backoffice.EventoPortafolioAprox e
 	left join bvq_backoffice.portafolio_vencimiento porv
 		on e.oper=1 and porv.porv_tfl_id=e.htp_id and porv.porv_tpo_id=e.htp_tpo_id

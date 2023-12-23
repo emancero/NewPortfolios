@@ -14,6 +14,8 @@ begin
 	,vencimiento
 	,amortizacion
 	,iamortizacion
+	,htp_comision_bolsa
+	,prEfectivo
 	)
 	select
 	null cvf_id,--/*no se utiliza*/row_number() over (order by op.htp_id,op.tiv_id,tiv.tfl_id) cvf_id,
@@ -109,14 +111,18 @@ begin
 	end
 	*isnull(def_cobrado,1)
 	,iAmortizacion=   round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*
+		tfl_capital*
 		case when op.tiv_interes_irregular=1 and tfl_interes>0 then
 			tfl_interes
 		else
-			tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100)
+			iTasa_interes*dias_cupon/(base_denominador*100)
 		end
 		,3)
 		*isnull(def_cobrado,1)
-
+	,op.htp_comision_bolsa
+	,prEfectivo=(op.valefeoper
+	--+isnull(op.htp_comision_bolsa,0)
+	)/op.montooper
 	from
 	bvq_backoffice.HtpCupon op
 	join bvq_backoffice.titulos_portafolio tpo on htp_tpo_id=tpo.tpo_id

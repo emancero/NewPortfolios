@@ -11,7 +11,7 @@ using (TransactionScope scope = new TransactionScope())
     conn.Open();
 
     comm.CommandType = System.Data.CommandType.Text;
-
+/*
     #region dematerialize titulo_flujo_comun
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN'";
     comm.ExecuteNonQuery();
@@ -47,7 +47,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     ChangeScript(comm,"TPO_F1");
     comm.ExecuteNonQuery();
-
+*/
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.HtpCupon'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.HtpCupon", "View");
@@ -75,7 +75,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EventoPortafolio", "View", suffix: false);
     comm.ExecuteNonQuery();
-
+/*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new EventoPortafolioCorte()).GetCode();
@@ -101,7 +101,7 @@ using (TransactionScope scope = new TransactionScope())
 
     comm.CommandText = (new GetObjectCode()).GetCode("Campo dias_cupon y TIV_FECHA_EMISION en LIQUIDEZ_CACHE y evtTemp", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
-
+*/
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PrepararLiquidezCache'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("PrepararLiquidezCache", "Stored Procedure", suffix: false);
@@ -115,13 +115,13 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
+    //comm.ExecuteNonQuery();
+/*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new InsertarTituloPortafolio()).GetCode();
     comm.ExecuteNonQuery();
-
+*/
 
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)

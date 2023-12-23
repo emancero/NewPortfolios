@@ -105,6 +105,9 @@
 	,evt.IPR_ES_CXC
 	,fecha_original=evt.fecha
 	,evp_valor_efectivo=isnull(evp.evp_pago_efectivo,0)
+	,evt.htp_comision_bolsa
+	,evt.prEfectivo
+	,EVP_AJUSTE_VALOR_EFECTIVO
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -221,6 +224,9 @@
 	,IPR_ES_CXC=null
 	,fecha_original=null
 	,evp_pago_efectivo
+	,htp_comision_bolsa=null
+	,prEfectivo=null
+	,EVP_AJUSTE_VALOR_EFECTIVO
 	from
 	bvq_backoffice.evento_portafolio evp
 

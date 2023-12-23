@@ -11,7 +11,6 @@
 		*def_cobrado_2
 	,iAmortizacion2=round(orig*tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100),3)
 		*def_cobrado_2--*case when def_cobrado is not null then isnull(def_exacto,0) else 1 end
-
 	,allIAmortizacion=round(orig*tfl_capital*iTasa_interes*dias_cupon/(base_denominador*100),3)
 	from bvq_backoffice.compra_venta_flujo
 	--Solo cupones posteriores a fecha de operación

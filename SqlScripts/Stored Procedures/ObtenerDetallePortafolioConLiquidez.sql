@@ -49,7 +49,9 @@ begin
 	,TIV_FRECUENCIA
 	,IPR_ES_CXC
 	,fecha_original
-	,EVP_PAGO_EFECTIVO
+	--,EVP_PAGO_EFECTIVO
+	,htp_comision_bolsa
+	,prEfectivo
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper,htp_id,es_vencimiento_interes,fecha,montoOper,vep_valor_efectivo,en_liquidez,por_id,saldo_liquidez,voucher_exists,lip_cliente_id,htp_tpo_id,htp_fecha_operacion,tasa_cupon,porv_retencion,iAmortizacion,nombre,por_codigo,liquidez_descripcion,ems_nombre
@@ -72,7 +74,9 @@ begin
 	,TIV_FRECUENCIA
 	,IPR_ES_CXC
 	,fecha_original
-	,EVP_PAGO_EFECTIVO
+	--,EVP_PAGO_EFECTIVO
+	,htp_comision_bolsa
+	,prEfectivo
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  
@@ -93,9 +97,23 @@ begin
 	,(iAmortizacion+amount) AS 'total_cuota'
 	,diasTran=dbo.fnDiasEu(case when fecha_compra>TFL_FECHA_INICIO then fecha_compra else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)
 	,originalProvision	=dbo.fnDiasEu(case when fecha_compra>TFL_FECHA_INICIO then fecha_compra else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)/dias_cupon * iamortizacion
-	,provision			=dbo.fnDiasEu(case when fecha_compra>TFL_FECHA_INICIO then fecha_compra else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)/dias_cupon * iamortizacion
-						+isnull(evp_ajuste_provision,0)
+	,provision			=
+						case when es_vencimiento_interes=0 then 0 else
+							dbo.fnDiasEu(case when fecha_compra>TFL_FECHA_INICIO then fecha_compra else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)/dias_cupon * iamortizacion
+							+isnull(evp_ajuste_provision,0)
+						end
 	,capMonto
+	,orginalEffectiveValue=
+		--case when es_vencimiento_interes=1 then 0 else
+			prEfectivo
+			*coalesce(capMonto,(-montooper))
+		--end
+	,EVP_PAGO_EFECTIVO=
+		case when es_vencimiento_interes=1 then 0 else
+			prEfectivo
+			*coalesce(capMonto,(-montooper))
+			+isnull(EVP_AJUSTE_VALOR_EFECTIVO,0)
+		end
 	from bvq_backoffice.evtTemp
 	left join (select capMonto=vep_valor_efectivo,capHtpId=htp_id from bvq_backoffice.evtTemp where es_vencimiento_interes=0) eCap on ecap.capHtpId=evtTemp.htp_id
 	where fecha between @i_fechaIni and @i_fechaFin
