@@ -1,4 +1,4 @@
-﻿create procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez(
+﻿CREATE procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez(
 	 @i_idPortfolio		int				--Identificador del portafolio
 	,@i_fechaIni		datetime
 	,@i_fechaFin		datetime
@@ -52,6 +52,7 @@ begin
 	--,EVP_PAGO_EFECTIVO
 	,htp_comision_bolsa
 	,prEfectivo
+	,EVP_AJUSTE_VALOR_EFECTIVO
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper,htp_id,es_vencimiento_interes,fecha,montoOper,vep_valor_efectivo,en_liquidez,por_id,saldo_liquidez,voucher_exists,lip_cliente_id,htp_tpo_id,htp_fecha_operacion,tasa_cupon,porv_retencion,iAmortizacion,nombre,por_codigo,liquidez_descripcion,ems_nombre
@@ -77,6 +78,7 @@ begin
 	--,EVP_PAGO_EFECTIVO
 	,htp_comision_bolsa
 	,prEfectivo
+	,EVP_AJUSTE_VALOR_EFECTIVO
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  
@@ -95,15 +97,15 @@ begin
 
 	select *,TPO_REESTRUCTURACION=CASE WHEN TPO_NUMERACION='2014-4933' THEN 1 ELSE 0 END
 	,(iAmortizacion+amount) AS 'total_cuota'
-	,diasTran=dbo.fnDiasEu(case when fecha_compra>TFL_FECHA_INICIO then fecha_compra else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)
-	,originalProvision	=dbo.fnDiasEu(case when fecha_compra>TFL_FECHA_INICIO then fecha_compra else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)/dias_cupon * iamortizacion
+	,diasTran=dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)
+	,originalProvision	=dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)/dias_cupon * iamortizacion
 	,provision			=
 						case when es_vencimiento_interes=0 then 0 else
-							dbo.fnDiasEu(case when fecha_compra>TFL_FECHA_INICIO then fecha_compra else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)/dias_cupon * iamortizacion
+							dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),354)/dias_cupon * iamortizacion
 							+isnull(evp_ajuste_provision,0)
 						end
 	,capMonto
-	,orginalEffectiveValue=
+	,originalEffectiveValue=
 		--case when es_vencimiento_interes=1 then 0 else
 			prEfectivo
 			*coalesce(capMonto,(-montooper))

@@ -121,7 +121,7 @@ begin
 		*isnull(def_cobrado,1)
 	,op.htp_comision_bolsa
 	,prEfectivo=(op.valefeoper
-	--+isnull(op.htp_comision_bolsa,0)
+	+isnull(case when op.htp_fecha_operacion>='20220601' then op.htp_comision_bolsa end,0)
 	)/op.montooper
 	from
 	bvq_backoffice.HtpCupon op
