@@ -83,6 +83,9 @@
     <None Include="Change Scripts\Campo por_siglas.sql" />
     <None Include="Change Scripts\Campo evp_valor_efectivo en LIQUIDEZ CACHE.sql" />
     <None Include="Change Scripts\Campo htp_comision_bolsa en LIQUIDEZ_CACHE y evtTemp.sql" />
+    <None Include="Change Scripts\Campos prov compra_venta_flujo.sql" />
+    <None Include="Change Scripts\Campos prov evtTemp.sql" />
+    <None Include="Change Scripts\Campos prov liquidez_cache.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

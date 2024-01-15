@@ -16,6 +16,9 @@ begin
 	,iamortizacion
 	,htp_comision_bolsa
 	,prEfectivo
+	,saldo
+	,tiv_interes_irregular
+	,TFL_INTERES
 	)
 	select
 	null cvf_id,--/*no se utiliza*/row_number() over (order by op.htp_id,op.tiv_id,tiv.tfl_id) cvf_id,
@@ -123,7 +126,10 @@ begin
 	,prEfectivo=(op.valefeoper
 	+isnull(case when op.htp_fecha_operacion>='20220601' then op.htp_comision_bolsa end,0)
 	)/op.montooper
-	from
+	,saldo = round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*tfl_capital,3)
+	,op.tiv_interes_irregular,
+	TFL_INTERES
+	from	
 	bvq_backoffice.HtpCupon op
 	join bvq_backoffice.titulos_portafolio tpo on htp_tpo_id=tpo.tpo_id
 	join bvq_administracion.TituloFlujoComun tiv

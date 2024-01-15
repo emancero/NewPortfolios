@@ -108,6 +108,10 @@
 	,evt.htp_comision_bolsa
 	,evt.prEfectivo
 	,EVP_AJUSTE_VALOR_EFECTIVO
+	,[tiv_tipo_base]
+	,[saldo]
+	,[tiv_interes_irregular]
+	,[tfl_interes]
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -227,6 +231,10 @@
 	,htp_comision_bolsa=null
 	,prEfectivo=null
 	,EVP_AJUSTE_VALOR_EFECTIVO
+	,[tiv_tipo_base]=null
+	,[saldo]=null
+	,[tiv_interes_irregular]=null
+	,[tfl_interes]=null
 	from
 	bvq_backoffice.evento_portafolio evp
 

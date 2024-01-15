@@ -67,6 +67,10 @@
 		,IPR_ES_CXC
 		,htp_comision_bolsa
 		,prEfectivo
+		,tiv_tipo_base
+		,saldo
+		,tiv_interes_irregular
+		,tfl_interes
 		--,
 		--vep.vep_fecha,
 
@@ -161,6 +165,10 @@
 		,ipr.IPR_ES_CXC
 		,evt.htp_comision_bolsa
 		,evt.prEfectivo
+		,evt.tiv_tipo_base
+		,evt.saldo
+		,evt.tiv_interes_irregular
+		,evt.tfl_interes
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

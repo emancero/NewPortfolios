@@ -48,12 +48,19 @@ using (TransactionScope scope = new TransactionScope())
     ChangeScript(comm,"TPO_F1");
     comm.ExecuteNonQuery();
 */
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.HtpCupon'";
+    /*comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.HtpCupon'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.HtpCupon", "View");
     comm.ExecuteNonQuery();
 
     comm.CommandText = (new CamposParaGcvf()).GetCode();
+    comm.ExecuteNonQuery();*/
+
+    comm.CommandText = (new GetObjectCode()).GetCode("Campos prov compra_venta_flujo", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("Campos prov liquidez_cache", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("Campos prov evtTemp", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarCompraVentaFlujo'";
@@ -115,7 +122,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "Stored Procedure", suffix: false);
-    //comm.ExecuteNonQuery();
+    comm.ExecuteNonQuery();
 /*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
     comm.ExecuteNonQuery();
