@@ -32,7 +32,54 @@ begin
 	--exec dropifexists 'bvq_backoffice.evtTemp'
 	truncate table bvq_backoffice.evtTemp
 	insert into bvq_backoffice.evtTemp
-	(oper,htp_id,es_vencimiento_interes,fecha,montoOper,vep_valor_efectivo,en_liquidez,por_id,saldo_liquidez,voucher_exists,lip_cliente_id,htp_tpo_id,htp_fecha_operacion,tasa_cupon,porv_retencion,iAmortizacion,nombre,por_codigo,liquidez_descripcion,ems_nombre,grc_codigo,tvl_codigo,tiv_fecha_vencimiento,tiv_tipo_valor,tpo_numeracion,vep_id,vep_cta_id,vep_other_account,amount,account,vep_renovacion,ttl_id,vep_observaciones,ttl_nombre,lip_retencion,com_id,lip_documento,cliente_nombre,htp_numeracion_clean,fecha_compra,por_tipo,tpo_categoria,vep_fecha,com_numero_comprobante,en_espera,evp_id,liq_compra
+	(
+	 oper
+	,htp_id
+	,es_vencimiento_interes
+	,fecha
+	,montoOper
+	,vep_valor_efectivo
+	,en_liquidez
+	,por_id
+	,saldo_liquidez
+	,voucher_exists
+	,lip_cliente_id
+	,htp_tpo_id
+	,htp_fecha_operacion
+	,tasa_cupon
+	,porv_retencion
+	,iAmortizacion
+	,nombre
+	,por_codigo
+	,liquidez_descripcion
+	,ems_nombre
+	,grc_codigo
+	,tvl_codigo
+	,tiv_fecha_vencimiento
+	,tiv_tipo_valor
+	,tpo_numeracion
+	,vep_id
+	,vep_cta_id
+	,vep_other_account
+	,amount
+	,account
+	,vep_renovacion
+	,ttl_id
+	,vep_observaciones
+	,ttl_nombre
+	,lip_retencion
+	,com_id
+	,lip_documento
+	,cliente_nombre
+	,htp_numeracion_clean
+	,fecha_compra
+	,por_tipo
+	,tpo_categoria
+	,vep_fecha
+	,com_numero_comprobante
+	,en_espera
+	,evp_id
+	,liq_compra
 	--POR_PUBLIC_2
 	,por_public
 	,TIV_ID
@@ -59,9 +106,55 @@ begin
 	,[tfl_interes]
 	)
 	select --* into bvq_backoffice.evtTemp
-	 oper,htp_id,es_vencimiento_interes,fecha,montoOper,vep_valor_efectivo,en_liquidez,por_id,saldo_liquidez,voucher_exists,lip_cliente_id,htp_tpo_id,htp_fecha_operacion,tasa_cupon,porv_retencion,iAmortizacion,nombre,por_codigo,liquidez_descripcion,ems_nombre
+	 oper
+	,htp_id
+	,es_vencimiento_interes
+	,fecha
+	,montoOper
+	,vep_valor_efectivo
+	,en_liquidez
+	,por_id
+	,saldo_liquidez
+	,voucher_exists
+	,lip_cliente_id
+	,htp_tpo_id
+	,htp_fecha_operacion
+	,tasa_cupon
+	,porv_retencion
+	,iAmortizacion
+	,nombre
+	,por_codigo
+	,liquidez_descripcion
+	,ems_nombre
 
-	 ,grc_codigo,tvl_codigo,tiv_fecha_vencimiento,tiv_tipo_valor,tpo_numeracion,vep_id,vep_cta_id,vep_other_account,amount,account,vep_renovacion,ttl_id,vep_observaciones,ttl_nombre,lip_retencion,com_id,lip_documento,cliente_nombre,htp_numeracion_clean,fecha_compra,por_tipo,tpo_categoria,vep_fecha,com_numero_comprobante,en_espera,evp_id,liq_compra
+	 
+	,grc_codigo
+	,tvl_codigo
+	,tiv_fecha_vencimiento
+	,tiv_tipo_valor
+	,tpo_numeracion
+	,vep_id
+	,vep_cta_id
+	,vep_other_account
+	,amount
+	,account
+	,vep_renovacion
+	,ttl_id
+	,vep_observaciones
+	,ttl_nombre
+	,lip_retencion
+	,com_id
+	,lip_documento
+	,cliente_nombre
+	,htp_numeracion_clean
+	,fecha_compra
+	,por_tipo
+	,tpo_categoria
+	,vep_fecha
+	,com_numero_comprobante
+	,en_espera
+	,evp_id
+	,liq_compra
  
 	--POR_PUBLIC_2
 	,por_public
@@ -106,7 +199,8 @@ begin
 	select *,TPO_REESTRUCTURACION=CASE WHEN TPO_NUMERACION='2014-4933' THEN 1 ELSE 0 END
 	,(iAmortizacion+amount) AS 'total_cuota'
 	,diasTran=dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)
-	,originalProvision	=dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion
+	,originalProvision	= case when saldo is not null and tfl_fecha_inicio is not null then dbo.CalculateProvision(saldo,tfl_fecha_inicio,fecha,2,354,tpo_fecha_ingreso,0,0) end
+		--dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion
 	,provision			=
 						case when es_vencimiento_interes=0 then 0 else
 							dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion
