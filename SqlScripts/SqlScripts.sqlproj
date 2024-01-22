@@ -117,4 +117,9 @@
     <Build Include="Views\EventoPortafolio.sql" />
     <Build Include="Change Scripts\Campos de fecha compra, recursos, serie, numero emisión, y frecuencia en LIQUIDEZ_CACHE y evtTemp.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
 </Project>
