@@ -90,7 +90,7 @@
 	valefeoper=	null,
 	itrans=	null,
 	cupoper_tfl_fecha_inicio=	tfl_fecha_vencimiento2,	--coalesce(retr_fecha_esperada,tfl_fecha_vencimiento),
-	htp_id=	convert(bigint,tfl_id*1e7+htp_tpo_id),
+	htp_id=	convert(bigint,tfl_id)*10000000+convert(bigint,htp_tpo_id),--convert(bigint,tfl_id*1e7+htp_tpo_id),
 	htp_tpo_id,
 	tfl_fecha_vencimiento,
 	oper=1,
