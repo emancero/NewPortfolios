@@ -104,6 +104,7 @@ begin
 	,[saldo]
 	,[tiv_interes_irregular]
 	,[tfl_interes]
+	,provision
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -180,6 +181,7 @@ begin
 	,[saldo]
 	,[tiv_interes_irregular]
 	,[tfl_interes]
+	,provision
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  
