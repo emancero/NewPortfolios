@@ -123,9 +123,9 @@ begin
 		,3)
 		*isnull(def_cobrado,1)
 	,op.htp_comision_bolsa
-	,prEfectivo=(op.valefeoper
+	,prEfectivo=isnull(tpo.tpo_precio_efectivo/100.0,(op.valefeoper
 	+isnull(case when op.htp_fecha_operacion>='20220601' then op.htp_comision_bolsa end,0)
-	)/op.montooper
+	)/op.montooper)
 	,saldo = round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*tfl_capital,3)
 	,op.tiv_interes_irregular,
 	TFL_INTERES
