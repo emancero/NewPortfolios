@@ -123,12 +123,23 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
-/*
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiqIntProv'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new InsertarTituloPortafolio()).GetCode();
+    comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
     comm.ExecuteNonQuery();
-*/
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ComprobanteIsspolRubros'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ComprobanteIsspolRubros", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    /*
+        comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
+        comm.ExecuteNonQuery();
+        comm.CommandText = (new InsertarTituloPortafolio()).GetCode();
+        comm.ExecuteNonQuery();
+    */
 
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)

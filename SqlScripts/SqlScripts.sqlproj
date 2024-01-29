@@ -86,6 +86,8 @@
     <None Include="Change Scripts\Campos prov compra_venta_flujo.sql" />
     <None Include="Change Scripts\Campos prov evtTemp.sql" />
     <None Include="Change Scripts\Campos prov liquidez_cache.sql" />
+    <None Include="Views\LiqIntProv.sql" />
+    <None Include="Views\ComprobanteIsspolRubros.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
