@@ -15,7 +15,7 @@
 	0 alliamortizacion,
 	0 acc,
 	valefeoper,
-	itrans,
+	itrans,--------
 	cupoper_tfl_fecha_inicio,
 	htp_id=convert(bigint,htp_id),
 	htp_tpo_id,
@@ -88,7 +88,8 @@
 	sum(alliamortizacion),
 	acc=	sum(isnull(alliamortizacion,0)-isnull(iamortizacion,0)),
 	valefeoper=	null,
-	itrans=	null,
+	--itrans=	null,--------
+	itrans,
 	cupoper_tfl_fecha_inicio=	tfl_fecha_vencimiento2,	--coalesce(retr_fecha_esperada,tfl_fecha_vencimiento),
 	htp_id=	convert(bigint,tfl_id)*10000000+convert(bigint,htp_tpo_id),--convert(bigint,tfl_id*1e7+htp_tpo_id),
 	htp_tpo_id,
@@ -144,4 +145,5 @@
 	from bvq_backoffice.compraventaflujo
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento
 	group by htp_tpo_id,tfl_id,tfl_fecha_vencimiento,vencimiento,tfl_capital,tfl_amortizacion,def_cobrado,tfl_fecha_inicio,/*retr_fecha_esperada,*/base_denominador,/*itasa_interes,*/tfl_fecha_vencimiento2,dias_cupon,compra_htp_id,isnull(htp_numeracion,''),TFL_PERIODO,tfl_fecha_inicio_orig,htp_comision_bolsa
-	,	tiv_tipo_base,tiv_interes_irregular,tfl_interes
+	,	tiv_tipo_base,tiv_interes_irregular,tfl_interes,itrans
+
