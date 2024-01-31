@@ -19,9 +19,10 @@ public partial class UserDefinedFunctions
     }
 
     [Microsoft.SqlServer.Server.SqlFunction]
-    public static double CalculateProvision(double quantity, DateTime dateIni, DateTime dateEnd, double interestRate, int calcBase, DateTime valueDate, double interestAccruedDays, bool table)
+    public static double CalculateProvision(double quantity, DateTime couponIni, DateTime dateEnd, double interestRate, int calcBase, DateTime valueDate, double interestAccruedDays, bool table)
     {
-        DateTime ini = GetEom(valueDate > dateIni ? valueDate : dateIni);
+        DateTime dateIni = valueDate > couponIni ? valueDate : couponIni;
+        DateTime ini = GetEom(dateIni);
         DateTime end = GetEom(dateEnd.Date);
         int accDays = 0;
 
