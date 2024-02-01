@@ -1,4 +1,4 @@
-﻿CREATE view [BVQ_BACKOFFICE].[ComprobanteIsspolRubros] as
+﻿create view [BVQ_BACKOFFICE].[ComprobanteIsspolRubros] as
 	select monto=
 		case rubro
 			when 'amount' then amountCosto

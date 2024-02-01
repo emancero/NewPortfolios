@@ -1,4 +1,4 @@
-﻿CREATE procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez(
+﻿create procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez(
 	 @i_idPortfolio		int				--Identificador del portafolio
 	,@i_fechaIni		datetime
 	,@i_fechaFin		datetime
@@ -105,6 +105,7 @@ begin
 	,[tiv_interes_irregular]
 	,[tfl_interes]
 	,provision
+	,itrans
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -182,6 +183,7 @@ begin
 	,[tiv_interes_irregular]
 	,[tfl_interes]
 	,provision
+	,itrans
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  

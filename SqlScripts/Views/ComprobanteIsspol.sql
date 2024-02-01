@@ -27,6 +27,7 @@
   ,precio_efectivo
   ,ipr_es_cxc
   ,deterioro
+  ,itrans
   --select distinct por_id  
   from bvq_backoffice.comprobanteIsspolRubros s 
   where ipr_es_cxc = 1 or (ipr_es_cxc is null or ipr_es_cxc = 0 ) and deterioro = 0
@@ -45,6 +46,7 @@
  ,plazo  
  ,ipr_es_cxc
  ,deterioro
+ ,itrans
  from liqComprob where  
  (  
   (  
@@ -73,6 +75,7 @@
  ,ri,plazo
  ,ipr_es_cxc
  ,deterioro
+ ,itrans
  from liqComprob  
  join (select '2.1.90.03' pr, 'DIDENT' ri union select '7.1.5.03.%','CUXC' union select '2.1.02.%','CUXP') ri  
  on cuenta like pr  
@@ -90,5 +93,5 @@
  --,monto  
  ,hist_fecha_compra,hist_precio_compra,cuenta,nombre,tipo,aux,tfl_fecha_inicio_orig  
  ,ICR_CODIGO  
- ,htp_tpo_id,ri,plazo,ipr_es_cxc,precio_efectivo,deterioro
+ ,htp_tpo_id,ri,plazo,ipr_es_cxc,precio_efectivo,deterioro,itrans
  --having htp_id=3002050000075 

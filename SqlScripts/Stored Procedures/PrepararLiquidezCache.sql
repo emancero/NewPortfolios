@@ -71,6 +71,7 @@
 		,saldo
 		,tiv_interes_irregular
 		,tfl_interes
+		,itrans
 		--,
 		--vep.vep_fecha,
 
@@ -169,6 +170,7 @@
 		,evt.saldo
 		,evt.tiv_interes_irregular
 		,evt.tfl_interes
+		,evt.itrans
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

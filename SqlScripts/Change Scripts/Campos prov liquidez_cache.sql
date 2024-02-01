@@ -29,3 +29,11 @@ BEGIN
     alter table BVQ_BACKOFFICE.liquidez_cache 
    add tfl_interes float 
 END
+
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'itrans'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.liquidez_cache'))
+BEGIN
+    alter table BVQ_BACKOFFICE.liquidez_cache 
+   add itrans float 
+END

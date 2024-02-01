@@ -1,4 +1,4 @@
-﻿CREATE view BVQ_BACKOFFICE.LiqIntProv as
+﻿create view BVQ_BACKOFFICE.LiqIntProv as
 	with LiqProp as
 	(
 		select
@@ -20,6 +20,7 @@
 		,plazo=max(plazo)
 		--,tpo_precio_ingreso
 		,TPO_PRECIO_EFECTIVO=max(TPO_PRECIO_EFECTIVO)
+		,itrans=sum(itrans)
 		from
 		(
 			--cross product
