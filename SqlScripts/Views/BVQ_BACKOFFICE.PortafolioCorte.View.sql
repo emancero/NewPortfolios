@@ -1,4 +1,4 @@
-﻿CREATE view bvq_backoffice.PortafolioCorte as
+﻿CREATE view [BVQ_BACKOFFICE].[PortafolioCorte] as
 	select
 	tva_valor_tasa,
 	arranqueValLineal,
@@ -39,7 +39,7 @@
 	/*row_number() over (order by c,tpo_id,htp.por_id,tiv.tiv_id,htp_numeracion)*/ 1 vsicav_id,
 	por_tipo,
 	por_nombre=null,--per.nombre,
-
+ 
 	accrual=isnull
 	(
 		round
@@ -116,7 +116,7 @@
 			,100
 		),0
 	),
-	
+ 
 	valEfeOper,iAmortizacion,amortizacion,itrans,
 	tiv_tasa_interes=case tiv_tipo_tasa when 365 then tiv_tasa_interes else isnull(tiv_tasa_margen+tva_valor_tasa,0) end,--bvq_administracion.TasaInteresCase(tiv_tipo_tasa,tiv_tasa_interes,tiv_tasa_margen,tva_valor_tasa)
 	fecha_compra,
@@ -142,11 +142,11 @@
 	,civ_prefijo_cuenta
 	,bde_cta_nombre
 	,bde_cta_descripcion
-
+ 
 	,htp.max_interes
 	,htp.max_comision_bolsa
 	,htp.max_comision_casa
-
+ 
 	,vpr_duracion_efectiva_anual
 	,vpr_duracion_modificada_anual
 	,ems_codigo_sic2
@@ -163,21 +163,21 @@
 	,htp.pond_precio_compra
 	,sum_ve= htp.sal * isnull(htp.pond_precio_compra,1.0) / case when tiv.tiv_tipo_renta=153 then 100e else 1e end
 	,prf_descripcion
-	
+ 
 	,vpr_tasa_descuento
 	,vpr_tasa_referencia
-
+ 
 	 -- 6-4-2022
 	,vpr_rendimiento_equivalente
-	
+ 
 	,htp.grp_id
 	,htp.tpo_cobro_cupon
 	,htp.ult_liq_id
-
+ 
 	--campos que identifican algoritmo y si es cxc para el Isspol
 	,IPR_NOMBRE_PROG
 	,IPR_ES_CXC
-
+ 
 	--newf
 	,ACEP.ACP_ID
 	,ACEP.ACP_NOMBRE
@@ -216,6 +216,7 @@
 	,HTP.TPO_COMISION_BOLSA
 	,HTP.TPO_DIVIDENDOS_EN_ACCIONES
 	,TIV.TIV_SERIE
+	,HTP.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -248,7 +249,7 @@
 					max_precio_compra,
 					max_compra,
 					max_rendimiento,
-					
+	 
 					e.max_interes,
 					e.max_comision_bolsa,
 					e.max_comision_casa,
@@ -262,13 +263,13 @@
 										100.0
 									end
 								end,
-
+ 
 					prVpr=
 					coalesce
 					(
 						case
-
-
+ 
+ 
 						when
 										exists(select * from bvq_administracion.parametro where par_codigo='C_AMORTIZADO_02' and par_valor='SI')
 										and isnull(tpo.tpo_tipo_valoracion,0)=1
@@ -353,17 +354,17 @@
 					,liq_numero_bolsa=e.max_numero_bolsa
 					,e.pond_precio_compra
 					,prf_descripcion
-					
+	 
 					,vpr_tasa_descuento
 					,vpr_tasa_referencia
-
+ 
 					-- 6-4-2022
 					,vpr_rendimiento_equivalente
-					
+	 
 					,tpo.GRP_ID
 					,tpo.tpo_cobro_cupon
 					,ult_liq_id=e.max_liq_id
-
+ 
 					--newf
 					,HTP_RENDIMIENTO
 					,TPO.TPO_CUPON_VECTOR
@@ -388,10 +389,10 @@
 					,TPO.TPO_ORD
 					,TPO.TPO_COMISION_BOLSA
 					,TPO.TPO_DIVIDENDOS_EN_ACCIONES
-					
+					,TPO.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
-
+ 
 					left join
 						BVQ_ADMINISTRACION.VALORACION_LINEAL_CACHE t
 						join
@@ -399,7 +400,7 @@
 						on t.tiv_id=vpr.tiv_id and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
 					on t.tiv_id=tpo.tiv_id
 					and c=t.cc
-
+ 
 					--bde_perfil_contable
 					left join bvq_backoffice.bde_perfil_contable bdeprf on
 					(
@@ -412,7 +413,7 @@
 					left join bvq_backoffice.cuenta_contable bdecta on bdeprf.prf_cta_id=bdecta.cta_id
 					------------- FIN VALORACIONES ---------------
 	) htp
-
+ 
 	inner join bvq_administracion.titulo_valor tiv on htp.tiv_id=tiv.tiv_id
 	--left join bvq_administracion.bde_perfil_contable prf on datediff(d,c,tiv_fecha_vencimento) between prf_dias_desde and prf_dias_hasta and prf_categoria_inversion
 	left join bvq_administracion.titulo_flujo_comun tfl
@@ -428,14 +429,14 @@
 		join corteslist c on datediff(dd, HRT_FECHA, c.c )=0
 	) s
 	on htp.c=s.cc AND (htp.tpo_id is null or s.rtpo_id=htp.tpo_id) and s.r=1
-
-
+ 
+ 
 	inner join bvq_administracion.tipo_valor tvl on tvl.tvl_id=tiv_tipo_valor
 	inner join bvq_administracion.emisor ems on tiv_emisor=ems_id
 	left join  bvq_administracion.item_catalogo itcpais on ems_pais=itcpais.itc_id
 	left join  bvq_administracion.item_catalogo itcsector on ems_sector=itcsector.itc_id
 	inner join bvq_backoffice.portafolio por on por.por_id=htp.por_id
-
+ 
 	
 	--joins para campos del Isspol
 	left join bvq_backoffice.aceptante acep on tiv.acp_id=acep.acp_id
