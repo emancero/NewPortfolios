@@ -217,6 +217,7 @@
 	,HTP.TPO_DIVIDENDOS_EN_ACCIONES
 	,TIV.TIV_SERIE
 	,HTP.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
+	,htp.TPO_DESGLOSAR_F1
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -390,6 +391,7 @@
 					,TPO.TPO_COMISION_BOLSA
 					,TPO.TPO_DIVIDENDOS_EN_ACCIONES
 					,TPO.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
+					,tpo.TPO_DESGLOSAR_F1
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  
