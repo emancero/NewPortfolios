@@ -46,6 +46,14 @@ BEGIN
    add itrans float 
 END
 
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'evp_referencia'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.evtTemp'))
+BEGIN
+    alter table BVQ_BACKOFFICE.evtTemp
+   add evp_referencia varchar(15) 
+END 
+
 /*IF not EXISTS(SELECT 1 FROM sys.columns 
           WHERE Name = N'originalProvision'
           AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.evtTemp'))
