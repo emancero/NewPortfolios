@@ -106,6 +106,7 @@ begin
 	,[tfl_interes]
 	,provision
 	,itrans
+	,evp_referencia
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -184,6 +185,7 @@ begin
 	,[tfl_interes]
 	,provision
 	,itrans
+	,evp_referencia
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  

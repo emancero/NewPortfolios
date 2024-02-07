@@ -120,6 +120,7 @@
     <Build Include="Change Scripts\Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp.sql" />
     <Build Include="Views\EventoPortafolio.sql" />
     <Build Include="Change Scripts\Campos de fecha compra, recursos, serie, numero emisión, y frecuencia en LIQUIDEZ_CACHE y evtTemp.sql" />
+    <Build Include="Change Scripts\Campos BQV_BACKOFFICE.evento_portafolio.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

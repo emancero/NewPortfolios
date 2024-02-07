@@ -35,6 +35,7 @@ BEGIN
   ,ipr_es_cxc
   ,deterioro
   ,itrans
+  ,evp_referencia
  FROM BVQ_BACKOFFICE.ComprobanteIsspol  
  WHERE tpo_numeracion=@i_tpo_numeracion and tiv_id=@i_tiv_id and fecha=@i_fecha  
  and not (@i_efectivo_siempre=0 and isnull(debe,0)=0 and isnull(haber,0)=0) --excluir mov sin afectación
@@ -64,6 +65,7 @@ BEGIN
   ,ipr_es_cxc
   ,deterioro
   ,itrans
+  ,evp_referencia
  --and oper=1  
  order by rubroOrd,tipo desc,por_ord  
 END 

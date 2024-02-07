@@ -21,6 +21,7 @@
 		--,tpo_precio_ingreso
 		,TPO_PRECIO_EFECTIVO=max(TPO_PRECIO_EFECTIVO)
 		,itrans=sum(itrans)
+		,evp_referencia
 		from
 		(
 			--cross product
@@ -45,7 +46,7 @@
 			) hist
 			on hist.htp_tpo_id=e.htp_tpo_id and (hist.fecha<e.fecha or hist.fecha=e.fecha and hist.htp_id<e.htp_id or oper =0 and hist.htp_id = e.htp_id)
 		) s
-		group by s.htp_id,s.es_vencimiento_interes,por_ord--,s.fecha,s.dias_cupon
+		group by s.htp_id,s.es_vencimiento_interes,por_ord,evp_referencia --,s.fecha,s.dias_cupon
 	)
 	, Costo as (
 		select comisiones=isnull(tpo_comision_bolsa,0)+isnull(tpo_comisiones,0)

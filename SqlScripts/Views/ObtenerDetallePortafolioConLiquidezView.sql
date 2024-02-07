@@ -119,6 +119,7 @@
 							+isnull(evp_ajuste_provision,0)
 						end
      ,evt.itrans
+	 ,evp.evp_referencia
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -244,6 +245,7 @@
 	,[tfl_interes]=null
 	,provision=null
 	,itrans = null
+	,evp_referencia = null
 	from
 	bvq_backoffice.evento_portafolio evp
 
