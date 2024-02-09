@@ -90,6 +90,7 @@
     <None Include="Views\ComprobanteIsspolRubros.sql" />
     <None Include="Views\ComprobanteIsspol.sql" />
     <None Include="Stored Procedures\ObtenerComprobanteIsspol.sql" />
+    <None Include="Change Scripts\Campos de evento_portafolio.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
