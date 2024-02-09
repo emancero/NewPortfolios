@@ -10,6 +10,7 @@
 --					PSA: 11/12/2012	Inserta numeración para papeles desmaterializados
 --					PSA: 20/06/2014 Elimina el campo TPO_SALDO
 --					PSA: 12/11/2017	Actualiza el campo renovado por
+--					GN: 10/01/2024	Se agregan campos adicionales
 -- =============================================
 CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarTituloPortafolio]	
 	 @i_tpo_id int
@@ -42,7 +43,24 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarTituloPortafolio]
 	,@i_amortizarMontoTotal bit
 	,@i_saldoEnFilaAnterior bit
 	,@i_oferta_id int = null
+	,@i_recursos VARCHAR(30) = NULL
+
+		---campos adicionales
 	
+	,@i_tpo_fecha_ven_convenio datetime = null		
+	,@i_tpo_fecha_susc_convenio datetime = null		
+	,@i_tpo_intervinientes varchar(255) = null		
+	,@i_tpo_interes_transcurrido float = null		
+	,@i_tpo_precio_ultima_compra float = null		
+	,@i_tpo_cupon_vector float = null		
+	,@i_tpo_acta varchar(10) = null		
+	,@i_tpo_otros_costos float = null		
+	,@i_tpo_comisiones float = null		
+	,@i_tpo_abono_interes float = null		
+	,@i_tpo_valnom_anterior float = null		
+	,@i_tpo_fecha_encargo datetime = null	
+	,@i_tpo_boletin varchar(20)  =null
+
 	,@i_lga_id int
 	
 AS
@@ -87,10 +105,33 @@ BEGIN
 		  ,TPO_MONTO_EMISION = @i_montoEmision
 		  ,TPO_OBJETO = @i_objeto
 		  ,TPO_OFERTA_ID = @i_oferta_id
+		  ,TPO_RECURSOS = @i_recursos
+
+
+
+		  	---campos adicionales
+	
+		,TPO_FECHA_VEN_CONVENIO = @i_tpo_fecha_ven_convenio 
+		,TPO_FECHA_SUSC_CONVENIO = @i_tpo_fecha_susc_convenio
+		,TPO_INTERVINIENTES = @i_tpo_intervinientes
+		,TPO_INTERES_TRANSCURRIDO = @i_tpo_interes_transcurrido
+		,TPO_PRECIO_ULTIMA_COMPRA = @i_tpo_precio_ultima_compra
+		,TPO_CUPON_VECTOR = @i_tpo_cupon_vector
+		,TPO_ACTA =  @i_tpo_acta
+		,TPO_OTROS_COSTOS = @i_tpo_otros_costos
+		,TPO_COMISIONES = @i_tpo_comisiones
+		,TPO_ABONO_INTERES = @i_tpo_abono_interes
+		,TPO_VALNOM_ANTERIOR = @i_tpo_valnom_anterior
+		,TPO_FECHA_ENCARGO = @i_tpo_fecha_encargo
+		 ,TPO_BOLETIN = @i_tpo_boletin
+		  -- NUEVO CAMPO LÍNEA 98
+		  --,TPO_FECHA_VEN_CONVENIO = @i_fecha_ven_convenio
 	 FROM [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO] TPO
 	 JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
 	 WHERE HTP.HTP_ID = @i_tpo_id;
 
+	 if @i_cantidad=0
+		raiserror('La cantidad no puede ser 0',16,1)
 	UPDATE HTP
 	SET HTP_FECHA_OPERACION = @i_fecha,
 		HTP_COMPRA = case when @i_cantidad>0 then @i_cantidad else 0 end,
