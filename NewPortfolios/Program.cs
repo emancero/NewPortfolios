@@ -82,33 +82,36 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EventoPortafolio", "View", suffix: false);
     comm.ExecuteNonQuery();
-/*
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new EventoPortafolioCorte()).GetCode();
+    /*
+        comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioCorte'";
+        comm.ExecuteNonQuery();
+        comm.CommandText = (new EventoPortafolioCorte()).GetCode();
+        comm.ExecuteNonQuery();
+
+        comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ISSPOL_PROGS'";
+        comm.ExecuteNonQuery();
+        comm.CommandText = (new ISSPOL_PROGS()).GetCode();
+        comm.ExecuteNonQuery();
+
+        comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PortafolioCorte'";
+        comm.ExecuteNonQuery();
+        comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.PortafolioCorte", "View");
+        comm.ExecuteNonQuery();
+
+        comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha'";
+        comm.ExecuteNonQuery();
+        comm.CommandText = (new ObtenerInfoPortfoliosPorFecha()).GetCode();
+        comm.ExecuteNonQuery();
+
+        comm.CommandText = (new GetObjectCode()).GetCode("Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp", "Change Script", suffix: false);
+        comm.ExecuteNonQuery();
+
+        comm.CommandText = (new GetObjectCode()).GetCode("Campo dias_cupon y TIV_FECHA_EMISION en LIQUIDEZ_CACHE y evtTemp", "Change Script", suffix: false);
+        comm.ExecuteNonQuery();
+    */
+    comm.CommandText = (new GetObjectCode()).GetCode("Campos de evento_portafolio", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ISSPOL_PROGS'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new ISSPOL_PROGS()).GetCode();
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PortafolioCorte'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.PortafolioCorte", "View");
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new ObtenerInfoPortfoliosPorFecha()).GetCode();
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = (new GetObjectCode()).GetCode("Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = (new GetObjectCode()).GetCode("Campo dias_cupon y TIV_FECHA_EMISION en LIQUIDEZ_CACHE y evtTemp", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-*/
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PrepararLiquidezCache'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("PrepararLiquidezCache", "Stored Procedure", suffix: false);
