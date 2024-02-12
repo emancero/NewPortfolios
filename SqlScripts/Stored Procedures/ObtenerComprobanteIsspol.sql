@@ -20,8 +20,16 @@ BEGIN
   ,nombre  
   ,debe=sum(debe)
   ,haber=sum(haber)
-  ,saldo,htp_compra  
-  ,ems_nombre,tvl_nombre,fecha_compra,tiv_fecha_vencimiento,tasa_cupon,oper,tiv_fecha_emision,rubro,monto  
+  ,saldo
+  ,htp_compra  
+  ,ems_nombre
+  ,tvl_nombre
+  ,fecha_compra
+  ,tiv_fecha_vencimiento
+  ,tasa_cupon
+  ,oper
+  ,tiv_fecha_emision
+  ,rubro,monto  
   ,hist_fecha_compra
   ,hist_precio_compra=max(hist_precio_compra)
   ,rubroOrd  
@@ -50,12 +58,23 @@ BEGIN
   ,nombre  
   --,debe  
   --,haber  
-  ,saldo,htp_compra  
-  ,ems_nombre,tvl_nombre,fecha_compra,tiv_fecha_vencimiento,tasa_cupon,oper,tiv_fecha_emision,rubro,monto  
+  ,saldo
+  ,htp_compra  
+  ,ems_nombre
+  ,tvl_nombre
+  ,fecha_compra
+  ,tiv_fecha_vencimiento
+  ,tasa_cupon
+  ,oper
+  ,tiv_fecha_emision
+  ,rubro
+  ,monto  
   ,hist_fecha_compra
   --,hist_precio_compra  
   ,rubroOrd  
-  ,tipo,por_ord,aux  
+  ,tipo
+  ,por_ord
+  ,aux  
   --,sum(htp_compra) over (partition by rubro) totalCompra  
   --,sum(case when haber is not null or cuenta like '7.1.3%' then htp_compra else 0 end) over (partition by rubro) totalCompra  
   ,tfl_fecha_inicio_orig  
