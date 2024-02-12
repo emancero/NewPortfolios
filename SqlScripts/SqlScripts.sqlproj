@@ -91,6 +91,10 @@
     <None Include="Views\ComprobanteIsspol.sql" />
     <None Include="Stored Procedures\ObtenerComprobanteIsspol.sql" />
     <None Include="Change Scripts\Campos de evento_portafolio.sql" />
+    <None Include="Change Scripts\Campos de liquidez_cache.sql" />
+    <None Include="Change Scripts\Campos de evtTemp.sql" />
+    <None Include="Change Scripts\USO_FONDOS.sql" />
+    <None Include="Views\BVQ_BACKOFFICE.UsoFondos.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

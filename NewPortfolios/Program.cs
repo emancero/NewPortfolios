@@ -63,6 +63,18 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("Campos prov evtTemp", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = (new GetObjectCode()).GetCode("Campos de evento_portafolio", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("Campos de liquidez_cache", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("Campos de evtTemp", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("USO_FONDOS", "Change Script", suffix: false);
+    //comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarCompraVentaFlujo'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GenerarCompraVentaFlujo()).GetCode();
