@@ -120,8 +120,6 @@
 						end
      ,evt.itrans
 	 ,evp.evp_referencia
-	 ,evt.UFO_USO_FONDOS
-	 ,evt.UFO_RENDIMIENTO
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -248,8 +246,6 @@
 	,provision=null
 	,itrans = null
 	,evp_referencia = null
-	,UFO_USO_FONDOS = null
-	,UFO_RENDIMIENTO = null
 	from
 	bvq_backoffice.evento_portafolio evp
 

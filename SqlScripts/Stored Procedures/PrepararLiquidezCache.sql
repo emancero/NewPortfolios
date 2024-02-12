@@ -72,8 +72,6 @@
 		,tiv_interes_irregular
 		,tfl_interes
 		,itrans
-		,UFO_USO_FONDOS
-		,UFO_RENDIMIENTO
 		--,
 		--vep.vep_fecha,
 
@@ -173,8 +171,6 @@
 		,evt.tiv_interes_irregular
 		,evt.tfl_interes
 		,evt.itrans
-		,ufo.UFO_USO_FONDOS
-		,ufo.UFO_RENDIMIENTO
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt
@@ -196,7 +192,6 @@
 			select 1 es_vencimiento_interes
 		) divven on oper=1 and NOT (iAmortizacion=0 and es_vencimiento_interes=1 or montoOper=0 and es_vencimiento_interes=0)
 		left join bvq_backoffice.isspol_progs ipr on ipr.ipr_nombre_prog=tpo.tpo_prog
-		left join bvq_backoffice.uso_fondos ufo on ufo.tfl_id=evt.tfl_id
 		--join bvq_administracion.parametro retencionpct on retencionpct.par_codigo='PAR_RETENCION_LIQ'
 		--where datediff(d,htp_fecha_operacion,'2017-04-28')=0
 		--fin separador vencimientos
