@@ -44,6 +44,8 @@ BEGIN
   ,deterioro
   ,itrans
   ,evp_referencia
+  ,UFO_USO_FONDOS=sum(UFO_USO_FONDOS)
+  ,UFO_RENDIMIENTO=sum(UFO_RENDIMIENTO)
  FROM BVQ_BACKOFFICE.ComprobanteIsspol  
  WHERE tpo_numeracion=@i_tpo_numeracion and tiv_id=@i_tiv_id and fecha=@i_fecha  
  and not (@i_efectivo_siempre=0 and isnull(debe,0)=0 and isnull(haber,0)=0) --excluir mov sin afectación

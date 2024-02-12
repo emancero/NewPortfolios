@@ -93,6 +93,8 @@
 					*coalesce(capMonto,(-montooper),0)
 					+isnull(EVP_AJUSTE_VALOR_EFECTIVO,0)
 				,2)
+				-
+				isnull(UFO_USO_FONDOS,0)
 				/*coalesce(
 					e.evp_pago_efectivo
 					,case when hist_fecha_compra>='20230601' then
@@ -103,7 +105,7 @@
 				)*/
 
 				/*-(e.hist_precio_compra/100.0*htp_compra+comisiones)/htp_compra*(-montooper)*/
-				-(pr+isnull(EVP_AJUSTE_PROVISION,0))
+				-(pr/*+isnull(EVP_AJUSTE_PROVISION,0)*/)
 			end
 		else
 			diasInteres/e.dias_cupon*descAm
@@ -111,11 +113,11 @@
 
 	--,2)
  
-	,prov=case when tvl_codigo not in ('PCO','FAC') then
+	,prov=pr/*case when tvl_codigo not in ('PCO','FAC') then
 		pr
 	else
 		(dias_cupon-diasInteres)/e.dias_cupon*descAm		
-	end+isnull(EVP_AJUSTE_PROVISION,0)
+	end*/-- +isnull(EVP_AJUSTE_PROVISION,0)
 	,fechaIni=fecha,prop=convert(float,day(e.fecha))/e.dias_cupon
 	,e.*
 	,prov2=orgIAmortizacion-pr

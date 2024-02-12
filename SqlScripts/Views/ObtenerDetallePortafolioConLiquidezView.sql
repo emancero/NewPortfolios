@@ -114,12 +114,15 @@
 	,[tfl_interes]
 	,provision			=
 						case when evt.es_vencimiento_interes=0 then 0 else
-							case when saldo is not null and tfl_fecha_inicio_orig is not null then dbo.CalculateProvision(saldo,tfl_fecha_inicio_orig,fecha,tasa_cupon,354,tpo_fecha_ingreso,0,0) end
+							case when evt.UFO_RENDIMIENTO is not null then evt.UFO_RENDIMIENTO
+							when saldo is not null and tfl_fecha_inicio_orig is not null then dbo.CalculateProvision(saldo,tfl_fecha_inicio_orig,fecha,tasa_cupon,354,tpo_fecha_ingreso,0,0) end
 							/*dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion*/
 							+isnull(evp_ajuste_provision,0)
 						end
      ,evt.itrans
 	 ,evp.evp_referencia
+	 ,evt.UFO_USO_FONDOS
+	 ,evt.UFO_RENDIMIENTO
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -246,6 +249,8 @@
 	,provision=null
 	,itrans = null
 	,evp_referencia = null
+	,UFO_USO_FONDOS = null
+	,UFO_RENDIMIENTO = null
 	from
 	bvq_backoffice.evento_portafolio evp
 
