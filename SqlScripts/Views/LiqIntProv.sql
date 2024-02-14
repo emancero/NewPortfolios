@@ -106,6 +106,7 @@
 
 				/*-(e.hist_precio_compra/100.0*htp_compra+comisiones)/htp_compra*(-montooper)*/
 				-(pr/*+isnull(EVP_AJUSTE_PROVISION,0)*/)
+				-case when tpo_fecha_ingreso>TFL_FECHA_INICIO then ISNULL(itrans,0) else 0 end
 			end
 		/*else
 			diasInteres/e.dias_cupon*descAm

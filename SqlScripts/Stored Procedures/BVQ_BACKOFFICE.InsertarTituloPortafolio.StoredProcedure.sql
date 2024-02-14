@@ -50,6 +50,23 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_oferta_id int=null
 	,@i_liq_id int=null
 	,@i_recursos int=null
+
+	---campos adicionales
+	
+	,@i_tpo_fecha_ven_convenio datetime = null		
+	,@i_tpo_fecha_susc_convenio datetime = null		
+	,@i_tpo_intervinientes varchar(255) = null		
+	,@i_tpo_interes_transcurrido float = null		
+	,@i_tpo_precio_ultima_compra float = null		
+	,@i_tpo_cupon_vector float = null		
+	,@i_tpo_acta varchar(10) = null		
+	,@i_tpo_otros_costos float = null		
+	,@i_tpo_comisiones float = null		
+	,@i_tpo_abono_interes float = null		
+	,@i_tpo_valnom_anterior float = null		
+	,@i_tpo_fecha_encargo datetime = null		
+	,@i_tpo_boletin varchar(20) = null
+
 	,@i_lga_id int		
 AS
 BEGIN
@@ -58,6 +75,10 @@ BEGIN
 
 
 	DECLARE @v_id_estado int, @v_monId int, @v_saldo float, @v_saldo_efectivo float;
+
+	if @i_tpo_fecha_ven_convenio='01/01/1900'  set @i_tpo_fecha_ven_convenio = null
+	if @i_tpo_fecha_susc_convenio='01/01/1900'  set @i_tpo_fecha_susc_convenio = null
+	if @i_tpo_fecha_encargo='01/01/1900'  set @i_tpo_fecha_encargo = null
 
 	
 	EXEC @v_id_estado = [BVQ_ADMINISTRACION].ObtenerIdEstadoCatalogo
@@ -97,47 +118,76 @@ BEGIN
 			end
 			INSERT INTO [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO]
            (
-			   USR_ID,
-			   TIV_ID,
-			   POR_ID,
-			   TPO_CANTIDAD,
-			   TPO_PRECIO_INGRESO,
-			   TPO_FECHA_INGRESO,
-			   TPO_FECHA_REGISTRO,
-			   TPO_ESTADO,
-			   TPO_ULTIMA_REVALUACION,
-			   TPO_COBRO_CUPON,
-			   TPO_CONFIRMA_TITULO,
-			   TPO_PRECIO_SUCIO,
-			   TPO_PRECIO_SUCIO_VAL,
-			   TPO_NUMERACION,
-			   TPO_CATEGORIA,
-			   TPO_RENOVADO_DE,
-			   TPO_COMISION_BOLSA,
-			   TPO_OFERTA_ID,
-			   FON_ID
+				USR_ID,
+				TIV_ID,
+				POR_ID,
+				TPO_CANTIDAD,
+				TPO_PRECIO_INGRESO,
+				TPO_FECHA_INGRESO,
+				TPO_FECHA_REGISTRO,
+				TPO_ESTADO,
+				TPO_ULTIMA_REVALUACION,
+				TPO_COBRO_CUPON,
+				TPO_CONFIRMA_TITULO,
+				TPO_PRECIO_SUCIO,
+				TPO_PRECIO_SUCIO_VAL,
+				TPO_NUMERACION,
+				TPO_CATEGORIA,
+				TPO_RENOVADO_DE,
+				TPO_COMISION_BOLSA,
+				TPO_OFERTA_ID,
+				FON_ID,
+				--campos adicionales Isspol
+				TPO_FECHA_VEN_CONVENIO,
+				TPO_FECHA_SUSC_CONVENIO,
+				TPO_INTERVINIENTES,
+				TPO_INTERES_TRANSCURRIDO,
+				TPO_PRECIO_ULTIMA_COMPRA,
+				TPO_CUPON_VECTOR,
+				TPO_ACTA,
+				TPO_OTROS_COSTOS,
+				TPO_COMISIONES,
+				TPO_ABONO_INTERES,
+				TPO_VALNOM_ANTERIOR,
+				TPO_FECHA_ENCARGO,
+				TPO_BOLETIN
            )
 			 VALUES
            (
-			   @i_usr_id,
-			   @i_tiv_id,
-			   @i_por_id,
-			   @i_cantidad,
-			   @i_precio_ingreso,
-			   @i_fecha_ingreso,
-			   BVQ_ADMINISTRACION.ObtenerFechaSistema(),
-			   @v_id_estado,
-			   null,
-			   @i_cobro_cupon,
-			   @i_confirn_title,
-			   @i_dirty_price,
-			   @i_dirty_price_val,			   
-			   @i_numeracion,
-			   @i_categoria,
-			   @i_renovadopor,
-			   @i_comisionBolsa,
-			   @i_oferta_id,
-			   @v_fon_id
+				@i_usr_id,
+				@i_tiv_id,
+				@i_por_id,
+				@i_cantidad,
+				@i_precio_ingreso,
+				@i_fecha_ingreso,
+				BVQ_ADMINISTRACION.ObtenerFechaSistema(),
+				@v_id_estado,
+				null,
+				@i_cobro_cupon,
+				@i_confirn_title,
+				@i_dirty_price,
+				@i_dirty_price_val,			   
+				@i_numeracion,
+				@i_categoria,
+				@i_renovadopor,
+				@i_comisionBolsa,
+				@i_oferta_id,
+				@v_fon_id,
+
+				--campos adicionales Isspol
+				@i_tpo_fecha_ven_convenio,		
+				@i_tpo_fecha_susc_convenio,	
+				@i_tpo_intervinientes,
+				@i_tpo_interes_transcurrido,	
+				@i_tpo_precio_ultima_compra,	
+				@i_tpo_cupon_vector,	
+				@i_tpo_acta,	
+				@i_tpo_otros_costos,		
+				@i_tpo_comisiones,		
+				@i_tpo_abono_interes,		
+				@i_tpo_valnom_anterior,	
+				@i_tpo_fecha_encargo,
+				@i_tpo_boletin
            )
 			set @v_tpo_id=scope_identity()
 	end
@@ -174,6 +224,8 @@ BEGIN
 			TPO_NUMERACION = @i_numeracion
 	end
 
+	if @i_cantidad=0
+		raiserror('La cantidad no puede ser 0',16,1)
 
 	INSERT INTO BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO
 	(
@@ -267,4 +319,3 @@ BEGIN
 	@i_columIdName = 'HTP_ID',
 	@i_idAfectado = @@IDENTITY;
 END
-
