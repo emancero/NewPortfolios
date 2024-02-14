@@ -95,6 +95,7 @@
     <None Include="Change Scripts\LIQUIDEZ_CACHE.sql" />
     <None Include="Change Scripts\USO_FONDOS.sql" />
     <None Include="Views\UsoFondos.sql" />
+    <None Include="Stored Procedures\InsertarLiquidezTitulo.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

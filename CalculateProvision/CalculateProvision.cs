@@ -23,7 +23,7 @@ public partial class UserDefinedFunctions
     }
 
     [Microsoft.SqlServer.Server.SqlFunction]
-    public static double CalculateProvision(double quantity, DateTime couponIni, DateTime dateEnd, double interestRate, int calcBase, DateTime valueDate, double interestAccruedDays, bool table)
+    public static double CalculateProvision(double quantity, DateTime couponIni, DateTime dateEnd, double interestRate, int calcBase, DateTime valueDate, double interestAccruedDays, int term, double effectivePrice, bool table)
     {
         DateTime dateIni = valueDate > couponIni ? valueDate : couponIni;
         DateTime ini = GetEom(dateIni);
@@ -45,10 +45,11 @@ public partial class UserDefinedFunctions
             else if (dateIni >= startOfMonth)
                 days = (eom - dateIni).Days;
 
-            double interest = quantity * days / 360.0 * interestRate / 100.0;
             accDays += days;
 
         }
+        if(interestRate==0 && term!=0) //a descuento
+            return (quantity-quantity * effectivePrice) / term * accDays;
         return quantity * accDays / 360.0 * interestRate / 100.0;
     }
 

@@ -166,6 +166,16 @@ using (TransactionScope scope = new TransactionScope())
         comm.ExecuteNonQuery();
     */
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new InsertarLiquidezPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezTitulo'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarLiquidezTitulo", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)
     {

@@ -1,4 +1,4 @@
-create procedure BVQ_BACKOFFICE.InsertarLiquidezPortafolio(
+CREATE procedure [BVQ_BACKOFFICE].[InsertarLiquidezPortafolio](
 	@i_evp_id int,
 	@i_evt_id bigint,
 	@i_oper_id int,
@@ -22,6 +22,10 @@ create procedure BVQ_BACKOFFICE.InsertarLiquidezPortafolio(
 	@o_com_id int out,
 	@i_ajuste_provision float = null,--nuevo campo provision
 	@i_pago_efectivo float=null,--nuevo campo ajuste_valor_efectivo
+	@i_duplica BIT = NULL,
+	@i_referencia VARCHAR(150) = NULL,
+	@i_evp_uso_fondos float = null,
+	@i_evp_rendimiento float = null,
 	@i_lga_id int
 ) AS
 begin
@@ -126,6 +130,7 @@ begin
 		@i_columIdName = 'EVP_ID',
 		@i_idAfectado = @i_evp_id;
 	
+		IF(@i_duplica = 0 OR @i_duplica IS NULL)
 		delete from bvq_backoffice.evento_portafolio where evp_id=@i_evp_id --or isnull(@i_evp_id,-1)=-1 and evt_id=@i_evt_id and oper_id=@i_oper_id and es_vencimiento_interes=@i_es_vencimiento_interes
 		
 		declare @tpo_id int
@@ -144,6 +149,10 @@ begin
 			,evp_tpo_id
 			,evp_ajuste_provision
 			,evp_ajuste_valor_efectivo
+			,EVP_ABONO
+			,evp_referencia
+			,evp_uso_fondos
+			,evp_rendimiento
 		)
 		values(@i_evt_id,@i_por_id,@i_oper_id,@i_es_vencimiento_interes,@i_cobrado,@i_fecha,@o_cta_id,@i_retencion,@i_cuenta,@i_renovacion
 			--evp_change_7
@@ -151,6 +160,10 @@ begin
 			--EMN: 12/05/2020 para hacer join por fecha y tpo, y no por evt_id
 			,@fecha_original,@tpo_id,@i_ajuste_provision
 			,@i_pago_efectivo
+			,@i_duplica
+			,@i_referencia
+			,@i_evp_uso_fondos
+			,@i_evp_rendimiento
 		)
 		set @v_evp_id=scope_identity()
 		EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
@@ -166,12 +179,27 @@ begin
 
 		if @i_oper_id=1
 		begin
-			delete retr from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
-			where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
-
-			insert into bvq_backoffice.retraso(retr_tpo_id,retr_fecha_esperada,retr_fecha_cobro,RETR_INTERES,retr_capital)
-			select @i_evt_id%10000000,tfl_fecha_vencimiento,@i_fecha,1 , 0  from bvq_administracion.titulo_flujo tfl where tfl_id=@i_evt_id/10000000 and
-			datediff(d,tfl_fecha_vencimiento,@i_fecha)<>0
+			--delete retr from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
+			--where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
+			if not exists(
+				select * from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
+				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
+			)
+			begin
+				insert into bvq_backoffice.retraso(retr_tpo_id,retr_fecha_esperada,retr_fecha_cobro,RETR_INTERES,retr_capital)
+				select @i_evt_id%10000000,tfl_fecha_vencimiento,@i_fecha,case when @i_es_vencimiento_interes=1 then 1 else 0 end , case when @i_es_vencimiento_interes=0 then 1 else 0 end
+				from bvq_administracion.titulo_flujo tfl where tfl_id=@i_evt_id/10000000 and
+				datediff(d,tfl_fecha_vencimiento,@i_fecha)<>0
+			end
+			else
+			begin
+				--delete retr
+				update retr set retr_fecha_cobro=@i_fecha
+				,retr_interes=case when @i_es_vencimiento_interes=1 then 1 else retr_interes end
+				,retr_capital=case when @i_es_vencimiento_interes=0 then 1 else retr_capital end
+				from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
+				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
+			end
 		end
 	end
 

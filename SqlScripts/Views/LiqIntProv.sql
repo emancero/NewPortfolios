@@ -84,7 +84,7 @@
  
 	,intacc=
 	--round(
-		case when tvl_codigo not in ('PCO','FAC') then
+		--case when tvl_codigo not in ('PCO','FAC') then
 			case when es_vencimiento_interes=1 then
 				coalesce(nullif(e.vep_valor_efectivo,0),amount)+coalesce(capMonto,(-montooper))
 				-
@@ -107,9 +107,9 @@
 				/*-(e.hist_precio_compra/100.0*htp_compra+comisiones)/htp_compra*(-montooper)*/
 				-(pr/*+isnull(EVP_AJUSTE_PROVISION,0)*/)
 			end
-		else
+		/*else
 			diasInteres/e.dias_cupon*descAm
-		end
+		end*/
 
 	--,2)
  

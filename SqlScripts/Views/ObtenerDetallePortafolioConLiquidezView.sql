@@ -113,16 +113,29 @@
 	,[tiv_interes_irregular]
 	,[tfl_interes]
 	,provision			=
-						case when evt.es_vencimiento_interes=0 then 0 else
-							case when evt.UFO_RENDIMIENTO is not null then evt.UFO_RENDIMIENTO
-							when saldo is not null and tfl_fecha_inicio_orig is not null then dbo.CalculateProvision(saldo,tfl_fecha_inicio_orig,fecha,tasa_cupon,354,tpo_fecha_ingreso,0,0) end
+						case when evt.es_vencimiento_interes=0 and (tasa_cupon<>0 or tasa_cupon is null) then 0 else
+							case when coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO) is not null then coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
+							when saldo is not null and tfl_fecha_inicio_orig is not null then
+								dbo.CalculateProvision(
+									 saldo
+									,tfl_fecha_inicio_orig
+									,fecha
+									,tasa_cupon
+									,354
+									,tpo_fecha_ingreso
+									,case when tasa_cupon=0 then dbo.fnDias(tpo_fecha_ingreso,tiv_fecha_vencimiento,tiv_tipo_base) else 0 end
+									,evt.prEfectivo
+									,0
+									,0
+								)
+							end
 							/*dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion*/
 							+isnull(evp_ajuste_provision,0)
 						end
      ,evt.itrans
 	 ,evp.evp_referencia
-	 ,evt.UFO_USO_FONDOS
-	 ,evt.UFO_RENDIMIENTO
+	 ,UFO_USO_FONDOS=coalesce(evp.evp_uso_fondos,evt.UFO_USO_FONDOS)
+	 ,UFO_RENDIMIENTO=coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
