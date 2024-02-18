@@ -136,6 +136,7 @@
 	 ,evp.evp_referencia
 	 ,UFO_USO_FONDOS=coalesce(evp.evp_uso_fondos,evt.UFO_USO_FONDOS)
 	 ,UFO_RENDIMIENTO=coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
+	 ,TPO_BOLETIN
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -264,6 +265,7 @@
 	,evp_referencia = null
 	,UFO_USO_FONDOS = null
 	,UFO_RENDIMIENTO = null
+	,TPO_BOLETIN = null
 	from
 	bvq_backoffice.evento_portafolio evp
 

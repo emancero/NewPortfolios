@@ -1,6 +1,6 @@
 ﻿create  view [BVQ_BACKOFFICE].[ComprobanteIsspol] as  
  with LiqComprob as(  
-  select  
+  select
    tpo_numeracion  
   ,tiv_id  
   ,fecha  
@@ -42,6 +42,7 @@
   ,evp_referencia
   ,UFO_USO_FONDOS
   ,UFO_RENDIMIENTO
+  ,TPO_BOLETIN
   --select distinct por_id  
   from bvq_backoffice.comprobanteIsspolRubros s 
   where ipr_es_cxc = 1 or (ipr_es_cxc is null or ipr_es_cxc = 0 ) and deterioro = 0
@@ -88,6 +89,7 @@
  ,evp_referencia
  ,UFO_USO_FONDOS
  ,UFO_RENDIMIENTO
+ ,TPO_BOLETIN
  from liqComprob where  
  (  
   (  
@@ -103,7 +105,7 @@
  and (isnull(debe,0)+isnull(haber,0)>0  
  or rubro='amount' or rubro='valnom' or rubro='montooper')
  --where tippap='CD' and oper=1  
- union  
+ union
  select
   tpo_numeracion
  ,tiv_id,oper
@@ -144,6 +146,7 @@
  ,evp_referencia
  ,UFO_USO_FONDOS=null
  ,UFO_RENDIMIENTO=null
+ ,TPO_BOLETIN=MAX(TPO_BOLETIN)
  from liqComprob  
  join (select '2.1.90.03' pr, 'DIDENT' ri union select '7.1.5.03.%','CUXC' union select '2.1.02.%','CUXP') ri  
  on cuenta like pr  
