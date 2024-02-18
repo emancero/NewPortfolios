@@ -1,6 +1,6 @@
 ﻿create  view [BVQ_BACKOFFICE].[ComprobanteIsspol] as  
  with LiqComprob as(  
-  select
+  select distinct
    tpo_numeracion  
   ,tiv_id  
   ,fecha  
@@ -105,7 +105,7 @@
  and (isnull(debe,0)+isnull(haber,0)>0  
  or rubro='amount' or rubro='valnom' or rubro='montooper')
  --where tippap='CD' and oper=1  
- union
+ union all
  select
   tpo_numeracion
  ,tiv_id,oper
