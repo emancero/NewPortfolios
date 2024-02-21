@@ -21,7 +21,8 @@
 		--,tpo_precio_ingreso
 		,TPO_PRECIO_EFECTIVO=max(TPO_PRECIO_EFECTIVO)
 		,itrans=sum(itrans)
-		,evp_referencia
+		,evp_referencia=max(evp_referencia)
+		,plazo_anterior=max(plazo_anterior)
 		from
 		(
 			--cross product
@@ -32,6 +33,7 @@
 			,TPO_COMISION_BOLSA
 			,TPO_COMISIONES,TPO_ID
 			,plazo=dbo.fnDias(hist.htp_fecha_operacion,tiv_fecha_vencimiento,case when tvl_codigo in ('BE','VCC','OBL') then 354 else 355 end)
+			,plazo_anterior=dbo.fnDias(hist.TPO_FECHA_COMPRA_ANTERIOR,hist.TPO_FECHA_VENCIMIENTO_ANTERIOR,case when tvl_codigo in ('BE','VCC','OBL') then 354 else 355 end)
 			,TPO_PRECIO_EFECTIVO
 			from bvq_backoffice.evttemp e
 			join bvq_backoffice.portafolio por on e.por_id=por.por_id
@@ -39,6 +41,8 @@
 				select hist.montooper,hist.htp_tpo_id,hist.fecha,hist.htp_id
 				,htp.htp_compra,htp.htp_fecha_operacion,htp.HTP_PRECIO_COMPRA,TPO_COMISION_BOLSA,TPO_COMISIONES,TPO_ID,TPO_PRECIO_INGRESO
 				,TPO_PRECIO_EFECTIVO
+				,TPO.TPO_FECHA_VENCIMIENTO_ANTERIOR
+				,TPO.TPO_FECHA_COMPRA_ANTERIOR
 				from bvq_backoffice.evttemp hist
 				left join bvq_backoffice.historico_titulos_portafolio htp on htp.htp_id=hist.htp_id
 				left join bvq_backoffice.titulos_portafolio tpo on tpo.tpo_id=htp.htp_tpo_id
@@ -46,7 +50,7 @@
 			) hist
 			on hist.htp_tpo_id=e.htp_tpo_id and (hist.fecha<e.fecha or hist.fecha=e.fecha and hist.htp_id<e.htp_id or oper =0 and hist.htp_id = e.htp_id)
 		) s
-		group by s.htp_id,s.es_vencimiento_interes,por_ord,evp_referencia --,s.fecha,s.dias_cupon
+		group by s.htp_id,s.es_vencimiento_interes,por_ord--,evp_referencia --,s.fecha,s.dias_cupon
 	)
 	, Costo as (
 		select comisiones=isnull(tpo_comision_bolsa,0)+isnull(tpo_comisiones,0)
@@ -150,6 +154,7 @@
 			,l.plazo
 			--,finMes=dateadd(d,-day(e.fecha),e.fecha)
 			,capMonto
+			,l.plazo_anterior
 			from costo l
 			join
 			bvq_backoffice.evttemp e

@@ -118,7 +118,8 @@ begin
 		case when op.tiv_interes_irregular=1 and tfl_interes>0 then
 			tfl_interes
 		else
-			iTasa_interes*dias_cupon/(base_denominador*100)
+			case when op.tiv_subtipo=3 then liq_rendimiento else iTasa_interes end
+			*dias_cupon/(base_denominador*100)
 		end
 		,3)
 		*isnull(def_cobrado,1)

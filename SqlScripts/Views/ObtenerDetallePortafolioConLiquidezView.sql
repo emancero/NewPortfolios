@@ -123,9 +123,9 @@
 									,tasa_cupon
 									,354
 									,tpo_fecha_ingreso
+									,0
 									,case when tasa_cupon=0 then dbo.fnDias(tpo_fecha_ingreso,tiv_fecha_vencimiento,tiv_tipo_base) else 0 end
 									,evt.prEfectivo
-									,0
 									,0
 								)
 							end
@@ -137,6 +137,10 @@
 	 ,UFO_USO_FONDOS=coalesce(evp.evp_uso_fondos,evt.UFO_USO_FONDOS)
 	 ,UFO_RENDIMIENTO=coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
 	 ,TPO_BOLETIN
+	,TPO_FECHA_COMPRA_ANTERIOR
+	,TPO_PRECIO_COMPRA_ANTERIOR
+	,TPO_FECHA_VENCIMIENTO_ANTERIOR
+
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -266,6 +270,10 @@
 	,UFO_USO_FONDOS = null
 	,UFO_RENDIMIENTO = null
 	,TPO_BOLETIN = null
+	,TPO_FECHA_COMPRA_ANTERIOR=null
+	,TPO_PRECIO_COMPRA_ANTERIOR=null
+	,TPO_FECHA_VENCIMIENTO_ANTERIOR=null
+
 	from
 	bvq_backoffice.evento_portafolio evp
 

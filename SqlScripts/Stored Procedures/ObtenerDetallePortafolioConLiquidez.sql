@@ -110,6 +110,11 @@ begin
 	,UFO_USO_FONDOS
 	,UFO_RENDIMIENTO
 	,TPO_BOLETIN
+
+	,TPO_FECHA_COMPRA_ANTERIOR
+	,TPO_PRECIO_COMPRA_ANTERIOR
+	,TPO_FECHA_VENCIMIENTO_ANTERIOR
+
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -188,10 +193,14 @@ begin
 	,[tfl_interes]
 	,provision
 	,itrans
-	,evp_referencia
+	,evp_referencia=nullif(evp_referencia,'')
 	,UFO_USO_FONDOS
 	,UFO_RENDIMIENTO
 	,TPO_BOLETIN
+
+	,TPO_FECHA_COMPRA_ANTERIOR
+	,TPO_PRECIO_COMPRA_ANTERIOR
+	,TPO_FECHA_VENCIMIENTO_ANTERIOR
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  

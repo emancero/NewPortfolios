@@ -1,6 +1,6 @@
 ﻿create  view [BVQ_BACKOFFICE].[ComprobanteIsspol] as  
  with LiqComprob as(  
-  select distinct
+  select
    tpo_numeracion  
   ,tiv_id  
   ,fecha  
@@ -43,11 +43,16 @@
   ,UFO_USO_FONDOS
   ,UFO_RENDIMIENTO
   ,TPO_BOLETIN
+
+  ,TPO_FECHA_COMPRA_ANTERIOR
+  ,TPO_PRECIO_COMPRA_ANTERIOR
+  ,TPO_FECHA_VENCIMIENTO_ANTERIOR
+  ,plazo_anterior
   --select distinct por_id  
   from bvq_backoffice.comprobanteIsspolRubros s 
   where ipr_es_cxc = 1 or (ipr_es_cxc is null or ipr_es_cxc = 0 ) and deterioro = 0
  )  
- select
+ select distinct
   tpo_numeracion
  ,tiv_id
  ,oper
@@ -90,6 +95,11 @@
  ,UFO_USO_FONDOS
  ,UFO_RENDIMIENTO
  ,TPO_BOLETIN
+
+ ,TPO_FECHA_COMPRA_ANTERIOR
+ ,TPO_PRECIO_COMPRA_ANTERIOR
+ ,TPO_FECHA_VENCIMIENTO_ANTERIOR
+ ,plazo_anterior
  from liqComprob where  
  (  
   (  
@@ -147,6 +157,10 @@
  ,UFO_USO_FONDOS=null
  ,UFO_RENDIMIENTO=null
  ,TPO_BOLETIN=MAX(TPO_BOLETIN)
+ ,TPO_FECHA_COMPRA_ANTERIOR
+ ,TPO_PRECIO_COMPRA_ANTERIOR
+ ,TPO_FECHA_VENCIMIENTO_ANTERIOR
+ ,plazo_anterior
  from liqComprob  
  join (select '2.1.90.03' pr, 'DIDENT' ri union select '7.1.5.03.%','CUXC' union select '2.1.02.%','CUXP') ri  
  on cuenta like pr  
@@ -189,4 +203,8 @@
  ,deterioro
  ,itrans
  ,evp_referencia
+ ,TPO_FECHA_COMPRA_ANTERIOR
+ ,TPO_PRECIO_COMPRA_ANTERIOR
+ ,TPO_FECHA_VENCIMIENTO_ANTERIOR
+ ,plazo_anterior
  --having htp_id=3002050000075 
