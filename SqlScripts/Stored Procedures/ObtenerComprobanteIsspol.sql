@@ -97,5 +97,5 @@ BEGIN
   ,TPO_FECHA_VENCIMIENTO_ANTERIOR
   ,plazo_anterior
  --and oper=1  
- order by rubroOrd,tipo desc,por_ord  
+ order by deterioro,rubroOrd,tipo desc,por_ord  
 END 
