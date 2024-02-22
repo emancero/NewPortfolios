@@ -176,6 +176,13 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("InsertarLiquidezTitulo", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
 
+    //envío de inversiones
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolSicav'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("IsspolSicav", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)
     {
