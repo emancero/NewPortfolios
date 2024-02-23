@@ -114,7 +114,7 @@ begin
 	,TPO_FECHA_COMPRA_ANTERIOR
 	,TPO_PRECIO_COMPRA_ANTERIOR
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR
-
+	,TPO_TABLA_AMORTIZACION
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -201,6 +201,7 @@ begin
 	,TPO_FECHA_COMPRA_ANTERIOR
 	,TPO_PRECIO_COMPRA_ANTERIOR
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR
+	,TPO_TABLA_AMORTIZACION
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  

@@ -140,7 +140,7 @@
 	,TPO_FECHA_COMPRA_ANTERIOR
 	,TPO_PRECIO_COMPRA_ANTERIOR
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR
-
+	,TPO_TABLA_AMORTIZACION
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -273,7 +273,7 @@
 	,TPO_FECHA_COMPRA_ANTERIOR=null
 	,TPO_PRECIO_COMPRA_ANTERIOR=null
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR=null
-
+	,TPO_TABLA_AMORTIZACION = null
 	from
 	bvq_backoffice.evento_portafolio evp
 

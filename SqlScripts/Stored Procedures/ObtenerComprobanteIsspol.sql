@@ -51,6 +51,7 @@ BEGIN
   ,TPO_PRECIO_COMPRA_ANTERIOR
   ,TPO_FECHA_VENCIMIENTO_ANTERIOR
   ,plazo_anterior
+  ,TPO_TABLA_AMORTIZACION = max(TPO_TABLA_AMORTIZACION)
  FROM BVQ_BACKOFFICE.ComprobanteIsspol  
  WHERE tpo_numeracion=@i_tpo_numeracion and tiv_id=@i_tiv_id and fecha=@i_fecha  
  and not (@i_efectivo_siempre=0 and isnull(debe,0)=0 and isnull(haber,0)=0) --excluir mov sin afectación
