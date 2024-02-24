@@ -46,3 +46,10 @@ IF NOT EXISTS(
 	and name='TPO_TABLA_AMORTIZACION'
 )
 	alter table BVQ_BACKOFFICE.evtTemp ADD TPO_TABLA_AMORTIZACION VARCHAR(8000)
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.evtTemp')
+	and name='originalProvision'
+)
+	alter table BVQ_BACKOFFICE.evtTemp ADD originalProvision float

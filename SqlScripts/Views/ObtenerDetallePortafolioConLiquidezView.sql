@@ -112,7 +112,16 @@
 	,[saldo]
 	,[tiv_interes_irregular]
 	,[tfl_interes]
-	,provision			=
+     ,evt.itrans
+	 ,evp.evp_referencia
+	 ,UFO_USO_FONDOS=coalesce(evp.evp_uso_fondos,evt.UFO_USO_FONDOS)
+	 ,UFO_RENDIMIENTO=coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
+	 ,TPO_BOLETIN
+	,TPO_FECHA_COMPRA_ANTERIOR
+	,TPO_PRECIO_COMPRA_ANTERIOR
+	,TPO_FECHA_VENCIMIENTO_ANTERIOR
+	,TPO_TABLA_AMORTIZACION
+	,originalProvision			=
 						case when evt.es_vencimiento_interes=0 and (tasa_cupon<>0 or tasa_cupon is null) then 0 else
 							case when coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO) is not null then coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
 							when saldo is not null and tfl_fecha_inicio_orig is not null then
@@ -130,17 +139,9 @@
 								)
 							end
 							/*dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion*/
-							+isnull(evp_ajuste_provision,0)
+							--+isnull(evp_ajuste_provision,0)
 						end
-     ,evt.itrans
-	 ,evp.evp_referencia
-	 ,UFO_USO_FONDOS=coalesce(evp.evp_uso_fondos,evt.UFO_USO_FONDOS)
-	 ,UFO_RENDIMIENTO=coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
-	 ,TPO_BOLETIN
-	,TPO_FECHA_COMPRA_ANTERIOR
-	,TPO_PRECIO_COMPRA_ANTERIOR
-	,TPO_FECHA_VENCIMIENTO_ANTERIOR
-	,TPO_TABLA_AMORTIZACION
+
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -264,7 +265,7 @@
 	,[saldo]=null
 	,[tiv_interes_irregular]=null
 	,[tfl_interes]=null
-	,provision=null
+	--,provision=null
 	,itrans = null
 	,evp_referencia = null
 	,UFO_USO_FONDOS = null
@@ -274,6 +275,7 @@
 	,TPO_PRECIO_COMPRA_ANTERIOR=null
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR=null
 	,TPO_TABLA_AMORTIZACION = null
+	,originalProvision = null
 	from
 	bvq_backoffice.evento_portafolio evp
 

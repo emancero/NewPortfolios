@@ -115,6 +115,7 @@ begin
 	,TPO_PRECIO_COMPRA_ANTERIOR
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR
 	,TPO_TABLA_AMORTIZACION
+	,originalProvision
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -191,7 +192,7 @@ begin
 	,[saldo]
 	,[tiv_interes_irregular]
 	,[tfl_interes]
-	,provision
+	,provision=originalProvision + isnull(evp_ajuste_provision,0)
 	,itrans
 	,evp_referencia=nullif(evp_referencia,'')
 	,UFO_USO_FONDOS
@@ -202,6 +203,7 @@ begin
 	,TPO_PRECIO_COMPRA_ANTERIOR
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR
 	,TPO_TABLA_AMORTIZACION
+	,originalProvision
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
  
@@ -221,11 +223,12 @@ begin
 	select *,TPO_REESTRUCTURACION=CASE WHEN TPO_NUMERACION='2014-4933' THEN 1 ELSE 0 END
 	,(iAmortizacion+amount) AS 'total_cuota'
 	,diasTran=dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)
-	,originalProvision =
+	--,originalProvision = null
 		/*case when es_vencimiento_interes=0 then 0 else
 			case when saldo is not null and tfl_fecha_inicio_orig is not null then dbo.CalculateProvision(saldo,tfl_fecha_inicio_orig,fecha,tasa_cupon,354,tpo_fecha_ingreso,0,0) end
 		end*/
-						case when es_vencimiento_interes=0 and (tasa_cupon<>0 or tasa_cupon is null) then 0 else
+
+						/*case when es_vencimiento_interes=0 and (tasa_cupon<>0 or tasa_cupon is null) then 0 else
 							case when UFO_RENDIMIENTO is not null then UFO_RENDIMIENTO
 							when saldo is not null and tfl_fecha_inicio_orig is not null then
 								dbo.CalculateProvision(
@@ -241,16 +244,9 @@ begin
 									,0
 								)
 							end
-							/*dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion*/
-							+isnull(evp_ajuste_provision,0)
-						end
+						end*/
 
 		--dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion
-	,provision			=
-						case when es_vencimiento_interes=0 then 0 else
-							dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion
-							+isnull(evp_ajuste_provision,0)
-						end
 	,capMonto
 	,originalEffectiveValue=
 		--case when es_vencimiento_interes=1 then 0 else
