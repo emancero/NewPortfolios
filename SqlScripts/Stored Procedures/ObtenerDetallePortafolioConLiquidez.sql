@@ -192,7 +192,7 @@ begin
 	,[saldo]
 	,[tiv_interes_irregular]
 	,[tfl_interes]
-	,provision=originalProvision + isnull(evp_ajuste_provision,0)
+	,provision=coalesce(evp_ajuste_provision,originalProvision,0)
 	,itrans
 	,evp_referencia=nullif(evp_referencia,'')
 	,UFO_USO_FONDOS
@@ -255,9 +255,12 @@ begin
 		--end
 	,EVP_PAGO_EFECTIVO=
 		case when es_vencimiento_interes=1 then 0 else
-			prEfectivo
-			*coalesce(capMonto,(-montooper))
-			+isnull(EVP_AJUSTE_VALOR_EFECTIVO,0)
+			coalesce(
+				 EVP_AJUSTE_VALOR_EFECTIVO
+				,prEfectivo
+				 *coalesce(capMonto,(-montooper))
+				,0
+			)
 		end
 	,diasIntTran=case when tpo_fecha_ingreso>TFL_FECHA_INICIO then dbo.fnDiasEu(tfl_fecha_inicio,tpo_fecha_ingreso,354) end
 
