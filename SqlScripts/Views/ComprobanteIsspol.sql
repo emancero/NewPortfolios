@@ -49,6 +49,7 @@
   ,TPO_FECHA_VENCIMIENTO_ANTERIOR
   ,plazo_anterior
   ,TPO_TABLA_AMORTIZACION
+  ,provision
   --select distinct por_id  
   from bvq_backoffice.comprobanteIsspolRubros s 
   where ipr_es_cxc = 1 or (ipr_es_cxc is null or ipr_es_cxc = 0 ) and deterioro = 0
@@ -102,6 +103,7 @@
  ,TPO_FECHA_VENCIMIENTO_ANTERIOR
  ,plazo_anterior
  ,TPO_TABLA_AMORTIZACION
+ ,provision
  from liqComprob where  
  (  
   (  
@@ -164,6 +166,7 @@
  ,TPO_FECHA_VENCIMIENTO_ANTERIOR
  ,plazo_anterior
  ,TPO_TABLA_AMORTIZACION = max(TPO_TABLA_AMORTIZACION)
+ ,provision=max(provision)
  from liqComprob  
  join (select '2.1.90.03' pr, 'DIDENT' ri union select '7.1.5.03.%','CUXC' union select '2.1.02.%','CUXP') ri  
  on cuenta like pr  
@@ -210,4 +213,4 @@
  ,TPO_PRECIO_COMPRA_ANTERIOR
  ,TPO_FECHA_VENCIMIENTO_ANTERIOR
  ,plazo_anterior
- --having htp_id=3002050000075 
+  --having htp_id=3002050000075 
