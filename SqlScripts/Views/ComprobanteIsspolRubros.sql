@@ -2,7 +2,7 @@
 	select monto=
 		case rubro
 			when 'amount' then amountCosto
-			when 'prov' then prov
+			when 'prov' then prov+isnull(itrans,0)
 			when 'intAcc' then intAcc
 			when 'valnom' then coalesce(capMonto,-montooper)
 		end,*
@@ -28,7 +28,7 @@
 		select vint=1, rpref='2.1.02.','intAcc' rubro,4 ord ,0 deterioro, null rcxc union
 		select vint=1, rpref='2.1.02.','prov' rubro,4 ord ,0 deterioro, null rcxc union
 		select vint=1, rpref='7.1.3.','montooper' rubro,0 ord ,0 deterioro, null rcxc union
-		select vint=1, rpref='7.6.','valnom' rubro,3 ord ,0 deterioro, null rcxc union
+		--select vint=1, rpref='7.6.','valnom' rubro,3 ord ,0 deterioro, null rcxc union
 		select vint=0, rpref='D.7.5.2.','valnom' rubro,0 ord ,1 deterioro, null rcxc union
 		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc
 	) rub on
