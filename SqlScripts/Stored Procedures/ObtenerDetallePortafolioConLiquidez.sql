@@ -259,7 +259,7 @@ begin
 				 EVP_AJUSTE_VALOR_EFECTIVO
 				,prEfectivo
 				 *coalesce(capMonto,(-montooper))
-				,0
+				--,0
 			)
 		end
 	,diasIntTran=case when tpo_fecha_ingreso>TFL_FECHA_INICIO then dbo.fnDiasEu(tfl_fecha_inicio,tpo_fecha_ingreso,354) end
