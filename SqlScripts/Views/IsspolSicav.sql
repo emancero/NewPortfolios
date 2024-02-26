@@ -61,4 +61,4 @@
 	join bvq_administracion.item_catalogo base on tiv.tiv_tipo_base=base.itc_id
 	left join bvq_backoffice.historico_factor_retencion hfr on htp.htp_fecha_operacion between hfr.hfr_fecha_desde and hfr.hfr_fecha_hasta
 	where htp_compra>0
-	and tpo.tpo_estado=352
+	and tpo.tpo_estado=352 and htp.htp_estado=352
