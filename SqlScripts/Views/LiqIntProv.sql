@@ -69,9 +69,14 @@
 		comisiones/htp_compra*(-montooper)
 	,2)*/
 	round(
-		isnull(prEfectivo,0)
+		coalesce(
+			EVP_AJUSTE_VALOR_EFECTIVO
+			,prEfectivo
+			*coalesce(capMonto,(-montooper))
+		)
+		/*isnull(prEfectivo,0)
 		*coalesce(capMonto,(-montooper),0)
-		+isnull(EVP_AJUSTE_VALOR_EFECTIVO,0)
+		+isnull(EVP_AJUSTE_VALOR_EFECTIVO,0)*/
 		/*coalesce(
 			e.evp_pago_efectivo
 			,
@@ -93,9 +98,15 @@
 				coalesce(nullif(e.vep_valor_efectivo,0),amount)+coalesce(capMonto,(-montooper))
 				-
 				round(
-					isnull(prEfectivo,0)
+					coalesce(
+						EVP_AJUSTE_VALOR_EFECTIVO
+						,prEfectivo
+						*coalesce(capMonto,(-montooper))
+					)
+
+					/*isnull(prEfectivo,0)
 					*coalesce(capMonto,(-montooper),0)
-					+isnull(EVP_AJUSTE_VALOR_EFECTIVO,0)
+					+isnull(EVP_AJUSTE_VALOR_EFECTIVO,0)*/
 				,2)
 				-
 				isnull(UFO_USO_FONDOS,0)

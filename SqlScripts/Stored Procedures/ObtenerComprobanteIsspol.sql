@@ -54,6 +54,7 @@ BEGIN
   ,plazo_anterior
   ,TPO_TABLA_AMORTIZACION = max(TPO_TABLA_AMORTIZACION)
   ,provision=max(provision)
+  ,intacc=max(intacc)
  FROM BVQ_BACKOFFICE.ComprobanteIsspol ci
  left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
 	on edpi.edpi_numeracion=ci.tpo_numeracion and ci.cuenta='2.1.90.03'

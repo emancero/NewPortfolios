@@ -2,8 +2,10 @@
 	select monto=
 		case rubro
 			when 'amount' then amountCosto
-			when 'prov' then prov+isnull(itrans,0)
+			when 'prov' then prov
+				+case when hist_fecha_compra>tfl_fecha_inicio_orig then isnull(itrans,0) else 0 end
 			when 'intAcc' then intAcc
+				+case when ipr_es_cxc=1 then isnull(ufo_uso_fondos,0) else 0 end
 			when 'valnom' then coalesce(capMonto,-montooper)
 		end,*
 	from bvq_backoffice.LiqIntProv e
@@ -32,7 +34,7 @@
 		select vint=0, rpref='D.7.5.2.','valnom' rubro,0 ord ,1 deterioro, null rcxc union
 		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc
 	) rub on
-	(es_vencimiento_interes=vint or tippap in ('PCO','FAC'))
+	(es_vencimiento_interes=vint /*or tippap in ('PCO','FAC')*/)
 	and p.prefijo=rub.rpref
 	--empatar con vigente (0 o null) o cxc (1)
 	and (rub.rcxc is null or rub.rcxc=isnull(ipr_es_cxc,0) and rub.rcxc=p.cxc)
