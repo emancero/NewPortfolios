@@ -106,7 +106,9 @@
 	,fecha_original=evt.fecha
 	,evp_valor_efectivo=isnull(evp.evp_pago_efectivo,0)
 	,evt.htp_comision_bolsa
-	,evt.prEfectivo
+	,prEfectivo=case when ipr_es_cxc=1 and evt.tasa_cupon=0 then
+		(-montooper-isnull(evt.UFO_RENDIMIENTO,0))/-montooper --caso especial de convenio de papel a descuento
+	else evt.prEfectivo end
 	,EVP_AJUSTE_VALOR_EFECTIVO
 	,[tiv_tipo_base]
 	,[saldo]

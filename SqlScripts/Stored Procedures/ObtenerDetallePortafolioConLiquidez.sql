@@ -257,8 +257,9 @@ begin
 		case when es_vencimiento_interes=1 then 0 else
 			coalesce(
 				 EVP_AJUSTE_VALOR_EFECTIVO
-				,prEfectivo
-				 *coalesce(capMonto,(-montooper))
+				,
+				prEfectivo
+				*coalesce(capMonto,(-montooper))
 				--,0
 			)
 		end
