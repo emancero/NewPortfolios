@@ -97,6 +97,7 @@
     <None Include="Views\UsoFondos.sql" />
     <None Include="Stored Procedures\InsertarLiquidezTitulo.sql" />
     <None Include="Views\IsspolSicav.sql" />
+    <None Include="Stored Procedures\SpProvisionInversionesView.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
