@@ -84,13 +84,14 @@ BEGIN
 				   (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde)) as 'DESDE',
 				   (SELECT (CONVERT(datetime,Convert(varchar,EOMONTH(@i_fechaCorte),106) +' 23:59:59'))) as 'HASTA',
 				   convert(varchar,fecha_compra,106) as 'FECHACOMPRA',		
-				   ult_fecha_interes as 'FECHAULTIMOCUPON',
-				   FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  THEN fecha_compra ELSE ult_fecha_interes END)
+				   tfl_fecha_inicio_orig as 'FECHAULTIMOCUPON',
+				   FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  THEN fecha_compra ELSE tfl_fecha_inicio_orig END)
 
 				   ,convert(varchar,tiv_fecha_vencimiento,106) as 'FECHAVENCIMIENTO'
 				   ,capital=sal
 				   ,valefectivo=valor_efectivo
-				   from BVQ_BACKOFFICE.inversionesisspol--PortafolioCorte
+				   from BVQ_BACKOFFICE.inversionesisspol i--PortafolioCorte
+				   join (select tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id from bvq_backoffice.EventoPortafolio) e on @i_fechaCorte between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_tpo_id=i.httpo_id
 				   where sal>0
 
 				)pfc INNER JOIN BVQ_ADMINISTRACION.TIPO_VALOR tvd
