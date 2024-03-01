@@ -182,6 +182,15 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("IsspolSicav", "View", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new InsertarTituloPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new ActualizarTituloPortafolio()).GetCode();
+    comm.ExecuteNonQuery();
 
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)

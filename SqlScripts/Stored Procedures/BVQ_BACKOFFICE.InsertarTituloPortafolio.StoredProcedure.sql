@@ -14,6 +14,7 @@
 --								aunque no tenga contrato
 --				PSA: Insertar título portafolio
 --				PSA: Inserta campo renovado por
+--				PSA: 28/02/2024 Inserta tpoId origen
 -- =============================================
 CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	 @i_usr_id int
@@ -66,7 +67,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_tpo_valnom_anterior float = null		
 	,@i_tpo_fecha_encargo datetime = null		
 	,@i_tpo_boletin varchar(20) = null
-
+	,@i_tiv_id_origen	int = null
 	,@i_lga_id int		
 AS
 BEGIN
@@ -74,13 +75,21 @@ BEGIN
 	SET NOCOUNT ON;	
 
 
-	DECLARE @v_id_estado int, @v_monId int, @v_saldo float, @v_saldo_efectivo float;
+	DECLARE @v_id_estado int, @v_monId int, @v_saldo float, @v_saldo_efectivo float, @v_tpoId_org int;
 
 	if @i_tpo_fecha_ven_convenio='01/01/1900'  set @i_tpo_fecha_ven_convenio = null
 	if @i_tpo_fecha_susc_convenio='01/01/1900'  set @i_tpo_fecha_susc_convenio = null
 	if @i_tpo_fecha_encargo='01/01/1900'  set @i_tpo_fecha_encargo = null
 
-	
+	IF(@i_tiv_id_origen IS NOT NULL)
+	BEGIN
+		SELECT TOP 1 @v_tpoId_org=TPO_ID
+		FROM [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO] TP
+		INNER JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO EST ON EST.ITC_ID = TP.TPO_ESTADO AND EST.ITC_CODIGO = 'A'
+		WHERE TP.TIV_ID=@i_tiv_id_origen AND TP.POR_ID = @i_por_id
+	END
+
+
 	EXEC @v_id_estado = [BVQ_ADMINISTRACION].ObtenerIdEstadoCatalogo
 	@i_code = N'BCK_ES_TIT_POR',
 	@i_status = N'A';
@@ -150,7 +159,8 @@ BEGIN
 				TPO_ABONO_INTERES,
 				TPO_VALNOM_ANTERIOR,
 				TPO_FECHA_ENCARGO,
-				TPO_BOLETIN
+				TPO_BOLETIN,
+				tpo_id_anterior
            )
 			 VALUES
            (
@@ -187,7 +197,8 @@ BEGIN
 				@i_tpo_abono_interes,		
 				@i_tpo_valnom_anterior,	
 				@i_tpo_fecha_encargo,
-				@i_tpo_boletin
+				@i_tpo_boletin,
+				@v_tpoId_org
            )
 			set @v_tpo_id=scope_identity()
 	end
@@ -206,7 +217,8 @@ BEGIN
 		TPO_CATEGORIA = @i_categoria,
 		TPO_RENOVADO_DE = @i_renovadopor,
 		TPO_COMISION_BOLSA = @i_comisionBolsa,
-		TPO_OFERTA_ID = @i_oferta_id
+		TPO_OFERTA_ID = @i_oferta_id,
+		tpo_id_anterior = @v_tpoId_org
 		where
 			POR_ID = @i_por_id and
 			TIV_ID = @i_tiv_id and

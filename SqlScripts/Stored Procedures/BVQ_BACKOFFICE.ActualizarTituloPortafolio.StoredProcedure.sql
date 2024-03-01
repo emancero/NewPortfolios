@@ -11,6 +11,7 @@
 --					PSA: 20/06/2014 Elimina el campo TPO_SALDO
 --					PSA: 12/11/2017	Actualiza el campo renovado por
 --					GN: 10/01/2024	Se agregan campos adicionales
+--					PSA: 28/02/2024 Inserta tpoId origen
 -- =============================================
 CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarTituloPortafolio]	
 	 @i_tpo_id int
@@ -60,14 +61,14 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarTituloPortafolio]
 	,@i_tpo_valnom_anterior float = null		
 	,@i_tpo_fecha_encargo datetime = null	
 	,@i_tpo_boletin varchar(20)  =null
-
+	,@i_tiv_id_origen	int = null
 	,@i_lga_id int
 	
 AS
 BEGIN
 	
 	SET NOCOUNT ON;	
-	 DECLARE @v_monId int, @v_saldo_efectivo float, @v_valefec int ;
+	 DECLARE @v_monId int, @v_saldo_efectivo float, @v_valefec int , @v_tpoId_org int;
 
 	EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
 		@i_lga_id = @i_lga_id,
@@ -78,7 +79,13 @@ BEGIN
 		@i_columIdName = N'TPO_ID',
 		@i_idAfectado = @i_tpo_id;
 		
-	
+	IF(@i_tiv_id_origen IS NOT NULL)
+	BEGIN
+		SELECT TOP 1 @v_tpoId_org=TPO_ID
+		FROM [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO] TP
+		INNER JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO EST ON EST.ITC_ID = TP.TPO_ESTADO AND EST.ITC_CODIGO = 'A'
+		WHERE TP.TIV_ID=@i_tiv_id_origen AND TP.POR_ID = @i_por_id
+	END
 
 	UPDATE [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO]
 	SET [USR_ID] = @i_usr_id
@@ -126,6 +133,7 @@ BEGIN
 		 ,TPO_BOLETIN = @i_tpo_boletin
 		  -- NUEVO CAMPO LÍNEA 98
 		  --,TPO_FECHA_VEN_CONVENIO = @i_fecha_ven_convenio
+		,tpo_id_anterior= case when @v_tpoId_org is null then tpo_id_anterior else @v_tpoId_org end
 	 FROM [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO] TPO
 	 JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
 	 WHERE HTP.HTP_ID = @i_tpo_id;
