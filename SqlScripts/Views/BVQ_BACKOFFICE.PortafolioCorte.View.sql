@@ -12,7 +12,10 @@
 	--tfl_fecha_vencimiento,
 	latest_inicio,
 	--latest_vencimiento,
-	dbo.fnDias(latest_inicio,c,case when tiv_accrual_365=1 then 355 else tiv.tiv_tipo_base end)
+	dbo.fnDias(
+		--latest_inicio
+		case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
+		,c,case when tiv_accrual_365=1 then 355 else tiv.tiv_tipo_base end)
 	+case when tiv_accrual_365=1 then 1 else 0 end
 	+case when tiv_codigo like 'CEAOBL29%' then 2 else 0 end
 	dias_al_corte,
@@ -218,6 +221,7 @@
 	,TIV.TIV_SERIE
 	,HTP.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
 	,htp.TPO_DESGLOSAR_F1
+	,ev.tfl_fecha_inicio_orig2
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -453,6 +457,8 @@
 	) enc on enc.r=1 and isnull(tiv.tiv_codigo_titulo_sic,'')<>'' and tiv.tiv_codigo_titulo_sic=enc.enc_numero_corto_emision
 	left join bvq_administracion.calificadoras cal on cal.cal_id=coalesce(tca.cal_id,enc.cal_id)
 	left join BVQ_BACKOFFICE.ISSPOL_PROGS progs	on HTP.TPO_PROG=progs.IPR_NOMBRE_PROG
+	left join (select tfl_fecha_inicio_orig2=tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id2=htp_tpo_id from bvq_backoffice.EventoPortafolio) ev on htp.c between ev.tfl_fecha_inicio_orig2 and ev.tfl_fecha_vencimiento2 and ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0
+
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
 	--left join bvq_prevencion.personacomitente per on por.ctc_id=per.ctc_id

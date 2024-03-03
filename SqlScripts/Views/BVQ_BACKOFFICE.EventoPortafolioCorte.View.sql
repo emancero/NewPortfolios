@@ -1,4 +1,4 @@
-﻿create view bvq_backoffice.EventoPortafolioCorte as
+﻿CREATE view bvq_backoffice.EventoPortafolioCorte as
 	select
 	--Cambio: Aumentar campo remaining para detectar inconsistencias con las siguientes versiones
 	remaining=sum(isnull(remaining,0)),
@@ -15,7 +15,7 @@
 
 	valefeoper=	sum(valefeoper),
 	itrans=	sum(itrans),
-	cupoper_tfl_fecha_inicio=	max(cupoper_tfl_fecha_inicio),
+	cupoper_tfl_fecha_inicio=	min(case when oper=0 then cupoper_tfl_fecha_inicio end),
 
 	htp_tpo_id ,
 	rnd=	max(rnd),
