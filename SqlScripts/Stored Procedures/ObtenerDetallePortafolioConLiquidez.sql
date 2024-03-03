@@ -205,8 +205,9 @@ begin
 	,TPO_TABLA_AMORTIZACION
 	,originalProvision
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
+	join bvq_administracion.parametro parIsspol on parIsspol.par_codigo='PAR_ISSPOL'
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
- 
+	where (parIsspol.PAR_VALOR='NO' or oper=1)
  
 	--create clustered index ix01 on bvq_backoffice.evtTemp(por_id,fecha,oper,htp_id,es_vencimiento_interes)
  
