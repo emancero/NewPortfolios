@@ -10,7 +10,9 @@
 	tfl.tfl_id,
 	--tfl_fecha_inicio,
 	--tfl_fecha_vencimiento,
-	latest_inicio,
+	latest_inicio
+	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
+	,
 	--latest_vencimiento,
 	dbo.fnDias(
 		--latest_inicio
