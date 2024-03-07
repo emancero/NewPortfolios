@@ -95,7 +95,18 @@
 	--round(
 		--case when tvl_codigo not in ('PCO','FAC') then
 			case when es_vencimiento_interes=1 then
-				coalesce(nullif(e.vep_valor_efectivo,0),amount)+coalesce(capMonto,(-montooper))
+
+				--depósito total capital+interés
+					--depósito de interés
+					coalesce(nullif(e.vep_valor_efectivo,0),amount)
+					--depósito de capital
+					+
+					case when tpo_numeracion='SPD-2023-03-06' then
+						hist_precio_compra/100.0 * htp_compra
+					else
+						coalesce(capMonto,(-montooper))
+					end
+
 				-
 				round(
 					coalesce(

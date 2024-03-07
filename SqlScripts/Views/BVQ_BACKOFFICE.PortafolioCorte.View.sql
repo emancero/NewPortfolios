@@ -224,6 +224,7 @@
 	,HTP.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
 	,htp.TPO_DESGLOSAR_F1
 	,ev.tfl_fecha_inicio_orig2
+	,tiv.tiv_split_de
 	/*,
 	tpo_categoria_inversion*/
 	from

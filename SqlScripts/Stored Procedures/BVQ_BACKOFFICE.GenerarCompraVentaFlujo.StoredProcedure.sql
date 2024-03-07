@@ -113,8 +113,14 @@ begin
 		-round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*(tfl_capital-tfl_amortizacion),5)
 	end
 	*isnull(def_cobrado,1)
-	,iAmortizacion=   round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*
-		tfl_capital*
+	,iAmortizacion=   round(
+		case when tpo_numeracion='SPD-2023-03-06' then
+			valefeoper
+		else
+			( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*
+			tfl_capital
+		end
+		*
 		case when op.tiv_interes_irregular=1 and tfl_interes>0 then
 			tfl_interes
 		else
