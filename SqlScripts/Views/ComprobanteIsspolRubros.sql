@@ -2,6 +2,7 @@
 	select monto=
 		case rubro
 			when 'amount' then amountCosto
+			when 'amountcxc' then amountCosto
 			when 'prov' then prov
 				+case when hist_fecha_compra>tfl_fecha_inicio_orig then isnull(itrans,0) else 0 end
 			when 'intAcc' then intAcc
@@ -22,7 +23,7 @@
 	join (
 		select vint=0, rpref='7.1.3.','amount' rubro,0 ord ,0 deterioro, 0 rcxc union --único exclusivo para vigentes
 		select vint=0, rpref='7.1.2.','amount' rubro,0 ord ,0 deterioro, null rcxc union
-		select vint=0, rpref='A7.1.5.','amount' rubro,0 ord ,0 deterioro, 1 rcxc union --único exclusivo para cxc
+		select vint=0, rpref='A7.1.5.','amountcxc' rubro,0 ord ,0 deterioro, 1 rcxc union --único exclusivo para cxc
 		select vint=1, rpref='7.5.','intAcc',1 ,0 deterioro, null rcxc union
 		select vint=1, rpref='7.1.5.','prov' rubro,2 ,0 deterioro, null rcxc union
 		select vint=0, rpref='7.6.','valnom',3 ,0 deterioro, null rcxc union
