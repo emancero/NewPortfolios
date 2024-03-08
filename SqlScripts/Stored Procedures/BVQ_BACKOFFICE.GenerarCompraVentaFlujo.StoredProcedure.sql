@@ -114,7 +114,7 @@ begin
 	end
 	*isnull(def_cobrado,1)
 	,iAmortizacion=   round(
-		case when tpo_numeracion='SPD-2023-03-06' then
+		case when op.tiv_subtipo=3 then
 			valefeoper
 		else
 			( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*

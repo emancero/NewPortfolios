@@ -101,7 +101,7 @@
 					coalesce(nullif(e.vep_valor_efectivo,0),amount)
 					--depósito de capital
 					+
-					case when tpo_numeracion='SPD-2023-03-06' then
+					case when tvl_codigo in ('PCO','FAC') and tasa_cupon=0 then
 						hist_precio_compra/100.0 * htp_compra
 					else
 						coalesce(capMonto,(-montooper))
