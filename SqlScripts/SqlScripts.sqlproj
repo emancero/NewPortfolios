@@ -99,6 +99,8 @@
     <None Include="Views\IsspolSicav.sql" />
     <None Include="Stored Procedures\SpProvisionInversionesView.sql" />
     <None Include="Stored Procedures\SpProvisionInversiones.sql" />
+    <None Include="Stored Procedures\ObtenerConfAsientoRecuperacion.sql" />
+    <None Include="Stored Procedures\GenerarRecuperacionInversion.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
