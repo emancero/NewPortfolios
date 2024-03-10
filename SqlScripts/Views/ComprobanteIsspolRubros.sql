@@ -14,10 +14,25 @@
 		--e.tvl_codigo not in ('FAC','PCO') and (es_vencimiento_interes=0 and icr_codigo in ('VALNOM','MONTO') or es_vencimiento_interes=1 and icr_codigo in ('INT','PROV'))
 		--or e.tvl_codigo in ('FAC','PCO')
 	left join (select tiporen=153,rIdent=1,rAmount=1,rIntacc=1,rProv=1) prePerf on e.tiv_tipo_renta=prePerf.tiporen
-	left--xx
-	join bvq_backoffice.perfiles_isspol p on
-	tvl_codigo=tippap and e.por_id=p.p_por_id --and left(p.prefijo,1) not in ('D','R')
 
+	--títulos reclasificados
+	left join
+	(
+		select FON_NUMERACION, ITR.RECLASIFICADO_A from
+		BVQ_BACKOFFICE.ISSPOL_TITULOS_RECLASIFICADOS ITR
+		join BVQ_BACKOFFICE.FONDO ITRFON on ITR.FON_ID=ITRFON.FON_ID
+	) ITRFON
+	on ITRFON.FON_NUMERACION=e.tpo_numeracion
+
+	left--xx
+	join bvq_backoffice.perfiles_isspol p
+	on
+		tvl_codigo=tippap
+		and (
+			e.por_id=p.p_por_id or p.prefijo='2.1.02.'
+			--títulos reclasificados
+			and ITRFON.RECLASIFICADO_A=p.p_por_id--tpo_numeracion like 'FEC-%'
+		)
 	cross join (select tipo='D' union select tipo='C') t
 	left--xx
 	join (
