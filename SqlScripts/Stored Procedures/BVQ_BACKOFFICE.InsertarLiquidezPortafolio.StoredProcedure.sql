@@ -179,8 +179,12 @@ begin
 
 		if @i_oper_id=1
 		begin
-			--delete retr from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
-			--where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
+			if(@i_cobrado=0 and isnull(@i_duplica,0) = 0)
+			begin
+				delete retr from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
+				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
+			end
+
 			if not exists(
 				select * from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
 				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
