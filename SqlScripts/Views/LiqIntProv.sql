@@ -2,7 +2,7 @@
 	with LiqProp as
 	(
 		select
-		saldo=sum(monto)
+		 saldo=sum(monto)
 		,htp_compra=max(case when r=1 then htp_compra end)
 		,hist_fecha_compra=max(case when r=1 then hist_fecha_operacion end)
 		,hist_precio_compra=max(case when r=1 then htp_precio_compra end)
@@ -22,9 +22,13 @@
 		(
 			--cross product
 			select
-			 monto=hist.montooper,e.*,por.por_ord
+			 monto=hist.montooper
+			,e.*
+			,por.por_ord
 			,r=row_number() over (partition by e.htp_id,e.es_vencimiento_interes order by hist.fecha,hist.htp_id)
-			,htp_compra,hist_fecha_operacion=hist.htp_fecha_operacion,htp_precio_compra
+			,htp_compra
+			,hist_fecha_operacion=hist.htp_fecha_operacion
+			,htp_precio_compra
 			,TPO_COMISION_BOLSA
 			,TPO_COMISIONES,TPO_ID
 			,plazo=dbo.fnDias(hist.htp_fecha_operacion,tiv_fecha_vencimiento,case when tvl_codigo in ('BE','VCC','OBL') then 354 else 355 end)
@@ -43,7 +47,13 @@
 				left join bvq_backoffice.titulos_portafolio tpo on tpo.tpo_id=htp.htp_tpo_id
 				where isnull(hist.es_vencimiento_interes,0)=0
 			) hist
-			on hist.htp_tpo_id=e.htp_tpo_id and (hist.fecha<e.fecha or hist.fecha=e.fecha and hist.htp_id<e.htp_id or oper =0 and hist.htp_id = e.htp_id)
+			on hist.htp_tpo_id=e.htp_tpo_id
+			and
+			(
+				hist.fecha<e.fecha
+				or hist.fecha=e.fecha and hist.htp_id<e.htp_id
+				or oper=0 and hist.htp_id = e.htp_id
+			)
 		) s
 		group by s.htp_id,s.es_vencimiento_interes,por_ord--,evp_referencia --,s.fecha,s.dias_cupon
 	)
@@ -130,7 +140,7 @@
 			bvq_backoffice.evttemp e
 			on l.htp_id=e.htp_id and l.es_vencimiento_interes=e.es_vencimiento_interes
 			left join (select tiv_id,tiv_tipo_renta from bvq_administracion.titulo_valor tiv) tiv on tiv.tiv_id=e.tiv_id
-			left join (select capMonto=evp_valor_efectivo,capHtpId=evt_id from bvq_backoffice.evento_portafolio where es_vencimiento_interes=0) eCap on ecap.capHtpId=e.htp_id
+			left join (select capMonto=evp_valor_efectivo,capHtpId=evt_id from bvq_backoffice.evento_portafolio where es_vencimiento_interes=0 and isnull(evp_abono,0)=0) eCap on ecap.capHtpId=e.htp_id
 		) s
 	) e
 	--where tpo_numeracion='MDF-2013-12-19' and fecha='20231219'

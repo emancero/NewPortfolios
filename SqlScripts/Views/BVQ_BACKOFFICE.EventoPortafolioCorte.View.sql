@@ -6,7 +6,11 @@
 	c.c,
 	cortenum,
 	amortizacion=	-sum(amortizacion-isnull(remaining,0)),
-	sal=	sum(montooper-isnull(remaining,0)),
+	sal=	sum(
+		montooper
+		+isnull(-evp_valor_efectivo,0)
+		-isnull(remaining,0)
+	),
 	salSinCupon=	sum(montoOperSinCupon-isnull(remaining,0)),
 	iamortizacion=	sum(iamortizacion),
 
