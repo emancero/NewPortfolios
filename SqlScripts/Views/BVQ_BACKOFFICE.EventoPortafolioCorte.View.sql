@@ -113,6 +113,11 @@
 	) htp_rendimiento
 	,hiperb=(select sum(hiperb) from [BVQ_ADMINISTRACION].[valoracionCostoAmortizado] val where val.htp_tpo_id=e.htp_tpo_id and val.fechaVal=c.c and val.htp_fecha_operacion<=c.c)
 	from bvq_backoffice.EventoPortafolio e
-	join corteslist c on coalesce(evt_fecha,htp_fecha_operacion)<=c
+	join corteslist c on
+	coalesce(
+	evt_fecha,
+	htp_fecha_operacion
+	)
+	<=c
 	--where  isnull(htp_reportado,0)=0-- or c>='2016-09-30T23:57:59'
 	group by htp_tpo_id,c,cortenum

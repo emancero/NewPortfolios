@@ -20,17 +20,18 @@
 	--EMN: En casos excepcionales el cliente puede colocar un valor personalizado del pago
 	left join BVQ_BACKOFFICE.custom_monto cus on cus.cus_tpo_id=e.htp_tpo_id and cus.cus_tfl_id=e.tfl_id
 	left join (
-		select evp_valor_efectivo=null,evt_fecha=null,evt_id=null
+		select evp_valor_efectivo=null,evt_fecha=null,evt_id=null,evp_type='DEFAULT'
 		union all
 		select
 		 evp_valor_efectivo
 		,evt_fecha
 
 		,evt_id
+		,evp_type='NORMAL'
 		from bvq_backoffice.evento_portafolio
 		where
 		es_vencimiento_interes=0
 		and evp_abono=1
 		and oper_id=1
 	) evp
-	on (evp.evt_id is null or evp.evt_id=e.htp_id)
+	on (evp.evp_type='DEFAULT' or evp.evt_id=e.htp_id)
