@@ -19,9 +19,10 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 		 @AS_MOV_VALOR = COALESCE(@AS_MOV_VALOR + ';', '') + convert(varchar(100),CAST(coalesce(debe, haber) AS money) ),
 		 @AS_MOV_REFERENCIA= COALESCE(@AS_MOV_REFERENCIA + ';', '') +  convert(varchar(100),isnull(ref.referencia,'') ) 
 	from bvq_backoffice.IsspolComprobanteRecuperacion icr
-	left join bvq_backoffice.Liquidez_Referencias_table ref on icr.tpo_numeracion=ref.tpo_numeracion and icr.fecha=ref.fecha
-	and icr.codigo_configuracion in ('DIDENT','DIDENT02')
-	and round(debe,1)=round(ref.valor,1)
+	left join bvq_backoffice.Liquidez_Referencias_table ref
+	on icr.tpo_numeracion=ref.tpo_numeracion and icr.fecha=ref.fecha
+		and icr.ri in ('DIDENT','DIDENT02')
+		and round(debe,0)=round(ref.valor,0)
 	where icr.tpo_numeracion=--'MDF-2013-04-25-2'
 		@AS_NOMBRE
 	and icr.fecha=--'20231201'
@@ -37,7 +38,7 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 		ON LR.codigo=icr.CODIGO_LISTA_RUBRO
 				--icr.codigo_configuracion
 				--+ case when icr.codigo_configuracion='DIDENT' then '' else VCT.tipoCodigo end
-	LEFT OUTER JOIN siisspolweb.siisspolweb.contautom.lista_rubro_detalle D ON D.id_lista_rubro = LR.id_lista_rubro
+	LEFT OUTER JOIN [siisspolweb].siisspolweb.contautom.lista_rubro_detalle D ON D.id_lista_rubro = LR.id_lista_rubro
 	--WHERE r.id_inversion  = @AI_INVERSION AND r.fecha_recuperacion = @AD_FECHA
 	where tpo_numeracion=--'MDF-2013-04-25-2'
 		@AS_NOMBRE

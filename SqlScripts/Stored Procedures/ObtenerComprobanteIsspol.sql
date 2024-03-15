@@ -108,9 +108,10 @@ BEGIN
 		,EDPI_NOM_CUENTA
 		,EDPI_AUX
 	) ci
-	left join bvq_backoffice.Liquidez_Referencias_table ref on ci.tpo_numeracion=ref.tpo_numeracion and ci.fecha=ref.fecha
+	left join bvq_backoffice.Liquidez_Referencias_table ref
+	on ci.tpo_numeracion=ref.tpo_numeracion and ci.fecha=ref.fecha
 		and ci.ri in ('DIDENT','DIDENT02')
-		and round(debe,1)=round(ref.valor,1)
+		and round(debe,0)=round(ref.valor,0)
 	--and oper=1  
 	order by deterioro,rubroOrd,tipo desc,por_ord  
 END 
