@@ -16,7 +16,7 @@ BEGIN
 
 	DECLARE @cmdOficina NVARCHAR(MAX) = 
 	N'SELECT @ls_oficina = [ReturnValue] FROM OPENQUERY(
-		siisspolweb
+		[siisspolweb]
 		, ''SELECT comun.func_obtiene_oficina_principal() ReturnValue''
 		)'
 	EXEC sys.sp_executesql 
@@ -25,7 +25,7 @@ BEGIN
 	DECLARE @LD_FECHA_ACTUAL DATE --= comun.func_fecha_actual()
 	DECLARE @cmdFechaActual NVARCHAR(MAX) = 
 	N'SELECT @LD_FECHA_ACTUAL = [ReturnValue] FROM OPENQUERY(
-		siisspolweb
+		[siisspolweb]
 		, ''SELECT comun.func_fecha_actual() ReturnValue''
 		)'
 	EXEC sys.sp_executesql 
@@ -37,7 +37,7 @@ BEGIN
 	DECLARE @ls_moneda VARCHAR(20)
 	DECLARE @cmdMoneda NVARCHAR(MAX) = 
 	N'SELECT @ls_moneda = [ReturnValue] FROM OPENQUERY(
-		siisspolweb
+		[siisspolweb]
 		, ''SELECT comun.[func_obtiene_moneda_local]() ReturnValue''
 		)'
 	EXEC sys.sp_executesql 
@@ -95,7 +95,6 @@ BEGIN
 				@AS_MOV_REFERENCIA =	@LS_MOV_REFERENCIA OUTPUT,
 				@AS_MSJ = @AS_MSJ OUTPUT
 
-
 				/*SELECT
 						@LS_MOV_REFERENCIA= COALESCE(@LS_MOV_REFERENCIA + ';', '') +  convert(varchar(100),isnull(ref.referencia,'') ) 
 				--select distinct top 100 codigo_configuracion
@@ -118,30 +117,16 @@ BEGIN
 	from bvq_backoffice.comprobanteisspol cis
 	where tpo_numeracion=@as_nombre and fecha=@ad_fecha_recuperacion
 
-	/*
-	INSERT INTO @TBL_CNT_TMP
-	SELECT top 1 @LD_FECHA_ACTUAL,'CNT', 'LINV', @ls_oficina
-	, [concepto] = 'REGISTRO PAGO ' + isnull(cis.tvl_nombre + ' ','') + isnull(cis.ems_nombre,'') + ' - ' + isnull(cis.tpo_numeracion,'') + ' - Pago de: ' + isnull(format(cis.fecha,'dd-MMM-yyyy'),'')
-	, referencia = cis.nombre
-	, @LS_MOV_CUENTA, @LS_MOV_VALOR, @AS_MOV_TIPO, @LS_MOV_REFERENCIA, @ls_moneda
-	, cis.ems_nombre
-	from bvq_backoffice.comprobanteisspol cis
-	where tpo_numeracion=@as_nombre and fecha=@ad_fecha_recuperacion
-	*/
-	--sp_helptext 'bvq_backoffice.isspolinsertarcomprobanterecuperacion'
-	--sp_helptext 'bvq_backoffice.comprobanteisspol'
-
-
 
 	SELECT @li_id_origen = id_tipo_tran_origen
-	FROM siisspolwebtst.siisspolweb.contabilidad.tipo_tran_origen
+	FROM [siisspolweb].siisspolweb.contabilidad.tipo_tran_origen
 	WHERE codigo = 'LNV'
 
 		SET @li_trans_cnt = @@IDENTITY
 
 			delete from _temp.vars
 			insert into _temp.vars(id)
-			exec siisspolwebtst.siisspolweb.dbo.sp_executesql N'
+			exec [siisspolweb].siisspolweb.dbo.sp_executesql N'
 															DECLARE @TBL_CNT_TMP TABLE
 							(
 								fecha           DATE,
@@ -202,57 +187,6 @@ BEGIN
 			,@LD_FECHA_ACTUAL,@ls_oficina,@LS_MOV_CUENTA,@LS_MOV_VALOR,@AS_MOV_TIPO,@LS_MOV_REFERENCIA,@ls_moneda
 			,@as_nombre,@ad_fecha_recuperacion,@ems_nombre,@tvl_nombre,@referencia
 			set @li_trans_cnt = (select top 1 id from _temp.vars)
-			/*
-							, @LS_MOV_CUENTA, @LS_MOV_VALOR, @AS_MOV_TIPO, @LS_MOV_REFERENCIA, @ls_moneda
-				, cis.ems_nombre
-				from bvq_backoffice.comprobanteisspol cis
-				where tpo_numeracion=@as_nombre and fecha=@ad_fecha_recuperacion*/
-				--select * from information_schema.columns c where column_name='tvl_nombre' and table_name='tipo_valor' and table_schema='bvq_administracion'
-	/*
-	--ENVIO A TABLA REMPORAL
-	INSERT INTO siisspolweb.siisspolweb.dbo.cn_trans_cnt
-	(fecha,
-		modulo,
-		tipo_trans_org,
-		oficina_ct,
-		concepto,
-		referencia,
-		mov_valor,
-		mov_cuenta,
-		mov_tipo_trans,
-		mov_referencia,
-		moneda,
-		beneficiario)
-	select @LD_FECHA_ACTUAL,
-			modulo,
-			tipo_tcrans_org,
-			oficina_ct,
-			concepto,
-			referencia,
-			mov_valor,
-			mov_cuenta,
-			mov_tipo_trans,
-			mov_referencia,
-			moneda,
-			beneficiario
-	from @tbl_cnt_tmp 
-			
-		select @LD_FECHA_ACTUAL,
-			modulo,
-			tipo_tcrans_org,
-			oficina_ct,
-			concepto,
-			referencia,
-			mov_valor,
-			mov_cuenta,
-			mov_tipo_trans,
-			mov_referencia,
-			moneda,
-			beneficiario
-	from @tbl_cnt_tmp 
-			
-
-	SET @li_trans_cnt = @@IDENTITY*/
 
 	IF @@ERROR <> 0
 	BEGIN
@@ -261,7 +195,7 @@ BEGIN
 	END
 
 	--GENERACION DE ASIENTO CONTABLE
-	EXEC @li_ret = siisspolwebtst.siisspolweb.contautom.proc_procesar_contab_automatica_tran_id
+	EXEC @li_ret = [siisspolweb].siisspolweb.contautom.proc_procesar_contab_automatica_tran_id
 						@as_tabla = @as_tabla,
 						@adt_fecha = @LD_FECHA_ACTUAL,
 						@as_oficina = @ls_oficina,
@@ -279,7 +213,7 @@ BEGIN
 			RETURN @li_ret
 	END
 
-	EXEC @li_ret = siisspolwebtst.siisspolweb.[contabilidad].[proc_transferir_lote_contab]
+	EXEC @li_ret = [siisspolweb].siisspolweb.[contabilidad].[proc_transferir_lote_contab]
 						@ai_lote = @li_id_lote,
 						@ai_id_origen = @li_id_origen,
 						@ai_id_asiento = @li_id_asiento OUTPUT,
@@ -295,8 +229,6 @@ BEGIN
 	END
 
 
-	/*UPDATE [inversion].[int_inversion_recuperacion] SET id_asiento = @li_id_asiento, estado = 1
-	where id_inversion = @ai_inversion*/
 
 return 1
 end

@@ -59,6 +59,7 @@
     <Folder Include="Views" />
     <Folder Include="Change Scripts" />
     <Folder Include="Schemas" />
+    <Folder Include="siisspolweb" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Functions\BVQ_BACKOFFICE.tfEstadoDeCuentaPortafolio.UserDefinedFunction.sql" />
@@ -99,9 +100,8 @@
     <None Include="Views\IsspolSicav.sql" />
     <None Include="Stored Procedures\SpProvisionInversionesView.sql" />
     <None Include="Stored Procedures\SpProvisionInversiones.sql" />
-    <None Include="Stored Procedures\ObtenerConfAsientoRecuperacion.sql" />
-    <None Include="Stored Procedures\GenerarRecuperacionInversion.sql" />
-    <None Include="Views\IsspolComprobanteRecuperacion.sql" />
+    <None Include="siisspolweb\GenerarRecuperacionInversion.sql" />
+    <None Include="siisspolweb\ObtenerConfAsientoRecuperacion.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
@@ -133,6 +133,8 @@
     <Build Include="Views\EventoPortafolio.sql" />
     <Build Include="Change Scripts\Campos de fecha compra, recursos, serie, numero emisión, y frecuencia en LIQUIDEZ_CACHE y evtTemp.sql" />
     <Build Include="Change Scripts\Campos BQV_BACKOFFICE.evento_portafolio.sql" />
+    <None Include="siisspolweb\IsspolComprobanteRecuperacion.sql" />
+    <None Include="siisspolweb\IsspolInsertarComprobanteRecuperacion.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

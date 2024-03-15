@@ -207,12 +207,12 @@ using (TransactionScope scope = new TransactionScope())
     //
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerConfAsientoRecuperacion'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerConfAsientoRecuperacion", "Stored Procedure", suffix: false);
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerConfAsientoRecuperacion", "siisspolweb", suffix: false);
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarRecuperacionInversion'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("GenerarRecuperacionInversion", "Stored Procedure", suffix: false);
+    comm.CommandText = (new GetObjectCode()).GetCode("GenerarRecuperacionInversion", "siisspolweb", suffix: false);
     comm.ExecuteNonQuery();
 
 

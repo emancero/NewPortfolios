@@ -21,18 +21,19 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 	from bvq_backoffice.IsspolComprobanteRecuperacion icr
 	left join bvq_backoffice.Liquidez_Referencias_table ref on icr.tpo_numeracion=ref.tpo_numeracion and icr.fecha=ref.fecha
 	and icr.codigo_configuracion in ('DIDENT','DIDENT02')
-	and round(debe,2)=round(ref.valor,2)
+	and round(debe,1)=round(ref.valor,1)
 	where icr.tpo_numeracion=--'MDF-2013-04-25-2'
 		@AS_NOMBRE
 	and icr.fecha=--'20231201'
 		@AD_FECHA
-	--ORDER BY [tipo_rubro_movimiento]
 
+
+	--mensaje de error si no encuentra la cuenta ----------------------------------------
 	SELECT @as_msj =
 	       'No se ha configurado la cuenta contable para el seguro ' + isnull(icr.descripcion, '') + ',   con codigo: ' + isnull(LR.codigo, '')
 	from bvq_backoffice.IsspolComprobanteRecuperacion icr
-	LEFT JOIN siisspolweb.siisspolweb.comun.vis_catalogo_tipo VCT ON VCT.grupoCodigo= 'CDF' AND VCT.valor = CAST( icr.id_cuenta AS varchar(10))
-	INNER JOIN siisspolweb.siisspolweb.contautom.lista_rubro LR
+	LEFT JOIN [siisspolweb].siisspolweb.comun.vis_catalogo_tipo VCT ON VCT.grupoCodigo= 'CDF' AND VCT.valor = CAST( icr.id_cuenta AS varchar(10))
+	INNER JOIN [siisspolweb].siisspolweb.contautom.lista_rubro LR
 		ON LR.codigo=icr.CODIGO_LISTA_RUBRO
 				--icr.codigo_configuracion
 				--+ case when icr.codigo_configuracion='DIDENT' then '' else VCT.tipoCodigo end
@@ -60,17 +61,9 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 	IF (@as_msj IS NOT NULL )
 	BEGIN
 		exec bvq_administracion.IsspolFormatoMensajeValidacion @as_msj,3,@as_msj output
-		/*DECLARE @Command NVARCHAR(MAX) = 
-		N'SELECT @as_new_msj = [ReturnValue] FROM OPENQUERY(
-			siisspolweb
-			, ''SELECT comun.func_formato_mensaje_validacion(@as_msj) ReturnValue''
-			)'
-		EXEC sys.sp_executesql 
-		@Command, N'@in_as_msj varchar(500),@LS_FECHA_ACTUAL datetime output', @in_as_msj=@as_msj, @as_new_msj=@as_msj OUTPUT*/
-
-		--SET @as_msj = comun.func_formato_mensaje_validacion(@as_msj, 3)
 		RETURN -1
 	END
+	--fin mensaje de error si no encuentra la cuenta -------------------------------------
 
 	RETURN 1
 	
