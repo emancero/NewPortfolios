@@ -101,6 +101,7 @@
     <None Include="Stored Procedures\SpProvisionInversiones.sql" />
     <None Include="Stored Procedures\ObtenerConfAsientoRecuperacion.sql" />
     <None Include="Stored Procedures\GenerarRecuperacionInversion.sql" />
+    <None Include="Views\IsspolComprobanteRecuperacion.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
