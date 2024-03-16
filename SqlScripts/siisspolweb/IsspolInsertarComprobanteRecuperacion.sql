@@ -12,7 +12,7 @@ AS
 begin
 	set xact_abort on
 	begin tran
-		if @i_id_inversion is not null
+		if 1=0 and @i_id_inversion is not null
 		begin
 			declare @log varchar(500)
 			declare @w_id_recuperacion int
@@ -133,7 +133,7 @@ begin
 			*/
 					
 		end --fin if @i_id_inversion is not null
-		if @i_id_inversion is not null
+		if 1=0 and @i_id_inversion is not null
 		begin
 			exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Antes de proc_generar_recuperacion_inversion'
 			declare @ret2 int
