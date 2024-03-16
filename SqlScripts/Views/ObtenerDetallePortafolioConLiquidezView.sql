@@ -143,7 +143,7 @@
 							/*dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)/dias_cupon * iamortizacion*/
 							--+isnull(evp_ajuste_provision,0)
 						end
-
+	,TFL_PERIODO
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -278,6 +278,7 @@
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR=null
 	,TPO_TABLA_AMORTIZACION = null
 	,originalProvision = null
+	,TFL_PERIODO = null
 	from
 	bvq_backoffice.evento_portafolio evp
 

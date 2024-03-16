@@ -116,6 +116,7 @@ begin
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR
 	,TPO_TABLA_AMORTIZACION
 	,originalProvision
+	,TFL_PERIODO
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -204,6 +205,7 @@ begin
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR
 	,TPO_TABLA_AMORTIZACION
 	,originalProvision
+	,TFL_PERIODO
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	join bvq_administracion.parametro parIsspol on parIsspol.par_codigo='PAR_ISSPOL'
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0

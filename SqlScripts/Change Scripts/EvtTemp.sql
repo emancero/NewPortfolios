@@ -53,3 +53,10 @@ IF NOT EXISTS(
 	and name='originalProvision'
 )
 	alter table BVQ_BACKOFFICE.evtTemp ADD originalProvision float
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.evtTemp')
+	and name='TFL_PERIODO'
+)
+	alter table BVQ_BACKOFFICE.evtTemp ADD TFL_PERIODO int
