@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE  [BVQ_BACKOFFICE].[ObtenerConfAsientoRecuperacion]
 	--@AI_INVERSION INT,
 	@AS_NOMBRE VARCHAR(200),
+	@AD_FECHA_ORIGINAL DATETIME=null,
 	@AD_FECHA  DATE,
 	@AS_USARIO VARCHAR(100),                                                
 	@AS_EQUIPO VARCHAR(100),
@@ -27,6 +28,11 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 		@AS_NOMBRE
 	and icr.fecha=--'20231201'
 		@AD_FECHA
+	and (
+		@AD_FECHA_ORIGINAL is null
+		OR icr.htp_fecha_operacion=@AD_FECHA_ORIGINAL
+	)
+	order by deterioro,rubroOrd,tipo desc,por_ord  
 
 
 	--mensaje de error si no encuentra la cuenta ----------------------------------------
