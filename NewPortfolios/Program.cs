@@ -72,6 +72,9 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("EvtTemp", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = (new GetObjectCode()).GetCode("COMPROBANTE_ISSPOL", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = (new GetObjectCode()).GetCode("USO_FONDOS", "Change Script", suffix: false);
     //comm.ExecuteNonQuery();
 
@@ -159,6 +162,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerComprobanteIsspol", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarComprobanteIsspol'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("GenerarComprobanteIsspol", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
     /*
         comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
         comm.ExecuteNonQuery();
@@ -205,6 +213,11 @@ using (TransactionScope scope = new TransactionScope())
 
 
     //
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolComprobanteRecuperacion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("IsspolComprobanteRecuperacion", "siisspolweb", suffix: false, plural: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerConfAsientoRecuperacion'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerConfAsientoRecuperacion", "siisspolweb", suffix: false, plural: false);
@@ -215,7 +228,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("GenerarRecuperacionInversion", "siisspolweb", suffix: false, plural:false);
     comm.ExecuteNonQuery();
 
-
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolInsertarComprobanteRecuperacion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("IsspolInsertarComprobanteRecuperacion", "siisspolweb", suffix: false, plural: false);
+    comm.ExecuteNonQuery();
+    
     #region Llamadas a GenerarCompraVentaFlujo
     if (false)
     {
