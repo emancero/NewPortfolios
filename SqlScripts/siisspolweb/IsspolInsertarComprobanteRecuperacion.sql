@@ -4,6 +4,7 @@
 	@i_maquina AS VARCHAR(50),
 	@i_usuario AS VARCHAR(50),
 	@i_monto_inversion AS MONEY,
+	@i_fecha_original as DATETIME=null,
 	@i_fecha as DATETIME,
 	@i_nombre as varchar(200),
 	@AS_MSJ AS VARCHAR(500) output,
@@ -157,11 +158,12 @@ begin
 			exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Antes de GenerarRecuperacionInversion'
 			declare @ret3 int
 			exec @ret3=bvq_backoffice.GenerarRecuperacionInversion
-																		@as_nombre = @i_nombre,
-																		@ad_fecha_recuperacion =@i_fecha,
-																		@as_usuario = @i_usuario,
-																		@as_equipo = @i_maquina,
-																		@as_msj = @as_msj OUTPUT
+				@as_nombre = @i_nombre,
+				@ad_fecha_original = @i_fecha_original,
+				@ad_fecha_recuperacion = @i_fecha,
+				@as_usuario = @i_usuario,
+				@as_equipo = @i_maquina,
+				@as_msj = @as_msj OUTPUT
 			exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Después de GenerarRecuperacionInversion'
 
 
