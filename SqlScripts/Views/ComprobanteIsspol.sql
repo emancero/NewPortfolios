@@ -1,4 +1,4 @@
-﻿create  view [BVQ_BACKOFFICE].[ComprobanteIsspol] as  
+﻿CREATE  view [BVQ_BACKOFFICE].[ComprobanteIsspol] as  
  with LiqComprob as(  
   select
    tpo_numeracion  
@@ -14,8 +14,8 @@
   ,cuenta=case when tipo='C' then acreedoraSinAux when tipo='D' then deudoraSinAux end  
   ,aux=case when tipo='C' then acreedoraAux when tipo='D' then deudoraAux end  
   ,nombre=case when tipo='C' then nomAcreedora when tipo='D' then nomDeudora end  
-  ,debe=case when tipo='D' then round(abs(monto),2) end  
-  ,haber=case when tipo='C' then round(abs(monto),2) end  
+  ,debe=case when tipo='D' and forced_por_id is null or tipo='C' and forced_por_id is not null then round(abs(monto),2) end  
+  ,haber=case when tipo='C' and forced_por_id is null or tipo='D' and forced_por_id is not null then round(abs(monto),2) end  
   ,saldo,htp_compra  
   ,ems_nombre
   ,tvl_nombre
@@ -53,6 +53,7 @@
   ,intacc
   ,TFL_PERIODO
   ,htp_fecha_operacion
+  ,forced_por_id
   --select distinct por_id  
   from bvq_backoffice.comprobanteIsspolRubros s 
   where ipr_es_cxc = 1 or (ipr_es_cxc is null or ipr_es_cxc = 0 ) and deterioro = 0
@@ -110,6 +111,7 @@
  ,intacc
  ,TFL_PERIODO
  ,htp_fecha_operacion
+ ,forced_por_id=null
  from liqComprob where  
  (  
   (  
@@ -176,6 +178,7 @@
  ,intacc=max(intacc)
  ,TFL_PERIODO=max(TFL_PERIODO)
  ,htp_fecha_operacion=max(htp_fecha_operacion)
+ ,forced_por_id=max(forced_por_id)
  from liqComprob  
  join (select '2.1.90.03' pr, 'DIDENT' ri union select '7.1.5.03.%','CUXC' union select '2.1.02.%','CUXP') ri  
  on cuenta like pr  
