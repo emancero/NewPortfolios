@@ -102,6 +102,8 @@
     <None Include="Stored Procedures\SpProvisionInversiones.sql" />
     <None Include="siisspolweb\GenerarRecuperacionInversion.sql" />
     <None Include="siisspolweb\ObtenerConfAsientoRecuperacion.sql" />
+    <None Include="Stored Procedures\GenerarComprobanteIsspol.sql" />
+    <None Include="Change Scripts\COMPROBANTE_ISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
