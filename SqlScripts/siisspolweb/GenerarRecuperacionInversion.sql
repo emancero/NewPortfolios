@@ -157,7 +157,8 @@ BEGIN
 
 				--ENVIO A TABLA REMPORAL
 				INSERT INTO dbo.cn_trans_cnt
-				(fecha,
+				(
+					fecha,
 					modulo,
 					tipo_trans_org,
 					oficina_ct,
@@ -169,7 +170,8 @@ BEGIN
 					mov_referencia,
 					moneda,
 					beneficiario)
-				select @LD_FECHA_ACTUAL,
+				select
+						@ad_fecha_recuperacion,
 						modulo,
 						tipo_tcrans_org,
 						oficina_ct,
