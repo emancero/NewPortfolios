@@ -1,12 +1,13 @@
 ﻿
 CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerComprobanteIsspol
 (
-@i_tpo_numeracion varchar(250),
-@i_tiv_id int, 
-@i_fecha datetime, 
-@i_efectivo_siempre bit=false, 
-@i_lga_id int=null
-) 
+	@i_tpo_numeracion varchar(250),
+	@i_tiv_id int, 
+	@i_fecha datetime, 
+	@i_fecha_original datetime,
+	@i_efectivo_siempre bit=false, 
+	@i_lga_id int=null
+)
 AS
 BEGIN
 	SELECT
@@ -45,7 +46,7 @@ BEGIN
 		,plazo
 		,ipr_es_cxc
 		,deterioro
-		,itrans
+		,itrans=sum(itrans)
 		,evp_referencia
 		,UFO_USO_FONDOS=sum(UFO_USO_FONDOS)
 		,UFO_RENDIMIENTO=sum(UFO_RENDIMIENTO)
@@ -62,7 +63,9 @@ BEGIN
 		FROM BVQ_BACKOFFICE.ComprobanteIsspol ci
 		left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
 		on edpi.edpi_numeracion=ci.tpo_numeracion and ci.cuenta='2.1.90.03'
-		WHERE tpo_numeracion=@i_tpo_numeracion and tiv_id=@i_tiv_id and fecha=@i_fecha  
+		WHERE tpo_numeracion=@i_tpo_numeracion and tiv_id=@i_tiv_id
+		and fecha=@i_fecha
+		and htp_fecha_operacion=@i_fecha_original
 		and not (@i_efectivo_siempre=0 and isnull(debe,0)=0 and isnull(haber,0)=0) --excluir mov sin afectación
 		group by
 		 tpo_numeracion  
@@ -99,7 +102,7 @@ BEGIN
 		,plazo
 		,ipr_es_cxc
 		,deterioro
-		,itrans
+		--,itrans
 		,evp_referencia
 		,TPO_FECHA_COMPRA_ANTERIOR
 		,TPO_PRECIO_COMPRA_ANTERIOR
@@ -115,4 +118,4 @@ BEGIN
 		and round(debe,0)=round(ref.valor,0)
 	--and oper=1  
 	order by deterioro,rubroOrd,tipo desc,por_ord  
-END 
+END
