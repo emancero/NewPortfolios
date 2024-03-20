@@ -2,7 +2,8 @@
 CREATE PROCEDURE bvq_backoffice.GenerarRecuperacionInversion
 																--@ai_inversion INT,
 																@as_nombre VARCHAR(200),
-																@ad_fecha_recuperacion date,
+																@ad_fecha_original datetime=null,
+																@ad_fecha_recuperacion datetime,
 																@as_usuario VARCHAR(20),
 																@as_equipo VARCHAR(20),
 																@as_msj VARCHAR(500) OUTPUT
@@ -88,6 +89,7 @@ BEGIN
 				@AS_NOMBRE =			@as_nombre,
 				@AS_USARIO =			@as_usuario,
 				@AS_EQUIPO =			@as_equipo,
+				@AD_FECHA_ORIGINAL =	@ad_fecha_original,
 				@AD_FECHA  =			@ad_fecha_recuperacion,
 				@AS_MOV_CUENTA =		@LS_MOV_CUENTA OUTPUT,
 				@AS_MOV_TIPO =			@AS_MOV_TIPO OUTPUT,
