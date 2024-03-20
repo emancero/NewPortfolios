@@ -8,7 +8,14 @@
 			when 'intAcc' then intAcc
 				+case when ipr_es_cxc=1 then isnull(ufo_uso_fondos,0) else 0 end
 			when 'valnom' then coalesce(capMonto,-montooper)
-		end,*
+		end
+		,forced_por_id=case when p.prefijo='2.1.02.'
+			--títulos reclasificados
+			and ITRFON.RECLASIFICADO_A=p.p_por_id
+		then
+			p.p_por_id
+		end
+		,*
 	from bvq_backoffice.LiqIntProv e
 	left join bvq_backoffice.isspol_cuenta_requerida icr on 1=0
 		--e.tvl_codigo not in ('FAC','PCO') and (es_vencimiento_interes=0 and icr_codigo in ('VALNOM','MONTO') or es_vencimiento_interes=1 and icr_codigo in ('INT','PROV'))
