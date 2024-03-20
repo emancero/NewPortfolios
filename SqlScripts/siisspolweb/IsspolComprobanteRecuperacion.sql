@@ -24,6 +24,11 @@
 			,coalesce(edpi.EDPI_AUX,cis.aux) cis_aux
 			,r.sir_codigo_configuracion
 			,rubroOrd = MAX(cis.rubroOrd)
+			,tfl_periodo=max(tfl_periodo)
+			,htp_fecha_operacion = max(htp_fecha_operacion)
+			,deterioro
+			,tipo=max(cis.tipo)
+			,por_ord=max(por_ord)
 			from BVQ_BACKOFFICE.Comprobante_Isspol CIS
 			--excepción a la cuenta de depósitos por indentificar
 			left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
@@ -45,7 +50,7 @@
 			left join bvq_administracion.persona_juridica pju on pju.pju_id=ems.pju_id
 
 			left join [siisspolweb].siisspolweb.inversion.vis_emisor_calificacion e on e.identificacion=pju_identificacion
-			join bvq_administracion.isspol_mapa_fondos imf on imf.imf_sicav=tpo.por_id
+			join bvq_administracion.isspol_mapa_fondos imf on imf.imf_sicav=coalesce(CIS.forced_por_id,tpo.por_id)
 
 			--unión con la inversión
 			left join [siisspolweb].siisspolweb.[inversion].[inversion] i				
@@ -80,10 +85,10 @@
 				or r.sir_codigo_configuracion='DETERIOROR' and cis.rubro='valnom' and ipr.ipr_es_cxc=1 and haber>0
 				or r.sir_codigo_configuracion='DETERIOROIC' and cis.rubro='amount' and ipr.ipr_es_cxc=1 and debe>0
 				or r.sir_codigo_configuracion='DETERIOROIR' and cis.rubro='amount' and ipr.ipr_es_cxc=1 and haber>0
-				or r.sir_codigo_configuracion='CUXC02' and ipr.ipr_es_cxc=1 and ri='CUXP' --and cis.tpo_numeracion not like 'FEC-%'-->0
-				or r.sir_codigo_configuracion='CUXP02' and ipr.ipr_es_cxc=1 and ri='CUXC' --and cis.tpo_numeracion not like 'FEC-%'--and haber>0
+				or r.sir_codigo_configuracion='CUXC02' and ipr.ipr_es_cxc=1 and ri='CUXC' and forced_por_id is not null--and cis.tpo_numeracion not like 'FEC-%'-->0
+				or r.sir_codigo_configuracion='CUXP02' and ipr.ipr_es_cxc=1 and ri='CUXP' and forced_por_id is not null--and cis.tpo_numeracion not like 'FEC-%'--and haber>0
 
-				or r.sir_codigo_configuracion=ri and not (ri='DIDENT' and edpi_id is not null)
+				or r.sir_codigo_configuracion=ri and not (ri='DIDENT' and edpi_id is not null or forced_por_id is not null) 
 				or r.sir_codigo_configuracion='DIDENT02' and edpi_id is not null
 			)
 			and (cis.cuenta not in ('7.1.5.90.99','7.5.2.04.05','7.5.2.04.09') or r.sir_codigo_configuracion like 'DETERIORO%' or r.sir_codigo_configuracion='inte')
@@ -130,5 +135,7 @@
 			,case when codigo_configuracion<>'DIDENT' or codigo_configuracion is null then tpo.por_id end--tpo.por_id
 			,coalesce(edpi.EDPI_CUENTA,cis.cuenta)
 			,coalesce(edpi.EDPI_AUX,cis.aux)
+			,deterioro
+			,htp_fecha_operacion
 			having sum(debe)>0 or sum(haber)>0
 			--having cis.tpo_numeracion='EDE-2019-02-26' and cis.fecha='20231020'
