@@ -19,7 +19,8 @@ begin
 		raiserror('Este procedimiento no puede ser llamado más de 1 vez cada hora por el usuario administrador desde la aplicación',16,1)
 		return
 	end*/
- 
+	set @i_fechaIni=convert(date,@i_fechaIni)
+
 	--PV: para sacar liquidez de portafolios diferidos
 	declare @tbPortafolio table (por_id int, dif_por_id int, por_public bit)
 	insert into @tbPortafolio
