@@ -89,7 +89,7 @@
 					case when tvl_codigo in ('PCO','FAC') and tasa_cupon=0 then
 						hist_precio_compra/100.0 * htp_compra
 					else
-						coalesce(capMonto,-montooper)
+						coalesce(capMonto,case when isnull(evp_abono,0)=0 then -montooper else 0 end)
 					end
 				--fin depósito total capital+interes
 
@@ -98,7 +98,7 @@
 					coalesce(
 						EVP_AJUSTE_VALOR_EFECTIVO
 						,prEfectivo
-						*coalesce(capMonto,-montooper)
+						*coalesce(capMonto,case when isnull(evp_abono,0)=0 then -montooper else 0 end)
 					)
 				,2)
 				-
@@ -144,7 +144,7 @@
 				select capMonto=evp_valor_efectivo,capHtpId=evt_id
 				from bvq_backoffice.evento_portafolio
 				where es_vencimiento_interes=0 and isnull(evp_abono,0)=0
-			) eCap on ecap.capHtpId=e.htp_id
+			) eCap on isnull(e.evp_abono,0)=0 and ecap.capHtpId=e.htp_id
 		) s
 	) e
 	--where tpo_numeracion='MDF-2013-12-19' and fecha='20231219'
