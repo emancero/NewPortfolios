@@ -140,7 +140,11 @@
 			bvq_backoffice.evttemp e
 			on l.htp_id=e.htp_id and l.es_vencimiento_interes=e.es_vencimiento_interes
 			left join (select tiv_id,tiv_tipo_renta from bvq_administracion.titulo_valor tiv) tiv on tiv.tiv_id=e.tiv_id
-			left join (select capMonto=evp_valor_efectivo,capHtpId=evt_id from bvq_backoffice.evento_portafolio where es_vencimiento_interes=0 and isnull(evp_abono,0)=0) eCap on ecap.capHtpId=e.htp_id
+			left join (
+				select capMonto=evp_valor_efectivo,capHtpId=evt_id
+				from bvq_backoffice.evento_portafolio
+				where es_vencimiento_interes=0 and isnull(evp_abono,0)=0
+			) eCap on ecap.capHtpId=e.htp_id
 		) s
 	) e
 	--where tpo_numeracion='MDF-2013-12-19' and fecha='20231219'
