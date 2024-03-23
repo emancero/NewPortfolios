@@ -104,6 +104,7 @@
     <None Include="siisspolweb\ObtenerConfAsientoRecuperacion.sql" />
     <None Include="Stored Procedures\GenerarComprobanteIsspol.sql" />
     <None Include="Change Scripts\COMPROBANTE_ISSPOL.sql" />
+    <None Include="Stored Procedures\ObtenerEnvioRecuperacionIsspol.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
