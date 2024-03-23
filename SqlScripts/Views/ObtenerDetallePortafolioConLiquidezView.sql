@@ -144,6 +144,7 @@
 							--+isnull(evp_ajuste_provision,0)
 						end
 	,TFL_PERIODO
+	,evp_abono
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -279,6 +280,7 @@
 	,TPO_TABLA_AMORTIZACION = null
 	,originalProvision = null
 	,TFL_PERIODO = null
+	,evp_abono = null
 	from
 	bvq_backoffice.evento_portafolio evp
 

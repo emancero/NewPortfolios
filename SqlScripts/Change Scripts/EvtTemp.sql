@@ -60,3 +60,12 @@ IF NOT EXISTS(
 	and name='TFL_PERIODO'
 )
 	alter table BVQ_BACKOFFICE.evtTemp ADD TFL_PERIODO int
+
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'evp_abono'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.evtTemp')
+)
+BEGIN
+    alter table BVQ_BACKOFFICE.evtTemp
+   add evp_abono bit
+END 
