@@ -183,6 +183,26 @@ begin
 												values (@i_nombre,@i_fecha)
 		END
 
+		--referencias -------------------------------
+		declare CUR_REFS cursor for
+		select valor,idMasivasTransaccion from bvq_backoffice.liquidez_referencias_table lrt
+		where tpo_numeracion=@i_nombre and fecha=@i_fecha and fecha_original=@i_fecha_original
+
+		declare @v_total float, @v_id_masivas_transaccion int
+		open CUR_REFS
+		fetch next from CUR_REFS into @v_total,@v_id_masivas_transaccion
+		while @@FETCH_STATUS=0
+		begin
+			exec BVQ_BACKOFFICE.IsspolAbonarADeposito
+				 @LM_TOTAL=@v_total, @AS_USUARIO=@i_usuario, @AS_EQUIPO=@i_maquina
+				,@AI_ID_MASIVA_TRANSACCION=@v_id_masivas_transaccion
+
+			fetch next from CUR_REFS into @v_total,@v_id_masivas_transaccion
+		end
+		close CUR_REFS
+		deallocate CUR_REFS
+		--fin referencias-----------------------------
+
 		COMMIT transaction
 
 		exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Fin IsspolInsertarComprobanteRecuperacion'

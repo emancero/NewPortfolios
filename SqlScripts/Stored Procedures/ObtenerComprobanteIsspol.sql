@@ -64,8 +64,8 @@ BEGIN
 		left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
 		on edpi.edpi_numeracion=ci.tpo_numeracion and ci.cuenta='2.1.90.03'
 		WHERE tpo_numeracion=@i_tpo_numeracion and tiv_id=@i_tiv_id
-		and fecha=@i_fecha
-		and htp_fecha_operacion=@i_fecha_original
+		and datediff(hh,fecha,@i_fecha)=0
+		and datediff(hh,htp_fecha_operacion,@i_fecha_original)=0
 		and not (@i_efectivo_siempre=0 and isnull(debe,0)=0 and isnull(haber,0)=0) --excluir mov sin afectación
 		group by
 		 tpo_numeracion  
