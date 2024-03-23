@@ -191,7 +191,12 @@ begin
 			)
 			begin
 				insert into bvq_backoffice.retraso(retr_tpo_id,retr_fecha_esperada,retr_fecha_cobro,RETR_INTERES,retr_capital)
-				select @i_evt_id%10000000,tfl_fecha_vencimiento,@i_fecha,case when @i_es_vencimiento_interes=1 then 1 else 0 end , case when @i_es_vencimiento_interes=0 then 1 else 0 end
+				select
+				 @i_evt_id%10000000
+				,tfl_fecha_vencimiento
+				,retr_fecha_cobro=@i_fecha
+				,case when @i_es_vencimiento_interes=1 then 1 else 0 end
+				,case when @i_es_vencimiento_interes=0 then 1 else 0 end
 				from bvq_administracion.titulo_flujo tfl where tfl_id=@i_evt_id/10000000 and
 				datediff(d,tfl_fecha_vencimiento,@i_fecha)<>0
 			end
