@@ -45,14 +45,16 @@
 	join (
 		select vint=0, rpref='7.1.3.','amount' rubro,0 ord ,0 deterioro, 0 rcxc union --único exclusivo para vigentes
 		select vint=0, rpref='7.1.2.','amount' rubro,0 ord ,0 deterioro, null rcxc union
-		select vint=0, rpref='A7.1.5.','amountcxc' rubro,0 ord ,0 deterioro, 1 rcxc union --único exclusivo para cxc
+		select vint=0, rpref='A7.1.5.','amountcxc' rubro,0 ord ,0 deterioro, 1 rcxc union --uno de dos exclusivos para cxc
 		select vint=1, rpref='7.5.','intAcc',1 ,0 deterioro, null rcxc union
 		select vint=1, rpref='7.1.5.','prov' rubro,2 ,0 deterioro, null rcxc union
 		select vint=0, rpref='7.6.','valnom',3 ,0 deterioro, null rcxc union
 		select vint=0, rpref='2.1.02.','amount' rubro,4 ord ,0 deterioro, null rcxc union
 		select vint=1, rpref='2.1.02.','intAcc' rubro,4 ord ,0 deterioro, null rcxc union
 		select vint=1, rpref='2.1.02.','prov' rubro,4 ord ,0 deterioro, null rcxc union
-		select vint=1, rpref='7.1.3.','montooper' rubro,0 ord ,0 deterioro, null rcxc union
+		select vint=1, rpref='7.1.3.','montooper' rubro,0 ord ,0 deterioro, 0 rcxc union
+		select vint=1, rpref='A7.1.5.','amountcxc' rubro,0 ord ,0 deterioro, 1 rcxc union --dos de dos exclusivos para cxc
+
 		--select vint=1, rpref='7.6.','valnom' rubro,3 ord ,0 deterioro, null rcxc union
 		select vint=0, rpref='D.7.5.2.','valnom' rubro,0 ord ,1 deterioro, null rcxc union
 		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc

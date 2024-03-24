@@ -102,7 +102,7 @@
 					)
 				,2)
 				-
-				isnull(UFO_USO_FONDOS,0)
+				case when isnull(evp_abono,0)=0 then isnull(UFO_USO_FONDOS,0) else 0 end
 				-pr
 				-case when tpo_fecha_ingreso>TFL_FECHA_INICIO then ISNULL(itrans,0) else 0 end
 			end
