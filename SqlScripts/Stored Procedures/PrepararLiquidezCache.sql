@@ -79,6 +79,7 @@
 		,TPO_PRECIO_COMPRA_ANTERIOR
 		,TPO_FECHA_VENCIMIENTO_ANTERIOR
 		,TPO_TABLA_AMORTIZACION
+		,evp_abono
 		--,
 		--vep.vep_fecha,
 
@@ -187,6 +188,7 @@
 		,tpo.TPO_PRECIO_COMPRA_ANTERIOR
 		,tpo.TPO_FECHA_VENCIMIENTO_ANTERIOR
 		,tpo.TPO_TABLA_AMORTIZACION
+		,evt.evp_abono
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt
@@ -212,3 +214,4 @@
 		--join bvq_administracion.parametro retencionpct on retencionpct.par_codigo='PAR_RETENCION_LIQ'
 		--where datediff(d,htp_fecha_operacion,'2017-04-28')=0
 		--fin separador vencimientos
+		where isnull(evt.evp_abono,0)=0

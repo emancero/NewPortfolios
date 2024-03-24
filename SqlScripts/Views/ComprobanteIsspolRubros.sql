@@ -7,7 +7,7 @@
 				+case when hist_fecha_compra>tfl_fecha_inicio_orig then isnull(itrans,0) else 0 end
 			when 'intAcc' then intAcc
 				+case when ipr_es_cxc=1 then isnull(ufo_uso_fondos,0) else 0 end
-			when 'valnom' then coalesce(capMonto,-montooper)
+			when 'valnom' then coalesce(case when e.evp_abono=1 and e.es_vencimiento_interes=0 then e.vep_valor_efectivo end,capMonto,-montooper)
 		end
 		,forced_por_id=case when p.prefijo='2.1.02.'
 			--títulos reclasificados

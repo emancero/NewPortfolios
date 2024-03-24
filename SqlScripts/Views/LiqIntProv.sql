@@ -70,7 +70,7 @@
 		coalesce(
 			EVP_AJUSTE_VALOR_EFECTIVO
 			,prEfectivo
-			*coalesce(capMonto,-montooper)
+			*coalesce(case when e.evp_abono=1 and e.es_vencimiento_interes=0 then e.vep_valor_efectivo end,capMonto,-montooper)
 		)
 	,2)
 	--o valefe+comisiones

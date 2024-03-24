@@ -53,3 +53,10 @@ IF NOT EXISTS(
 	and name='TFL_PERIODO'
 )
 	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD TFL_PERIODO INT
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.LIQUIDEZ_CACHE')
+	and name='EVP_ABONO'
+)
+	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD EVP_ABONO BIT

@@ -194,7 +194,7 @@ begin
 				select
 				 @i_evt_id%10000000
 				,tfl_fecha_vencimiento
-				,retr_fecha_cobro=@i_fecha
+				,retr_fecha_cobro=case when @i_duplica=1 then '39991231' else @i_fecha end
 				,case when @i_es_vencimiento_interes=1 then 1 else 0 end
 				,case when @i_es_vencimiento_interes=0 then 1 else 0 end
 				from bvq_administracion.titulo_flujo tfl where tfl_id=@i_evt_id/10000000 and
