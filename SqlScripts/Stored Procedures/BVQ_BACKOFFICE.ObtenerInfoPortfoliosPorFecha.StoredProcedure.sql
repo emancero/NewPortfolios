@@ -41,6 +41,7 @@ BEGIN
                                                 ,TPO_INTERES_TRANSCURRIDO float
 												,TPO_COMISION_BOLSA float
 												,tpo_recursos varchar(30)
+												,TPO_PRECIO_REGISTRO_VALOR_EFECTIVO float
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -54,7 +55,7 @@ BEGIN
                         ,null
                         ,null
                         ,null
-               ,null
+						,null
                         ,null
                         ,null
                         ,TPO_ACTA
@@ -62,6 +63,7 @@ BEGIN
                         ,TPO_INTERES_TRANSCURRIDO
 						,TPO_COMISION_BOLSA
 						,tpo_recursos
+						,TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
 				from bvq_backoffice.portafoliocorte
 
 		
@@ -118,13 +120,13 @@ BEGIN
                                                     pcorte.sal
                                                     --precio
                                                     * (
-                                                         pcorte.htp_precio_compra--tiv_precio
-													    +case when pcorte.fecha_compra>='20220701' then 1 else 0 end
-                                                        *(
-                                                             isnull(TPO_INTERES_TRANSCURRIDO,0)
-                                                            +isnull(TPO_COMISIONES,0)
+                                                        coalesce(tpo_precio_registro_valor_efectivo*100.0,pcorte.htp_precio_compra)--tiv_precio
+														+case when pcorte.fecha_compra>='20220601' then 1 else 0 end
+														*(
+															 isnull(TPO_INTERES_TRANSCURRIDO,0)
+															+isnull(TPO_COMISIONES,0)
 															+isnull(TPO_COMISION_BOLSA,0)
-                                                        )/htp_compra*100.0
+														)/htp_compra*100.0
                                                     )
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
                                                     --+ isnull(TPO_COMISIONES,0)
@@ -137,6 +139,7 @@ BEGIN
                                                 ,por.Por_ord
                                                 ,httpo_id
 												,pcorte.tpo_recursos
+												,pcorte.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id
