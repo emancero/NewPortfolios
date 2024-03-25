@@ -69,3 +69,12 @@ BEGIN
     alter table BVQ_BACKOFFICE.evtTemp
    add evp_abono bit
 END 
+
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'FON_ID'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.evtTemp')
+)
+BEGIN
+    alter table BVQ_BACKOFFICE.evtTemp
+   add FON_ID int
+END 

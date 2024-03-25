@@ -145,6 +145,7 @@
 						end
 	,TFL_PERIODO
 	,evp.evp_abono
+	,evt.FON_ID
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -281,6 +282,7 @@
 	,originalProvision = null
 	,TFL_PERIODO = null
 	,evp_abono = null
+	,FON_ID = null
 	from
 	bvq_backoffice.evento_portafolio evp
 

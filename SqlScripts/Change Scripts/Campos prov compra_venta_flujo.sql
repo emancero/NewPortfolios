@@ -14,12 +14,18 @@ BEGIN
    add tiv_interes_irregular bit 
 END
 
-
-
 IF not EXISTS(SELECT 1 FROM sys.columns 
           WHERE Name = N'tfl_interes'
           AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.compra_venta_flujo'))
 BEGIN
     alter table BVQ_BACKOFFICE.compra_venta_flujo 
    add tfl_interes float 
+END
+
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'FON_ID'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.compra_venta_flujo'))
+BEGIN
+    alter table BVQ_BACKOFFICE.compra_venta_flujo 
+   add FON_ID int
 END

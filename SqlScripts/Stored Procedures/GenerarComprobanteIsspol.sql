@@ -40,6 +40,7 @@ begin
 	,htp_fecha_operacion
 	,deterioro
 	,forced_por_id
+	,FON_ID
 	)
 	select
 	tpo_numeracion
@@ -80,5 +81,6 @@ begin
 	,htp_fecha_operacion
 	,deterioro
 	,forced_por_id
+	,FON_ID
 	from bvq_backoffice.comprobanteisspol where fecha>='20230101'
 end

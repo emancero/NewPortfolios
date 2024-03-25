@@ -54,6 +54,7 @@
   ,TFL_PERIODO
   ,htp_fecha_operacion
   ,forced_por_id
+  ,FON_ID
   --select distinct por_id  
   from bvq_backoffice.comprobanteIsspolRubros s 
   where ipr_es_cxc = 1 or (ipr_es_cxc is null or ipr_es_cxc = 0 ) and deterioro = 0
@@ -112,6 +113,7 @@
  ,TFL_PERIODO
  ,htp_fecha_operacion
  ,forced_por_id=null
+ ,FON_ID
  from liqComprob where  
  (  
   (  
@@ -179,6 +181,7 @@
  ,TFL_PERIODO=max(TFL_PERIODO)
  ,htp_fecha_operacion=max(htp_fecha_operacion)
  ,forced_por_id=max(forced_por_id)
+ ,FON_ID=max(FON_ID)
  from liqComprob  
  join (select '2.1.90.03' pr, 'DIDENT' ri union select '7.1.5.03.%','CUXC' union select '2.1.02.%','CUXP') ri  
  on cuenta like pr  

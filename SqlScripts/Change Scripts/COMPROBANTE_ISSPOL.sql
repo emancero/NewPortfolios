@@ -18,3 +18,10 @@ IF NOT EXISTS(
 	and name='deterioro'
 )
 	alter table BVQ_BACKOFFICE.COMPROBANTE_ISSPOL ADD deterioro BIT
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.COMPROBANTE_ISSPOL')
+	and name='FON_ID'
+)
+	alter table BVQ_BACKOFFICE.COMPROBANTE_ISSPOL ADD FON_ID INT

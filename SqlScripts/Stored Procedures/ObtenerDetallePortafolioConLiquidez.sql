@@ -119,6 +119,7 @@ begin
 	,originalProvision
 	,TFL_PERIODO
 	,evp_abono
+	,FON_ID
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -209,6 +210,7 @@ begin
 	,originalProvision
 	,TFL_PERIODO
 	,evp_abono
+	,FON_ID
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--join bvq_administracion.parametro parIsspol on parIsspol.par_codigo='PAR_ISSPOL'
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
