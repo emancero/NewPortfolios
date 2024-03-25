@@ -91,6 +91,7 @@
 					else
 						coalesce(capMonto,case when isnull(evp_abono,0)=0 then -montooper else 0 end)
 					end
+					+case when isnull(evp_abono,0)=1 then isnull(ufo_rendimiento-pr,0) end
 				--fin depósito total capital+interes
 
 				-
@@ -103,7 +104,7 @@
 				,2)
 				-
 				case when isnull(evp_abono,0)=0 then isnull(UFO_USO_FONDOS,0) else 0 end
-				-pr
+				-case when isnull(evp_abono,0)=0 then pr else 0 end
 				-case when tpo_fecha_ingreso>TFL_FECHA_INICIO then ISNULL(itrans,0) else 0 end
 			end
  

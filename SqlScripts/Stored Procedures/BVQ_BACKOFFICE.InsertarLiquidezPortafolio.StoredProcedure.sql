@@ -132,6 +132,8 @@ begin
 	
 		IF(@i_duplica = 0 OR @i_duplica IS NULL)
 		delete from bvq_backoffice.evento_portafolio where evp_id=@i_evp_id --or isnull(@i_evp_id,-1)=-1 and evt_id=@i_evt_id and oper_id=@i_oper_id and es_vencimiento_interes=@i_es_vencimiento_interes
+
+		delete from bvq_backoffice.evento_portafolio where evp_id=@i_evp_id and evp_abono=1 --si es abono borrar siempre
 		
 		declare @tpo_id int
 		set @tpo_id=@i_evt_id % 10000000
