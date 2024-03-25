@@ -112,12 +112,12 @@ using (TransactionScope scope = new TransactionScope())
         comm.ExecuteNonQuery();
         comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.PortafolioCorte", "View");
         comm.ExecuteNonQuery();
-    /*
+    
         comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha'";
         comm.ExecuteNonQuery();
         comm.CommandText = (new ObtenerInfoPortfoliosPorFecha()).GetCode();
         comm.ExecuteNonQuery();
-
+    /*
         comm.CommandText = (new GetObjectCode()).GetCode("Campo TIV_ID en LIQUIDEZ_CACHE y evtTemp", "Change Script", suffix: false);
         comm.ExecuteNonQuery();
 
