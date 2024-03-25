@@ -225,6 +225,7 @@
 	,htp.TPO_DESGLOSAR_F1
 	,ev.tfl_fecha_inicio_orig2
 	,tiv.tiv_split_de
+	,htp.TPO_TABLA_AMORTIZACION
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -399,6 +400,7 @@
 					,TPO.TPO_DIVIDENDOS_EN_ACCIONES
 					,TPO.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
 					,tpo.TPO_DESGLOSAR_F1
+					,TPO.TPO_TABLA_AMORTIZACION
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  

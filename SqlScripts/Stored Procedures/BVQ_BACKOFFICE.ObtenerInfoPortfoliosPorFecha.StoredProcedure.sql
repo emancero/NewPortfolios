@@ -42,6 +42,7 @@ BEGIN
 												,TPO_COMISION_BOLSA float
 												,tpo_recursos varchar(30)
 												,TPO_PRECIO_REGISTRO_VALOR_EFECTIVO float
+                                                ,TPO_TABLA_AMORTIZACION varchar(40)
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -64,6 +65,7 @@ BEGIN
 						,TPO_COMISION_BOLSA
 						,tpo_recursos
 						,TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
+                        ,TPO_TABLA_AMORTIZACION
 				from bvq_backoffice.portafoliocorte
 
 		
@@ -140,6 +142,7 @@ BEGIN
                                                 ,httpo_id
 												,pcorte.tpo_recursos
 												,pcorte.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
+                                                ,pcorte.TPO_TABLA_AMORTIZACION
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id
