@@ -134,6 +134,8 @@ begin
 			*/
 					
 		end --fin if @i_id_inversion is not null
+
+		declare @li_id_asiento int=-1
 		if 1=0 and @i_id_inversion is not null
 		begin
 			exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Antes de proc_generar_recuperacion_inversion'
@@ -163,6 +165,7 @@ begin
 				@ad_fecha_recuperacion = @i_fecha,
 				@as_usuario = @i_usuario,
 				@as_equipo = @i_maquina,
+				@ai_id_asiento = @li_id_asiento output,
 				@as_msj = @as_msj OUTPUT
 			exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Después de GenerarRecuperacionInversion'
 
@@ -185,19 +188,60 @@ begin
 
 		--referencias -------------------------------
 		declare CUR_REFS cursor for
-		select valor,idMasivasTransaccion from bvq_backoffice.liquidez_referencias_table lrt
+		select valor,idMasivasTransaccion,referencia from bvq_backoffice.liquidez_referencias_table lrt
 		where tpo_numeracion=@i_nombre and fecha=@i_fecha and fecha_original=@i_fecha_original
 
-		declare @v_total float, @v_id_masivas_transaccion int
+		declare @v_total float, @v_id_masivas_transaccion int, @v_referencia2 varchar(50), @v_sec int
 		open CUR_REFS
-		fetch next from CUR_REFS into @v_total,@v_id_masivas_transaccion
+		fetch next from CUR_REFS into @v_total,@v_id_masivas_transaccion,@v_referencia2
 		while @@FETCH_STATUS=0
 		begin
+			--obtener sec
+			select @v_sec=sec from [siisspolweb].siisspolweb.contabilidad.movimiento m where id_asiento=@li_id_asiento and m.referencia=@v_referencia2
+
+			INSERT INTO [siisspolweb].siisspolweb.banco.masiva_detalle_deposito_noidentif(
+			 id_masivas_transaccion
+			,id_asiento
+			,sec
+			,referencia
+			,fecha
+			,valor
+			,concepto
+			,tipo_asignacion
+			,eliminado
+			,creacion_usuario
+			,creacion_fecha
+			,creacion_equipo
+			,modifica_usuario
+			,modifica_fecha,modifica_equipo)
+			VALUES (
+				 @v_id_masivas_transaccion --@AI_ID_MASIVA_TRANSACCION
+				,@li_id_asiento--@AI_ID_ASIENTO
+				,@v_sec--@AI_SEC
+				,@v_referencia2--@AS_REFERENCIA
+				,getdate()--@AD_FECHA
+				,@v_total--@AM_VALOR
+				,@v_referencia2--@AS_CONCEPTO
+				,'I'--@AS_TIPO_ASIGNACION
+				,0
+				,@i_usuario--@AS_USUARIO
+				,getdate()--@AD_FECHA
+				,@i_maquina--@AS_EQUIPO
+				,@i_usuario--@AS_USUARIO
+				,getdate()--@AD_FECHA
+				,@i_maquina--@AS_EQUIPO
+			)
+			IF ( @@ERROR<> 0 )
+			BEGIN
+				SET @AS_MSJ = 'siisspol.comun.errorProcesarPeticion'
+				RETURN -1
+			END
+
 			exec BVQ_BACKOFFICE.IsspolAbonarADeposito
 				 @LM_TOTAL=@v_total, @AS_USUARIO=@i_usuario, @AS_EQUIPO=@i_maquina
 				,@AI_ID_MASIVA_TRANSACCION=@v_id_masivas_transaccion
 
-			fetch next from CUR_REFS into @v_total,@v_id_masivas_transaccion
+			fetch next from CUR_REFS into @v_total,@v_id_masivas_transaccion,@v_referencia2
 		end
 		close CUR_REFS
 		deallocate CUR_REFS

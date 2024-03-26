@@ -6,6 +6,7 @@ CREATE PROCEDURE bvq_backoffice.GenerarRecuperacionInversion
 																@ad_fecha_recuperacion datetime,
 																@as_usuario VARCHAR(20),
 																@as_equipo VARCHAR(20),
+																@ai_id_asiento int OUTPUT,
 																@as_msj VARCHAR(500) OUTPUT
 AS
 BEGIN
@@ -225,6 +226,8 @@ BEGIN
 						@dt_fecha = @LD_FECHA_ACTUAL,
 						@as_equipo = @as_equipo,
 						@as_msj = @as_msj OUTPUT
+	set @ai_id_asiento=@li_id_asiento
+
 	IF (@li_ret <> 1)
 	BEGIN
 			set @as_msj = ISNULL(@as_msj, 'ERROR EN [contabilidad].[proc_transferir_lote_contab]')
