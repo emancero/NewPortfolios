@@ -91,7 +91,7 @@
 					else
 						coalesce(capMonto,case when isnull(evp_abono,0)=0 then -montooper else 0 end)
 					end
-					+case when isnull(evp_abono,0)=1 then isnull(ufo_rendimiento-pr,0) end
+					+case when isnull(evp_abono,0)=1 then isnull(ufo_rendimiento-pr,0) else 0 end
 				--fin depósito total capital+interes
 
 				-
