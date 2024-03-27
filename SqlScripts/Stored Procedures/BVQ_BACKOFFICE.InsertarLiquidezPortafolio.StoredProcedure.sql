@@ -36,7 +36,7 @@ begin
 	select @o_com_id=com_id from bvq_backoffice.liquidez_portafolio lip
 	where vep_id=@i_vep_id
 	
-	declare @fecha_anterior datetime,@fns_codigo varchar(50)
+	declare @fecha_anterior datetime,@fns_codigo varchar(50),@abono bit = isnull(@i_duplica,0)
 	
 	declare @v_com_numero_comprobante varchar(50)
 	select @v_com_numero_comprobante=com_numero_comprobante,@fecha_anterior=com_fecha_aplicacion,@fns_codigo=fns_codigo
@@ -167,6 +167,16 @@ begin
 			,@i_evp_uso_fondos
 			,@i_evp_rendimiento
 		)
+
+		--actualizar referencia si cambia la fecha (y no es abono)
+		if @abono=0
+		begin
+			update r set fecha=@i_fecha
+			from bvq_backoffice.liquidez_referencias_table r
+			join bvq_backoffice.titulos_portafolio tpo on r.tpo_numeracion=tpo.tpo_numeracion
+			where tpo.tpo_id=@tpo_id and datediff(d,r.fecha_original,@fecha_original)=0
+		end
+
 		set @v_evp_id=scope_identity()
 		EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
 		@i_lga_id = @i_lga_id,
