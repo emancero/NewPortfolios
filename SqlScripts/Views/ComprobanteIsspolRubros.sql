@@ -64,3 +64,4 @@
 	--empatar con vigente (0 o null) o cxc (1)
 	and (rub.rcxc is null or rub.rcxc=isnull(ipr_es_cxc,0) and rub.rcxc=p.cxc)
 	and not (rubro='montooper' and montooper<>0 and isnull(evp_abono,0)=0)
+	--and not (isnull(evp_abono,0)=1 and rubro='prov')
