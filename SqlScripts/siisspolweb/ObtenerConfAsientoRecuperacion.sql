@@ -26,11 +26,10 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 		and round(debe,0)=round(ref.valor,0)
 	where icr.tpo_numeracion=--'MDF-2013-04-25-2'
 		@AS_NOMBRE
-	and icr.fecha=--'20231201'
-		@AD_FECHA
+	and datediff(hh,icr.fecha,@AD_FECHA)=0
 	and (
 		@AD_FECHA_ORIGINAL is null
-		OR icr.htp_fecha_operacion=@AD_FECHA_ORIGINAL
+		OR datediff(hh,icr.htp_fecha_operacion,@AD_FECHA_ORIGINAL)=0
 	)
 	order by deterioro,rubroOrd,tipo desc,por_ord  
 
