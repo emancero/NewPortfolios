@@ -53,7 +53,7 @@
 		select vint=1, rpref='2.1.02.','intAcc' rubro,4 ord ,0 deterioro, null rcxc union
 		select vint=1, rpref='2.1.02.','prov' rubro,4 ord ,0 deterioro, null rcxc union
 		select vint=1, rpref='7.1.3.','montooper' rubro,0 ord ,0 deterioro, 0 rcxc union
-		select vint=1, rpref='A7.1.5.','amountcxc' rubro,0 ord ,0 deterioro, 1 rcxc union --dos de dos exclusivos para cxc
+		--select vint=1, rpref='A7.1.5.','amountcxc' rubro,0 ord ,0 deterioro, 1 rcxc union --dos de dos exclusivos para cxc
 
 		--select vint=1, rpref='7.6.','valnom' rubro,3 ord ,0 deterioro, null rcxc union
 		select vint=0, rpref='D.7.5.2.','valnom' rubro,0 ord ,1 deterioro, null rcxc union
@@ -64,4 +64,5 @@
 	--empatar con vigente (0 o null) o cxc (1)
 	and (rub.rcxc is null or rub.rcxc=isnull(ipr_es_cxc,0) and rub.rcxc=p.cxc)
 	and not (rubro='montooper' and montooper<>0 and isnull(evp_abono,0)=0)
+	and not (rubro='prov' and e.tiv_subtipo=3 and isnull(ipr_es_cxc,0)=1)
 	--and not (isnull(evp_abono,0)=1 and rubro='prov')
