@@ -116,7 +116,12 @@ begin
 	*isnull(def_cobrado,1)
 	,iAmortizacion=   round(
 		case when op.tiv_subtipo=3 then
-			valefeoper
+			case when tpo_id_anterior is null then valefeoper else
+				--especial convenio a descuento
+				( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*
+				tfl_capital
+				-(8-(tfl_periodo-1))*ufo_rendimiento
+			end
 		else
 			( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*
 			tfl_capital
@@ -152,4 +157,5 @@ begin
 	)  -- defaults: discriminación de vencimientos
 	left join bvq_backoffice.retraso retr1 on retr1.retr_tpo_id=htp_tpo_id and retr1.retr_fecha_esperada=tiv.tfl_fecha_inicio
 	left join bvq_backoffice.retraso retr2 on retr2.retr_tpo_id=htp_tpo_id and retr2.retr_fecha_esperada=tiv.tfl_fecha_vencimiento
+	left join bvq_backoffice.uso_fondos ufo on ufo.tpo_id=tpo.tpo_id and ufo.tfl_id=tiv.tfl_id
 end

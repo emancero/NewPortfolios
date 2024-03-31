@@ -125,7 +125,8 @@
 	,TPO_TABLA_AMORTIZACION
 	,originalProvision			=
 						case when evt.es_vencimiento_interes=0 and (tasa_cupon<>0 or tasa_cupon is null) then 0 else
-							case when coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO) is not null then coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
+							case when coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO) is not null then
+								case when evt.tiv_subtipo=3 and tasa_cupon=0 and 1=0 then 0 else coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO) end
 							when saldo is not null and tfl_fecha_inicio_orig is not null then
 								dbo.CalculateProvision(
 									 saldo
@@ -146,6 +147,7 @@
 	,TFL_PERIODO
 	,evp.evp_abono
 	,evt.FON_ID
+	,evt.TIV_SUBTIPO
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -283,6 +285,7 @@
 	,TFL_PERIODO = null
 	,evp_abono = null
 	,FON_ID = null
+	,TIV_SUBTIPO = null
 	from
 	bvq_backoffice.evento_portafolio evp
 

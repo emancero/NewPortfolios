@@ -67,3 +67,10 @@ IF NOT EXISTS(
 	and name='FON_ID'
 )
 	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD FON_ID INT
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.LIQUIDEZ_CACHE')
+	and name='TIV_SUBTIPO'
+)
+	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD TIV_SUBTIPO INT

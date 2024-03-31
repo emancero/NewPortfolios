@@ -81,6 +81,7 @@
 		,TPO_TABLA_AMORTIZACION
 		,evp_abono
 		,FON_ID
+		,TIV_SUBTIPO
 		--,
 		--vep.vep_fecha,
 
@@ -191,6 +192,7 @@
 		,tpo.TPO_TABLA_AMORTIZACION
 		,evt.evp_abono
 		,evt.FON_ID
+		,evt.TIV_SUBTIPO
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

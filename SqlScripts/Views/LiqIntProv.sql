@@ -87,17 +87,17 @@
 			case when es_vencimiento_interes=1 then
 
 				--depósito total capital+interés
-					--depósito de interés
-					coalesce(nullif(e.vep_valor_efectivo,0),amount)
-					--depósito de capital
+					--depósito de interés:
+					coalesce(nullif(e.vep_valor_efectivo,0), amount)
 					+
-					case when tvl_codigo in ('PCO','FAC') and tasa_cupon=0 then
+					--depósito de capital:
+					case when tvl_codigo in ('PCO','FAC') and tasa_cupon=0 and isnull(e.ipr_es_cxc,0)=0 then
 						hist_precio_compra/100.0 * htp_compra
 					else
 						coalesce(capMonto,case when isnull(evp_abono,0)=0 then -montooper else 0 end)
 					end
 					+case when isnull(evp_abono,0)=1 then isnull(ufo_rendimiento-pr,0) else 0 end
-				--fin depósito total capital+interes
+				--fin depósito total capital+interés
 
 				-
 				round(
