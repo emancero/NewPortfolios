@@ -78,3 +78,11 @@ BEGIN
     alter table BVQ_BACKOFFICE.evtTemp
    add FON_ID int
 END 
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.evtTemp')
+	and name='TIV_SUBTIPO'
+)
+	alter table BVQ_BACKOFFICE.evtTemp ADD TIV_SUBTIPO int
+
