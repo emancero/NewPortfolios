@@ -116,7 +116,7 @@ begin
 	*isnull(def_cobrado,1)
 	,iAmortizacion=   round(
 		case when op.tiv_subtipo=3 then
-			case when tpo_id_anterior is null then valefeoper else
+			case when tpo_id_anterior is null then 0/*valefeoper*/ else
 				--especial convenio a descuento
 				( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*
 				tfl_capital

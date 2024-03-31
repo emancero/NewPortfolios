@@ -59,7 +59,7 @@
 		select vint=0, rpref='D.7.5.2.','valnom' rubro,0 ord ,1 deterioro, null rcxc union
 		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc
 	) rub on
-	(es_vencimiento_interes=vint /*or tippap in ('PCO','FAC')*/)
+	(es_vencimiento_interes=vint or tiv_subtipo=3 and tasa_cupon=0)
 	and p.prefijo=rub.rpref
 	--empatar con vigente (0 o null) o cxc (1)
 	and (rub.rcxc is null or rub.rcxc=isnull(ipr_es_cxc,0) and rub.rcxc=p.cxc)

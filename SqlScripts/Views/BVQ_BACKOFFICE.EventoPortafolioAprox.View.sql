@@ -121,7 +121,7 @@
 	--tivchange
 	,tiv_tipo_valor=null
 	,tiv_fecha_vencimiento=null
-	,tiv_subtipo=null
+	,tiv_subtipo--=null
 	,compra_htp_id
 	,htp_numeracion_clean=isnull(htp_numeracion,'')
 	--,tiv_calculo_frecuencia=null
@@ -147,5 +147,5 @@
 	from bvq_backoffice.compraventaflujo
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento
 	group by htp_tpo_id,tfl_id,tfl_fecha_vencimiento,vencimiento,tfl_capital,tfl_amortizacion,def_cobrado,tfl_fecha_inicio,/*retr_fecha_esperada,*/base_denominador,/*itasa_interes,*/tfl_fecha_vencimiento2,dias_cupon,compra_htp_id,isnull(htp_numeracion,''),TFL_PERIODO,tfl_fecha_inicio_orig,htp_comision_bolsa
-	,	tiv_tipo_base,tiv_interes_irregular,tfl_interes,FON_ID
+	,	tiv_tipo_base,tiv_interes_irregular,tfl_interes,FON_ID,tiv_subtipo
 
