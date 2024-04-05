@@ -427,10 +427,17 @@
  
 	inner join bvq_administracion.titulo_valor tiv on htp.tiv_id=tiv.tiv_id
 	--left join bvq_administracion.bde_perfil_contable prf on datediff(d,c,tiv_fecha_vencimento) between prf_dias_desde and prf_dias_hasta and prf_categoria_inversion
+
+	--start
 	left join bvq_administracion.titulo_flujo_comun tfl
+		left join (
+			select distinct retr_fecha_cobro, retr_fecha_esperada, tpo.tiv_id from bvq_backoffice.retraso retr join bvq_backoffice.titulos_portafolio tpo on retr_tpo_id=tpo.tpo_id
+			where tiv_id=1e9+48
+		) retr on retr_fecha_esperada=tfl_fecha_inicio and tfl.tiv_id=retr.tiv_id
 	on
 	tfl.tiv_id=tiv.tiv_id and
-	latest_inicio=tfl_fecha_inicio
+	latest_inicio=coalesce(retr_fecha_cobro,tfl_fecha_inicio)
+
 	left join bvq_administracion.TasaValorCompact ts on tfl.tfl_id=ts.tfl_id
 	left join
 	(
