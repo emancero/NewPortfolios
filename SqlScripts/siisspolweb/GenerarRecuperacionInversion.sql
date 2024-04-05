@@ -116,7 +116,10 @@ BEGIN
 
 
 	declare @ems_nombre varchar(200),@tvl_nombre varchar(150),@referencia varchar(200)
-	select @ems_nombre=ems_nombre,@tvl_nombre=tvl_nombre,@referencia=cis.nombre
+	select
+	 @ems_nombre=ems_nombre
+	,@tvl_nombre=tvl_nombre
+	,@referencia=cis.tpo_numeracion
 	from bvq_backoffice.comprobanteisspol cis
 	where tpo_numeracion=@as_nombre and fecha=@ad_fecha_recuperacion
 
