@@ -48,11 +48,11 @@ using (TransactionScope scope = new TransactionScope())
         ChangeScript(comm,"TPO_F1");
         comm.ExecuteNonQuery();
     */
-    /*comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.HtpCupon'";
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.HtpCupon'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.HtpCupon", "View");
     comm.ExecuteNonQuery();
-
+    /*
     comm.CommandText = (new CamposParaGcvf()).GetCode();
     comm.ExecuteNonQuery();*/
 

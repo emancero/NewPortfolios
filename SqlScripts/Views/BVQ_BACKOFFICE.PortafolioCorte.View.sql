@@ -226,6 +226,7 @@
 	,ev.tfl_fecha_inicio_orig2
 	,tiv.tiv_split_de
 	,htp.TPO_TABLA_AMORTIZACION
+	,tiv.TIV_CODIGO_TITULO_SIC
 	/*,
 	tpo_categoria_inversion*/
 	from

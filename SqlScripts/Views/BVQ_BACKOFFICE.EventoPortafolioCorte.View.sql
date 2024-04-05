@@ -120,4 +120,5 @@
 	)
 	<=c
 	--where  isnull(htp_reportado,0)=0-- or c>='2016-09-30T23:57:59'
+	where HTP_TIENE_VALNOM=1
 	group by htp_tpo_id,c,cortenum
