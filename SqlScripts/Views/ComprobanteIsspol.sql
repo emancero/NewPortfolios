@@ -55,6 +55,7 @@
   ,htp_fecha_operacion
   ,forced_por_id
   ,FON_ID
+  ,HTP_TIENE_VALNOM
   --select distinct por_id  
   from bvq_backoffice.comprobanteIsspolRubros s 
   where ipr_es_cxc = 1 or (ipr_es_cxc is null or ipr_es_cxc = 0 ) and deterioro = 0

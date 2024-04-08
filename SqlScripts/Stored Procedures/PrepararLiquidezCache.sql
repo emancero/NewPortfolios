@@ -82,6 +82,8 @@
 		,evp_abono
 		,FON_ID
 		,TIV_SUBTIPO
+		,TFL_PERIODO
+		,HTP_TIENE_VALNOM
 		--,
 		--vep.vep_fecha,
 
@@ -193,6 +195,8 @@
 		,evt.evp_abono
 		,evt.FON_ID
 		,evt.TIV_SUBTIPO
+		,evt.TFL_PERIODO
+		,evt.HTP_TIENE_VALNOM
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

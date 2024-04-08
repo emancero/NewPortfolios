@@ -74,3 +74,10 @@ IF NOT EXISTS(
 	and name='TIV_SUBTIPO'
 )
 	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD TIV_SUBTIPO INT
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.LIQUIDEZ_CACHE')
+	and name='HTP_TIENE_VALNOM'
+)
+	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD HTP_TIENE_VALNOM BIT
