@@ -127,7 +127,7 @@
   )  
   or cuenta is null  
  )  
- and (isnull(debe,0)+isnull(haber,0)>0  
+ and (isnull(debe,0)+isnull(haber,0)<>0  
  or rubro='amount' or rubro='valnom' or rubro='montooper')
  --where tippap='CD' and oper=1  
  union all
