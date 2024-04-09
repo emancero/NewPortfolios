@@ -24,7 +24,7 @@ BEGIN
 		,nombre=coalesce(EDPI_NOM_CUENTA,nombre)  
 		,debe=sum(debe)
 		,haber=sum(haber)
-		,saldo
+		,saldo=sum(saldo)--merge
 		,htp_compra  
 		,ems_nombre
 		,tvl_nombre
@@ -32,7 +32,8 @@ BEGIN
 		,tiv_fecha_vencimiento
 		,tasa_cupon
 		,tiv_fecha_emision
-		,rubro,monto  
+		,rubro
+		,monto=sum(monto)--merge
 		,hist_fecha_compra
 		,hist_precio_compra=max(hist_precio_compra)
 		,rubroOrd  
@@ -56,8 +57,8 @@ BEGIN
 		,TPO_FECHA_VENCIMIENTO_ANTERIOR
 		,plazo_anterior
 		,TPO_TABLA_AMORTIZACION = max(TPO_TABLA_AMORTIZACION)
-		,provision=max(provision)
-		,intacc=max(intacc)
+		,provision=sum(provision)
+		,intacc=sum(intacc)
 		,ri=max(ri)
 		,TFL_PERIODO=max(TFL_PERIODO)
 		FROM BVQ_BACKOFFICE.ComprobanteIsspol ci
@@ -78,7 +79,7 @@ BEGIN
 		,nombre
 		--,debe  
 		--,haber  
-		,saldo
+		--,saldo --merge
 		,htp_compra  
 		,ems_nombre
 		,tvl_nombre
@@ -87,7 +88,7 @@ BEGIN
 		,tasa_cupon
 		,tiv_fecha_emision
 		,rubro
-		,monto  
+		--,monto --merge
 		,hist_fecha_compra
 		--,hist_precio_compra  
 		,rubroOrd  
