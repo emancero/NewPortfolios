@@ -278,7 +278,7 @@ begin
 	,diasIntTran=case when tpo_fecha_ingreso>TFL_FECHA_INICIO then dbo.fnDiasEu(tfl_fecha_inicio,tpo_fecha_ingreso,354) end
 
 	from bvq_backoffice.evtTemp
-	left join (select capMonto=nullif(vep_valor_efectivo,0),capHtpId=htp_id,capFecha=fecha from bvq_backoffice.evtTemp where es_vencimiento_interes=0) eCap
+	left join (select capMonto=nullif(vep_valor_efectivo,0),capHtpId=htp_id,capFecha=fecha from bvq_backoffice.evtTemp where es_vencimiento_interes=0 and htp_tiene_valnom=1) eCap
 	on ecap.capHtpId=evtTemp.htp_id and capFecha=evtTemp.fecha
 	where fecha between @i_fechaIni and @i_fechaFin
 	and (@i_client_id=lip_cliente_id or @i_client_id is null)
