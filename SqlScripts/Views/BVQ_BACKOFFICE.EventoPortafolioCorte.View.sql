@@ -10,7 +10,16 @@
 		--montooper
 		coalesce(
 			-evp_valor_efectivo,
-			montooper
+			case when HTP_TIENE_VALNOM=1 then montooper end
+		)
+		--+isnull(-evp_valor_efectivo,0)
+		-isnull(remaining,0)
+	),
+	salNewValNom=	sum(
+		--montooper
+		coalesce(
+			-evp_valor_efectivo,
+			montooper--case when HTP_TIENE_VALNOM=1 then montooper end
 		)
 		--+isnull(-evp_valor_efectivo,0)
 		-isnull(remaining,0)
@@ -120,5 +129,5 @@
 	)
 	<=c
 	--where  isnull(htp_reportado,0)=0-- or c>='2016-09-30T23:57:59'
-	where HTP_TIENE_VALNOM=1
+	--where HTP_TIENE_VALNOM=1
 	group by htp_tpo_id,c,cortenum
