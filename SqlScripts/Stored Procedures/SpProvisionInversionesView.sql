@@ -39,7 +39,7 @@ BEGIN
 				END
 			)
 
-			,SUM(pfc.sal) DISTRIBUCION
+			,SUM(pfc.salNewValnom) DISTRIBUCION
 			,/*SUM(case when pfc.tvl_codigo in ('FAC','PCO') and pfc.tiv_tipo_base=355 and pfc.latest_inicio=pfc.fecha_compra 
 				then datediff(d,pfc.tiv_fecha_vencimiento,pfc.tfcorte) else pfc.dias_al_corte end * 
 			CASE WHEN pfc.TVL_CODIGO in ('FAC','PCO','PACTO') 
@@ -92,7 +92,7 @@ BEGIN
 				FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  THEN fecha_compra ELSE i.tfl_fecha_inicio_orig2 END)
 
 				,convert(varchar,tiv_fecha_vencimiento,106) as 'FECHAVENCIMIENTO'
-				,capital=sal
+				,capital=salNewValNom
 				,valefectivo=isnull((TPO_COMISION_BOLSA),0) + valEfeOper
 				from BVQ_BACKOFFICE.PortafolioCorte i--PortafolioCorte
 				--join (select tfl_fecha_inicio_orig2=tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id from bvq_backoffice.EventoPortafolio) e on @i_fechaCorte between e.tfl_fecha_inicio_orig2 and tfl_fecha_vencimiento2 and e.htp_tpo_id=i.httpo_id

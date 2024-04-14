@@ -227,6 +227,7 @@
 	,tiv.tiv_split_de
 	,htp.TPO_TABLA_AMORTIZACION
 	,tiv.TIV_CODIGO_TITULO_SIC
+	,htp.salNewValNom
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -402,6 +403,7 @@
 					,TPO.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
 					,tpo.TPO_DESGLOSAR_F1
 					,TPO.TPO_TABLA_AMORTIZACION
+					,e.salNewValNom
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  
