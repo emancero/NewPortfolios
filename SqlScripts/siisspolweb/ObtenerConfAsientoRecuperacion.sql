@@ -17,10 +17,16 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 	SELECT
 		 @AS_MOV_CUENTA = COALESCE(@AS_MOV_CUENTA + ';', '') + convert(varchar(100), icr.[codigo_lista_rubro] ),
 		 @AS_MOV_TIPO = COALESCE(@AS_MOV_TIPO + ';', '') + convert(varchar(100),icr.[tipo_rubro_movimiento] ),
-		 @AS_MOV_VALOR = COALESCE(@AS_MOV_VALOR + ';', '') + convert(varchar(100),CAST(coalesce(debe, haber) AS money) ),
+		 @AS_MOV_VALOR = COALESCE(@AS_MOV_VALOR + ';', '') + convert(varchar(100),CAST(coalesce(case when ref.valord<>ref.valor then ref.valord end, debe, haber) AS money) ),
 		 @AS_MOV_REFERENCIA= COALESCE(@AS_MOV_REFERENCIA + ';', '') +  convert(varchar(100),isnull(ref.referencia,'') ) 
 	from bvq_backoffice.IsspolComprobanteRecuperacion icr
-	left join bvq_backoffice.Liquidez_Referencias_table ref
+
+--	left join bvq_backoffice.Liquidez_Referencias_table ref
+	left join (
+		select valor=sum(valor) over (partition by tpo_numeracion,fecha,fecha_original),tpo_numeracion,fecha,fecha_original,valord=valor,referencia
+		from bvq_backoffice.liquidez_referencias_table
+	) ref
+
 	on icr.tpo_numeracion=ref.tpo_numeracion and icr.fecha=ref.fecha
 		and icr.ri in ('DIDENT','DIDENT02')
 		and round(debe,0)=round(ref.valor,0)
