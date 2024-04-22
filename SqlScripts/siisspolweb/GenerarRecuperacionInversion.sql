@@ -121,7 +121,7 @@ BEGIN
 	,@tvl_nombre=tvl_nombre
 	,@referencia=cis.tpo_numeracion
 	from bvq_backoffice.comprobanteisspol cis
-	where tpo_numeracion=@as_nombre and fecha=@ad_fecha_recuperacion
+	where tpo_numeracion=@as_nombre and datediff(hh,fecha,@ad_fecha_recuperacion)=0
 
 
 	SELECT @li_id_origen = id_tipo_tran_origen
