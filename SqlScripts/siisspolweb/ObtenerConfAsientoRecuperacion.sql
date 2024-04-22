@@ -2,7 +2,7 @@
 	--@AI_INVERSION INT,
 	@AS_NOMBRE VARCHAR(200),
 	@AD_FECHA_ORIGINAL DATETIME=null,
-	@AD_FECHA  DATE,
+	@AD_FECHA  DATETIME,
 	@AS_USARIO VARCHAR(100),                                                
 	@AS_EQUIPO VARCHAR(100),
 	@AS_MOV_CUENTA VARCHAR(MAX) OUT,
@@ -27,7 +27,8 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 		from bvq_backoffice.liquidez_referencias_table
 	) ref
 
-	on icr.tpo_numeracion=ref.tpo_numeracion and icr.fecha=ref.fecha
+	on icr.tpo_numeracion=ref.tpo_numeracion
+	and datediff(hh,icr.fecha,ref.fecha)=0
 		and icr.ri in ('DIDENT','DIDENT02')
 		and round(debe,0)=round(ref.valor,0)
 	where icr.tpo_numeracion=--'MDF-2013-04-25-2'
@@ -39,7 +40,7 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 	)
 	order by deterioro,rubroOrd,tipo desc,por_ord  
 
-
+	
 	--mensaje de error si no encuentra la cuenta ----------------------------------------
 	SELECT @as_msj =
 	       'No se ha configurado la cuenta contable para el seguro ' + isnull(icr.descripcion, '') + ',   con codigo: ' + isnull(LR.codigo, '')

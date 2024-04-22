@@ -55,7 +55,7 @@ BEGIN
 			*/
 			left join [siisspolweb].siisspolweb.[inversion].[int_inversion_recuperacion] ir
 			on ir.id_inversion=cis.id_inversion and datediff(d,ir.fecha_recuperacion,CIS.fecha)=0-- between 0 and 20
-			left join bvq_backoffice.isspol_recuperacion isr on isr_fecha=cis.fecha and isr.ISR_NUMERACION=cis.tpo_numeracion
+			left join bvq_backoffice.isspol_recuperacion isr on datediff(hh,isr_fecha,cis.fecha)=0 and isr.ISR_NUMERACION=cis.tpo_numeracion
 
 
 			/*
