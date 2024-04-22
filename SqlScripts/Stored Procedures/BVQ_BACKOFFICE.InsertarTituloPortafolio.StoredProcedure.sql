@@ -50,7 +50,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_saldoEnFilaAnterior bit
 	,@i_oferta_id int=null
 	,@i_liq_id int=null
-	,@i_recursos int=null
+	,@i_recursos varchar(30)=null
 
 	---campos adicionales
 	
