@@ -106,6 +106,8 @@
     <None Include="Change Scripts\COMPROBANTE_ISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerEnvioRecuperacionIsspol.sql" />
     <None Include="Stored Procedures\IsspolInsertarInversion.sql" />
+    <None Include="Stored Procedures\IsspolInsertarEfectivo.sql" />
+    <None Include="Stored Procedures\IsspolInsertarFlujoCaja.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
