@@ -33,8 +33,9 @@
 		end
 		/(case when base.itc_valor in ('360','365') then base.itc_valor end*100)
 	,2)*isnull(htp_cobra_primer_cupon,1)*isnull(htp_libre,1)
-	,retencionBolsa=htp_comision_bolsa*isnull(hfr.hfr_factor,0.0275)
-	,retencionOperador=tpo_comisiones*isnull(hfr.hfr_factor,0.0275)
+	,retencionBolsa=htp_comision_bolsa*isnull(hfr.hfr_factor,0.03)
+	,retencionOperador=tpo_comisiones*isnull(hfr.hfr_factor,0.03)
+	,plazoVencer=dbo.fnDias(htp.HTP_FECHA_OPERACION,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)
 	from bvq_backoffice.titulos_portafolio tpo
 	join bvq_administracion.titulo_valor tiv on tpo.tiv_id=tiv.tiv_id	
 	join bvq_administracion.tipo_valor tvl on tiv.tiv_tipo_valor=tvl.tvl_id
