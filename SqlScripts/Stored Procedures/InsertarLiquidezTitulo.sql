@@ -42,4 +42,10 @@ AS
 			@i_evp_uso_fondos = @i_evp_uso_fondos,
 			@i_evp_rendimiento = @i_evp_rendimiento,
 			@i_lga_id = @i_lga_id
+
+		--recuperar default borrado temporalmente si existe (es decir si es cxc)
+		update d set fecha=@i_fecha_cobro
+		from bvq_backoffice.EventoPortafolioDefaults d
+		where d.htp_id=@i_evt_id and fecha='29991231'
+
 	END

@@ -111,6 +111,7 @@
     <None Include="Stored Procedures\IsspolInsertarCaja.sql" />
     <None Include="Views\IsspolAInsertar.sql" />
     <None Include="Views\IsspolTitulosAInsertar.sql" />
+    <None Include="Stored Procedures\ObtenerUltimoVencimientoPagado.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
