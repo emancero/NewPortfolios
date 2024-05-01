@@ -228,6 +228,8 @@
 	,htp.TPO_TABLA_AMORTIZACION
 	,tiv.TIV_CODIGO_TITULO_SIC
 	,htp.salNewValNom
+	,htp.valnomCompraAnterior
+	,htp.precioCompraAnterior
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -404,6 +406,9 @@
 					,tpo.TPO_DESGLOSAR_F1
 					,TPO.TPO_TABLA_AMORTIZACION
 					,e.salNewValNom
+					,TPO.TPO_ID_ANTERIOR
+					,TPO2.valnomCompraAnterior
+					,TPO2.precioCompraAnterior
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  
@@ -425,6 +430,7 @@
 					datediff(d,c,e.tiv_fecha_vencimiento) between bdeprf.prf_dias_desde and bdeprf.prf_dias_hasta
 					left join bvq_backoffice.sb_categoria_inversion civ on civ.civ_id=tpo_categoria_inversion
 					left join bvq_backoffice.cuenta_contable bdecta on bdeprf.prf_cta_id=bdecta.cta_id
+					left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
 					------------- FIN VALORACIONES ---------------
 	) htp
  
