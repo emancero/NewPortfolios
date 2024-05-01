@@ -149,6 +149,7 @@
 	,evt.FON_ID
 	,evt.TIV_SUBTIPO
 	,evt.HTP_TIENE_VALNOM
+	,evt.specialValnom
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -288,6 +289,7 @@
 	,FON_ID = null
 	,TIV_SUBTIPO = null
 	,HTP_TIENE_VALNOM=null
+	,specialValnom=null
 	from
 	bvq_backoffice.evento_portafolio evp
 

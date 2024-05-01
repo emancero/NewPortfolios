@@ -5,9 +5,10 @@
 			when 'amountcxc' then amountCosto
 			when 'prov' then prov
 				+case when hist_fecha_compra>tfl_fecha_inicio_orig then isnull(itrans,0) else 0 end
+				+case when oper=0 then itrans else 0 end
 			when 'intAcc' then intAcc
 				+case when ipr_es_cxc=1 then isnull(ufo_uso_fondos,0) else 0 end
-			when 'valnom' then coalesce(case when htp_tiene_valnom=0 then 0 end,case when e.evp_abono=1 and e.es_vencimiento_interes=0 then e.vep_valor_efectivo end,capMonto,-montooper)
+			when 'valnom' then coalesce(case when htp_tiene_valnom=0 then -specialValnom end,case when e.evp_abono=1 and e.es_vencimiento_interes=0 then e.vep_valor_efectivo end,capMonto,-montooper)
 		end
 		,forced_por_id=case when p.prefijo='2.1.02.'
 			--títulos reclasificados
@@ -59,7 +60,11 @@
 		select vint=0, rpref='D.7.5.2.','valnom' rubro,0 ord ,1 deterioro, null rcxc union
 		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc
 	) rub on
-	(es_vencimiento_interes=vint or tiv_subtipo=3 and tasa_cupon=0 and isnull(ipr_es_cxc,0)=0)
+	(
+		es_vencimiento_interes=vint
+		or tiv_subtipo=3 and tasa_cupon=0 and isnull(ipr_es_cxc,0)=0
+		or oper=0 and rubro='prov'
+	)
 	and p.prefijo=rub.rpref
 	--empatar con vigente (0 o null) o cxc (1)
 	and (rub.rcxc is null or rub.rcxc=isnull(ipr_es_cxc,0) and rub.rcxc=p.cxc)

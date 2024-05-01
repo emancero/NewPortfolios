@@ -84,6 +84,7 @@
 		,TIV_SUBTIPO
 		,TFL_PERIODO
 		,HTP_TIENE_VALNOM
+		,specialValnom
 		--,
 		--vep.vep_fecha,
 
@@ -197,6 +198,7 @@
 		,evt.TIV_SUBTIPO
 		,evt.TFL_PERIODO
 		,evt.HTP_TIENE_VALNOM
+		,evt.specialValnom
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

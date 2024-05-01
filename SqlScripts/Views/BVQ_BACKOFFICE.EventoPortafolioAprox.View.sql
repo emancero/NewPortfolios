@@ -25,7 +25,7 @@
 	null tfl_amortizacion,
 	null def_cobrado,
 	cupoper_base_denominador,
-	null tasa_cupon,
+	cupoper_itasa_interes tasa_cupon,
 	tfl_fecha_vencimiento2=case when def_int_cobrado is null then coalesce(
 		 CASE WHEN RETR_INTERES=1 THEN RETR_FECHA_COBRO END
 		,cupoper_tfl_fecha_inicio) else null end,
@@ -73,6 +73,7 @@
 	,tfl_interes=null
 	,FON_ID=null
 	,HTP_TIENE_VALNOM
+	,specialValnom=montooper
 	from bvq_backoffice.htpcupon
 	left join bvq_backoffice.defaults def on htpcupon.por_id=def.por_id and htpcupon.tiv_id=def.tiv_id
 	and datediff(m,def.fecha,htpcupon.cupoper_tfl_fecha_inicio)>=0
@@ -145,9 +146,10 @@
 	,tiv_interes_irregular
 	,tfl_interes
 	,FON_ID
-	,HTP_TIENE_VALNOM--=min(convert(int,HTP_TIENE_VALNOM))
+	,HTP_TIENE_VALNOM=min(convert(int,HTP_TIENE_VALNOM))
+	,specialValnom=	-sum(isnull(htp_cobra_primer_cupon,1)*case when htp_tiene_valnom=1 then amortizacion else 0 end)
 	from bvq_backoffice.compraventaflujo
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento
 	group by htp_tpo_id,tfl_id,tfl_fecha_vencimiento,vencimiento,tfl_capital,tfl_amortizacion,def_cobrado,tfl_fecha_inicio,/*retr_fecha_esperada,*/base_denominador,/*itasa_interes,*/tfl_fecha_vencimiento2,dias_cupon,compra_htp_id,isnull(htp_numeracion,''),TFL_PERIODO,tfl_fecha_inicio_orig,htp_comision_bolsa
-	,	tiv_tipo_base,tiv_interes_irregular,tfl_interes,FON_ID,tiv_subtipo,HTP_TIENE_VALNOM
+	,	tiv_tipo_base,tiv_interes_irregular,tfl_interes,FON_ID,tiv_subtipo--,HTP_TIENE_VALNOM
 

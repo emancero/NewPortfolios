@@ -81,3 +81,10 @@ IF NOT EXISTS(
 	and name='HTP_TIENE_VALNOM'
 )
 	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD HTP_TIENE_VALNOM BIT
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.LIQUIDEZ_CACHE')
+	and name='specialValnom'
+)
+	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD specialValnom float

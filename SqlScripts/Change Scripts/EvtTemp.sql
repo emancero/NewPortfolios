@@ -92,3 +92,10 @@ IF NOT EXISTS(
 	and name='HTP_TIENE_VALNOM'
 )
 	alter table BVQ_BACKOFFICE.evtTemp ADD HTP_TIENE_VALNOM bit
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.evtTemp')
+	and name='specialValnom'
+)
+	alter table BVQ_BACKOFFICE.evtTemp ADD specialValnom float
