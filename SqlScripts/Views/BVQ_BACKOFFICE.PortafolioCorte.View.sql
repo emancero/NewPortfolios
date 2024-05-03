@@ -230,6 +230,16 @@
 	,htp.salNewValNom
 	,htp.valnomCompraAnterior
 	,htp.precioCompraAnterior
+	,htp.UFO_USO_FONDOS
+	,htp.UFO_RENDIMIENTO
+	,valefeConRendimiento=case when htp.tiv_subtipo=3 then
+		case when round(htp.ufo_rendimiento,6)>0 then
+			htp.sal-(100.0-htp.precioCompraAnterior)/100.0*htp_compra+ufo_rendimiento
+		when htp.tpo_fecha_susc_convenio is not null then
+			htp.sal
+		end
+	end
+	,htp.tiv_subtipo
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -409,6 +419,9 @@
 					,TPO.TPO_ID_ANTERIOR
 					,TPO2.valnomCompraAnterior
 					,TPO2.precioCompraAnterior
+					,e.UFO_USO_FONDOS
+					,e.UFO_RENDIMIENTO
+					,e.tiv_subtipo
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  

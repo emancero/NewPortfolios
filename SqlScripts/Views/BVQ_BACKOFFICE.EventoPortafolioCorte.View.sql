@@ -121,6 +121,8 @@
 		order by htp_fecha_operacion asc,htp_id asc
 	) htp_rendimiento
 	,hiperb=(select sum(hiperb) from [BVQ_ADMINISTRACION].[valoracionCostoAmortizado] val where val.htp_tpo_id=e.htp_tpo_id and val.fechaVal=c.c and val.htp_fecha_operacion<=c.c)
+	,ufo_uso_fondos=sum(ufo_uso_fondos)
+	,ufo_rendimiento=sum(ufo_rendimiento)
 	from bvq_backoffice.EventoPortafolio e
 	join corteslist c on
 	coalesce(

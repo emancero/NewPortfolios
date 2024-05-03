@@ -37,3 +37,19 @@ begin
 	 alter table bvq_backoffice.compra_venta_flujo
     add HTP_TIENE_VALNOM bit
 end
+
+if NOT EXISTS (SELECT 1 FROM sys.columns 
+          WHERE Name = N'UFO_USO_FONDOS'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.compra_venta_flujo'))
+begin
+	 alter table bvq_backoffice.compra_venta_flujo
+    add UFO_USO_FONDOS float
+end
+
+if NOT EXISTS (SELECT 1 FROM sys.columns 
+          WHERE Name = N'UFO_RENDIMIENTO'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.compra_venta_flujo'))
+begin
+	 alter table bvq_backoffice.compra_venta_flujo
+    add UFO_RENDIMIENTO float
+end

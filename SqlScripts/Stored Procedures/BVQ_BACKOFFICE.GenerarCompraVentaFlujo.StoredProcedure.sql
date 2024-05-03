@@ -21,6 +21,8 @@ begin
 	,TFL_INTERES
 	,FON_ID
 	,HTP_TIENE_VALNOM
+	,ufo_uso_fondos
+	,ufo_rendimiento
 	)
 	select
 	null cvf_id,--/*no se utiliza*/row_number() over (order by op.htp_id,op.tiv_id,tiv.tfl_id) cvf_id,
@@ -145,6 +147,8 @@ begin
 	,TFL_INTERES
 	,tpo.FON_ID
 	,op.HTP_TIENE_VALNOM
+	,ufo.ufo_uso_fondos
+	,ufo.ufo_rendimiento
 	from	
 	bvq_backoffice.HtpCupon op
 	join bvq_backoffice.titulos_portafolio tpo on htp_tpo_id=tpo.tpo_id
