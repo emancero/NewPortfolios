@@ -113,6 +113,7 @@
     <None Include="Views\IsspolTitulosAInsertar.sql" />
     <None Include="Stored Procedures\ObtenerUltimoVencimientoPagado.sql" />
     <None Include="Stored Procedures\ObtenerNotasPorArchivo.sql" />
+    <None Include="Views\OtrasCuentasPorCobrarView.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
