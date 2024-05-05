@@ -1,4 +1,4 @@
-﻿create view bvq_backoffice.OtrasCuentasPorCobrarView as
+﻿CREATE view bvq_backoffice.OtrasCuentasPorCobrarView as
 	SELECT
 		TVL_NOMBRE = TVL_NOMBRE
 	   ,CUENTA_CONTABLE = CUENTA_CONTABLE
@@ -61,14 +61,14 @@
 	   ,ems_nombre = ems_nombre
 	   --,TPO_F1 = TPO_F1
 	   ,TPO_F1=(case when TPO_DESGLOSAR_F1 = 1 then TPO_F1 end)
-	   ,OTROS_COSTOS = OTROS_COSTOS
+	   ,OTROS_COSTOS = sum(OTROS_COSTOS)
 	   ,COMISIONES = SUM(COMISIONES)
 	   ,TPO_PROG = TPO_PROG
 	   ,RECURSOS = RECURSOS
 	   ,tiv_valor_nominal = tiv_valor_nominal
 	   ,htp_compra = SUM(htp_compra)
-	   ,ABONO_INTERES = ABONO_INTERES
-	   ,VALNOM_ANTERIOR = VALNOM_ANTERIOR
+	   ,ABONO_INTERES = sum(ABONO_INTERES)
+	   ,VALNOM_ANTERIOR = sum(VALNOM_ANTERIOR)
 	   ,FECHA_ENCARGO = FECHA_ENCARGO
 	   ,DIVIDENDOS_EN_ACCIONES = DIVIDENDOS_EN_ACCIONES
 	   ,
@@ -114,7 +114,9 @@
 							kf1
 						FROM keyf1
 						WHERE natkey LIKE 'MINISTERIO DE FINANZAS|20240620|20160108|%'
-						AND kf1 = 339) THEN 377916.44 / 873855.24 * sal
+						AND kf1 = 339) THEN
+							(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885 * sal
+						--377916.44 / 873855.24 * sal
 				WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
 				ELSE sal * [tiv_precio] / 100.0
 			END
@@ -340,7 +342,8 @@
 		AND tiv_tipo_renta = 153
 	--ORDER BY TVL_CODIGO,EMS_NOMBRE,TIV_FECHA_VENCIMIENTO
 	) s
-	GROUP BY TVL_NOMBRE
+	GROUP BY
+			TVL_NOMBRE
 			,CUENTA_CONTABLE
 			,VECTOR_PRECIO
 			,TIPO
@@ -387,12 +390,12 @@
 			,ems_nombre
 			--,TPO_F1
 			,(case when TPO_DESGLOSAR_F1 = 1 then TPO_F1 end)
-			,OTROS_COSTOS
+			--,OTROS_COSTOS
 			,TPO_PROG
 			,RECURSOS
 			,tiv_valor_nominal
-			,ABONO_INTERES
-			,VALNOM_ANTERIOR
+			--,ABONO_INTERES
+			--,VALNOM_ANTERIOR
 			,FECHA_ENCARGO
 			,DIVIDENDOS_EN_ACCIONES
 			--,htp_numeracion--(case when TPO_DESGLOSAR_F1 = 1 then htp_numeracion end)
