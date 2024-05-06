@@ -10,7 +10,8 @@
 		--montooper
 		coalesce(
 			-evp_valor_efectivo,
-			case when HTP_TIENE_VALNOM=1 then montooper end
+			--case when HTP_TIENE_VALNOM=1 then montooper end
+			montooperOld
 		)
 		--+isnull(-evp_valor_efectivo,0)
 		-isnull(remaining,0)
@@ -123,6 +124,7 @@
 	,hiperb=(select sum(hiperb) from [BVQ_ADMINISTRACION].[valoracionCostoAmortizado] val where val.htp_tpo_id=e.htp_tpo_id and val.fechaVal=c.c and val.htp_fecha_operacion<=c.c)
 	,ufo_uso_fondos=sum(ufo_uso_fondos)
 	,ufo_rendimiento=sum(ufo_rendimiento)
+	,MIN_TIENE_VALNOM=min(HTP_TIENE_VALNOM)
 	from bvq_backoffice.EventoPortafolio e
 	join corteslist c on
 	coalesce(

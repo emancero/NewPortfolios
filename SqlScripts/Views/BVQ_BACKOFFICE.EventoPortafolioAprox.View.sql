@@ -3,6 +3,8 @@
 	0 amortizacion,
 	0 amortizacion2,
 	montooper,
+	amortizacionOld=0,
+	montooperOld=montooper*htp_tiene_valnom,
 	montoOperSinCupon=(
 	isnull(htp_cobra_primer_cupon,1)*isnull(htp_libre,1)
 	--+ case when htp_tpo_id-266000 in (745,746,747) and htp_cobra_primer_cupon=0 then 1 else 0 end
@@ -79,12 +81,15 @@
 	from bvq_backoffice.htpcupon
 	left join bvq_backoffice.defaults def on htpcupon.por_id=def.por_id and htpcupon.tiv_id=def.tiv_id
 	and datediff(m,def.fecha,htpcupon.cupoper_tfl_fecha_inicio)>=0
+	--where htp_tiene_valnom=1
 	union
 	
 	select
 	amortizacion=	-sum(isnull(htp_cobra_primer_cupon,1)*amortizacion),
 	amortizacion2=	-sum(isnull(htp_cobra_primer_cupon,1)*amortizacion2),
 	montoOper=	-sum(isnull(htp_cobra_primer_cupon,1)*amortizacion),
+	amortizacionOld=	-sum(isnull(htp_cobra_primer_cupon,1)*amortizacion*htp_tiene_valnom),
+	montoOperOld=	-sum(isnull(htp_cobra_primer_cupon,1)*amortizacion*htp_tiene_valnom),
 	montoOperSinCupon=-sum(isnull(htp_cobra_primer_cupon,1)*isnull(case when cupoper_tfl_id=tfl_id then htp_libre end,1)*amortizacion),
 	htp_cobra_primer_cupon=avg(htp_cobra_primer_cupon),
 	htp_libre=avg(htp_libre),
@@ -153,6 +158,7 @@
 	,ufo_uso_fondos=sum(ufo_uso_fondos)
 	,ufo_rendimiento=sum(ufo_rendimiento)
 	from bvq_backoffice.compraventaflujo
+	--where htp_tiene_valnom=1
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento
 	group by htp_tpo_id,tfl_id,tfl_fecha_vencimiento,vencimiento,tfl_capital,tfl_amortizacion,def_cobrado,tfl_fecha_inicio,/*retr_fecha_esperada,*/base_denominador,/*itasa_interes,*/tfl_fecha_vencimiento2,dias_cupon,compra_htp_id,isnull(htp_numeracion,''),TFL_PERIODO,tfl_fecha_inicio_orig,htp_comision_bolsa
 	,	tiv_tipo_base,tiv_interes_irregular,tfl_interes,FON_ID,tiv_subtipo--,HTP_TIENE_VALNOM

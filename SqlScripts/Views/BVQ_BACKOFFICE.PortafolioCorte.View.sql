@@ -14,13 +14,14 @@
 	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
 	,
 	--latest_vencimiento,
-	dbo.fnDias(
-		--latest_inicio
-		case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
-		,c,case when tiv_accrual_365=1 then 355 else tiv.tiv_tipo_base end)
-	+case when tiv_accrual_365=1 then 1 else 0 end
-	+case when tiv_codigo like 'CEAOBL29%' then 2 else 0 end
-	dias_al_corte,
+	dias_al_corte=
+		dbo.fnDias(
+			--latest_inicio
+			case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
+			,c,case when tiv_accrual_365=1 then 355 when tiv_tipo_valor in (5,6,11) then 354 else tiv.tiv_tipo_base end)
+		+case when tiv_accrual_365=1 then 1 else 0 end
+		+case when tiv_codigo like 'CEAOBL29%' or htp_numeracion='CEA-2022-12-27-5' then 1 else 0 end --porque es 29 de febrero
+	,
 	ems_nombre,
 	pais=coalesce(itcpais.itc_valor,'ECUADOR'),
 	sector_general=itcsector.itc_codigo,
@@ -240,6 +241,8 @@
 		end
 	end
 	,htp.tiv_subtipo
+	,htp.MIN_TIENE_VALNOM
+	,ems_abr=ems.ems_codigo
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -422,6 +425,7 @@
 					,e.UFO_USO_FONDOS
 					,e.UFO_RENDIMIENTO
 					,e.tiv_subtipo
+					,e.MIN_TIENE_VALNOM
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  
