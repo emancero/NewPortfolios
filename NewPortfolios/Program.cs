@@ -217,6 +217,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("OtrasCuentasPorCobrarView", "View", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolRentaFijaView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("IsspolRentaFijaView", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
     //
     /*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolComprobanteRecuperacion'";
