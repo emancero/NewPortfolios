@@ -1,8 +1,7 @@
 ﻿CREATE PROCEDURE BVQ_BACKOFFICE.SpProvisionInversiones
-(
-	@i_fechaCorte as datetime,
+--declare
+	@i_fechaCorte as datetime='2024-04-30T23:59:59',
 	@i_lga_id int = null
-)
 AS
 BEGIN
 	DECLARE @v_fechaCorte datetime
@@ -15,7 +14,7 @@ BEGIN
 	end
 	SET @v_fechaDesde = CONVERT(datetime,Convert(varchar,@i_fechaCorte,106) +' 00:00:00')
 	SET @v_fechaCorte = CONVERT(datetime,Convert(varchar,@i_fechaCorte,106) +' 23:59:59')
- 
+
 	delete from corteslist
 	insert into corteslist (c,cortenum) select @v_fechaCorte,1
 	exec BVQ_BACKOFFICE.GenerarCompraVentaFlujo
@@ -24,7 +23,9 @@ BEGIN
       DROP TABLE ##tablaInversionesIsspol
 
 	  --   tvl_codigo as 'CODIGO',
-	select rtrim(ltrim(ems_nombre)) as 'EMISOR',
+	select
+		   htp_numeracion,
+		   rtrim(ltrim(ems_nombre)) as 'EMISOR',
 		   --TVL_DESCRIPCION as 'CODIGO',	    
 		   CASE  WHEN TVL_DESCRIPCION = 'PAPEL COMERCIAL' AND tiv_tasa_interes = 0 THEN 'PAPEL COMERCIAL CERO CUPON'
 				 WHEN TVL_DESCRIPCION = 'PAPEL COMERCIAL' AND tiv_tasa_interes > 0 THEN 'PAPEL COMERCIAL CON INTERES'
@@ -41,11 +42,13 @@ BEGIN
 		   (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde)) as 'DESDE',
 		   (SELECT (CONVERT(datetime,Convert(varchar,EOMONTH(@i_fechaCorte),106) +' 23:59:59'))) as 'HASTA',
 		   convert(varchar,fecha_compra,106) as 'FECHACOMPRA',		
-		   tfl_fecha_inicio_orig2 as 'FECHAULTIMOCUPON',
-		   FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  THEN fecha_compra ELSE tfl_fecha_inicio_orig2 END)
+		   coalesce(tfl_fecha_inicio_orig2,max(latest_inicio)) as 'FECHAULTIMOCUPON',
+		   FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  THEN fecha_compra ELSE coalesce(tfl_fecha_inicio_orig2,max(latest_inicio)) END)
 
 		   ,tiv_fecha_vencimiento as 'FECHAVENCIMIENTO'	
 		   ,sum(isnull((TPO_COMISION_BOLSA),0) + valEfeOper) valEfectivo
+		   ,tfl_fecha_inicio_orig2
+		   ,MAX(latest_inicio) latest_inicio
 	 into ##tablaInversionesIsspol 
 	 from BVQ_BACKOFFICE.portafoliocorte i
 	 --join (select tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id from bvq_backoffice.EventoPortafolio) e on @i_fechaCorte between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_tpo_id=i.httpo_id
@@ -53,10 +56,9 @@ BEGIN
 	 group by htp_numeracion,tvl_codigo,tiv_tasa_interes,dias_al_corte,fecha_compra,ult_fecha_interes,tiv_fecha_vencimiento,ems_nombre,TVL_DESCRIPCION, tiv_tipo_base,tfl_fecha_inicio_orig2
 	 HAVING sum(sal)>0
 	 order by tvl_codigo
-	 	 
 
-    
-	select  EMISOR,		  
+	select
+		   EMISOR,		  
 	       CODIGO,
 	       CAPITAL,
 		   TASA,
@@ -85,6 +87,8 @@ BEGIN
 		   FECHAULTIMOCUPON,
 		   FECHAVENCIMIENTO
 		   ,VALEFECTIVO AS 'VALOR EFECTIVO'
+		   --htp_numeracion,
+		   --FECHA_INTERES,
 	from ##tablaInversionesIsspol
 
 	--where codigo like 'bono%'

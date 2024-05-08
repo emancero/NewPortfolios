@@ -1,8 +1,6 @@
 ﻿CREATE PROCEDURE BVQ_BACKOFFICE.SpProvisionInversionesView
-(
 	@i_fechaCorte as datetime,
 	@i_lga_id int
-)
 AS
 BEGIN
 	DECLARE @v_fechaCorte datetime
@@ -88,8 +86,8 @@ BEGIN
 				(SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde)) as 'DESDE',
 				(SELECT (CONVERT(datetime,Convert(varchar,EOMONTH(@i_fechaCorte),106) +' 23:59:59'))) as 'HASTA',
 				convert(varchar,fecha_compra,106) as 'FECHACOMPRA',		
-				i.tfl_fecha_inicio_orig2 as 'FECHAULTIMOCUPON',
-				FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  THEN fecha_compra ELSE i.tfl_fecha_inicio_orig2 END)
+				coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio) as 'FECHAULTIMOCUPON',
+				FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  THEN fecha_compra ELSE coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio) END)
 
 				,convert(varchar,tiv_fecha_vencimiento,106) as 'FECHAVENCIMIENTO'
 				,capital=salNewValNom
@@ -171,7 +169,7 @@ BEGIN
             (doc.Nombre_Contabilidad IS NULL OR doc.Nombre_Contabilidad = '')
             AND (
                 doc.NOMBRE IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ') OR
-                doc.Nombre_Contabilidad IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ')
+             doc.Nombre_Contabilidad IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ')
             )
        )
 		 order by orden asc
