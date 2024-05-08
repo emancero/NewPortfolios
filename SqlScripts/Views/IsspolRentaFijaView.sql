@@ -87,11 +87,23 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
         ORDER BY por.por_ord
         FOR XML PATH('')), 1, 1, '')  ) ,
   s.htp_numeracion,
-  ems_abr
-
+  ems_abr,
+  s.tiv_id,
+  s.tiv_split_de
   from(
    select     
-   TVL_NOMBRE=COALESCE(TVLH_TIPOSC, TVL_CODIGO ),    
+   TVL_NOMBRE=
+        COALESCE(TVLH_TIPOSC, TVL_CODIGO )
+        +case when tiv_split_de is not null and tiv_split_de not in ('0','') then
+            '-SUT2'
+        when tiv_numero_tramo_sicav is not null then
+            '-T'+ltrim(tiv_numero_tramo_sicav)
+            +isnull('-S'+nullif(case when len(tiv_serie)<3 then TIV_SERIE end,''),'')
+        when tvl_codigo in ('OCA') then
+            ''
+        else
+            isnull('-C'+nullif(TIV_SERIE,''),'')
+        end,
    CUENTA_CONTABLE='7.1.5.90.90',    
    VECTOR_PRECIO=case when [TPO_MANTIENE_VECTOR_PRECIO]=1 or isnull([IPR_ES_CXC],0)=0  or tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end,    
    TIPO=TVL_DESCRIPCION + isnull(' '+TIV_SERIE,''),    
@@ -190,7 +202,12 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    PRECIO2=case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end,    
    CUPON2=case when tiv_codigo_vector not in ('0','') then [TIV_TASA_INTERES]/100.0 end,    
    CODIGO_TITULO=[TIV_CODIGO_VECTOR],    
-   TIPO2=case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [TVL_CODIGO] + ' ' + CASE WHEN [tvl_codigo]='swap' THEN [TPO_ACTA] else [TIV_CLASE] END end,    
+   TIPO2=
+   case when isnull(ipr_es_cxc,0)=0 then
+        COALESCE(TVLH_TIPOSC, TVL_CODIGO ) + isnull(' '+TIV_SERIE,'') + isnull(' '+TPO_ACTA,'')
+   else
+        case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [TVL_CODIGO] + ' ' + CASE WHEN [tvl_codigo]='swap' THEN [TPO_ACTA] else [TIV_CLASE] END end
+   end,    
    VALORES_RECUPERADOS=[htp_compra]-[sal],    
    ACCIONES_REALIZADAS=[TPO_OBJETO],    
    MANTIENE_VECTOR_PRECIO=TPO_MANTIENE_VECTOR_PRECIO,    
@@ -222,6 +239,8 @@ ABONO_INTERES=TPO_ABONO_INTERES,
    ,ID_EMISOR = pc.tiv_emisor
    ,pc.ems_abr
    ,pc.min_tiene_valnom
+   ,pc.tiv_id
+   ,pc.tiv_split_de
    from bvq_backoffice.portafoliocorte pc    
   join BVQ_BACKOFFICE.PORTAFOLIO port on pc.por_id = port.POR_ID  
     left join    
@@ -264,4 +283,4 @@ ABONO_INTERES=TPO_ABONO_INTERES,
   ,CUPON2,CODIGO_TITULO,TIPO2,ACCIONES_REALIZADAS,MANTIENE_VECTOR_PRECIO,ACP_ID,PROG,ACTA,GCXC_NOMBRE,TVL_CODIGO,EMS_NOMBRE,OTROS_COSTOS,TPO_PROG,RECURSOS    
   ,TIV_VALOR_NOMINAL,ABONO_INTERES,VALNOM_ANTERIOR,FECHA_ENCARGO,DIVIDENDOS_EN_ACCIONES,asi_emi_codemi,TPO_ORD,GENERICO,s.ID_EMISOR,htp_numeracion
   ,(case when TPO_DESGLOSAR_F1 = 1 then TPO_F1 end)
-  ,ems_abr
+  ,ems_abr,s.tiv_id,s.tiv_split_de

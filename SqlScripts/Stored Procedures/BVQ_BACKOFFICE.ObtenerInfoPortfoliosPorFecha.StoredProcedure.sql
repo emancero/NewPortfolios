@@ -43,6 +43,9 @@ BEGIN
 												,tpo_recursos varchar(30)
 												,TPO_PRECIO_REGISTRO_VALOR_EFECTIVO float
                                                 ,TPO_TABLA_AMORTIZACION varchar(40)
+                                                ,TIV_EMISOR int
+                                                ,TIV_CODIGO_TITULO_SIC varchar(20)
+                                                ,TCA_VALOR nvarchar(10)
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -66,6 +69,9 @@ BEGIN
 						,tpo_recursos
 						,TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
                         ,TPO_TABLA_AMORTIZACION
+                        ,TIV_EMISOR
+                        ,TIV_CODIGO_TITULO_SIC
+                        ,TCA_VALOR
 				from bvq_backoffice.portafoliocorte
 
 		
@@ -143,12 +149,40 @@ BEGIN
 												,pcorte.tpo_recursos
 												,pcorte.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
                                                 ,pcorte.TPO_TABLA_AMORTIZACION
+                                                ,CALIFICACION_DE_RIESGO=coalesce(emical.eca_valor,emscal.[ENC_VALOR],[TCA_VALOR],'NO DISPONIBLE')
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id
                                join bvq_administracion.item_catalogo rent on pcorte.tiv_tipo_renta=rent.itc_id
                                join bvq_administracion.tipo_tasa tta on pcorte.tiv_tipo_tasa=tta.tta_id
                                left join _temp.prop prop on prop.por_id=por.por_id
+    left join    
+    (    
+    
+     select row_number() over (partition by emi_id order by eca_fecha_resolucion desc,eca_id desc) r,emi_id    
+     ,eca_valor     
+     ,cal_nombre eca_nombre    
+     ,cal_nombre_personalizado eca_nombre_personalizado    
+     ,eca_fecha_resolucion    
+     from bvq_administracion.emisores_calificacion eca    
+     join bvq_administracion.calificadoras cal on eca.cal_id=cal.cal_id    
+     where eca_estado=21 and (eca_fecha_resolucion is null or eca_fecha_resolucion<=(select c from corteslist))    
+    ) emical on emical.emi_id=tiv_emisor and emical.r=1--(tvl_generico=1 or tiv_tipo_valor in (/*10,*/13)) and emical.emi_id=tiv_emisor and emical.r=1  
+    left join    
+    (    
+    
+     select row_number() over (partition by eca.enc_numero_corto_emision order BY eca.ENC_FECHA_DESDE  desc,eca.ENC_ID desc) r,enc_numero_corto_emision    
+     ,eca.ENC_VALOR 
+     ,cal_nombre eca_nombre    
+     ,cal_nombre_personalizado eca_nombre_personalizado    
+     ,eca.ENC_FECHA_DESDE    
+     FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION eca   
+     join bvq_administracion.calificadoras cal on eca.CAL_ID=cal.CAL_ID    
+     where eca.ENC_ESTADO=21 and (eca.ENC_FECHA_DESDE is null or eca.ENC_FECHA_DESDE<=(select c from corteslist))    
+    ) emscal on emscal.enc_numero_corto_emision=pcorte.TIV_CODIGO_TITULO_SIC and emscal.r=1  
+    left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
+    ON pcorte.tvl_codigo = H.[TVLH_CODIGO]    
+
                 where sal>0 --and prop.por_id is null -- para que no incluya portafolio propio
                 order by tvl_descripcion,ems_nombre,fecha_compra
 				--and por.por_tipo<>@v_portfolio_oc	-- para ocultar portafolios ocultos

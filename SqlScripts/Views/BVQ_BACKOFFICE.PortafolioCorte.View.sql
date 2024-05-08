@@ -243,6 +243,7 @@
 	,htp.tiv_subtipo
 	,htp.MIN_TIENE_VALNOM
 	,ems_abr=ems.ems_codigo
+	,tiv.TIV_NUMERO_TRAMO_SICAV
 	/*,
 	tpo_categoria_inversion*/
 	from
