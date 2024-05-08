@@ -29,51 +29,26 @@ BEGIN
 			TITULO = CASE doc.Nombre_Contabilidad WHEN  NULL THEN DOC.NOMBRE 
 										WHEN '' THEN doC.NOMBRE 
 										ELSE  doc.Nombre_Contabilidad END,
-				--nombre_etiqueta = doc.etiqueta + '-'  + seg.nombre_contabilidad
-			nombre_etiqueta = (
+			nombre_etiqueta =
 				CASE 
 					WHEN COALESCE(doc.etiqueta, '') = '' THEN 'Interes - ' + seg.nombre_contabilidad
 					ELSE doc.etiqueta + '-' + seg.nombre_contabilidad
 				END
-			)
 
 			,SUM(pfc.salNewValNom) DISTRIBUCION
-			,/*SUM(case when pfc.tvl_codigo in ('FAC','PCO') and pfc.tiv_tipo_base=355 and pfc.latest_inicio=pfc.fecha_compra 
-				then datediff(d,pfc.tiv_fecha_vencimiento,pfc.tfcorte) else pfc.dias_al_corte end * 
-			CASE WHEN pfc.TVL_CODIGO in ('FAC','PCO','PACTO') 
-				THEN (
-					case when pfc.TVL_CODIGO in ('PCO') 
-						then pfc.sal * pfc.htp_precio_compra/100.0 
-						else pfc.valefe end + 
-					CASE WHEN pfc.TPO_INTERVINIENTES LIKE 'Capital Ventura%' 
-						THEN pfc.TPO_INTERES_TRANSCURRIDO ELSE 0 END
-						) * pfc.HTP_RENDIMIENTO/100.0/360.0
-			ELSE (pfc.sal-isnull(pfc.TPO_VALNOM_ANTERIOR,0)) * pfc.TIV_TASA_INTERES /100.0/360.0
-			END - isnull(pfc.TPO_ABONO_INTERES,0)) TOTAL_PROVISION*/
-			/*sum(isnull( sal * tiv_tasa_interes/100.0 * ( CASE WHEN ult_fecha_interes>EOMONTH(@v_fechaCorte) THEN 0 
-				WHEN ult_fecha_interes<DATEADD(DAY, 1 - DAY(@v_fechaCorte), @v_fechaCorte) THEN 30
-				ELSE DATEDIFF(DAY, ult_fecha_interes,EOMONTH(@v_fechaCorte)) END) /360
-			,0)
-			) AS TOTAL_PROVISION
-			,*/
-			sum(
-			isnull( 
-			CASE WHEN pfc.tvl_codigo = 'PCO'  AND TASA = 0 THEN (((CAPITAL - VALEFECTIVO)/PLAZO )  * ( CASE WHEN FECHA_INTERES>HASTA THEN 0 
+			,sum(
+			isnull(
+			CASE WHEN pfc.tvl_codigo = 'PCO'  AND TASA = 0 THEN (((CAPITAL - VALEFECTIVO)/PLAZO )  * ( CASE WHEN FECHA_INTERES>HASTA THEN 0
 				WHEN FECHA_INTERES<DESDE THEN @v_diasMes --30
 				ELSE DATEDIFF(DAY, FECHA_INTERES,HASTA) END))
-
 				ELSE (
-			CAPITAL * TASA * ( CASE WHEN FECHA_INTERES>HASTA THEN 0 
-				WHEN FECHA_INTERES<DESDE THEN @v_diasMes --30
-				ELSE DATEDIFF(DAY, FECHA_INTERES,HASTA) END) /360
+					CAPITAL * TASA * ( CASE WHEN FECHA_INTERES>HASTA THEN 0 
+					WHEN FECHA_INTERES<DESDE THEN @v_diasMes --30
+					ELSE DATEDIFF(DAY, FECHA_INTERES,HASTA) END) /360
 				) 
 				END
-
-
 			,0)) AS TOTAL_PROVISION
-		--,htp_numeracion
 			FROM (
-				--select *  from BVQ_BACKOFFICE.PortafolioCorte
 				select *,
 				tiv_tasa_interes/100 as 'TASA',		 
 				dbo.fnDias(fecha_compra , tiv_fecha_vencimiento, tiv_tipo_base)
@@ -93,7 +68,6 @@ BEGIN
 				,capital=salNewValNom
 				,valefectivo=isnull((TPO_COMISION_BOLSA),0) + valEfeOper
 				from BVQ_BACKOFFICE.PortafolioCorte i--PortafolioCorte
-				--join (select tfl_fecha_inicio_orig2=tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id from bvq_backoffice.EventoPortafolio) e on @i_fechaCorte between e.tfl_fecha_inicio_orig2 and tfl_fecha_vencimiento2 and e.htp_tpo_id=i.httpo_id
 				where salNewValNom>0
 
 			)pfc
@@ -105,7 +79,6 @@ BEGIN
 				on seg.nombre = pfc.por_codigo
 			where isnull(ipr_es_cxc,0)=0
 			GROUP BY doc.orden, seg.orden,DOC.Codigo, seg.por_id, DOC.NOMBRE, doc.etiqueta, seg.nombre_contabilidad,pfc.TVL_CODIGO, DOC.NOMBRE_CONTABILIDAD,tvd.TVL_NOMBRE, pfc.sector_general, pfc.por_codigo, seg.nombre--,htp_numeracion
-			 -- order by doc.orden
 	  
 			  union
 
@@ -116,7 +89,6 @@ BEGIN
 			TITULO = (CASE doc.Nombre_Contabilidad WHEN  NULL THEN DOC.NOMBRE 
 										WHEN '' THEN doC.NOMBRE 
 										ELSE  doc.Nombre_Contabilidad END),
-			--nombre_etiqueta = DOC.ETIQUETA + '-' + seg.Nombre_Contabilidad,
 			nombre_etiqueta = (
         CASE 
             WHEN COALESCE(doc.etiqueta, '') = '' THEN 'Interes - ' + seg.nombre_contabilidad
@@ -129,33 +101,26 @@ BEGIN
 		 from Sicav.BVQ_BACKOFFICE.LISTA_ITEMS_CONTABILIDAD doc INNER JOIN Sicav.BVQ_BACKOFFICE.LISTA_ITEMS_CONTABILIDAD seg
 		 ON seg.estado = doc.estado  AND doc.tipo = 'Documento'  and seg.tipo='Seguro'
 		 WHERE seg.estado='A' AND DOC.estado='A'
-		 --order by doc.orden asc, seg.orden asc
 		 )
 		 select orden_doc, orden_seg, Codigo1, por_id1, titulo, nombre_etiqueta,sum(distribucion)  as distribucion, sum(TOTAL_PROVISION) provision--,htp_numeracion
 		 into #CTE
 		 from cte_provision
 		 group by orden_doc, orden_seg, Codigo1, por_id1, titulo, nombre_etiqueta--,htp_numeracion
-		 --order by orden_doc asc, orden_seg asc 
 
 
-		--SELECT cte.orden_doc, cte.orden_seg, per1.acreedora,  per2.acreedora, cte.TITULO,cte.nombre_etiqueta, cte.distribucion, cte.provision
 		SELECT cte.orden_doc, 
 		cte.orden_seg,
 		(per1.acreedora) as cuenta1,  
 		(per2.acreedora) as cuenta2,
 		cte.TITULO,
 		cte.nombre_etiqueta, 
-		--nombre_etiqueta = ( CASE
-		--					 WHEN per1.acreedora IS NULL OR per2.acreedora IS NULL THEN  'Intereses ' + cte.nombre_etiqueta ELSE cte.nombre_etiqueta END),
 		cte.distribucion, 
 		cte.provision
-		--,htp_numeracion
 		FROM #CTE cte
 		LEFT JOIN BVQ_BACKOFFICE.PERFILES_ISSPOL per1
 		on per1.tipPap = cte.Codigo1 and per1.p_por_id = cte.por_id1 and per1.prefijo='7.1.5.'--acreedora = '7.1.5.90.90'
 		LEFT JOIN BVQ_BACKOFFICE.PERFILES_ISSPOL per2
 		on per2.tipPap = cte.Codigo1 and per2.p_por_id = cte.por_id1 and per2.prefijo = '7.5.'
-		--group by cte.orden_doc, cte.orden_seg, per1.acreedora,  per2.acreedora, cte.TITULO,cte.nombre_etiqueta, cte.distribucion, cte.provision
 		where RTRIM(cte.TITULO) not IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ')
 		group by cte.orden_doc, cte.orden_seg, per1.acreedora,  per2.acreedora, per1.acreedoraAux, per2.acreedoraAux, cte.TITULO,cte.nombre_etiqueta, cte.distribucion, cte.provision--,htp_numeracion
 		order by orden_doc asc, orden_seg asc 
