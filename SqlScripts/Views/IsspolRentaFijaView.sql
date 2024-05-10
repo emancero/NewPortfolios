@@ -89,7 +89,8 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
   s.htp_numeracion,
   ems_abr,
   s.tiv_id,
-  s.tiv_split_de
+  s.tiv_split_de,
+  s.tfcorte
   from(
    select     
    TVL_NOMBRE=
@@ -105,7 +106,11 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
             isnull('-C'+nullif(TIV_SERIE,''),'')
         end,
    CUENTA_CONTABLE='7.1.5.90.90',    
-   VECTOR_PRECIO=case when [TPO_MANTIENE_VECTOR_PRECIO]=1 or isnull([IPR_ES_CXC],0)=0  or tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end,    
+   VECTOR_PRECIO = 
+   case
+    when [TPO_MANTIENE_VECTOR_PRECIO]=1 or
+   isnull([IPR_ES_CXC],0)=0 
+   or tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end,    
    TIPO=TVL_DESCRIPCION + isnull(' '+TIV_SERIE,''),    
    CUPON=[TIV_TASA_INTERES]/100.0,    
    PLAZO_PACTADO=dbo.fnDiaseu([FECHA_COMPRA],[TIV_FECHA_VENCIMIENTO],TIV_TIPO_BASE)
@@ -143,9 +148,23 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    CALIFICACION_DE_RIESGO=coalesce(eca_valor,pc.[ENC_VALOR],[TCA_VALOR],'NO DISPONIBLE'),       
    VALOR_PROVISIONADO=sal*[TIV_PRECIO]/100.0,    
    FECHA_DE_PAGO_ULTIMO_CUPON=latest_inicio,    
-   DIAS_DE_INTERES_GANADO=case when tvl_codigo in ('FAC','PCO') and pc.tiv_tipo_base=355 and latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte) else pc.dias_al_corte end,    
-   INTERES_GANADO=			case when tvl_codigo in ('FAC','PCO') and pc.tiv_tipo_base=355 and latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte) else pc.dias_al_corte end
-							/360.0 * sal * tiv_tasa_interes/100.0    
+   DIAS_DE_INTERES_GANADO=
+   case
+        when tvl_codigo in
+            ('FAC','PCO') and
+            pc.tiv_tipo_base=355 and
+            latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
+            else pc.dias_al_corte
+   end,    
+   INTERES_GANADO=
+        case
+            when tvl_codigo in
+                ('FAC','PCO') and
+                pc.tiv_tipo_base=355 and
+                latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
+            else pc.dias_al_corte
+        end
+		/360.0 * sal * tiv_tasa_interes/100.0    
     /*case when tvl_codigo in ('FAC','PCO') and pc.tiv_tipo_base=355 and latest_inicio=fecha_compra then    
      datediff(d,tiv_fecha_vencimiento,tfcorte)    
     else pc.dias_al_corte end    
@@ -241,6 +260,7 @@ ABONO_INTERES=TPO_ABONO_INTERES,
    ,pc.min_tiene_valnom
    ,pc.tiv_id
    ,pc.tiv_split_de
+   ,pc.tfcorte
    from bvq_backoffice.portafoliocorte pc    
   join BVQ_BACKOFFICE.PORTAFOLIO port on pc.por_id = port.POR_ID  
     left join    
@@ -283,4 +303,4 @@ ABONO_INTERES=TPO_ABONO_INTERES,
   ,CUPON2,CODIGO_TITULO,TIPO2,ACCIONES_REALIZADAS,MANTIENE_VECTOR_PRECIO,ACP_ID,PROG,ACTA,GCXC_NOMBRE,TVL_CODIGO,EMS_NOMBRE,OTROS_COSTOS,TPO_PROG,RECURSOS    
   ,TIV_VALOR_NOMINAL,ABONO_INTERES,VALNOM_ANTERIOR,FECHA_ENCARGO,DIVIDENDOS_EN_ACCIONES,asi_emi_codemi,TPO_ORD,GENERICO,s.ID_EMISOR,htp_numeracion
   ,(case when TPO_DESGLOSAR_F1 = 1 then TPO_F1 end)
-  ,ems_abr,s.tiv_id,s.tiv_split_de
+  ,ems_abr,s.tiv_id,s.tiv_split_de,s.tfcorte

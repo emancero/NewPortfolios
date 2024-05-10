@@ -88,6 +88,11 @@
 					FOR XML PATH (''))
 				, 1, 1, ''))
 		--,numeracionb=(case when TPO_DESGLOSAR_F1 = 1 then s.htp_numeracion end)--
+	    ,s.ems_abr
+	    ,s.min_tiene_valnom
+	    ,s.tiv_id
+	    ,s.tiv_split_de
+		,tfcorte
 	FROM (SELECT
 			TVL_NOMBRE = TVL_DESCRIPCION
 		   ,CUENTA_CONTABLE = '7.1.5.90.90'
@@ -263,11 +268,7 @@
 			END
 		   ,PRECIO_ULTIMA_COMPRA = TPO_PRECIO_ULTIMA_COMPRA
 		   ,FECHA_ULTIMA_COMPRA =
-			CASE
-				WHEN IPR_ES_CXC = 0 THEN tfcorte
-				WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') THEN [fecha_compra]
-				WHEN TPO_MANTIENE_VECTOR_PRECIO = 1 THEN  [fecha_compra]
-			END
+			CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN [fecha_compra] END
 			--,FECHA_ULTIMA_COMPRA=
 			--   case when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,@i_fechaCorte,tiv_fecha_vencimiento)<=365 then
 			--	lastValDate
@@ -334,6 +335,11 @@
 		   ,pc.TPO_DESGLOSAR_F1
 		   ,desglosarB=(case when TPO_DESGLOSAR_F1 = 1 then pc.htp_numeracion end)
 		   ,f1Group=case when tpo_prog='cxcnomovs' and tpo_f1 in (337,338) then TPO_F1 end
+		   ,pc.ems_abr
+		   ,pc.min_tiene_valnom
+		   ,pc.tiv_id
+		   ,pc.tiv_split_de
+		   ,tfcorte
 		FROM BVQ_BACKOFFICE.PortafolioCorte pc
 		JOIN BVQ_BACKOFFICE.PORTAFOLIO port
 			ON pc.por_id = port.POR_ID
@@ -401,4 +407,9 @@
 			--,htp_numeracion--(case when TPO_DESGLOSAR_F1 = 1 then htp_numeracion end)
 			,desglosarB--(case when TPO_DESGLOSAR_F1 = 1 then s.htp_numeracion end)--
 			,f1group
+		    ,s.ems_abr
+		    ,s.min_tiene_valnom
+		    ,s.tiv_id
+		    ,s.tiv_split_de
+			,s.tfcorte
 	HAVING SUM(VALOR_NOMINAL)>=1

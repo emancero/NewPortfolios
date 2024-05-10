@@ -46,6 +46,9 @@ BEGIN
                                                 ,TIV_EMISOR int
                                                 ,TIV_CODIGO_TITULO_SIC varchar(20)
                                                 ,TCA_VALOR nvarchar(10)
+                                                ,TIV_CODIGO_VECTOR varchar(50)
+                                                ,lastValDate datetime
+                                                ,fecha_ultima_compra datetime
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -72,6 +75,9 @@ BEGIN
                         ,TIV_EMISOR
                         ,TIV_CODIGO_TITULO_SIC
                         ,TCA_VALOR
+                        ,TIV_CODIGO_VECTOR
+                        ,lastValDate
+                        ,fecha_ultima_compra
 				from bvq_backoffice.portafoliocorte
 
 		
@@ -149,7 +155,48 @@ BEGIN
 												,pcorte.tpo_recursos
 												,pcorte.TPO_PRECIO_REGISTRO_VALOR_EFECTIVO
                                                 ,pcorte.TPO_TABLA_AMORTIZACION
-                                                ,CALIFICACION_DE_RIESGO=coalesce(emical.eca_valor,emscal.[ENC_VALOR],[TCA_VALOR],'NO DISPONIBLE')
+                                                ,CALIFICACION_DE_RIESGO=coalesce(
+                                                     emical.eca_valor
+                                                    ,emscal.[ENC_VALOR]
+                                                    ,[TCA_VALOR]
+                                                    ,'NO DISPONIBLE')
+                                                ,PRECIO_DE_HOY=
+                                                     iif(
+                                                        case
+                                                        when [TPO_MANTIENE_VECTOR_PRECIO]=1 or
+                                                        isnull([IPR_ES_CXC],0)=0 
+                                                        or pcorte.tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end<>''
+                                                        ,
+                                                        case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end
+                                                        ,
+                                                        pcorte.htp_precio_compra/100.0
+                                                    )+
+                                                    datediff(d,fecha_ultima_compra,tfcorte)
+	                                                * (
+                                                        1.0-
+                                                        iif(
+                                                            case
+                                                            when [TPO_MANTIENE_VECTOR_PRECIO]=1 or
+                                                            isnull([IPR_ES_CXC],0)=0 
+                                                            or pcorte.tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end<>''
+	                                                        ,
+                                                            case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end
+                                                            ,
+                                                            pcorte.htp_precio_compra/100.0
+	                                                    )
+                                                    )
+	                                                /
+                                                    datediff(d,fecha_ultima_compra,tiv_fecha_vencimiento)
+                                               ,INTERES_GANADO=
+                                                    case
+                                                        when pcorte.tvl_codigo in
+                                                            ('FAC','PCO') and
+                                                            pcorte.tiv_tipo_base=355 and
+                                                            latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
+                                                        else pcorte.dias_al_corte
+                                                    end
+		                                            /360.0 * sal * tiv_tasa_interes/100.0    
+
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id

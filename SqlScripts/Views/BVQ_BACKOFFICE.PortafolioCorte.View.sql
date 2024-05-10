@@ -244,6 +244,19 @@
 	,htp.MIN_TIENE_VALNOM
 	,ems_abr=ems.ems_codigo
 	,tiv.TIV_NUMERO_TRAMO_SICAV
+
+	,fecha_ultima_compra=
+	case when isnull(ipr_es_cxc,0)=0 then
+		case when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
+		lastValDate
+		when isnull(rtrim(tiv_codigo_vector),'')='' then [fecha_compra]
+		when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
+			htp.c
+		end
+	else
+		CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN [fecha_compra] end
+	END
+
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -459,7 +472,7 @@
 	left join bvq_administracion.titulo_flujo_comun tfl
 		left join (
 			select distinct retr_fecha_cobro, retr_fecha_esperada, tpo.tiv_id from bvq_backoffice.retraso retr join bvq_backoffice.titulos_portafolio tpo on retr_tpo_id=tpo.tpo_id
-			where tiv_id=1e9+48
+			where tiv_id=1596
 		) retr on retr_fecha_esperada=tfl_fecha_inicio and tfl.tiv_id=retr.tiv_id
 	on
 	tfl.tiv_id=tiv.tiv_id and
