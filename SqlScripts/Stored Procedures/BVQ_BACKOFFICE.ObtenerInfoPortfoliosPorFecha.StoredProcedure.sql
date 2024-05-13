@@ -186,7 +186,7 @@ BEGIN
                                                     )
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
                                                     */
-                                                    pcorte.salNewValNom*pcorte.prEfectivo
+                                                    coalesce(pcorte.prEfectivo,pcorte.htp_precio_compra/100.0)*pcorte.salNewValNom
                                                     --+ isnull(TPO_COMISIONES,0)
                                                ,TIPO_RENTA=case tiv_tipo_renta when 153 then 'Renta fija' when 154 then 'Renta variable' end
                                                ,ESTADO = case when isnull(IPR_ES_CXC,0)=0 then 'Vigente' else 'Cuentas por cobrar' end
