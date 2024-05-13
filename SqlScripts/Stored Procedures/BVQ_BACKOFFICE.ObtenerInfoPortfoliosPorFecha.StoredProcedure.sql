@@ -6,7 +6,8 @@
 -- =============================================
 
 CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha]
-                @i_fechaCorte datetime,
+--declare
+                @i_fechaCorte datetime='2024-04-01T23:59:59',
                 @i_lga_id	int
 
 AS
@@ -15,7 +16,7 @@ BEGIN
 
                 truncate table corteslist
                 insert into corteslist values (@i_fechaCorte,1)
-                
+
                 exec bvq_administracion.generarcompraventacorte
                 exec bvq_administracion.generarvectores
 				exec BVQ_ADMINISTRACION.PrepararValoracionLinealCache
@@ -84,14 +85,50 @@ BEGIN
                         ,salNewValnom
 				from bvq_backoffice.portafoliocorte
 
-		
 				insert into @tbPortafolioComitente
 				select por.ctc_id, ctc_inicial_tipo,identificacion,nombre,por_id,por_codigo,por_tipo,tipo.itc_descripcion,por.sbp_id,sbp.sbp_descripcion,por.por_codigo+': '+ctc.nombre,por_ord
 				from bvq_prevencion.personacomitente ctc
 					inner join bvq_backoffice.portafolio por on ctc.ctc_id=por.ctc_id
 					inner join bvq_administracion.item_catalogo tipo on por.por_tipo=tipo.itc_id
 					left join bvq_backoffice.subtipo_portafolio sbp on sbp.sbp_id=por.sbp_id
-               
+
+
+	if OBJECT_ID('tempdb..#emscal') is not null
+		drop table #emscal
+	if OBJECT_ID('tempdb..#emical') is not null
+		drop table #emical
+	/*if OBJECT_ID('tempdb..#x') is not null
+		drop table #x*/
+
+	select * into #emical from
+    (    
+    
+     select row_number() over (partition by emi_id order by eca_fecha_resolucion desc,eca_id desc) r,emi_id    
+     ,eca_valor     
+     ,cal_nombre eca_nombre    
+     ,cal_nombre_personalizado eca_nombre_personalizado    
+     ,eca_fecha_resolucion    
+     from bvq_administracion.emisores_calificacion eca    
+     join bvq_administracion.calificadoras cal on eca.cal_id=cal.cal_id    
+     where eca_estado=21 and (eca_fecha_resolucion is null or eca_fecha_resolucion<=(select c from corteslist))    
+    ) emical
+	where emical.r=1
+
+	select * into #emscal from
+    (    
+    
+     select row_number() over (partition by eca.enc_numero_corto_emision order BY eca.ENC_FECHA_DESDE  desc,eca.ENC_ID desc) r,enc_numero_corto_emision    
+     ,eca.ENC_VALOR 
+     ,cal_nombre eca_nombre    
+     ,cal_nombre_personalizado eca_nombre_personalizado    
+     ,eca.ENC_FECHA_DESDE    
+     FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION eca   
+     join bvq_administracion.calificadoras cal on eca.CAL_ID=cal.CAL_ID    
+     where eca.ENC_ESTADO=21 and (eca.ENC_FECHA_DESDE is null or eca.ENC_FECHA_DESDE<=(select c from corteslist))    
+    ) emscal
+	where
+	emscal.r=1
+
                 select distinct 				por.nombre as comitente
                                                ,pcorte.ems_nombre
                                                ,tvl.tvl_descripcion
@@ -204,6 +241,7 @@ BEGIN
                                                     end
 		                                            /360.0 * sal * tiv_tasa_interes/100.0    
                                                 ,prEfectivo
+												--into #x
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id
@@ -211,29 +249,11 @@ BEGIN
                                join bvq_administracion.tipo_tasa tta on pcorte.tiv_tipo_tasa=tta.tta_id
                                left join _temp.prop prop on prop.por_id=por.por_id
     left join    
-    (    
-    
-     select row_number() over (partition by emi_id order by eca_fecha_resolucion desc,eca_id desc) r,emi_id    
-     ,eca_valor     
-     ,cal_nombre eca_nombre    
-     ,cal_nombre_personalizado eca_nombre_personalizado    
-     ,eca_fecha_resolucion    
-     from bvq_administracion.emisores_calificacion eca    
-     join bvq_administracion.calificadoras cal on eca.cal_id=cal.cal_id    
-     where eca_estado=21 and (eca_fecha_resolucion is null or eca_fecha_resolucion<=(select c from corteslist))    
-    ) emical on emical.emi_id=tiv_emisor and emical.r=1--(tvl_generico=1 or tiv_tipo_valor in (/*10,*/13)) and emical.emi_id=tiv_emisor and emical.r=1  
-    left join    
-    (    
-    
-     select row_number() over (partition by eca.enc_numero_corto_emision order BY eca.ENC_FECHA_DESDE  desc,eca.ENC_ID desc) r,enc_numero_corto_emision    
-     ,eca.ENC_VALOR 
-     ,cal_nombre eca_nombre    
-     ,cal_nombre_personalizado eca_nombre_personalizado    
-     ,eca.ENC_FECHA_DESDE    
-     FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION eca   
-     join bvq_administracion.calificadoras cal on eca.CAL_ID=cal.CAL_ID    
-     where eca.ENC_ESTADO=21 and (eca.ENC_FECHA_DESDE is null or eca.ENC_FECHA_DESDE<=(select c from corteslist))    
-    ) emscal on emscal.enc_numero_corto_emision=pcorte.TIV_CODIGO_TITULO_SIC and emscal.r=1  
+	#emical emical
+	on emical.emi_id=tiv_emisor--(tvl_generico=1 or tiv_tipo_valor in (/*10,*/13)) and emical.emi_id=tiv_emisor
+    left join
+	#emscal emscal
+	on emscal.enc_numero_corto_emision=pcorte.TIV_CODIGO_TITULO_SIC
     left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
     ON pcorte.tvl_codigo = H.[TVLH_CODIGO]    
 
