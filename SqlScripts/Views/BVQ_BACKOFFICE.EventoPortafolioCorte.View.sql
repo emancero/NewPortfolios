@@ -125,6 +125,7 @@
 	,ufo_uso_fondos=sum(ufo_uso_fondos)
 	,ufo_rendimiento=sum(ufo_rendimiento)
 	,MIN_TIENE_VALNOM=min(HTP_TIENE_VALNOM)
+	,prEfectivo=min(prEfectivo)
 	from bvq_backoffice.EventoPortafolio e
 	join corteslist c on
 	coalesce(

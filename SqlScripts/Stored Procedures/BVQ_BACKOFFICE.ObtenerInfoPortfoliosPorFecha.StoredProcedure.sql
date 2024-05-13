@@ -49,6 +49,8 @@ BEGIN
                                                 ,TIV_CODIGO_VECTOR varchar(50)
                                                 ,lastValDate datetime
                                                 ,fecha_ultima_compra datetime
+                                                ,prEfectivo float
+                                                ,salNewValnom float
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -78,6 +80,8 @@ BEGIN
                         ,TIV_CODIGO_VECTOR
                         ,lastValDate
                         ,fecha_ultima_compra
+                        ,prEfectivo
+                        ,salNewValnom
 				from bvq_backoffice.portafoliocorte
 
 		
@@ -131,6 +135,7 @@ BEGIN
                                                ,IPR_ES_CXC
                                                ,pcorte.TPO_ACTA
                                                ,VALOR_EFECTIVO=
+                                               /*
                                                     pcorte.sal
                                                     --precio
                                                     * (
@@ -143,6 +148,8 @@ BEGIN
 														)/htp_compra*100.0
                                                     )
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
+                                                    */
+                                                    pcorte.salNewValNom*pcorte.prEfectivo
                                                     --+ isnull(TPO_COMISIONES,0)
                                                ,TIPO_RENTA=case tiv_tipo_renta when 153 then 'Renta fija' when 154 then 'Renta variable' end
                                                ,ESTADO = case when isnull(IPR_ES_CXC,0)=0 then 'Vigente' else 'Cuentas por cobrar' end
@@ -196,7 +203,7 @@ BEGIN
                                                         else pcorte.dias_al_corte
                                                     end
 		                                            /360.0 * sal * tiv_tasa_interes/100.0    
-
+                                                ,prEfectivo
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
 							   join @tbPortafolioComitente por on pcorte.por_id=por.por_id
