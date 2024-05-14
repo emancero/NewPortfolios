@@ -62,7 +62,7 @@ BEGIN
 				(SELECT (CONVERT(datetime,Convert(varchar,EOMONTH(@i_fechaCorte),106) +' 23:59:59'))) as 'HASTA',
 				convert(varchar,fecha_compra,106) as 'FECHACOMPRA',		
 				coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio) as 'FECHAULTIMOCUPON',
-				FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  THEN fecha_compra ELSE coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio) END)
+				FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte)) and fecha_compra>coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio) THEN fecha_compra ELSE coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio) END)
 
 				,convert(varchar,tiv_fecha_vencimiento,106) as 'FECHAVENCIMIENTO'
 				,capital=salNewValNom
