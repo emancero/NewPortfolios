@@ -52,6 +52,8 @@ BEGIN
                                                 ,fecha_ultima_compra datetime
                                                 ,prEfectivo float
                                                 ,salNewValnom float
+                                                ,TPO_F1 int
+                                                ,valefeConRendimiento float
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -83,6 +85,8 @@ BEGIN
                         ,fecha_ultima_compra
                         ,prEfectivo
                         ,salNewValnom
+                        ,TPO_F1
+                        ,valefeConRendimiento
 				from bvq_backoffice.portafoliocorte
 
 				insert into @tbPortafolioComitente
@@ -186,7 +190,28 @@ BEGIN
                                                     )
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
                                                     */
-                                                    coalesce(pcorte.prEfectivo,pcorte.htp_precio_compra/100.0)*pcorte.salNewValNom
+                                                    iif(isnull(ipr_es_cxc,0)=0
+                                                    ,coalesce(pcorte.prEfectivo*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
+			                                        ,CASE
+				                                        WHEN valefeConRendimiento is not null then
+					                                        valefeConRendimiento
+				                                        WHEN [TPO_F1] = (SELECT TOP 1
+							                                        kf1
+						                                        FROM keyf1
+						                                        WHERE natkey LIKE 'MINISTERIO DE FINANZAS|20240620|20160108|%'
+						                                        AND kf1 = 339) THEN
+							                                        (1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885
+                                                                    * salNewValnom
+						                                        --377916.44 / 873855.24 * sal
+				                                        WHEN pcorte.[tvl_codigo] IN ('PCO') THEN
+                                                            salNewValnom
+                                                            * [htp_precio_compra] / 100.0
+				                                        ELSE
+                                                            salNewValnom
+                                                            * [tiv_precio] / 100.0
+			                                        END
+                                                    )
+
                                                     --+ isnull(TPO_COMISIONES,0)
                                                ,TIPO_RENTA=case tiv_tipo_renta when 153 then 'Renta fija' when 154 then 'Renta variable' end
                                                ,ESTADO = case when isnull(IPR_ES_CXC,0)=0 then 'Vigente' else 'Cuentas por cobrar' end
@@ -257,7 +282,7 @@ BEGIN
     left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
     ON pcorte.tvl_codigo = H.[TVLH_CODIGO]    
 
-                where sal>0 --and prop.por_id is null -- para que no incluya portafolio propio
+                where sal>0 or salNewValNom>0 --and prop.por_id is null -- para que no incluya portafolio propio
                 order by tvl_descripcion,ems_nombre,fecha_compra
 				--and por.por_tipo<>@v_portfolio_oc	-- para ocultar portafolios ocultos
                 --order by pcorte.por_codigo,pcorte.tiv_tipo_valor,pcorte.tiv_id
