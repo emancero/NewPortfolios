@@ -54,6 +54,7 @@ BEGIN
                                                 ,salNewValnom float
                                                 ,TPO_F1 int
                                                 ,valefeConRendimiento float
+												,HTP_RENDIMIENTO float
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -87,6 +88,7 @@ BEGIN
                         ,salNewValnom
                         ,TPO_F1
                         ,valefeConRendimiento
+						,HTP_RENDIMIENTO
 				from bvq_backoffice.portafoliocorte
 
 				insert into @tbPortafolioComitente
@@ -266,6 +268,12 @@ BEGIN
                                                     end
 		                                            /360.0 * sal * tiv_tasa_interes/100.0    
                                                 ,prEfectivo
+											   ,YIELD =
+												CASE
+													WHEN pcorte.[tvl_codigo] IN ('FAC', 'PCO') THEN [HTP_RENDIMIENTO]
+													ELSE [tiv_tasa_interes]
+												END / 100.0
+
 												--into #x
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
