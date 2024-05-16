@@ -12,9 +12,7 @@ AS
 BEGIN
 	SET
 	NOCOUNT ON
-	DECLARE @LI_RETURN  INT
-	DECLARE @LS_MOV_CUENTA VARCHAR(7000), @AS_MOV_TIPO VARCHAR(7000), @as_tabla VARCHAR(20)='CNT', @li_trans_cnt INT,
-			@LS_MOV_VALOR VARCHAR(7000),  @ls_oficina VARCHAR(20)--= comun.func_obtiene_oficina_principal()
+	DECLARE @LI_RETURN  INT, @ls_oficina VARCHAR(20)--= comun.func_obtiene_oficina_principal()
 
 	DECLARE @cmdOficina NVARCHAR(MAX) = 
 	N'SELECT @ls_oficina = [ReturnValue] FROM OPENQUERY(
@@ -84,6 +82,8 @@ BEGIN
 
 	END
 	ELSE*/
+	DECLARE @LS_MOV_CUENTA VARCHAR(7000), @AS_MOV_TIPO VARCHAR(7000), @as_tabla VARCHAR(20)='CNT', @li_trans_cnt INT,
+			@LS_MOV_VALOR VARCHAR(7000)
 	BEGIN
 		EXEC	@LI_RETURN = BVQ_BACKOFFICE.ObtenerConfAsientoRecuperacion--[inversion].[proc_obtiene_conf_asiento_recuperacion]
 				--@AI_INVERSION =		@ai_inversion,

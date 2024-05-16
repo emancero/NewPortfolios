@@ -228,22 +228,26 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //
-    /*
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolCrearConfiguracion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("IsspolCrearConfiguracion", "siisspolweb", suffix: false, plural: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolComprobanteRecuperacion'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("IsspolComprobanteRecuperacion", "siisspolweb", suffix: false, plural: false);
     comm.ExecuteNonQuery();
-    
+ /*   
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerConfAsientoRecuperacion'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerConfAsientoRecuperacion", "siisspolweb", suffix: false, plural: false);
     comm.ExecuteNonQuery();
-    
+    */
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarRecuperacionInversion'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("GenerarRecuperacionInversion", "siisspolweb", suffix: false, plural:false);
     comm.ExecuteNonQuery();
-    
+   /* 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolInsertarComprobanteRecuperacion'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("IsspolInsertarComprobanteRecuperacion", "siisspolweb", suffix: false, plural: false);

@@ -117,6 +117,7 @@
     <None Include="Views\IsspolRentaFija.sql" />
     <None Include="Views\IsspolRentaFijaView.sql" />
     <None Include="Stored Procedures\spPerfilesISSPOLMantenimiento.sql" />
+    <None Include="siisspolweb\IsspolCrearConfiguracion.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
