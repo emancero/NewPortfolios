@@ -222,6 +222,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("IsspolRentaFijaView", "View", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.spPerfilesIsspolMantenimiento'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("spPerfilesIsspolMantenimiento", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
     //
     /*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolComprobanteRecuperacion'";
