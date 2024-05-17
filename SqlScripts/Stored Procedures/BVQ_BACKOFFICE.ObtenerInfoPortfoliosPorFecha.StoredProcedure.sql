@@ -273,6 +273,14 @@ BEGIN
 													WHEN pcorte.[tvl_codigo] IN ('FAC', 'PCO') THEN [HTP_RENDIMIENTO]
 													ELSE [tiv_tasa_interes]
 												END / 100.0
+                                               ,NUEVO_VALOR_NOMINAL=
+                                                    case when pcorte.tvl_codigo='FI'
+                                                        then htp_compra*htp_precio_compra
+                                                    else
+                                                        salNewValnom*
+                                                        case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal
+                                                        else 1 end
+                                                    end
 
 												--into #x
                 from @tbPortafolioCorte pcorte 
