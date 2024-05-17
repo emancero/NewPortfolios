@@ -29,6 +29,7 @@
 			,deterioro
 			,tipo=max(cis.tipo)
 			,por_ord=max(por_ord)
+			,imf_sicav=max(imf_sicav)
 			from BVQ_BACKOFFICE.Comprobante_Isspol CIS
 			--excepción a la cuenta de depósitos por indentificar
 			left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
