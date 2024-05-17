@@ -28,6 +28,11 @@ BEGIN
 			,CIS.idemisor
 			,CIS.tiv_id
 			,CIS.htp_fecha_operacion
+			 ,errores=case when min(id_tipo_papel) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta tipo de papel en Siisspolweb, ' else '' end
+			 +case when min(imf_sicav) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta fondo en Siisspolweb, ' else '' end
+			 +case when min(cis_cuenta) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta perfil en Sicav, ' else '' end
+			 +case when min(id_int_conf_fondo_cuenta) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta perfil en Siisspolweb,' else '' end
+
 	FROM
 			--del0 bvq_backoffice.IsspolAInsertar SIC
 			/*left join inversion.r_int_inversion INV 
