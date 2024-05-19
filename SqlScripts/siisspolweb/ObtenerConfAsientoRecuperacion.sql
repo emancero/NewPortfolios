@@ -21,16 +21,18 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 		 @AS_MOV_REFERENCIA= COALESCE(@AS_MOV_REFERENCIA + ';', '') +  convert(varchar(100),isnull(ref.referencia,'') ) 
 	from bvq_backoffice.IsspolComprobanteRecuperacion icr
 
---	left join bvq_backoffice.Liquidez_Referencias_table ref
+	-- unión con referencias -------------------------------------------
+	--	left join bvq_backoffice.Liquidez_Referencias_table ref
 	left join (
 		select valor=sum(valor) over (partition by tpo_numeracion,fecha,fecha_original),tpo_numeracion,fecha,fecha_original,valord=valor,referencia
 		from bvq_backoffice.liquidez_referencias_table
 	) ref
-
 	on icr.tpo_numeracion=ref.tpo_numeracion
 	and datediff(hh,icr.fecha,ref.fecha)=0
 		and icr.ri in ('DIDENT','DIDENT02')
 		and round(debe,0)=round(ref.valor,0)
+	-- fin unión con referencias ---------------------------------------
+
 	where icr.tpo_numeracion=--'MDF-2013-04-25-2'
 		@AS_NOMBRE
 	and datediff(hh,icr.fecha,@AD_FECHA)=0
