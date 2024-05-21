@@ -120,7 +120,7 @@ BEGIN
 	 @ems_nombre=ems_nombre
 	,@tvl_nombre=tvl_nombre
 	,@referencia=cis.tpo_numeracion
-	from bvq_backoffice.comprobanteisspol cis
+	from bvq_backoffice.comprobante_isspol cis
 	where tpo_numeracion=@as_nombre and datediff(hh,fecha,@ad_fecha_recuperacion)=0
 
 
