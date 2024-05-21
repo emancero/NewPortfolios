@@ -163,7 +163,7 @@ begin
 			exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Antes de GenerarRecuperacionInversion'
 			declare @ret3 int
 			exec @ret3=bvq_backoffice.GenerarRecuperacionInversion
-				@as_nombre = @i_nombre,
+				@as_nombre = @i_nombre,-- @i_nombre es TPO_NUMERACION
 				@ad_fecha_original = @i_fecha_original,
 				@ad_fecha_recuperacion = @i_fecha,
 				@as_usuario = @i_usuario,

@@ -133,21 +133,21 @@ BEGIN
 			delete from _temp.vars
 			insert into _temp.vars(id)
 			exec [siisspolweb].siisspolweb.dbo.sp_executesql N'
-															DECLARE @TBL_CNT_TMP TABLE
-							(
-								fecha           DATE,
-								modulo          VARCHAR(10),
-								tipo_tcrans_org VARCHAR(10),
-								oficina_ct      VARCHAR(10),
-								concepto        VARCHAR(MAX),
-								referencia      VARCHAR(MAX),             
-								mov_cuenta      VARCHAR(MAX),
-								mov_valor       VARCHAR(MAX),
-								mov_tipo_trans  VARCHAR(MAX),
-								mov_referencia  VARCHAR(MAX),
-								moneda          VARCHAR(10),
-								beneficiario    VARCHAR(MAX)
-							)
+				DECLARE @TBL_CNT_TMP TABLE
+				(
+					fecha           DATE,
+					modulo          VARCHAR(10),
+					tipo_tcrans_org VARCHAR(10),
+					oficina_ct      VARCHAR(10),
+					concepto        VARCHAR(MAX),
+					referencia      VARCHAR(MAX),             
+					mov_cuenta      VARCHAR(MAX),
+					mov_valor       VARCHAR(MAX),
+					mov_tipo_trans  VARCHAR(MAX),
+					mov_referencia  VARCHAR(MAX),
+					moneda          VARCHAR(10),
+					beneficiario    VARCHAR(MAX)
+				)
 
 				INSERT INTO @TBL_CNT_TMP
 				SELECT top 1 @LD_FECHA_ACTUAL,''CNT'', ''LINV'', @ls_oficina
