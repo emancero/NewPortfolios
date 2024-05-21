@@ -250,11 +250,11 @@ begin
 		deallocate CUR_REFS
 		--fin referencias-----------------------------
 
-		COMMIT transaction
+	COMMIT transaction
 
-		exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Fin IsspolInsertarComprobanteRecuperacion'
+	exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Fin IsspolInsertarComprobanteRecuperacion'
 
-		return 1
+	return 1
 /*end try
 begin catch
 	--exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Error en ejecucion: '
