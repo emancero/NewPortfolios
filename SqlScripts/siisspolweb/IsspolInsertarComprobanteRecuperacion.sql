@@ -45,6 +45,7 @@ begin
 			and cis.fecha=@i_fecha
 			print formatmessage('referencia:%s concepto:%s beneficiario:%s',@v_referencia,@v_concepto,@v_beneficiario)
 
+			-- insertar en int_inversion_recuperacion -------------------------------------------
 			delete from _temp.vars
 			insert into _temp.vars(id)
 			exec [siisspolweb].siisspolweb.dbo.sp_executesql N'
@@ -66,6 +67,7 @@ begin
 			set @log=formatmessage('id de recuperación %d',isnull(@w_id_recuperacion,0))
 			exec bvq_administracion.IsspolEnvioLog @log
 			print @log
+			-- Fin insertar en int_inversion_recuperacion ---------------------------------------
 
 					
 			---///////////////
@@ -91,8 +93,8 @@ begin
 			print @i_id_inversion
 			---////////////////////
 
+			--insertar en int_recuperacion_detalle -------------------------------------------------
 			INSERT INTO [siisspolweb].siisspolweb.inversion.int_recuperacion_detalle (id_int_inversion_recuperacion, id_int_conf_fondo_cuenta, valor, creacion_usuario, creacion_fecha,creacion_equipo,modifica_usuario,modifica_fecha,modifica_equipo)
-			
 			select @w_id_recuperacion, id_int_conf_fondo_cuenta, 
 			case when cis.tipo_rubro_movimiento='D' then cis.debe else cis.haber end, 
 			@i_usuario, 
@@ -110,6 +112,7 @@ begin
 			cis.fecha=@i_fecha/*'20230629'*/
 			and cis.tpo_numeracion=@i_nombre/*'ABO-2023-06-26-10'*/
 			and cis.id_inversion=@i_id_inversion/*225*/--datediff(m,'20230901',cis.fecha)=0
+			--Fin insertar en int_recuperacion_detalle --------------------------------------------
 					
 			---and datediff(d,cis.fecha,@i_fecha)=0
 			/*select * from siisspolweb.siisspolweb.inversion.int_conf_fondo_cuenta c where id_int_conf_fondo_cuenta>140
