@@ -136,7 +136,7 @@ begin
 			END CATCH
 			*/
 					
-		end --fin if @i_id_inversion is not null
+		end --fin if 1=0 and @i_id_inversion is not null
 
 		declare @li_id_asiento int=-1
 		if 1=0 and @i_id_inversion is not null
@@ -163,6 +163,7 @@ begin
 			exec BVQ_ADMINISTRACION.IsspolEnvioLog 'Antes de GenerarRecuperacionInversion'
 			declare @ret3 int
 			exec @ret3=bvq_backoffice.GenerarRecuperacionInversion
+				@ai_inversion = @i_id_inversion,
 				@as_nombre = @i_nombre,-- @i_nombre es TPO_NUMERACION
 				@ad_fecha_original = @i_fecha_original,
 				@ad_fecha_recuperacion = @i_fecha,

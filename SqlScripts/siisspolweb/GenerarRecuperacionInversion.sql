@@ -1,6 +1,6 @@
 ﻿-- Basado en sp creado por Santiago.Yacelga Isspol
 CREATE PROCEDURE bvq_backoffice.GenerarRecuperacionInversion
-																--@ai_inversion INT,
+																@ai_inversion INT,
 																@as_nombre VARCHAR(200),
 																@ad_fecha_original datetime=null,
 																@ad_fecha_recuperacion datetime,
@@ -10,6 +10,8 @@ CREATE PROCEDURE bvq_backoffice.GenerarRecuperacionInversion
 																@as_msj VARCHAR(500) OUTPUT
 AS
 BEGIN
+	declare @log varchar(500)
+
 	SET
 	NOCOUNT ON
 	DECLARE @LI_RETURN  INT, @ls_oficina VARCHAR(20)--= comun.func_obtiene_oficina_principal()
@@ -123,6 +125,8 @@ BEGIN
 	from bvq_backoffice.comprobante_isspol cis
 	where tpo_numeracion=@as_nombre and datediff(hh,fecha,@ad_fecha_recuperacion)=0
 
+	declare @v_concepto varchar(250)=
+		'REGISTRO PAGO ' + isnull(@tvl_nombre + ' ','') + isnull(@ems_nombre,'') + ' - ' + isnull(@as_nombre,'') + ' - Pago de: ' + isnull(format(@ad_fecha_recuperacion,'dd-MMM-yyyy'),'')
 
 	SELECT @li_id_origen = id_tipo_tran_origen
 	FROM [siisspolweb].siisspolweb.contabilidad.tipo_tran_origen
@@ -237,6 +241,57 @@ BEGIN
 			exec bvq_administracion.IsspolFormatoMensajeValidacion @as_msj, 2, @as_msj output
 			RETURN @li_ret
 	END
+
+	if @ai_inversion is not null
+	begin
+		-- insertar en int_inversion_recuperacion -------------------------------------------
+		declare @w_id_recuperacion int
+		delete from _temp.vars
+		insert into _temp.vars(id)
+		exec [siisspolweb].siisspolweb.dbo.sp_executesql N'
+			INSERT INTO inversion.int_inversion_recuperacion (
+				id_inversion, id_asiento, estado, referencia, concepto, beneficiario, creacion_usuario, creacion_fecha
+				,creacion_equipo,modifica_usuario,modifica_fecha,modifica_equipo,fecha_recuperacion
+			)
+			VALUES (
+					@i_id_inversion, @i_id_asiento, @i_estado_inversion, @v_referencia, @v_concepto, @v_beneficiario, @i_usuario, GETDATE()
+				, @i_maquina, @i_usuario, GETDATE(), @i_maquina,@i_fecha
+			)
+			SELECT SCOPE_IDENTITY();'
+		,N'
+			@i_id_inversion int, @i_id_asiento int, @i_estado_inversion int, @i_usuario varchar(100), @i_maquina varchar(100)
+			, @v_referencia varchar(250), @v_concepto varchar(250), @v_beneficiario varchar(250), @i_fecha datetime'
+		,@ai_inversion,@li_id_asiento,1,@as_usuario,@as_equipo,@referencia
+		, @v_concepto
+		, @ems_nombre, @ad_fecha_recuperacion --i_id_inversion,@i_estado_inversion,@i_usuario,@i_maquina
+		set @w_id_recuperacion = (select top 1 id from _temp.vars)
+
+		set @log=formatmessage('id de recuperación %d',isnull(@w_id_recuperacion,0))
+		exec bvq_administracion.IsspolEnvioLog @log
+		print @log
+		-- Fin insertar en int_inversion_recuperacion ---------------------------------------
+
+		--insertar en int_recuperacion_detalle -------------------------------------------------
+		INSERT INTO [siisspolweb].siisspolweb.inversion.int_recuperacion_detalle (id_int_inversion_recuperacion, id_int_conf_fondo_cuenta, valor, creacion_usuario, creacion_fecha,creacion_equipo,modifica_usuario,modifica_fecha,modifica_equipo)
+		select @w_id_recuperacion, id_int_conf_fondo_cuenta, 
+		case when cis.tipo_rubro_movimiento='D' then cis.debe else cis.haber end, 
+		@as_usuario, 
+		GETDATE(),
+		@as_equipo,
+		@as_usuario,
+		GETDATE(),
+		@as_equipo
+		--select cis.*--tiv_id,cis.htp_tpo_id
+		--,i.id_inversion--tiv.tiv_emisor,tiv_subtipo,tpo.tpo_acta,tp.id_tipo_papel,idEmisor,imf_sis--,*
+		from bvq_backoffice.IsspolComprobanteRecuperacion cis
+
+		--select ri,rubro,* from bvq_backoffice.comprobanteisspol cis
+		where
+		datediff(hh,cis.fecha,@ad_fecha_recuperacion)=0/*'20230629'*/
+		and cis.tpo_numeracion=@as_nombre/*'ABO-2023-06-26-10'*/
+		/*and cis.id_inversion=@i_id_inversion --225*/--datediff(m,'20230901',cis.fecha)=0
+		--Fin insertar en int_recuperacion_detalle --------------------------------------------
+	end
 
 
 
