@@ -109,7 +109,7 @@ BEGIN
 						TPOR.TPO_FECHA_ENCARGO,
 						TPOR.TPO_RECURSOS,
 						TPOR.TPO_BOLETIN,
-						TPOR.TPO_ID_ANTERIOR
+						tpoAnt.tiv_id_origen
                         FROM BVQ_BACKOFFICE.TITULOS_PORTAFOLIO AS TPOR 
                              INNER JOIN BVQ_ADMINISTRACION.TITULO_VALOR AS TIT ON TPOR.TIV_ID = TIT.TIV_ID 
                              INNER JOIN BVQ_ADMINISTRACION.EMISOR AS EMISOR ON TIT.TIV_EMISOR = EMISOR.EMS_ID 
@@ -119,6 +119,7 @@ BEGIN
                              left join bvq_administracion.parametro portafolios02 on par_codigo='PORTAFOLIOS_02'
                              join BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP on HTP.HTP_TPO_ID=TPOR.TPO_ID
 							 join [bvq_backoffice].[tfObtenerSaldoTituloPortafolio] (@i_fecha) tfn on htp.htp_tpo_id=tfn.htp_tpo_id
+							 left join (select tiv_id_origen=tiv_id, tpo_id_anterior=tpo_id from BVQ_BACKOFFICE.TITULOS_PORTAFOLIO) tpoAnt on tpoAnt.tpo_id_anterior=TPOR.TPO_ID_ANTERIOR
                              WHERE /*(
 								 --TPOR.POR_ID <> @i_por_id
 								 @i_por_id is null
