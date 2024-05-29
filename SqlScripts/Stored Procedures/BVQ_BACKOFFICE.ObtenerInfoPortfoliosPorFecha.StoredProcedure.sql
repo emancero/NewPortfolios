@@ -169,7 +169,7 @@ BEGIN
                                                ,VALOR_UNITARIO=case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal else 1 end
                                                ,VALOR_NOMINAL=
                                                     case when pcorte.tvl_codigo='FI'
-                                                        then htp_compra*htp_precio_compra
+                                                        then sal*htp_precio_compra
                                                     else
                                                         sal*
                                                         case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal
@@ -275,7 +275,7 @@ BEGIN
 												END / 100.0
                                                ,NUEVO_VALOR_NOMINAL=
                                                     case when pcorte.tvl_codigo='FI'
-                                                        then htp_compra*htp_precio_compra
+                                                        then salNewValnom*htp_precio_compra
                                                     else
                                                         salNewValnom*
                                                         case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal
@@ -298,7 +298,7 @@ BEGIN
     left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
     ON pcorte.tvl_codigo = H.[TVLH_CODIGO]    
 
-                where sal>0 or salNewValNom>0 --and prop.por_id is null -- para que no incluya portafolio propio
+                where sal>0 or round(salNewValNom,2)>0 --and prop.por_id is null -- para que no incluya portafolio propio
                 order by tvl_descripcion,ems_nombre,fecha_compra
 				--and por.por_tipo<>@v_portfolio_oc	-- para ocultar portafolios ocultos
                 --order by pcorte.por_codigo,pcorte.tiv_tipo_valor,pcorte.tiv_id
