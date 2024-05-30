@@ -183,8 +183,8 @@ begin
 			end
 		end
 				
-		--insertar en log local se obtiene en la consulta de envío de recuperaciones para saber si está enviada
-		IF NOT EXISTS (SELECT 1 FROM bvq_backoffice.ISSPOL_RECUPERACION WHERE ISR_NUMERACION=@i_nombre AND ISR_FECHA=@i_fecha)
+		--insertar en log local. Se obtiene en la consulta de envío de recuperaciones para saber si está enviada
+		IF NOT EXISTS (SELECT 1 FROM bvq_backoffice.ISSPOL_RECUPERACION WHERE ISR_NUMERACION=@i_nombre AND datediff(hh,ISR_FECHA,@i_fecha)=0)
 		BEGIN
 			insert into bvq_backoffice.ISSPOL_RECUPERACION (ISR_NUMERACION, ISR_FECHA)
 												values (@i_nombre,@i_fecha)
