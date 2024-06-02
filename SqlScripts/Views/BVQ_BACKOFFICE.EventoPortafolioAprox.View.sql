@@ -68,7 +68,11 @@
 	,liq_id=htpcupon.liq_id
 	,tfl_fecha_inicio_orig=null
 	,htp_comision_bolsa
-	,prEfectivo=null
+	,prEfectivo=case when htpcupon.tiv_tipo_renta=154 then
+		(htpcupon.valefeoper
+		+isnull(case when htpcupon.htp_fecha_operacion>='20220601' then htpcupon.htp_comision_bolsa end,0)
+		)/htpcupon.montooper
+	end
 	,tiv_tipo_base=null
 	,saldo=null
 	,tiv_interes_irregular=null
@@ -78,6 +82,7 @@
 	,specialValnom=montooper
 	,ufo_uso_fondos=null
 	,ufo_rendimiento=null
+	,htpcupon.tiv_tipo_renta
 	from bvq_backoffice.htpcupon
 	left join bvq_backoffice.defaults def on htpcupon.por_id=def.por_id and htpcupon.tiv_id=def.tiv_id
 	and datediff(m,def.fecha,htpcupon.cupoper_tfl_fecha_inicio)>=0
@@ -157,6 +162,7 @@
 	,specialValnom=	-sum(isnull(htp_cobra_primer_cupon,1)*case when htp_tiene_valnom=1 then amortizacion else 0 end)
 	,ufo_uso_fondos=sum(ufo_uso_fondos)
 	,ufo_rendimiento=sum(ufo_rendimiento)
+	,tiv_tipo_renta=max(tiv_tipo_renta)
 	from bvq_backoffice.compraventaflujo
 	--where htp_tiene_valnom=1
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento

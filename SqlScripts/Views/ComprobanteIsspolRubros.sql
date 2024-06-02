@@ -54,6 +54,7 @@
 		select vint=1, rpref='2.1.02.','intAcc' rubro,4 ord ,0 deterioro, null rcxc union
 		select vint=1, rpref='2.1.02.','prov' rubro,4 ord ,0 deterioro, null rcxc union
 		select vint=1, rpref='7.1.3.','montooper' rubro,0 ord ,0 deterioro, 0 rcxc union
+		select vint=1, rpref='7.1.2.','montooper' rubro,0 ord ,0 deterioro, 0 rcxc union
 		--select vint=1, rpref='A7.1.5.','amountcxc' rubro,0 ord ,0 deterioro, 1 rcxc union --dos de dos exclusivos para cxc
 
 		--select vint=1, rpref='7.6.','valnom' rubro,3 ord ,0 deterioro, null rcxc union
@@ -64,6 +65,7 @@
 		es_vencimiento_interes=vint
 		or tiv_subtipo=3 and tasa_cupon=0 and isnull(ipr_es_cxc,0)=0
 		or oper=0 and rubro='prov'
+		or oper=1 and tiv_tipo_renta=154 and rubro='intAcc'
 	)
 	and p.prefijo=rub.rpref
 	--empatar con vigente (0 o null) o cxc (1)

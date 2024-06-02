@@ -85,6 +85,7 @@
 		,TFL_PERIODO
 		,HTP_TIENE_VALNOM
 		,specialValnom
+		,TIV_TIPO_RENTA
 		--,
 		--vep.vep_fecha,
 
@@ -199,6 +200,7 @@
 		,evt.TFL_PERIODO
 		,evt.HTP_TIENE_VALNOM
 		,evt.specialValnom
+		,evt.TIV_TIPO_RENTA
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

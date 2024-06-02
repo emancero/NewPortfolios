@@ -10,12 +10,15 @@
 	evt.tiv_fecha_vencimiento,
 	evt.tiv_tipo_valor,
 	evt.tpo_numeracion,
-	evt.oper,
+	oper= case when evt.tvl_codigo in ('ACC','CDP','ENC')
+		and evp.evp_abono=1 then
+			1
+		else evt.oper end,
 	evt.htp_id,
 	evt.htp_fecha_operacion,
 	evt.tasa_cupon,
 	evt.porv_retencion,
-	es_vencimiento_interes=isnull(evt.es_ven_interes,0),
+	es_vencimiento_interes=coalesce(evp.es_vencimiento_interes,isnull(evt.es_ven_interes,0)),
 	--evt.fecha,
 	fecha=coalesce(evp.evt_fecha,evt.fecha),
 
@@ -150,6 +153,7 @@
 	,evt.TIV_SUBTIPO
 	,evt.HTP_TIENE_VALNOM
 	,evt.specialValnom
+	,evt.TIV_TIPO_RENTA
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -160,8 +164,13 @@
 			and evp.evp_fecha_original=evt.htp_fecha_operacion
 		)
 		and
-		evp.oper_id=evt.oper and
-		evp.es_vencimiento_interes=evt.es_vencimiento_interes
+		(
+			evp.oper_id=evt.oper and
+			evp.es_vencimiento_interes=evt.es_vencimiento_interes
+			or
+			evt.tvl_codigo in ('ACC','CDP','ENC')
+			and evp.evp_abono=1
+		)
 	--evp_change_4
 	left join bvq_backoffice.CuentaContableYBancaria cta	--ObtenerDetallePortafolioConLiquidezView						ctb_descripcion_grid,ctl_id
 		--on vep_cta_id=cta.cta_id
@@ -290,6 +299,7 @@
 	,TIV_SUBTIPO = null
 	,HTP_TIENE_VALNOM=null
 	,specialValnom=null
+	,TIV_TIPO_RENTA=null
 	from
 	bvq_backoffice.evento_portafolio evp
 

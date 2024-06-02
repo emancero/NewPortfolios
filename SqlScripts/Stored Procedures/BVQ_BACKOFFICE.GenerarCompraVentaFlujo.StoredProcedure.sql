@@ -23,6 +23,7 @@ begin
 	,HTP_TIENE_VALNOM
 	,ufo_uso_fondos
 	,ufo_rendimiento
+	,tiv_tipo_renta
 	)
 	select
 	null cvf_id,--/*no se utiliza*/row_number() over (order by op.htp_id,op.tiv_id,tiv.tfl_id) cvf_id,
@@ -139,9 +140,11 @@ begin
 		,3)
 		*isnull(def_cobrado,1)
 	,op.htp_comision_bolsa
-	,prEfectivo=isnull(tpo.tpo_precio_efectivo/100.0,(op.valefeoper
-	+isnull(case when op.htp_fecha_operacion>='20220601' then op.htp_comision_bolsa end,0)
-	)/op.montooper)
+	,prEfectivo=isnull(tpo.tpo_precio_efectivo/100.0,
+		(op.valefeoper
+		+isnull(case when op.htp_fecha_operacion>='20220601' then op.htp_comision_bolsa end,0)
+		)/op.montooper
+	)
 	,saldo = round(( montoOper/isnull(nullif(cupOper_tfl_capital,0),1e) )*tfl_capital,3)
 	,op.tiv_interes_irregular
 	,TFL_INTERES
@@ -149,6 +152,7 @@ begin
 	,op.HTP_TIENE_VALNOM
 	,ufo.ufo_uso_fondos
 	,ufo.ufo_rendimiento
+	,op.tiv_tipo_renta
 	from	
 	bvq_backoffice.HtpCupon op
 	join bvq_backoffice.titulos_portafolio tpo on htp_tpo_id=tpo.tpo_id

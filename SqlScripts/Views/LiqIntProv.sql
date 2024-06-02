@@ -33,7 +33,7 @@
 			,TPO_COMISIONES,TPO_ID
 			,plazo=dbo.fnDias(hist.htp_fecha_operacion,tiv_fecha_vencimiento,case when tvl_codigo in ('BE','VCC','OBL') then 354 else 355 end)
 			,plazo_anterior=dbo.fnDias(hist.TPO_FECHA_COMPRA_ANTERIOR,hist.TPO_FECHA_VENCIMIENTO_ANTERIOR,case when tvl_codigo in ('BE','VCC','OBL') then 354 else 355 end)
-			,TPO_PRECIO_EFECTIVO
+			,TPO_PRECIO_EFECTIVO--=case when TIPO_RENTA=154 then prEfectivo else hist.TPO_PRECIO_EFECTIVO end
 			from bvq_backoffice.evttemp e
 			join bvq_backoffice.portafolio por on e.por_id=por.por_id
 			left join (

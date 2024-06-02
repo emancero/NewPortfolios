@@ -41,7 +41,7 @@ BEGIN
 		,tipo,por_ord
 		,aux=coalesce(EDPI_AUX,aux) 
 		--,sum(htp_compra) over (partition by rubro) totalCompra  
-		,sum(case when (sum(haber) is not null or cuenta like '7.1.3%') and deterioro=0 then htp_compra else 0 end) over (partition by rubro) totalCompra  
+		,sum(case when (sum(haber) is not null or cuenta like '7.1.3%' or cuenta like '7.1.2%') and deterioro=0 then htp_compra else 0 end) over (partition by rubro) totalCompra  
 		,tfl_fecha_inicio_orig  
 		,precio_efectivo=max(precio_efectivo)
 		,ICR_CODIGO  

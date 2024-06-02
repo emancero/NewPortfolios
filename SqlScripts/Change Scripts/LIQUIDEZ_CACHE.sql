@@ -88,3 +88,10 @@ IF NOT EXISTS(
 	and name='specialValnom'
 )
 	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD specialValnom float
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.LIQUIDEZ_CACHE')
+	and name='TIV_TIPO_RENTA'
+)
+	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD TIV_TIPO_RENTA INT

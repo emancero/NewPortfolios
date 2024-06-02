@@ -53,3 +53,11 @@ begin
 	 alter table bvq_backoffice.compra_venta_flujo
     add UFO_RENDIMIENTO float
 end
+
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'TIV_TIPO_RENTA'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.compra_venta_flujo'))
+BEGIN
+    alter table BVQ_BACKOFFICE.compra_venta_flujo 
+   add TIV_TIPO_RENTA int
+END
