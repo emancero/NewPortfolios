@@ -35,4 +35,4 @@
 		and evp_abono=1
 		and oper_id=1
 	) evp
-	on (evp.evp_type='DEFAULT' or evp.evt_id=e.htp_id)
+	on (evp.evp_type='DEFAULT' or evp.evt_id=e.htp_id and e.oper=1)
