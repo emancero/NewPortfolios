@@ -62,11 +62,11 @@
 				(
 						t.fecha_vencimiento=cis.tiv_fecha_vencimiento
 					and t.fecha_emision=cis.tiv_fecha_emision
-					or (tiv_tipo_renta=154 and datediff(d,cis.fecha,i.fecha)=0 and cis.tippap<>'FI')
+					or (tiv_tipo_renta=154 and datediff(d,cis.fecha_compra,i.fecha)=0 and cis.tippap<>'FI')
 					or (cis.tippap='FI' and i.fecha=cis.tiv_fecha_emision)
 				)
 				or cis.tpo_numeracion='SGE-2023-03-31' and i.id_inversion=175
-			) and i.id_inversion not in (229,230,231,233,234,235,246)
+			) and i.id_inversion not in (229,230,231,233,234,235,246,115)
 			--fin unión con la inversión
 
 			join [siisspolweb].siisspolweb.[inversion].[fondo_inversion] fi 
