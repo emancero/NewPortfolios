@@ -9,7 +9,7 @@ begin
 	--aparezca en cuentas por cobrar
 	update d set fecha='29991231'
 	from bvq_backoffice.EventoPortafolioDefaults d
-	where fecha=@i_fecha
+	where fecha=@i_fecha and tpo_numeracion=@i_numeracion
 
 	if @@ROWCOUNT>0
 	begin
