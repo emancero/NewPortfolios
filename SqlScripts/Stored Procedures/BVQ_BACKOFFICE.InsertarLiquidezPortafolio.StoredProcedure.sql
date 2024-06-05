@@ -140,6 +140,12 @@ begin
 		declare @fecha_original datetime
 		select @fecha_original=tfl_fecha_vencimiento from BVQ_ADMINISTRACION.TITULO_FLUJO TFL
 		WHERE TFL_ID=@i_evt_id/10000000
+
+		--evitar caso excepcional de Fecorsa que paga dos vencimientos del mismo título en una misma fecha
+		select top 1 @i_fecha=dateadd(hh,1,evt_fecha)
+		from bvq_backoffice.evento_portafolio evp where htp_tpo_id=@tpo_id
+		and evp_fecha=@i_fecha and @tpo_id=324
+		order by evt_fecha desc
 		
 		insert into bvq_backoffice.evento_portafolio(evt_id,por_id,oper_id,es_vencimiento_interes,evp_cobrado,evt_fecha,cta_id,evp_retencion,evp_otra_cuenta,evp_renovacion
 			--evp_change_6
@@ -176,15 +182,6 @@ begin
 			join bvq_backoffice.titulos_portafolio tpo on r.tpo_numeracion=tpo.tpo_numeracion
 			where tpo.tpo_id=@tpo_id and datediff(d,r.fecha_original,@fecha_original)=0
 		end
-
-		--evitar caso excepcional de Fecorsa que se pagan dos vencimientos del mismo título en una misma fecha
-		;with e as(
-			select * from bvq_backoffice.evento_portafolio
-		)
-		update e2 set evt_fecha=dateadd(hh,1,e.evt_fecha)
-		from e join e e2
-		on e.evp_tpo_id=e2.evp_tpo_id and e.evt_fecha=e2.evt_fecha and e.evt_id<e2.evt_id
-		and e.evp_tpo_id=324 -- quitar para generalizar
 
 
 		set @v_evp_id=scope_identity()
