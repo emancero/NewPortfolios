@@ -73,7 +73,8 @@
 	   ,DIVIDENDOS_EN_ACCIONES = DIVIDENDOS_EN_ACCIONES
 	   ,
 		--POR_SIGLAS = dbo.StringAGG(por_siglas, '-')
-		por_siglas = (SELECT
+		por_siglas = (
+				SELECT
 				STUFF((SELECT
 						distinct '-',por_ord+'',por.por_siglas+''
 					FROM BVQ_BACKOFFICE.TITULOS_PORTAFOLIO p2
@@ -87,12 +88,13 @@
 					ORDER BY por.por_ord+''
 					FOR XML PATH (''))
 				, 1, 1, ''))
-		--,numeracionb=(case when TPO_DESGLOSAR_F1 = 1 then s.htp_numeracion end)--
+		,s.desglosarb
 	    ,s.ems_abr
 	    ,s.min_tiene_valnom
 	    ,s.tiv_id
 	    ,s.tiv_split_de
 		,tfcorte
+		,s.f1group
 	FROM (SELECT
 			TVL_NOMBRE = TVL_DESCRIPCION
 		   ,CUENTA_CONTABLE = '7.1.5.90.90'

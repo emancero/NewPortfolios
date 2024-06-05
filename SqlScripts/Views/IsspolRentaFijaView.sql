@@ -76,16 +76,21 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
  ID_EMISOR = s.ID_EMISOR,
  --POR_SIGLAS = dbo.CLRSortedCssvAgg(POR_SIGLAS)
  por_siglas= (  
-        SELECT STUFF((SELECT '-' + por.por_siglas
-        FROM bvq_backoffice.titulos_portafolio p2
-        JOIN bvq_backoffice.portafolio por ON por.por_id = p2.por_id
-        WHERE p2.tpo_numeracion = s.htp_numeracion
-			AND isnull(case when p2.TPO_DESGLOSAR_F1 = 1 then p2.TPO_F1 end,-1)=isnull(case when s.TPO_DESGLOSAR_F1 = 1 then s.TPO_F1 end,-1)
-			--and isnull(p2.tpo_f1,-1)=isnull(s.tpo_f1,-1)
-            AND tpo_estado = 352
-            AND (min(min_tiene_valnom)=1 or min(min_tiene_valnom)=0 and p2.tpo_id<1500)
-        ORDER BY por.por_ord
-        FOR XML PATH('')), 1, 1, '')  ) ,
+        SELECT
+		STUFF((SELECT
+				'-' + por.por_siglas
+			FROM bvq_backoffice.titulos_portafolio p2
+			JOIN bvq_backoffice.portafolio por
+				ON por.por_id = p2.por_id
+			WHERE
+				p2.tpo_numeracion = s.htp_numeracion
+				AND isnull(case when p2.TPO_DESGLOSAR_F1 = 1 then p2.TPO_F1 end,-1)=isnull(case when s.TPO_DESGLOSAR_F1 = 1 then s.TPO_F1 end,-1)
+				--and isnull(p2.tpo_f1,-1)=isnull(s.tpo_f1,-1)
+				AND tpo_estado = 352
+				AND (min(min_tiene_valnom)=1 or min(min_tiene_valnom)=0 and p2.tpo_id<1500)
+			ORDER BY por.por_ord
+			FOR XML PATH(''))
+		, 1, 1, '') ) ,
   s.htp_numeracion,
   ems_abr,
   s.tiv_id,

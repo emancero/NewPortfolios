@@ -224,12 +224,36 @@ begin
 			end
 			else
 			begin
-				--delete retr
-				update retr set retr_fecha_cobro=convert(date,@i_fecha)
-				,retr_interes=case when @i_es_vencimiento_interes=1 then 1 else retr_interes end
-				,retr_capital=case when @i_es_vencimiento_interes=0 then 1 else retr_capital end
-				from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
-				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
+				if @abono=0
+				begin
+					declare @v_retr_id int = (select top 1 retr_id from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
+					where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000)
+
+					EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
+					@i_lga_id = @i_lga_id,
+					@i_tabla = 'RETRASO',
+					@i_esquema = N'BVQ_BACKOFFICE',
+					@i_operacion = N'U',
+					@i_subTipo = N'A',
+					@i_columIdName = 'RETR_ID',
+					@i_idAfectado = @v_retr_id;
+
+					--delete retr
+					update retr set retr_fecha_cobro=convert(date,@i_fecha)
+					,retr_interes=case when @i_es_vencimiento_interes=1 then 1 else retr_interes end
+					,retr_capital=case when @i_es_vencimiento_interes=0 then 1 else retr_capital end
+					from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
+					where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
+
+					EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
+					@i_lga_id = @i_lga_id,
+					@i_tabla = 'RETRASO',
+					@i_esquema = N'BVQ_BACKOFFICE',
+					@i_operacion = N'U',
+					@i_subTipo = N'N',
+					@i_columIdName = 'RETR_ID',
+					@i_idAfectado = @v_retr_id;
+				end
 			end
 		end
 	end
