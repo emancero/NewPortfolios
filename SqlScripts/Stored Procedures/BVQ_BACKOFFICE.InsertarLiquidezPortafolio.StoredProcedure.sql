@@ -142,10 +142,10 @@ begin
 		WHERE TFL_ID=@i_evt_id/10000000
 
 		--evitar caso excepcional de Fecorsa que paga dos vencimientos del mismo título en una misma fecha
-		select top 1 @i_fecha=dateadd(hh,1,evt_fecha)
-		from bvq_backoffice.evento_portafolio evp where htp_tpo_id=@tpo_id
-		and evp_fecha=@i_fecha and tpo_id=@tpo_id and @tpo_id in (321,324)
-		order by evt_fecha desc
+		select top 1 @i_fecha=dateadd(hh,1,fecha)
+		from bvq_backoffice.evttemp evp where htp_tpo_id=@tpo_id
+		and fecha=@i_fecha and @tpo_id in (321,324) and evp_id is not null
+		order by fecha desc
 		
 		insert into bvq_backoffice.evento_portafolio(evt_id,por_id,oper_id,es_vencimiento_interes,evp_cobrado,evt_fecha,cta_id,evp_retencion,evp_otra_cuenta,evp_renovacion
 			--evp_change_6
