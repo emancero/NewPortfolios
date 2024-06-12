@@ -152,6 +152,7 @@
 			END
 		   ,YIELD =
 			CASE
+				WHEN [tvl_codigo] in ('DER','PAG') THEN NULL
 				WHEN [tvl_codigo] IN ('FAC', 'PCO') THEN [HTP_RENDIMIENTO]
 				ELSE [tiv_tasa_interes]
 			END / 100.0
