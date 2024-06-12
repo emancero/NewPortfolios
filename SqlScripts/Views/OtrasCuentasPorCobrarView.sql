@@ -95,6 +95,7 @@
 	    ,s.tiv_split_de
 		,tfcorte
 		,s.f1group
+		,s.TPO_FECHA_VENCIMIENTO_ANTERIOR
 	FROM (SELECT
 			TVL_NOMBRE = TVL_DESCRIPCION
 		   ,CUENTA_CONTABLE = '7.1.5.90.90'
@@ -104,11 +105,11 @@
 					ISNULL([IPR_ES_CXC], 0) = 0 THEN [tiv_codigo_vector]
 			END
 		   ,TIPO = TVL_DESCRIPCION
-		   ,CUPON = [tiv_tasa_interes] / 100.0
+		   ,CUPON = case when tiv_subtipo=3 then 0 else [tiv_tasa_interes] / 100.0 end
 		   ,PLAZO_PACTADO = dbo.fnDiasEu([fecha_compra], [tiv_fecha_vencimiento], tiv_tipo_base)
 		   ,FECHA_VENCIMIENTO_CONVENIO_PAGO = TPO_FECHA_VEN_CONVENIO
 		   ,FECHA_SUSCRIPCION_CONVENIO_PAGO = TPO_FECHA_SUSC_CONVENIO
-		   ,FECHA_VENCIMIENTO_ORIGINAL = tiv_fecha_vencimiento
+		   ,FECHA_VENCIMIENTO_ORIGINAL = coalesce(TPO_FECHA_VENCIMIENTO_ANTERIOR,tiv_fecha_vencimiento)
 		   ,DECRETO_EMISOR = [ems_nombre] + ISNULL('/' + [ACP_NOMBRE], '')
 		   ,intervinientes = TPO_INTERVINIENTES
 		   ,VALOR_NOMINAL = sal
@@ -342,6 +343,7 @@
 		   ,pc.tiv_id
 		   ,pc.tiv_split_de
 		   ,tfcorte
+		   ,pc.TPO_FECHA_VENCIMIENTO_ANTERIOR
 		FROM BVQ_BACKOFFICE.PortafolioCorte pc
 		JOIN BVQ_BACKOFFICE.PORTAFOLIO port
 			ON pc.por_id = port.POR_ID
@@ -414,4 +416,5 @@
 		    ,s.tiv_id
 		    ,s.tiv_split_de
 			,s.tfcorte
+			,s.TPO_FECHA_VENCIMIENTO_ANTERIOR
 	HAVING SUM(VALOR_NOMINAL)>=1

@@ -257,7 +257,7 @@
 		CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN [fecha_compra] end
 	END
 	,prEfectivo
-
+	,htp.TPO_FECHA_VENCIMIENTO_ANTERIOR
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -442,6 +442,7 @@
 					,e.tiv_subtipo
 					,e.MIN_TIENE_VALNOM
 					,e.prEfectivo
+					,TPO.TPO_FECHA_VENCIMIENTO_ANTERIOR
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  
