@@ -82,7 +82,8 @@
 						ON por.por_id = p2.por_id
 					WHERE (
 						p2.TPO_NUMERACION = s.desglosarB
-						or p2.TPO_PROG='cxcnomovs' and p2.tpo_f1=s.f1group--s.htp_numeracion
+						and isnull(p2.tpo_f1,-1)=isnull(case when s.TPO_DESGLOSAR_F1 = 1 then s.TPO_F1 end,-1)
+						--or p2.TPO_PROG='cxcnomovs' and p2.tpo_f1=s.f1group--s.htp_numeracion
 					)
 					AND TPO_ESTADO = 352
 					ORDER BY por.por_ord+''
@@ -96,6 +97,7 @@
 		,tfcorte
 		,s.f1group
 		,s.TPO_FECHA_VENCIMIENTO_ANTERIOR
+		,DesglosarF1=(case when s.TPO_DESGLOSAR_F1 = 1 then s.TPO_F1 end)
 	FROM (SELECT
 			TVL_NOMBRE = TVL_DESCRIPCION
 		   ,CUENTA_CONTABLE = '7.1.5.90.90'
