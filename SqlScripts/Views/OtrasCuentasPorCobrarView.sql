@@ -111,7 +111,9 @@
 		   ,PLAZO_PACTADO = dbo.fnDiasEu([fecha_compra], [tiv_fecha_vencimiento], tiv_tipo_base)
 		   ,FECHA_VENCIMIENTO_CONVENIO_PAGO = TPO_FECHA_VEN_CONVENIO
 		   ,FECHA_SUSCRIPCION_CONVENIO_PAGO = TPO_FECHA_SUSC_CONVENIO
-		   ,FECHA_VENCIMIENTO_ORIGINAL = coalesce(TPO_FECHA_VENCIMIENTO_ANTERIOR,tiv_fecha_vencimiento)
+		   ,FECHA_VENCIMIENTO_ORIGINAL = coalesce(
+				TPO_FECHA_VENCIMIENTO_ANTERIOR
+				,tiv_fecha_vencimiento)
 		   ,DECRETO_EMISOR = [ems_nombre] + ISNULL('/' + [ACP_NOMBRE], '')
 		   ,intervinientes = TPO_INTERVINIENTES
 		   ,VALOR_NOMINAL = sal
