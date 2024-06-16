@@ -112,7 +112,11 @@
 		   ,FECHA_VENCIMIENTO_CONVENIO_PAGO = TPO_FECHA_VEN_CONVENIO
 		   ,FECHA_SUSCRIPCION_CONVENIO_PAGO = TPO_FECHA_SUSC_CONVENIO
 		   ,FECHA_VENCIMIENTO_ORIGINAL = coalesce(
-				TPO_FECHA_VENCIMIENTO_ANTERIOR
+				case when tvl_codigo='SWAP' then
+					convert(datetime,'20341228')
+				when htp_numeracion not like 'FEC-%' then
+					TPO_FECHA_VENCIMIENTO_ANTERIOR
+				end
 				,tiv_fecha_vencimiento)
 		   ,DECRETO_EMISOR = [ems_nombre] + ISNULL('/' + [ACP_NOMBRE], '')
 		   ,intervinientes = TPO_INTERVINIENTES
@@ -132,7 +136,13 @@
 				WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
 				ELSE sal * [tiv_precio] / 100.0
 			END
-		   ,INTERES_TRANSCURRIDO = [TPO_INTERES_TRANSCURRIDO]
+		   ,INTERES_TRANSCURRIDO =
+			   case when
+				   tvl_codigo='PACTO'
+				   and htp_numeracion not in ('MDF-2018-11-27') --excepciones
+			   then
+					[TPO_INTERES_TRANSCURRIDO]
+			   else 0 end
 		   ,PRECIO_DE_HOY =
 			CASE
 				WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') THEN [tiv_precio] / 100.0
