@@ -98,6 +98,7 @@
 		,s.f1group
 		,s.TPO_FECHA_VENCIMIENTO_ANTERIOR
 		,DesglosarF1=(case when s.TPO_DESGLOSAR_F1 = 1 then s.TPO_F1 end)
+		,valefe=sum(valefe)
 	FROM (SELECT
 			TVL_NOMBRE = TVL_DESCRIPCION
 		   ,CUENTA_CONTABLE = '7.1.5.90.90'
@@ -213,7 +214,7 @@
 						ELSE 0
 					END)
 					* [HTP_RENDIMIENTO] / 100.0 / 360.0
-				ELSE (sal - ISNULL(TPO_VALNOM_ANTERIOR, 0))
+				ELSE (sal - ISNULL(case when EMS_ABR='PURA_VIDA' then TPO_VALNOM_ANTERIOR end, 0))
 					* [tiv_tasa_interes]
 					/ 100.0 / 360.0
 			END
@@ -359,6 +360,7 @@
 		   ,pc.tiv_split_de
 		   ,tfcorte
 		   ,pc.TPO_FECHA_VENCIMIENTO_ANTERIOR
+		   ,pc.valefe
 		FROM BVQ_BACKOFFICE.PortafolioCorte pc
 		JOIN BVQ_BACKOFFICE.PORTAFOLIO port
 			ON pc.por_id = port.POR_ID
