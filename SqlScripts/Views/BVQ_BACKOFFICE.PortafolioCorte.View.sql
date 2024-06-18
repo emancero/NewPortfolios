@@ -258,6 +258,7 @@
 	END
 	,prEfectivo
 	,htp.TPO_FECHA_VENCIMIENTO_ANTERIOR
+	,htp.fechaInicioOriginal
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -443,6 +444,7 @@
 					,e.MIN_TIENE_VALNOM
 					,e.prEfectivo
 					,TPO.TPO_FECHA_VENCIMIENTO_ANTERIOR
+					,e.fechaInicioOriginal
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  

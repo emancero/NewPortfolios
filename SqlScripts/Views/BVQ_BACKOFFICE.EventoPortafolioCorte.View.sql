@@ -126,6 +126,7 @@
 	,ufo_rendimiento=sum(ufo_rendimiento)
 	,MIN_TIENE_VALNOM=min(HTP_TIENE_VALNOM)
 	,prEfectivo=min(prEfectivo)
+	,fechaInicioOriginal=max(cupoper_tfl_fecha_inicio)
 	from bvq_backoffice.EventoPortafolio e
 	join corteslist c on
 	coalesce(
