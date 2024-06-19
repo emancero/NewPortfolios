@@ -24,6 +24,9 @@ begin
 	,ufo_uso_fondos
 	,ufo_rendimiento
 	,tiv_tipo_renta
+	,totalUfoUsoFondos
+	,totalUfoRendimiento
+	,htp_numeracion_2
 	)
 	select
 	null cvf_id,--/*no se utiliza*/row_number() over (order by op.htp_id,op.tiv_id,tiv.tfl_id) cvf_id,
@@ -153,7 +156,10 @@ begin
 	,ufo.ufo_uso_fondos
 	,ufo.ufo_rendimiento
 	,op.tiv_tipo_renta
-	from	
+	,ufo.totalUfoUsoFondos
+	,ufo.totalUfoRendimiento
+	,op.htp_numeracion_2
+	from
 	bvq_backoffice.HtpCupon op
 	join bvq_backoffice.titulos_portafolio tpo on htp_tpo_id=tpo.tpo_id
 	join bvq_administracion.TituloFlujoComun tiv

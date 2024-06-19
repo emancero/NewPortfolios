@@ -185,7 +185,12 @@
 		   ,CALIFICADORA_DE_RIESGO = [CAL_NOMBRE]
 		   ,CALIFICACION_DE_RIESGO = COALESCE([ENC_VALOR], [TCA_VALOR])
 		   ,VALOR_PROVISIONADO = sal * [tiv_precio] / 100.0
-		   ,FECHA_DE_PAGO_ULTIMO_CUPON = latest_inicio
+		   ,FECHA_DE_PAGO_ULTIMO_CUPON = 
+				case when TPO_FECHA_SUSC_CONVENIO is not null then
+					fechaInicioOriginal
+				else
+					latest_inicio
+				end
 		   ,DIAS_DE_INTERES_GANADO =
 			CASE
 				WHEN tvl_codigo IN
@@ -206,7 +211,8 @@
 			CASE
 				WHEN [tvl_codigo] IN ('FAC', 'PCO', 'PACTO') THEN (CASE
 						WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
-						ELSE pc.valefe
+						WHEN valefeConRendimiento is not null THEN valefeConRendimiento
+						else pc.valefe
 					END +
 					CASE
 						WHEN TPO_INTERVINIENTES
@@ -225,29 +231,31 @@
 			--,INTERES_POR_DIAS_DE_RETRASO=
 			--CASE WHEN [TPO_FECHA_SUSC_CONVENIO] is not null THEN sal*[TIV_PRECIO]/100.0*datediff(d,[TIV_FECHA_VENCIMIENTO],[LATEST_INICIO])/360.0*CASE WHEN [TVL_CODIGO] in ('FAC','PCO') THEN [HTP_RENDIMIENTO] ELSE [TIV_TASA_INTERES] END/100.0 END,
 		   ,INTERES_AL_VENCIMIENTO_ORIGINAL_ =
-			CASE
-				WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN [sal] * DATEDIFF(d, [fecha_compra], [tiv_fecha_vencimiento]) / 360.0 *
-					CASE
-						WHEN [tvl_codigo] IN ('FAC', 'PCO') THEN 0/*[HTP_RENDIMIENTO]*/
-						ELSE [tiv_tasa_interes]
-					END / 100.0
-				WHEN pc.tiv_emisor = 1000036 THEN (sal * [tiv_precio] / 100.0) * (dbo.fnDiasEu([fecha_compra], [tiv_fecha_vencimiento], tiv_tipo_base)) * ([tiv_tasa_interes] / 100.0) / 360
-				WHEN pc.tiv_emisor = 1000042 THEN (CASE
-						WHEN tiv_fecha_vencimiento > latest_inicio THEN sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, tiv_fecha_vencimiento) / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360
-					END)
-			END
+		   pc.totalUfoRendimiento -
+		   pc.ufo_rendimiento
+			--CASE
+			--	WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN [sal] * DATEDIFF(d, [fecha_compra], [tiv_fecha_vencimiento]) / 360.0 *
+			--		CASE
+			--			WHEN [tvl_codigo] IN ('FAC', 'PCO') THEN 0/*[HTP_RENDIMIENTO]*/
+			--			ELSE [tiv_tasa_interes]
+			--		END / 100.0
+			--	WHEN pc.tiv_emisor = 1000036 THEN (sal * [tiv_precio] / 100.0) * (dbo.fnDiasEu([fecha_compra], [tiv_fecha_vencimiento], tiv_tipo_base)) * ([tiv_tasa_interes] / 100.0) / 360
+			--	WHEN pc.tiv_emisor = 1000042 THEN (CASE
+			--			WHEN tiv_fecha_vencimiento > latest_inicio THEN sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, tiv_fecha_vencimiento) / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360
+			--		END)
+			--END
 		   ,INTERES_POR_DIAS_DE_RETRASO =
+		   pc.totalUfoUsoFondos -
+		   pc.ufo_uso_fondos
+			--CASE
+			--	WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN sal * [tiv_precio] / 100.0 * DATEDIFF(d, [tiv_fecha_vencimiento], [latest_inicio]) / 360.0 *
+			--		CASE
+			--			WHEN [tvl_codigo] IN ('FAC', 'PCO') THEN [HTP_RENDIMIENTO]
+			--			ELSE [tiv_tasa_interes]
+			--		END / 100.0
 
-			CASE
-				WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN sal * [tiv_precio] / 100.0 * DATEDIFF(d, [tiv_fecha_vencimiento], [latest_inicio]) / 360.0 *
-					CASE
-						WHEN [tvl_codigo] IN ('FAC', 'PCO') THEN [HTP_RENDIMIENTO]
-						ELSE [tiv_tasa_interes]
-					END / 100.0
-
-				--WHEN pc.tiv_emisor = 1000036 THEN -1
-				WHEN pc.tiv_emisor = 1000042 THEN sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, '20221005') / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360
-			END
+			--	WHEN pc.tiv_emisor = 1000042 THEN sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, '20221005') / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360
+			--END
 		   ,PCT_A_AJUSTAR =
 			CASE
 				WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') THEN 1 - [TPO_PRECIO_ULTIMA_COMPRA]

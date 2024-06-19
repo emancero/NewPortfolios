@@ -17,7 +17,7 @@
 	dias_al_corte=
 		dbo.fnDias(
 			--latest_inicio
-			case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
+			case when tpo_fecha_susc_convenio is not null then fechaInicioOriginal when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
 			,c,case when tiv_accrual_365=1 then 355 when tiv_tipo_valor in (5,6,11) then 354 else tiv.tiv_tipo_base end)
 		+case when tiv_accrual_365=1 then 1 else 0 end
 		+case when tiv_codigo like 'CEAOBL29%' or htp_numeracion='CEA-2022-12-27-5' then 1 else 0 end --porque es 29 de febrero
@@ -259,6 +259,8 @@
 	,prEfectivo
 	,htp.TPO_FECHA_VENCIMIENTO_ANTERIOR
 	,htp.fechaInicioOriginal
+	,htp.totalUfoUsoFondos
+	,htp.totalUfoRendimiento
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -445,6 +447,8 @@
 					,e.prEfectivo
 					,TPO.TPO_FECHA_VENCIMIENTO_ANTERIOR
 					,e.fechaInicioOriginal
+					,e.totalUfoUsoFondos
+					,e.totalUfoRendimiento
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  

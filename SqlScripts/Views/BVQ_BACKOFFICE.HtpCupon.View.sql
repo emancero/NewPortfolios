@@ -64,6 +64,7 @@
 		,op.htp_comision_bolsa
 		,op.HTP_TIENE_VALNOM
 		,cupoper.tiv_tipo_renta
+		,op.htp_numeracion_2
 	from bvq_backoffice.historico_titulos_portafolio op
 		--Averiguar si es reporto para utilizar TPR_SALDO como base del proporcional
 		left join BVQ_BACKOFFICE.TITULOS_PORTAFOLIO_REPORTO tpr

@@ -61,3 +61,27 @@ BEGIN
     alter table BVQ_BACKOFFICE.compra_venta_flujo 
    add TIV_TIPO_RENTA int
 END
+
+if NOT EXISTS (SELECT 1 FROM sys.columns 
+          WHERE Name = N'totalUfoUsoFondos'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.compra_venta_flujo'))
+begin
+	 alter table bvq_backoffice.compra_venta_flujo
+    add totalUfoUsoFondos float
+end
+
+if NOT EXISTS (SELECT 1 FROM sys.columns 
+          WHERE Name = N'totalUfoRendimiento'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.compra_venta_flujo'))
+begin
+	 alter table bvq_backoffice.compra_venta_flujo
+    add totalUfoRendimiento float
+end
+
+if NOT EXISTS (SELECT 1 FROM sys.columns 
+          WHERE Name = N'htp_numeracion_2'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.compra_venta_flujo'))
+begin
+	 alter table bvq_backoffice.compra_venta_flujo
+    add htp_numeracion_2 varchar(100)
+end
