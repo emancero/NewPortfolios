@@ -230,9 +230,10 @@
 			--THEN [sal]*datediff(d,[FECHA_COMPRA],[TIV_FECHA_VENCIMIENTO])/360.0*CASE WHEN [TVL_CODIGO] in ('FAC','PCO') THEN 0/*[HTP_RENDIMIENTO]*/ ELSE [TIV_TASA_INTERES] END/100.0 END
 			--,INTERES_POR_DIAS_DE_RETRASO=
 			--CASE WHEN [TPO_FECHA_SUSC_CONVENIO] is not null THEN sal*[TIV_PRECIO]/100.0*datediff(d,[TIV_FECHA_VENCIMIENTO],[LATEST_INICIO])/360.0*CASE WHEN [TVL_CODIGO] in ('FAC','PCO') THEN [HTP_RENDIMIENTO] ELSE [TIV_TASA_INTERES] END/100.0 END,
-		   ,INTERES_AL_VENCIMIENTO_ORIGINAL_ =
+		   ,INTERES_AL_VENCIMIENTO_ORIGINAL_ = case when ems_abr='INTEROCEANICA' then null else
 		   pc.totalUfoRendimiento -
 		   pc.ufo_rendimiento
+		   end
 			--CASE
 			--	WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN [sal] * DATEDIFF(d, [fecha_compra], [tiv_fecha_vencimiento]) / 360.0 *
 			--		CASE
@@ -244,9 +245,10 @@
 			--			WHEN tiv_fecha_vencimiento > latest_inicio THEN sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, tiv_fecha_vencimiento) / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360
 			--		END)
 			--END
-		   ,INTERES_POR_DIAS_DE_RETRASO =
+		   ,INTERES_POR_DIAS_DE_RETRASO = case when ems_abr='INTEROCEANICA' then null else
 		   pc.totalUfoUsoFondos -
 		   pc.ufo_uso_fondos
+		   end
 			--CASE
 			--	WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN sal * [tiv_precio] / 100.0 * DATEDIFF(d, [tiv_fecha_vencimiento], [latest_inicio]) / 360.0 *
 			--		CASE
