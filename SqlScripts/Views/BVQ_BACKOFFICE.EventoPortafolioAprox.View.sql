@@ -83,8 +83,6 @@
 	,ufo_uso_fondos=null
 	,ufo_rendimiento=null
 	,htpcupon.tiv_tipo_renta
-	,totalUfoUsoFondos=null
-	,totalUfoRendimiento=null
 	from bvq_backoffice.htpcupon
 	left join bvq_backoffice.defaults def on htpcupon.por_id=def.por_id and htpcupon.tiv_id=def.tiv_id
 	and datediff(m,def.fecha,htpcupon.cupoper_tfl_fecha_inicio)>=0
@@ -153,7 +151,7 @@
 	,tfl_periodo
 	,liq_id=null
 	,tfl_fecha_inicio_orig
-	,htp_comision_bolsa
+	,htp_comision_bolsa=sum(htp_comision_bolsa)
 	,prEfectivo=max(prEfectivo)
 	,tiv_tipo_base
 	,saldo=sum(saldo)
@@ -165,11 +163,9 @@
 	,ufo_uso_fondos=sum(ufo_uso_fondos)
 	,ufo_rendimiento=sum(ufo_rendimiento)
 	,tiv_tipo_renta=max(tiv_tipo_renta)
-	,totalUfoUsoFondos=max(totalUfoUsoFondos)
-	,totalUfoRendimiento=max(totalUfoRendimiento)
 	from bvq_backoffice.compraventaflujo
 	--where htp_tiene_valnom=1
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento
-	group by htp_tpo_id,tfl_id,tfl_fecha_vencimiento,vencimiento,tfl_capital,tfl_amortizacion,def_cobrado,tfl_fecha_inicio,/*retr_fecha_esperada,*/base_denominador,/*itasa_interes,*/tfl_fecha_vencimiento2,dias_cupon,compra_htp_id,isnull(htp_numeracion,''),TFL_PERIODO,tfl_fecha_inicio_orig,htp_comision_bolsa
+	group by htp_tpo_id,tfl_id,tfl_fecha_vencimiento,vencimiento,tfl_capital,tfl_amortizacion,def_cobrado,tfl_fecha_inicio,/*retr_fecha_esperada,*/base_denominador,/*itasa_interes,*/tfl_fecha_vencimiento2,dias_cupon,compra_htp_id,isnull(htp_numeracion,''),TFL_PERIODO,tfl_fecha_inicio_orig
+	--,htp_comision_bolsa
 	,	tiv_tipo_base,tiv_interes_irregular,tfl_interes,FON_ID,tiv_subtipo--,HTP_TIENE_VALNOM
-
