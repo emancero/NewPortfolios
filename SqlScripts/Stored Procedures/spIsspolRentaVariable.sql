@@ -92,7 +92,8 @@
                     AND tpo_estado = 352
               ORDER BY por.por_ord
               FOR XML PATH('')), 1, 1, '')
- )   
+ )
+ ,PRECIO_INFO_BASICA=1.0
   from(  
    select   
  TVL_NOMBRE=COALESCE(TVLH_TIPOSC, TVL_CODIGO ),  
@@ -201,7 +202,8 @@
  ORD=case when tvl_codigo='FI' then 1 else 0 end ,
  --por_siglas = por_siglas  
  port.por_ord as orden,
-pc.htp_numeracion
+ pc.htp_numeracion,
+ PRECIO_INFO_BASICA=1.0
  --select * from rvout where cname like '%calif%'  
    from bvq_backoffice.portafoliocorte pc  
    join BVQ_BACKOFFICE.PORTAFOLIO port on pc.por_id = port.POR_ID

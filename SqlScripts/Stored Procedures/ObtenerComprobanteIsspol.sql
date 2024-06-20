@@ -35,7 +35,7 @@ BEGIN
 		,tiv_fecha_emision
 		,rubro
 		,monto=sum(monto)--merge
-		,hist_fecha_compra
+		,hist_fecha_compra=min(hist_fecha_compra)
 		,hist_precio_compra=max(hist_precio_compra)
 		,rubroOrd  
 		,tipo,por_ord
@@ -45,15 +45,15 @@ BEGIN
 		,tfl_fecha_inicio_orig  
 		,precio_efectivo=max(precio_efectivo)
 		,ICR_CODIGO  
-		,plazo
-		,ipr_es_cxc
+		,plazo=max(plazo)
+		,ipr_es_cxc=isnull(ipr_es_cxc,0)
 		,deterioro
 		,itrans=sum(itrans)
 		,evp_referencia
 		,UFO_USO_FONDOS=sum(UFO_USO_FONDOS)
 		,UFO_RENDIMIENTO=sum(UFO_RENDIMIENTO)
 		,TPO_BOLETIN=max(TPO_BOLETIN)
-		,TPO_FECHA_COMPRA_ANTERIOR
+		,TPO_FECHA_COMPRA_ANTERIOR=max(tpo_fecha_compra_anterior)
 		,TPO_PRECIO_COMPRA_ANTERIOR
 		,TPO_FECHA_VENCIMIENTO_ANTERIOR
 		,plazo_anterior
@@ -91,7 +91,7 @@ BEGIN
 		,tiv_fecha_emision
 		,rubro
 		--,monto --merge
-		,hist_fecha_compra
+		--,hist_fecha_compra
 		--,hist_precio_compra  
 		,rubroOrd  
 		,tipo
@@ -102,12 +102,12 @@ BEGIN
 		,tfl_fecha_inicio_orig  
 		--,precio_efectivo  
 		,ICR_CODIGO  
-		,plazo
-		,ipr_es_cxc
+		--,plazo
+		,isnull(ipr_es_cxc,0)
 		,deterioro
 		--,itrans
 		,evp_referencia
-		,TPO_FECHA_COMPRA_ANTERIOR
+		--,TPO_FECHA_COMPRA_ANTERIOR
 		,TPO_PRECIO_COMPRA_ANTERIOR
 		,TPO_FECHA_VENCIMIENTO_ANTERIOR
 		,plazo_anterior
