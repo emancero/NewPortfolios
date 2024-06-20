@@ -187,7 +187,7 @@
  GCXC_NOMBRE=[GCXC_NOMBRE],  
  TVL_CODIGO=[TVL_CODIGO],  
  EMS_NOMBRE=[EMS_NOMBRE],  
- TPO_F1=[TPO_F1],  
+ TPO_F1=case when tvl_codigo='ENC' then 1 else 0 end *100000000 + datediff(d,'20120101',fecha_compra)*1000+isnull(tpo_f1,0), --','+format(fecha_compra,'yyyyMMdd')+','+rtrim(TPO_F1),--[TPO_F1],  
  OTROS_COSTOS=TPO_OTROS_COSTOS,  
  COMISIONES=TPO_COMISION_BOLSA,  
  TPO_PROG=[TPO_PROG],  
@@ -239,4 +239,5 @@ pc.htp_numeracion
    WHERE @i_fechaCorte between isnull(INC_FECHA_DESDE,0) and isnull(INC_FECHA_HASTA,'9999-12-31T00:00:00')  
    AND INC_ARCHIVO='RV'  
    ORDER BY INC_ORDEN  
- end 
+ end
+ 
