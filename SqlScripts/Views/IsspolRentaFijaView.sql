@@ -99,7 +99,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
   from(
    select     
    TVL_NOMBRE=
-        COALESCE(TVLH_TIPOSC, TVL_CODIGO )
+        COALESCE(case when TVL_CODIGO='PCO' and tiv_subtipo=4 then 'PCI' end, TVLH_TIPOSC, TVL_CODIGO )
         +case when tiv_split_de is not null and tiv_split_de not in ('0','') then
             '-SUT2'
         when tiv_numero_tramo_sicav is not null then
