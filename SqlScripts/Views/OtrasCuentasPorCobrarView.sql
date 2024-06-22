@@ -110,16 +110,20 @@
 			END
 		   ,TIPO = TVL_DESCRIPCION
 		   ,CUPON = case when tiv_subtipo=3 then 0 else [tiv_tasa_interes] / 100.0 end
-		   ,PLAZO_PACTADO = dbo.fnDiasEu([fecha_compra], [tiv_fecha_vencimiento], tiv_tipo_base)
+		   ,PLAZO_PACTADO = dbo.fnDiasEu([fecha_compra]
+			, [tiv_fecha_vencimiento]
+			, tiv_tipo_base)
 		   ,FECHA_VENCIMIENTO_CONVENIO_PAGO = TPO_FECHA_VEN_CONVENIO
 		   ,FECHA_SUSCRIPCION_CONVENIO_PAGO = TPO_FECHA_SUSC_CONVENIO
-		   ,FECHA_VENCIMIENTO_ORIGINAL = coalesce(
-				case when tvl_codigo='SWAP' then
-					convert(datetime,'20341228')
-				when htp_numeracion not like 'FEC-%' then
-					TPO_FECHA_VENCIMIENTO_ANTERIOR
-				end
-				,tiv_fecha_vencimiento)
+		   ,FECHA_VENCIMIENTO_ORIGINAL =
+				coalesce(
+					case when tvl_codigo='SWAP' then
+						convert(datetime,'20341228')
+					when htp_numeracion not like 'FEC-%' then
+						TPO_FECHA_VENCIMIENTO_ANTERIOR
+					end
+					,tiv_fecha_vencimiento
+				)
 		   ,DECRETO_EMISOR = [ems_nombre] + ISNULL('/' + [ACP_NOMBRE], '')
 		   ,intervinientes = TPO_INTERVINIENTES
 		   ,VALOR_NOMINAL = sal
