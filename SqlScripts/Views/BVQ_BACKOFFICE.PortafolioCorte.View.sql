@@ -261,6 +261,9 @@
 	,htp.fechaInicioOriginal
 	,htp.totalUfoUsoFondos
 	,htp.totalUfoRendimiento
+	,htp.TPO_FECHA_COMPRA_ANTERIOR
+	--,plazo_anterior=dbo.fnDias(htp.TPO_FECHA_COMPRA_ANTERIOR,htp.TPO_FECHA_VENCIMIENTO_ANTERIOR,case when tvl_codigo in ('BE','VCC','OBL') then 354 else 355 end)
+
 	/*,
 	tpo_categoria_inversion*/
 	from
@@ -449,6 +452,7 @@
 					,e.fechaInicioOriginal
 					,e.totalUfoUsoFondos
 					,e.totalUfoRendimiento
+					,TPO.TPO_FECHA_COMPRA_ANTERIOR
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  

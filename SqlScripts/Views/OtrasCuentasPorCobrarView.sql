@@ -110,9 +110,35 @@
 			END
 		   ,TIPO = TVL_DESCRIPCION
 		   ,CUPON = case when tiv_subtipo=3 then 0 else [tiv_tasa_interes] / 100.0 end
-		   ,PLAZO_PACTADO = dbo.fnDiasEu([fecha_compra]
-			, [tiv_fecha_vencimiento]
-			, tiv_tipo_base)
+		   ,PLAZO_PACTADO =
+		    --pc.plazo_anterior
+			--dbo.fnDias(pc.TPO_FECHA_COMPRA_ANTERIOR,pc.TPO_FECHA_VENCIMIENTO_ANTERIOR,case when tvl_codigo in ('BE','VCC','OBL') then 354 else 355 end)
+		   dbo.fnDiasEu(
+			--[fecha_compra]
+				coalesce(
+					case when htp_numeracion not like 'FEC-%' then
+						TPO_FECHA_COMPRA_ANTERIOR
+					end
+					,fecha_compra
+				)
+			,
+			--[tiv_fecha_vencimiento]
+				coalesce(
+					case when tvl_codigo='SWAP' then
+						convert(datetime,'20341228')
+					when htp_numeracion not like 'FEC-%' then
+						TPO_FECHA_VENCIMIENTO_ANTERIOR
+					end
+					,
+					tiv_fecha_vencimiento
+				)
+			,
+				case when tpo_fecha_susc_convenio is not null then 
+					case when tvl_codigo in ('BE','VCC','OBL') then	354 else 355 end
+				else
+					tiv_tipo_base
+				end
+			)
 		   ,FECHA_VENCIMIENTO_CONVENIO_PAGO = TPO_FECHA_VEN_CONVENIO
 		   ,FECHA_SUSCRIPCION_CONVENIO_PAGO = TPO_FECHA_SUSC_CONVENIO
 		   ,FECHA_VENCIMIENTO_ORIGINAL =
@@ -164,7 +190,13 @@
 		   ,VALOR_DE_MERCADO = valefe
 		   ,PCT_DEL_VALOR_DE_MERCADO = [valefe]
 		   ,VENCER = DATEDIFF(d, [tfcorte], [tiv_fecha_vencimiento])
-		   ,FECHA_VALOR_DE_COMPRA = fecha_compra
+		   ,FECHA_VALOR_DE_COMPRA = --fecha_compra
+				coalesce(
+					case when htp_numeracion not like 'FEC-%' then
+						TPO_FECHA_COMPRA_ANTERIOR
+					end
+					,fecha_compra
+				)
 		   ,VALOR_EFECTIVO_HISTORICO = ISNULL([TPO_INTERES_TRANSCURRIDO], 0) + ISNULL([TPO_COMISION_BOLSA], 0) + coalesce(valnomCompraAnterior,[htp_compra]) * coalesce(precioCompraAnterior, [htp_precio_compra]) /
 			CASE
 				WHEN [tiv_tipo_renta] = 153 THEN 100e
