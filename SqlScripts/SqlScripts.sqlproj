@@ -122,6 +122,7 @@
     <None Include="Stored Procedures\EnviarMsj.sql" />
     <None Include="Views\DetallePortafolio.sql" />
     <None Include="Stored Procedures\spIsspolRentaVariable.sql" />
+    <None Include="Functions\fnDias.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
