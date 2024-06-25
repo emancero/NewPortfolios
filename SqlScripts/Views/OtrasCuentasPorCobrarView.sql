@@ -177,7 +177,9 @@
 			   else 0 end
 		   ,PRECIO_DE_HOY =
 			CASE
-				WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') THEN [tiv_precio] / 100.0
+				WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG', 'PACTO')
+				--and not (tvl_codigo in ('PACTO') )--and not datediff(m,'20181001',fecha_compra) in (0,1))
+				THEN [tiv_precio] / 100.0
 				ELSE NULL
 			END
 		   ,INTERES_ACUMULADO = [dias_al_corte] *
@@ -245,19 +247,27 @@
 			END
 			*
 			CASE
-				WHEN [tvl_codigo] IN ('FAC', 'PCO', 'PACTO') THEN (CASE
-						WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
-						WHEN valefeConRendimiento is not null THEN valefeConRendimiento
-						else pc.valefe
-					END +
-					CASE
-						WHEN TPO_INTERVINIENTES
+				WHEN [tvl_codigo] IN ('FAC', 'PCO', 'PACTO') THEN
+					(
+						CASE
+							WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
+							WHEN valefeConRendimiento is not null THEN valefeConRendimiento
+							else pc.valefe
+						END +
+						CASE
+							WHEN TPO_INTERVINIENTES
 
-							LIKE 'Capital Ventura%' THEN TPO_INTERES_TRANSCURRIDO
-						ELSE 0
-					END)
+								LIKE 'Capital Ventura%' THEN TPO_INTERES_TRANSCURRIDO
+							ELSE 0
+						END
+					)
 					* [HTP_RENDIMIENTO] / 100.0 / 360.0
-				ELSE (sal - ISNULL(case when EMS_ABR='PURA_VIDA' then TPO_VALNOM_ANTERIOR end, 0))
+				ELSE
+					(
+						CASE WHEN pc.tpo_f1=339 and pc.tpo_prog='cxcNoMovs' THEN 2.45e6/11.0
+						ELSE sal end
+						- ISNULL(case when EMS_ABR='PURA_VIDA' then TPO_VALNOM_ANTERIOR end, 0)
+					)
 					* [tiv_tasa_interes]
 					/ 100.0 / 360.0
 			END
@@ -266,9 +276,17 @@
 			--THEN [sal]*datediff(d,[FECHA_COMPRA],[TIV_FECHA_VENCIMIENTO])/360.0*CASE WHEN [TVL_CODIGO] in ('FAC','PCO') THEN 0/*[HTP_RENDIMIENTO]*/ ELSE [TIV_TASA_INTERES] END/100.0 END
 			--,INTERES_POR_DIAS_DE_RETRASO=
 			--CASE WHEN [TPO_FECHA_SUSC_CONVENIO] is not null THEN sal*[TIV_PRECIO]/100.0*datediff(d,[TIV_FECHA_VENCIMIENTO],[LATEST_INICIO])/360.0*CASE WHEN [TVL_CODIGO] in ('FAC','PCO') THEN [HTP_RENDIMIENTO] ELSE [TIV_TASA_INTERES] END/100.0 END,
-		   ,INTERES_AL_VENCIMIENTO_ORIGINAL_ = case when ems_abr='INTEROCEANICA' then null else
-		   pc.totalUfoRendimiento -
-		   pc.ufo_rendimiento
+		   ,INTERES_AL_VENCIMIENTO_ORIGINAL_ =
+		   case when ems_abr='INTEROCEANICA' then null
+		   when ems_abr='GIO_MOR' then
+				(sal * [tiv_precio] / 100.0) * (dbo.fnDiasEu([fecha_compra], [tiv_fecha_vencimiento], tiv_tipo_base)) * ([tiv_tasa_interes] / 100.0) / 360
+		   when ems_abr='MOPROCORP' then
+				CASE
+						WHEN tiv_fecha_vencimiento > latest_inicio THEN sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, tiv_fecha_vencimiento) / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360
+				END
+		   else
+			   pc.totalUfoRendimiento -
+			   pc.ufo_rendimiento
 		   end
 			--CASE
 			--	WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN [sal] * DATEDIFF(d, [fecha_compra], [tiv_fecha_vencimiento]) / 360.0 *
@@ -277,13 +295,18 @@
 			--			ELSE [tiv_tasa_interes]
 			--		END / 100.0
 			--	WHEN pc.tiv_emisor = 1000036 THEN (sal * [tiv_precio] / 100.0) * (dbo.fnDiasEu([fecha_compra], [tiv_fecha_vencimiento], tiv_tipo_base)) * ([tiv_tasa_interes] / 100.0) / 360
-			--	WHEN pc.tiv_emisor = 1000042 THEN (CASE
+			--	WHEN pc.tiv_emisor = 1000042 THEN (
+			--	CASE
 			--			WHEN tiv_fecha_vencimiento > latest_inicio THEN sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, tiv_fecha_vencimiento) / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360
-			--		END)
+			--	END
+			--)
 			--END
-		   ,INTERES_POR_DIAS_DE_RETRASO = case when ems_abr='INTEROCEANICA' then null else
-		   pc.totalUfoUsoFondos -
-		   pc.ufo_uso_fondos
+		   ,INTERES_POR_DIAS_DE_RETRASO = case when ems_abr='INTEROCEANICA' then null
+		   when ems_abr='MOPROCORP' then
+				sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, '20221005') / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360		   
+		   else
+			   pc.totalUfoUsoFondos -
+			   pc.ufo_uso_fondos
 		   end
 			--CASE
 			--	WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN sal * [tiv_precio] / 100.0 * DATEDIFF(d, [tiv_fecha_vencimiento], [latest_inicio]) / 360.0 *

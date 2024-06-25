@@ -60,7 +60,7 @@
 	--tiv_calculo_frecuencia=	max(tiv_calculo_frecuencia),
 
 	cupoper_base_denominador=	min(cupoper_base_denominador),
-	latest_vencimiento=	max(tfl_fecha_vencimiento2)
+	latest_vencimiento=	max(case when tfl_fecha_vencimiento2<=c or tfl_fecha_vencimiento2 is null then tfl_fecha_vencimiento2 end)
 
 	,prox_capital=(
 		select min(tfl_fecha_vencimiento)
@@ -126,7 +126,7 @@
 	,ufo_rendimiento=sum(ufo_rendimiento)
 	,MIN_TIENE_VALNOM=min(HTP_TIENE_VALNOM)
 	,prEfectivo=min(prEfectivo)
-	,fechaInicioOriginal=max(coalesce(evt_fecha,cupoper_tfl_fecha_inicio))
+	,fechaInicioOriginal=max(case when coalesce(evt_fecha,cupoper_tfl_fecha_inicio)<=c then coalesce(evt_fecha,cupoper_tfl_fecha_inicio) end)
 	,totalUfoUsoFondos=max(totalUfoUsoFondos)
 	,totalUfoRendimiento=max(totalUfoRendimiento)
 	from bvq_backoffice.EventoPortafolio e

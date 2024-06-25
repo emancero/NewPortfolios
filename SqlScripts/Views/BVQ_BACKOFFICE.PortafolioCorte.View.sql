@@ -15,9 +15,11 @@
 	,
 	--latest_vencimiento,
 	dias_al_corte=
-		dbo.fnDias(
+		dbo.fnDias2(
 			--latest_inicio
-			case when tpo_fecha_susc_convenio is not null then fechaInicioOriginal when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
+			case when tpo_fecha_susc_convenio is not null then fechaInicioOriginal
+			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2
+			else latest_inicio end
 			,c,case when tiv_accrual_365=1 then 355 when tiv_tipo_valor in (5,6,11) then 354 else tiv.tiv_tipo_base end)
 		+case when tiv_accrual_365=1 then 1 else 0 end
 		+case when tiv_codigo like 'CEAOBL29%' or htp_numeracion='CEA-2022-12-27-5' then 1 else 0 end --porque es 29 de febrero
@@ -270,7 +272,14 @@
 	(
 					------------- VALORACIONES ---------------
 					select
-					latest_inicio=case when datediff(d,fecha_compra,latest_vencimiento)=0 then cupoper_tfl_fecha_inicio else latest_vencimiento end,
+					latest_inicio=case
+						when tpo_prog='oblSums' and htp_tpo_id in (321,324) then
+							(
+								select top 1 retr_fecha_esperada from bvq_backoffice.retraso r
+								where retr_tpo_id=htp_tpo_id and RETR_FECHA_COBRO=latest_vencimiento order by retr_fecha_esperada desc
+							)
+						when datediff(d,fecha_compra,latest_vencimiento)=0 then cupoper_tfl_fecha_inicio
+						else latest_vencimiento end,
 					isnull(tpo_numeracion,'') htp_numeracion,
 					tpo.por_id,
 					tpo.tiv_id,
