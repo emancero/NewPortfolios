@@ -28,7 +28,7 @@
 	   ,PATRIMONIO = PATRIMONIO
 	   ,CALIFICADORA_DE_RIESGO = CALIFICADORA_DE_RIESGO
 	   ,CALIFICACION_DE_RIESGO = CALIFICACION_DE_RIESGO
-	   ,VALOR_PROVISIONADO = SUM(VALOR_PROVISIONADO)
+	   ,VALOR_PROVISIONADO = SUM(VALOR_EFECTIVO)
 	   ,FECHA_DE_PAGO_ULTIMO_CUPON = FECHA_DE_PAGO_ULTIMO_CUPON
 	   ,DIAS_DE_INTERES_GANADO = DIAS_DE_INTERES_GANADO
 	   ,INTERES_GANADO = SUM(INTERES_GANADO)
@@ -126,7 +126,7 @@
 				coalesce(
 					case when tvl_codigo='SWAP' then
 						convert(datetime,'20341228')
-					when htp_numeracion not like 'FEC-%' then
+					when tvl_codigo <> 'OBL' then
 						TPO_FECHA_VENCIMIENTO_ANTERIOR
 					end
 					,
@@ -145,7 +145,7 @@
 				coalesce(
 					case when tvl_codigo='SWAP' then
 						convert(datetime,'20341228')
-					when htp_numeracion not like 'FEC-%' then
+					when tvl_codigo<>'OBL' then
 						TPO_FECHA_VENCIMIENTO_ANTERIOR
 					end
 					,tiv_fecha_vencimiento
@@ -191,7 +191,19 @@
 			END
 		   ,VALOR_DE_MERCADO = valefe
 		   ,PCT_DEL_VALOR_DE_MERCADO = [valefe]
-		   ,VENCER = DATEDIFF(d, [tfcorte], [tiv_fecha_vencimiento])
+		   ,VENCER = DATEDIFF(d, [tfcorte]
+				,
+				coalesce
+				(
+					case when tvl_codigo='SWAP' then
+						convert(datetime,'20341228')
+					--when tvl_codigo <> 'OBL' then
+					--	TPO_FECHA_VENCIMIENTO_ANTERIOR
+					end
+					,
+					tiv_fecha_vencimiento
+				)
+		   )
 		   ,FECHA_VALOR_DE_COMPRA = --fecha_compra
 				coalesce(
 					case when htp_numeracion not like 'FEC-%' then
@@ -210,7 +222,7 @@
 				WHEN [tvl_codigo] IN ('FAC', 'PCO') THEN [HTP_RENDIMIENTO]
 				ELSE [tiv_tasa_interes]
 			END / 100.0
-		   ,PRECIO = htp_precio_compra
+		   ,PRECIO = coalesce(case when tvl_codigo not in ('OBL') then tpo_precio_compra_anterior end,htp_precio_compra)
 		   ,SECTOR =
 			CASE [sector_general]
 				WHEN 'SEC_PRI_FIN' THEN 'PRIVADO FINANCIERO'
@@ -357,7 +369,7 @@
 			END
 		   ,PRECIO_ULTIMA_COMPRA = TPO_PRECIO_ULTIMA_COMPRA
 		   ,FECHA_ULTIMA_COMPRA =
-			CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN [fecha_compra] END
+			CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN coalesce(tpo_fecha_compra_anterior,[fecha_compra]) END
 			--,FECHA_ULTIMA_COMPRA=
 			--   case when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,@i_fechaCorte,tiv_fecha_vencimiento)<=365 then
 			--	lastValDate
