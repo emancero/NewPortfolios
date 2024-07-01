@@ -167,6 +167,7 @@
 						--377916.44 / 873855.24 * sal
 				WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
 				ELSE sal * [tiv_precio] / 100.0
+					+ CASE WHEN TPO_F1=319 THEN -1.81/2.0 ELSE 0 END
 			END
 		   ,INTERES_TRANSCURRIDO =
 			   case when
