@@ -129,6 +129,16 @@
 	,fechaInicioOriginal=max(case when coalesce(evt_fecha,cupoper_tfl_fecha_inicio)<=c then coalesce(evt_fecha,cupoper_tfl_fecha_inicio) end)
 	,totalUfoUsoFondos=max(totalUfoUsoFondos)
 	,totalUfoRendimiento=max(totalUfoRendimiento)
+	,interesCoactivo=(
+		select sum(evp_valor_efectivo)
+		from bvq_backoffice.evento_portafolio evp
+		where
+		es_vencimiento_interes=1
+		and evp_abono=1
+		and oper_id=1
+		and evt_fecha<=c
+		and evp.evp_tpo_id=e.htp_tpo_id
+	)
 	from bvq_backoffice.EventoPortafolio e
 	join corteslist c on
 	coalesce(

@@ -34,6 +34,7 @@
 	   ,INTERES_GANADO = SUM(INTERES_GANADO)
 	   ,INTERES_AL_VENCIMIENTO_ORIGINAL_ = SUM(INTERES_AL_VENCIMIENTO_ORIGINAL_)
 	   ,INTERES_POR_DIAS_DE_RETRASO = SUM(INTERES_POR_DIAS_DE_RETRASO)
+	   ,SALDO_INTERES_COACTIVO = SUM(SALDO_INTERES_COACTIVO)
 	   ,PCT_A_AJUSTAR = PCT_A_AJUSTAR
 	   ,DIAS_POR_VENCER_A_LA_COMPRA = DIAS_POR_VENCER_A_LA_COMPRA
 	   ,PCT_AJUSTE_DIARIO = PCT_AJUSTE_DIARIO
@@ -116,7 +117,7 @@
 		   dbo.fnDiasEu(
 			--[fecha_compra]
 				coalesce(
-					case when htp_numeracion not like 'FEC-%' then
+					case when htp_numeracion not like 'FEC-%' and htp_numeracion not like 'DCP-2019-02-22' then
 						TPO_FECHA_COMPRA_ANTERIOR
 					end
 					,fecha_compra
@@ -207,7 +208,7 @@
 		   )
 		   ,FECHA_VALOR_DE_COMPRA = --fecha_compra
 				coalesce(
-					case when htp_numeracion not like 'FEC-%' then
+					case when htp_numeracion not like 'FEC-%' and htp_numeracion not like 'DCP-2019-02-22' then
 						TPO_FECHA_COMPRA_ANTERIOR
 					end
 					,fecha_compra
@@ -242,7 +243,7 @@
 				else
 					latest_inicio
 				end
-		   ,DIAS_DE_INTERES_GANADO =
+		   ,DIAS_DE_INTERES_GANADO =convert(int,round(
 			CASE
 				WHEN tvl_codigo IN
 
@@ -251,13 +252,17 @@
 					latest_inicio = fecha_compra THEN DATEDIFF(d, tiv_fecha_vencimiento, tfcorte)
 				ELSE pc.dias_al_corte
 			END
+			+ isnull(TPO_AJUSTE_DIAS_DE_INTERES_GANADO,0),0))
 		   ,INTERES_GANADO =
-			CASE
-				WHEN tvl_codigo IN ('FAC', 'PCO') AND
-					pc.tiv_tipo_base = 355 AND
-					latest_inicio = fecha_compra THEN DATEDIFF(d, tiv_fecha_vencimiento, tfcorte)
-				ELSE pc.dias_al_corte
-			END
+		   (
+				CASE
+					WHEN tvl_codigo IN ('FAC', 'PCO') AND
+						pc.tiv_tipo_base = 355 AND
+						latest_inicio = fecha_compra THEN DATEDIFF(d, tiv_fecha_vencimiento, tfcorte)
+					ELSE pc.dias_al_corte
+				END
+				+ isnull(TPO_AJUSTE_DIAS_DE_INTERES_GANADO,0)
+			)
 			*
 			CASE
 				WHEN [tvl_codigo] IN ('FAC', 'PCO', 'PACTO') THEN
@@ -315,11 +320,29 @@
 			--)
 			--END
 		   ,INTERES_POR_DIAS_DE_RETRASO = case when ems_abr='INTEROCEANICA' then null
-		   when ems_abr='MOPROCORP' then
-				sal * ([tiv_tasa_interes] / 100.0) * DATEDIFF(DAY, latest_inicio, '20221005') / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360		   
+		   when TPO_FECHA_CORTE_OBLIGACION is not null then
+				sal * ([tiv_tasa_interes] / 100.0)
+				* DATEDIFF(DAY
+				, case when latest_inicio>tiv_fecha_vencimiento then latest_inicio else tiv_fecha_vencimiento end
+				, TPO_FECHA_CORTE_OBLIGACION) / 360 --DATEDIFF(DAY, tiv_fecha_vencimiento, latest_inicio) / 360		   
 		   else
 			   pc.totalUfoUsoFondos -
 			   pc.ufo_uso_fondos
+		   end
+		   ,SALDO_INTERES_COACTIVO=
+		   case when tpo_fecha_corte_obligacion is not null then
+		       case when ems_abr='MOPROCORP' then
+					sal * 0.099 * datediff(d,tpo_fecha_corte_obligacion,'20230908')/360.0
+			   else
+					--
+					sal * 0.1001 * datediff(d,tpo_fecha_corte_obligacion,'20230718')
+					/360.0
+					+
+					--
+					sal * 0.099 * datediff(d,'20230718','20230906')
+					/360.0
+			   end
+			   -ISNULL(interesCoactivo,0)
 		   end
 			--CASE
 			--	WHEN [TPO_FECHA_SUSC_CONVENIO] IS NOT NULL THEN sal * [tiv_precio] / 100.0 * DATEDIFF(d, [tiv_fecha_vencimiento], [latest_inicio]) / 360.0 *
