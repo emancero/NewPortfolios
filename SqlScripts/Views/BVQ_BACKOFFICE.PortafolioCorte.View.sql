@@ -268,6 +268,8 @@
 	,htp.TPO_FECHA_CORTE_OBLIGACION
 	,htp.TPO_AJUSTE_DIAS_DE_INTERES_GANADO
 	,htp.interesCoactivo
+	,htp.TPO_FECHA_LIQUIDACION_OBLIGACION
+
 	--,plazo_anterior=dbo.fnDias(htp.TPO_FECHA_COMPRA_ANTERIOR,htp.TPO_FECHA_VENCIMIENTO_ANTERIOR,case when tvl_codigo in ('BE','VCC','OBL') then 354 else 355 end)
 
 	/*,
@@ -470,6 +472,7 @@
 					,TPO.TPO_FECHA_CORTE_OBLIGACION
 					,TPO.TPO_AJUSTE_DIAS_DE_INTERES_GANADO
 					,e.interesCoactivo
+					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
  
