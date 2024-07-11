@@ -138,6 +138,8 @@ BEGIN
 	 JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
 	 WHERE HTP.HTP_ID = @i_tpo_id;
 
+	 exec bvq_backoffice.CancelarTpoAnterior @v_tpoid_org, @i_fecha
+
 	 if @i_cantidad=0
 		raiserror('La cantidad no puede ser 0',16,1)
 	UPDATE HTP

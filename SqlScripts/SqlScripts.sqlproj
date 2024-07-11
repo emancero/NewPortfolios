@@ -123,6 +123,7 @@
     <None Include="Views\DetallePortafolio.sql" />
     <None Include="Stored Procedures\spIsspolRentaVariable.sql" />
     <None Include="Functions\fnDias.sql" />
+    <None Include="Stored Procedures\CancelarTpoAnterior.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

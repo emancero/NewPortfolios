@@ -236,6 +236,8 @@ BEGIN
 			TPO_NUMERACION = @i_numeracion
 	end
 
+	exec bvq_backoffice.CancelarTpoAnterior @v_tpoid_org, @i_fecha_ingreso
+
 	if @i_cantidad=0
 		raiserror('La cantidad no puede ser 0',16,1)
 
