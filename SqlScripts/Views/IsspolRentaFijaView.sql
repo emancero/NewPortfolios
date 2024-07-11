@@ -108,7 +108,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
         when tvl_codigo in ('OCA') then
             ''
         else
-            isnull('-C'+nullif(TIV_SERIE,''),'')
+            isnull('-C'+nullif(case when tiv_serie='UNO' then '1' else TIV_SERIE end,''),'')
         end,
    CUENTA_CONTABLE='7.1.5.90.90',    
    VECTOR_PRECIO = 
