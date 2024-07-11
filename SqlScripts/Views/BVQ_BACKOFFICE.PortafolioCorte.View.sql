@@ -505,7 +505,7 @@
 	left join bvq_administracion.titulo_flujo_comun tfl
 		left join (
 			select distinct retr_fecha_cobro, retr_fecha_esperada, tpo.tiv_id from bvq_backoffice.retraso retr join bvq_backoffice.titulos_portafolio tpo on retr_tpo_id=tpo.tpo_id
-			where tiv_id=1596
+			where tiv_id in (1596,6864)
 		) retr on retr_fecha_esperada=tfl_fecha_inicio and tfl.tiv_id=retr.tiv_id
 	on
 	tfl.tiv_id=tiv.tiv_id and
