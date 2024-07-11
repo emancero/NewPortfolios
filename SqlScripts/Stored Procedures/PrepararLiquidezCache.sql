@@ -222,7 +222,8 @@
 			select 1 es_vencimiento_interes
 		) divven on oper=1 and NOT (iAmortizacion=0 and es_vencimiento_interes=1 or montoOper=0 and es_vencimiento_interes=0)
 		left join bvq_backoffice.isspol_progs ipr on ipr.ipr_nombre_prog=tpo.tpo_prog
-		left join bvq_backoffice.uso_fondos ufo on ufo.tfl_id=evt.tfl_id and ufo.tpo_id=tpo.tpo_id
+		--obtener el uso de fondos de una vista y no de la tabla
+		left join bvq_backoffice.UsoFondosView/*uso_fondos*/ ufo on ufo.tfl_id=evt.tfl_id and ufo.tpo_id=tpo.tpo_id
 		--join bvq_administracion.parametro retencionpct on retencionpct.par_codigo='PAR_RETENCION_LIQ'
 		--where datediff(d,htp_fecha_operacion,'2017-04-28')=0
 		--fin separador vencimientos

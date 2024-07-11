@@ -173,5 +173,6 @@ begin
 	)  -- defaults: discriminación de vencimientos
 	left join bvq_backoffice.retraso retr1 on retr1.retr_tpo_id=htp_tpo_id and retr1.retr_fecha_esperada=tiv.tfl_fecha_inicio
 	left join bvq_backoffice.retraso retr2 on retr2.retr_tpo_id=htp_tpo_id and retr2.retr_fecha_esperada=tiv.tfl_fecha_vencimiento
-	left join bvq_backoffice.uso_fondos ufo on ufo.tpo_id=tpo.tpo_id and ufo.tfl_id=tiv.tfl_id
+	--obtener el uso de fondos de una vista y no de la tabla
+	left join bvq_backoffice.UsoFondosView/*uso_fondos*/ ufo on ufo.tpo_id=tpo.tpo_id and ufo.tfl_id=tiv.tfl_id
 end
