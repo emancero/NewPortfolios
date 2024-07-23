@@ -481,7 +481,7 @@
 						join
 						bvq_administracion.vector_precio vpr
 						on t.tiv_id=vpr.tiv_id and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
-					on case when tpo.fon_id=337 then 3831 else t.tiv_id end=tpo.tiv_id
+					on /*case when tpo.fon_id=337 then 3831 else t.tiv_id end*/t.tiv_id=tpo.tiv_id
 					and c=t.cc
  
 					--bde_perfil_contable
