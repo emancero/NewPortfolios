@@ -7,4 +7,5 @@
 		select 'cxc12ins',1,6 union
 		select 'pagares',1,9 union
 		select 'oblSums',1,3 union
-		select 'cxcNoMovs',1,7
+		select 'cxcNoMovs',1,7 union
+		select 'normal',1,10
