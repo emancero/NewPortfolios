@@ -68,7 +68,10 @@
 	,liq_id=htpcupon.liq_id
 	,tfl_fecha_inicio_orig=null
 	,htp_comision_bolsa
-	,prEfectivo=case when htpcupon.tiv_tipo_renta=154 then
+	,prEfectivo=
+	case when htp_numeracion like 'cfr-%' then
+		tpo_precio_efectivo/100.0
+	when htpcupon.tiv_tipo_renta=154 then
 		(htpcupon.valefeoper
 		+isnull(case when htpcupon.htp_fecha_operacion>='20220601' then htpcupon.htp_comision_bolsa end,0)
 		)/htpcupon.montooper

@@ -161,7 +161,9 @@
 		   ,VALOR_NOMINAL = sal
 		   
 		   ,VALOR_EFECTIVO =
-			CASE
+            iif(isnull(ipr_es_cxc,0)=0 or pcorte.tpo_fecha_compra_anterior>='20220601'
+            ,coalesce(pcorte.prEfectivo*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
+			,CASE
 				WHEN valefeConRendimiento is not null then
 					valefeConRendimiento
 				WHEN [TPO_F1] = (SELECT TOP 1
@@ -175,6 +177,7 @@
 				ELSE sal * [tiv_precio] / 100.0
 					+ CASE WHEN TPO_F1=319 THEN -1.81/2.0 ELSE 0 END
 			END
+			)
 		   ,INTERES_TRANSCURRIDO =
 			   case when
 				   tvl_codigo='PACTO'

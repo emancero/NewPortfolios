@@ -192,7 +192,7 @@ BEGIN
                                                     )
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
                                                     */
-                                                    iif(isnull(ipr_es_cxc,0)=0
+                                                    iif(isnull(ipr_es_cxc,0)=0 or pcorte.tpo_fecha_compra_anterior>='20220601'
                                                     ,coalesce(pcorte.prEfectivo*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
 			                                        ,CASE
 				                                        WHEN valefeConRendimiento is not null then

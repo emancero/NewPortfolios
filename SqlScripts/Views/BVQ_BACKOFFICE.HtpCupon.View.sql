@@ -65,7 +65,9 @@
 		,op.HTP_TIENE_VALNOM
 		,cupoper.tiv_tipo_renta
 		,op.htp_numeracion_2
+		,tpo.tpo_precio_efectivo
 	from bvq_backoffice.historico_titulos_portafolio op
+		join (select tpo_id, tpo_precio_efectivo from bvq_backoffice.titulos_portafolio) tpo on op.htp_tpo_id=tpo.tpo_id
 		--Averiguar si es reporto para utilizar TPR_SALDO como base del proporcional
 		left join BVQ_BACKOFFICE.TITULOS_PORTAFOLIO_REPORTO tpr
 		on TPR_TIPO_REPORTO=854 and tpr.HTP_ID=op.htp_id+1 or tpr.tpr_tipo_reporto=892 and tpr.htp_id=op.htp_id-1
