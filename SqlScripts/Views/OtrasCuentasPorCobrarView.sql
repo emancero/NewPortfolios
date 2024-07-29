@@ -1,4 +1,4 @@
-﻿CREATE view bvq_backoffice.OtrasCuentasPorCobrarView as
+﻿create view bvq_backoffice.OtrasCuentasPorCobrarView as
 	SELECT
 		TVL_NOMBRE = TVL_NOMBRE
 	   ,CUENTA_CONTABLE = CUENTA_CONTABLE
@@ -161,9 +161,12 @@
 		   ,VALOR_NOMINAL = sal
 		   
 		   ,VALOR_EFECTIVO =
-            iif(isnull(ipr_es_cxc,0)=0 or pcorte.tpo_fecha_compra_anterior>='20220601'
-            ,coalesce(pcorte.prEfectivo*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
-			,CASE
+            iif(isnull(ipr_es_cxc,0)=0 or pc.tpo_fecha_compra_anterior>='20220601'
+            ,coalesce(
+				pc.prEfectivo*pc.salNewValNom,pc.htp_precio_compra/100.0*pc.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
+			   )
+			,
+			CASE
 				WHEN valefeConRendimiento is not null then
 					valefeConRendimiento
 				WHEN [TPO_F1] = (SELECT TOP 1
