@@ -185,12 +185,17 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //envío de inversiones
-/*    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolSicav'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("IsspolSicav", "View", suffix: false);
-    comm.ExecuteNonQuery();*/
+    /*    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolSicav'";
+        comm.ExecuteNonQuery();
+        comm.CommandText = (new GetObjectCode()).GetCode("IsspolSicav", "View", suffix: false);
+        comm.ExecuteNonQuery();*/
 
     //
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.CancelarTpoAnterior'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("CancelarTpoAnterior", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new InsertarTituloPortafolio()).GetCode();
