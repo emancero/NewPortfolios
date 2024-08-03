@@ -55,6 +55,7 @@ BEGIN
                                                 ,TPO_F1 int
                                                 ,valefeConRendimiento float
 												,HTP_RENDIMIENTO float
+                                                ,tpo_fecha_compra_anterior datetime
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -89,6 +90,7 @@ BEGIN
                         ,TPO_F1
                         ,valefeConRendimiento
 						,HTP_RENDIMIENTO
+                        ,tpo_fecha_compra_anterior
 				from bvq_backoffice.portafoliocorte
 
 				insert into @tbPortafolioComitente
