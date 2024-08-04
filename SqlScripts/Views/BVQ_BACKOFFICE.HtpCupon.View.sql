@@ -30,7 +30,20 @@
 		cupoper.tfl_id cupoper_tfl_id,
 		cupoper.tfl_fecha_inicio cupoper_tfl_fecha_inicio,
 		cupoper.base_denominador cupoper_base_denominador,
-		cupoper.tfl_capital cupoper_tfl_capital,
+		cupoper.tfl_capital
+		--delayedPayment
+		+(
+			select isnull(sum(tfl_amortizacion),0) delayedPayment--,delay_tpo_id=retr_tpo_id,retr_fecha_esperada
+			from (
+				select tfl_amortizacion,retr_fecha_esperada,retr_tpo_id from bvq_backoffice.retraso d
+				join bvq_backoffice.titulos_portafolio tpo on d.retr_tpo_id=tpo.tpo_id
+				join bvq_administracion.titulo_flujo tfl on tpo.tiv_id=tfl.tiv_id and d.retr_fecha_esperada=tfl.tfl_fecha_vencimiento
+				where d.retr_capital=1 and d.retr_tpo_id not in (777)
+			) d
+			where d.retr_tpo_id=op.htp_tpo_id and d.retr_fecha_esperada<op.htp_fecha_operacion
+		)
+	
+		cupoper_tfl_capital,
 		liq.liq_numero_bolsa,
 		liq.liq_comision_bolsa,
 		liq.liq_comision_casa,
