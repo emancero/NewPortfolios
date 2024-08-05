@@ -84,8 +84,8 @@
 				or r.sir_codigo_configuracion='cvalnom' and cis.rubro='valnom' and haber>0
 				or r.sir_codigo_configuracion='valefe' and cis.rubro='amount' and isnull(ipr.ipr_es_cxc,0)=0
 				or r.sir_codigo_configuracion='VALEFECXC' and cis.rubro='amountcxc' and ipr.ipr_es_cxc=1
-				or r.sir_codigo_configuracion='DETERIOROXC' and cis.rubro='valnom' and ipr.ipr_es_cxc=1 and debe>0
-				or r.sir_codigo_configuracion='DETERIOROR' and cis.rubro='valnom' and ipr.ipr_es_cxc=1 and haber>0
+				or r.sir_codigo_configuracion='DETERIOROXC' and cis.rubro='amountcxc' and ipr.ipr_es_cxc=1 and debe>0
+				or r.sir_codigo_configuracion='DETERIOROR' and cis.rubro='amountcxc' and ipr.ipr_es_cxc=1 and haber>0 and cis.cuenta like '7.5.2.%'
 				or r.sir_codigo_configuracion='DETERIOROIC' and cis.rubro='amount' and ipr.ipr_es_cxc=1 and debe>0
 				or r.sir_codigo_configuracion='DETERIOROIR' and cis.rubro='amount' and ipr.ipr_es_cxc=1 and haber>0
 				or r.sir_codigo_configuracion='CUXC02' and ipr.ipr_es_cxc=1 and ri='CUXC' and forced_por_id is not null--and cis.tpo_numeracion not like 'FEC-%'-->0

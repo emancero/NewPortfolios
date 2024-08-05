@@ -58,7 +58,7 @@
 		--select vint=1, rpref='A7.1.5.','amountcxc' rubro,0 ord ,0 deterioro, 1 rcxc union --dos de dos exclusivos para cxc
 
 		--select vint=1, rpref='7.6.','valnom' rubro,3 ord ,0 deterioro, null rcxc union
-		select vint=0, rpref='D.7.5.2.','valnom' rubro,0 ord ,1 deterioro, null rcxc union
+		select vint=0, rpref='D.7.5.2.','amountcxc' rubro,0 ord ,1 deterioro, null rcxc union
 		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc
 	) rub on
 	(
