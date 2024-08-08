@@ -124,6 +124,7 @@
     <None Include="Stored Procedures\spIsspolRentaVariable.sql" />
     <None Include="Functions\fnDias.sql" />
     <None Include="Stored Procedures\CancelarTpoAnterior.sql" />
+    <None Include="Stored Procedures\ObtenerPoliticaLimites.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
