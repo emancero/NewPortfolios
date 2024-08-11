@@ -9,6 +9,8 @@ begin
 	;with a as(
 		select tpo_recursos
 		,vn=sal*case when tiv_tipo_renta=154 then tiv_valor_nominal else 1 end
+		,pai=case when tpo_recursos='pai' then 1 else 0 end
+			*sal*case when tiv_tipo_renta=154 then tiv_valor_nominal else 1 end
 		,TIPO_RENTA=tiv_tipo_renta
 		--,sector_general
 		,SECTOR=
@@ -24,7 +26,10 @@ begin
 		end--,*
 		--when 
 		from bvq_backoffice.portafoliocorte pc where isnull(ipr_es_cxc,0)=0 and sal>0
-	) select sal=isnull(sum(vn),0),pai=isnull(sum(vn),0),sec.TIPO_RENTA,sec.SECTOR,PCT,alert
+	) select
+		 sal=isnull(sum(vn),0)
+		,pai=sum(pai)
+		,sec.TIPO_RENTA,sec.SECTOR,PCT,alert
 	,r=row_number() over (partition by sec.TIPO_RENTA order by ord desc)
 	from
 	(values
