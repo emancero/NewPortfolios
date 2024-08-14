@@ -69,7 +69,9 @@
 	,tfl_fecha_inicio_orig=null
 	,htp_comision_bolsa
 	,prEfectivo=
-	case when htp_numeracion like 'cfr-%' then
+	case when htp_numeracion like 'cfr-%'
+		or htp_numeracion like 'RZK-2024-08-05%'
+	then
 		tpo_precio_efectivo/100.0
 	when htpcupon.tiv_tipo_renta=154 then
 		(htpcupon.valefeoper
