@@ -55,7 +55,7 @@ BEGIN
                                                 ,TPO_F1 int
                                                 ,valefeConRendimiento float
 												,HTP_RENDIMIENTO float
-                                                ,tpo_fecha_compra_anterior datetime
+												,tpo_fecha_compra_anterior datetime
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -90,7 +90,7 @@ BEGIN
                         ,TPO_F1
                         ,valefeConRendimiento
 						,HTP_RENDIMIENTO
-                        ,tpo_fecha_compra_anterior
+						,tpo_fecha_compra_anterior
 				from bvq_backoffice.portafoliocorte
 
 				insert into @tbPortafolioComitente
@@ -143,7 +143,7 @@ BEGIN
                                                ,rent.itc_descripcion as renta
                                                ,tta.tta_nombre
                                                ,por.por_tipo_nombre
-                                               ,por.por_codigo
+                   ,por.por_codigo
                                                ,pcorte.tiv_precio
                                                ,pcorte.por_id
                                                ,pcorte.tiv_id
@@ -198,7 +198,7 @@ BEGIN
                                                     ,coalesce(pcorte.prEfectivo*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
 			                                        ,CASE
 				                                        WHEN valefeConRendimiento is not null then
-					                                        valefeConRendimiento
+					                         valefeConRendimiento
 				                                        WHEN [TPO_F1] = (SELECT TOP 1
 							                                        kf1
 						                                        FROM keyf1
@@ -250,7 +250,7 @@ BEGIN
                                                         iif(
                                                             case
                                                             when [TPO_MANTIENE_VECTOR_PRECIO]=1 or
-                                                            isnull([IPR_ES_CXC],0)=0 
+                                       isnull([IPR_ES_CXC],0)=0 
                                                             or pcorte.tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end<>''
 	                                                        ,
                                                             case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end
@@ -268,7 +268,7 @@ BEGIN
                                                             latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
                                                         else pcorte.dias_al_corte
                                                     end
-		                                            /360.0 * sal * tiv_tasa_interes/100.0    
+		                                            /360.0e0 * sal * tiv_tasa_interes/100.0    
                                                 ,prEfectivo
 											   ,YIELD =
 												CASE
