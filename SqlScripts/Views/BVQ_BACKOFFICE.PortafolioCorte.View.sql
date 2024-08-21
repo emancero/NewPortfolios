@@ -22,7 +22,9 @@
 			else latest_inicio end
 			,c,case when tiv_accrual_365=1 then 355 when tiv_tipo_valor in (5,6,11) then 354 else tiv.tiv_tipo_base end)
 		+case when tiv_accrual_365=1 then 1 else 0 end
-		+case when tiv_codigo like 'CEAOBL29%' or htp_numeracion='CEA-2022-12-27-5' then 1 else 0 end --porque es 29 de febrero
+		+case when (tiv_codigo like 'CEAOBL29%' or htp_numeracion='CEA-2022-12-27-5')
+		and datepart(m,latest_inicio)=2
+		then 1 else 0 end --porque es 29 de febrero
 	,
 	ems_nombre,
 	pais=coalesce(itcpais.itc_valor,'ECUADOR'),
@@ -481,7 +483,7 @@
 						join
 						bvq_administracion.vector_precio vpr
 						on t.tiv_id=vpr.tiv_id and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
-					on /*case when tpo.fon_id=337 then 3831 else t.tiv_id end*/t.tiv_id=tpo.tiv_id
+					on t.tiv_id=tpo.tiv_id
 					and c=t.cc
  
 					--bde_perfil_contable
