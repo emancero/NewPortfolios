@@ -126,7 +126,12 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    FECHA_VENCIMIENTO_CONVENIO_PAGO=TPO_FECHA_VEN_CONVENIO,    
    FECHA_SUSCRIPCION_CONVENIO_PAGO=TPO_FECHA_SUSC_CONVENIO,    
    FECHA_DE_VENCIMIENTO=tiv_fecha_vencimiento,    
-   DECRETO_EMISOR= replace([EMS_NOMBRE] + isnull('/' + [ACP_NOMBRE],''),'COOPERATIVA DE AHORRO Y CRÉDITO','CAC'),    
+   DECRETO_EMISOR= 
+   case when tvl_codigo='BE' then
+        tvl_codigo+' '+isnull(tpo_acta,'')
+   else
+        replace([EMS_NOMBRE] + isnull('/' + [ACP_NOMBRE],''),'COOPERATIVA DE AHORRO Y CRÉDITO','CAC')
+   end,
    --DECRETO_EMISOR= [EMS_NOMBRE] + isnull('/' + [ACP_NOMBRE],''),    
    INTERVINIENTES=TPO_INTERVINIENTES,    
    VALOR_NOMINAL=sal,    
@@ -151,7 +156,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    PATRIMONIO=[VBA_PATRIMONIO_TECNICO],    
    CALIFICADORA_DE_RIESGO=coalesce(rtrim(emical.eca_nombre)+' - '+convert(varchar,emical.eca_fecha_resolucion,103), rtrim(emscal.eca_nombre)+' - '+convert(varchar,emscal.ENC_FECHA_DESDE,103),[CAL_NOMBRE],'NO DISPONIBLE'),    
    CALIFICACION_DE_RIESGO=coalesce(eca_valor,pc.[ENC_VALOR],[TCA_VALOR],'NO DISPONIBLE'),       
-   VALOR_PROVISIONADO=case when 1=0 then sal*[TIV_PRECIO]/100.0 else 0 end,    
+   VALOR_PROVISIONADO=case when isnull(ipr_es_cxc,0)=1 then sal*[TIV_PRECIO]/100.0 else 0 end,    
    FECHA_DE_PAGO_ULTIMO_CUPON=latest_inicio,    
    DIAS_DE_INTERES_GANADO=
    case
