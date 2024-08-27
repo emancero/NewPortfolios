@@ -151,7 +151,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    PATRIMONIO=[VBA_PATRIMONIO_TECNICO],    
    CALIFICADORA_DE_RIESGO=coalesce(rtrim(emical.eca_nombre)+' - '+convert(varchar,emical.eca_fecha_resolucion,103), rtrim(emscal.eca_nombre)+' - '+convert(varchar,emscal.ENC_FECHA_DESDE,103),[CAL_NOMBRE],'NO DISPONIBLE'),    
    CALIFICACION_DE_RIESGO=coalesce(eca_valor,pc.[ENC_VALOR],[TCA_VALOR],'NO DISPONIBLE'),       
-   VALOR_PROVISIONADO=sal*[TIV_PRECIO]/100.0,    
+   VALOR_PROVISIONADO=case when 1=0 then sal*[TIV_PRECIO]/100.0 else 0 end,    
    FECHA_DE_PAGO_ULTIMO_CUPON=latest_inicio,    
    DIAS_DE_INTERES_GANADO=
    case
