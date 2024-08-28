@@ -197,7 +197,7 @@
 	,TCA.TCA_VALOR
 	--,TIV.TIV_ACTA
 	,TIV.TIV_CLASE
-	,tiv.tiv_codigo_vector
+	,tiv_codigo_vector=coalesce(case when datediff(d,c,tiv_fecha_vencimiento)>365 then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
 	,TIV.TIV_MONTO_EMISION
 	,HTP.TPO_CUPON_VECTOR
 	,HTP.TPO_FECHA_SUSC_CONVENIO

@@ -126,6 +126,7 @@
     <None Include="Stored Procedures\CancelarTpoAnterior.sql" />
     <None Include="Stored Procedures\ObtenerPoliticaLimites.sql" />
     <None Include="Views\CodigoCortoSicTit.sql" />
+    <None Include="Stored Procedures\PrepararValoracionLinealCache.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
