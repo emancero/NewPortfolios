@@ -106,6 +106,10 @@
 		,DesglosarF1=(case when s.TPO_DESGLOSAR_F1 = 1 then s.TPO_F1 end)
 		,valefe=sum(valefe)
 		,s.fechaInicioOriginal
+	    ,SECTOR_DETALLADO=case when max(SECTOR_GENERAL)='SEC_PRI_FIN' then
+		case when EMS_NOMBRE like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
+  else SECTOR END
+
 	FROM (SELECT
 			TVL_NOMBRE = TVL_DESCRIPCION
 		   ,CUENTA_CONTABLE = '7.1.5.90.90'
@@ -479,6 +483,7 @@
 		   ,pc.TPO_FECHA_VENCIMIENTO_ANTERIOR
 		   ,pc.valefe
 		   ,pc.fechaInicioOriginal
+		   ,pc.SECTOR_GENERAL
 		FROM BVQ_BACKOFFICE.PortafolioCorte pc
 		JOIN BVQ_BACKOFFICE.PORTAFOLIO port
 			ON pc.por_id = port.POR_ID

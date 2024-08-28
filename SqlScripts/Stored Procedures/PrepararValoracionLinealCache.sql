@@ -10,7 +10,7 @@ begin
 			select tiv.*,c,
 			lastValDate=
 				case when
-					tiv.tiv_tipo_renta=153 and datediff(d,c,tiv_fecha_vencimiento)<365 and c>=(select tpor_tiempo from bvq_backoffice.tiempos_portafolio where tpor_codigo='ARRANQUE_VAL_LINEAL2')
+					tiv.tiv_tipo_renta=153 and datediff(d,c,tiv_fecha_vencimiento)<=365 and c>=(select tpor_tiempo from bvq_backoffice.tiempos_portafolio where tpor_codigo='ARRANQUE_VAL_LINEAL2')
 					--and tiv_tipo_valor not in (10,13)
 					and tiv_subtipo not in (3)
 					--or tiv_tipo_valor in (10,32)

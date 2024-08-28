@@ -95,7 +95,10 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
   ems_abr,
   s.tiv_id,
   s.tiv_split_de,
-  s.tfcorte
+  s.tfcorte,
+  SECTOR_DETALLADO=case when max(SECTOR_GENERAL)='SEC_PRI_FIN' then
+	case when EMS_NOMBRE like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
+  else SECTOR END
   from(
    select     
    TVL_NOMBRE=
@@ -271,6 +274,7 @@ ABONO_INTERES=TPO_ABONO_INTERES,
    ,pc.tiv_id
    ,pc.tiv_split_de
    ,pc.tfcorte
+   ,pc.SECTOR_GENERAL
    from bvq_backoffice.portafoliocorte pc    
   join BVQ_BACKOFFICE.PORTAFOLIO port on pc.por_id = port.POR_ID  
     left join    
