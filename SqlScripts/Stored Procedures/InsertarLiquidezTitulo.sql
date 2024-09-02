@@ -8,6 +8,8 @@
 		@i_dpl_abono   BIT = NULL,
 		@i_evp_uso_fondos float = NULL,
 		@i_evp_rendimiento float = NULL,
+		@i_evp_costas_judiciales float = NULL,
+		@i_evp_costas_judiciales_referencia varchar(100) = NULL,
 		@i_lga_id	   INT = NULL
 	)
 AS
@@ -41,8 +43,9 @@ AS
 			@i_duplica = @i_dpl_abono,
 			@i_evp_uso_fondos = @i_evp_uso_fondos,
 			@i_evp_rendimiento = @i_evp_rendimiento,
-			@i_lga_id = @i_lga_id
-
+			@i_lga_id = @i_lga_id,
+			@i_evp_costas_judiciales = @i_evp_costas_judiciales,
+			@i_evp_costas_judiciales_referencia = @i_evp_costas_judiciales_referencia
 		--recuperar default borrado temporalmente si existe (es decir si es cxc)
 		update d set fecha=@i_fecha_cobro
 		from bvq_backoffice.EventoPortafolioDefaults d

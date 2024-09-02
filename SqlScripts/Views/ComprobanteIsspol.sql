@@ -56,6 +56,7 @@
   ,forced_por_id
   ,FON_ID
   ,fecha_original
+  ,EVP_COSTAS_JUDICIALES_REFERENCIA
   --,HTP_TIENE_VALNOM
   --select distinct por_id  
   from bvq_backoffice.comprobanteIsspolRubros s 
@@ -117,6 +118,7 @@
  ,forced_por_id=null
  ,FON_ID
  ,fecha_original
+ ,EVP_COSTAS_JUDICIALES_REFERENCIA
  from liqComprob where  
  (  
   (  
@@ -186,6 +188,7 @@
  ,forced_por_id=max(forced_por_id)
  ,FON_ID=max(FON_ID)
  ,fecha_original=max(fecha_original)
+ ,EVP_COSTAS_JUDICIALES_REFERENCIA=null
  from liqComprob  
  join (select '2.1.90.03' pr, 'DIDENT' ri union select '7.1.5.03.%','CUXC' union select '2.1.02.%','CUXP') ri  
  on cuenta like pr  

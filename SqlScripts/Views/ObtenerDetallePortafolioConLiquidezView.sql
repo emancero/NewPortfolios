@@ -154,6 +154,8 @@
 	,evt.HTP_TIENE_VALNOM
 	,evt.specialValnom
 	,evt.TIV_TIPO_RENTA
+	,evp.EVP_COSTAS_JUDICIALES
+	,evp.EVP_COSTAS_JUDICIALES_REFERENCIA
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -300,6 +302,8 @@
 	,HTP_TIENE_VALNOM=null
 	,specialValnom=null
 	,TIV_TIPO_RENTA=null
+	,EVP_COSTAS_JUDICIALES=null
+	,EVP_COSTAS_JUDICIALES_REFERENCIA=null
 	from
 	bvq_backoffice.evento_portafolio evp
 

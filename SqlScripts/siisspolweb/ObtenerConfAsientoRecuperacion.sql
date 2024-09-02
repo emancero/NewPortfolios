@@ -18,11 +18,15 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 		 @AS_MOV_CUENTA = COALESCE(@AS_MOV_CUENTA + ';', '') + convert(varchar(100), icr.[codigo_lista_rubro] ),
 		 @AS_MOV_TIPO = COALESCE(@AS_MOV_TIPO + ';', '') + convert(varchar(100),icr.[tipo_rubro_movimiento] ),
 		 @AS_MOV_VALOR = COALESCE(@AS_MOV_VALOR + ';', '') + convert(varchar(100),CAST(coalesce(case when ref.valord<>ref.valor then ref.valord end, debe, haber) AS money) ),
-		 @AS_MOV_REFERENCIA= COALESCE(@AS_MOV_REFERENCIA + ';', '') +  convert(varchar(100),isnull(ref.referencia,'') ) 
+		 @AS_MOV_REFERENCIA= COALESCE(@AS_MOV_REFERENCIA + ';', '') +  convert(varchar(100)
+			,coalesce(
+				 ref.referencia
+				,CASE WHEN icr.rubro='COSTAS' THEN icr.EVP_COSTAS_JUDICIALES_REFERENCIA END
+				,'')--isnull(ref.referencia,'')
+		 ) 
 	from bvq_backoffice.IsspolComprobanteRecuperacion icr
 
-	-- unión con referencias -------------------------------------------
-	--	left join bvq_backoffice.Liquidez_Referencias_table ref
+--	left join bvq_backoffice.Liquidez_Referencias_table ref
 	left join (
 		select valor=sum(valor) over (partition by tpo_numeracion,fecha,fecha_original),tpo_numeracion,fecha,fecha_original,valord=valor,referencia
 		from bvq_backoffice.liquidez_referencias_table
@@ -31,8 +35,6 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 	and datediff(hh,icr.fecha,ref.fecha)=0
 		and icr.ri in ('DIDENT','DIDENT02')
 		and round(debe,0)=round(ref.valor,0)
-	-- fin unión con referencias ---------------------------------------
-
 	where icr.tpo_numeracion=--'MDF-2013-04-25-2'
 		@AS_NOMBRE
 	and datediff(hh,icr.fecha,@AD_FECHA)=0
@@ -42,7 +44,7 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 	)
 	order by deterioro,rubroOrd,tipo desc,por_ord  
 
-	
+
 	--mensaje de error si no encuentra la cuenta ----------------------------------------
 	SELECT @as_msj =
 	       'No se ha configurado la cuenta contable para el seguro ' + isnull(icr.descripcion, '') + ',   con codigo: ' + isnull(LR.codigo, '')

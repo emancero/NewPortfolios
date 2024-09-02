@@ -11,6 +11,69 @@ using (TransactionScope scope = new TransactionScope())
     conn.Open();
 
     comm.CommandType = System.Data.CommandType.Text;
+
+    comm.CommandText = (new GetObjectCode()).GetCode("Campos de evento_portafolio", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidezView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidezView", "View", suffix:false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("EvtTemp", "Change Script", suffix:false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "StoredProcedure", suffix:false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("BVQ_BACKOFFICE.InsertarLiquidezPortafolio", "StoredProcedure");
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezTitulo'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarLiquidezTitulo", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiqIntProv'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ComprobanteIsspolRubros'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ComprobanteIsspolRubros", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ComprobanteIsspol'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ComprobanteIsspol", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("COMPROBANTE_ISSPOL", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarComprobanteIsspol'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("GenerarComprobanteIsspol", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolComprobanteRecuperacion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("IsspolComprobanteRecuperacion", "siisspolweb", suffix: false, plural:false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerConfAsientoRecuperacion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerConfAsientoRecuperacion", "siisspolweb", suffix: false, plural: false);
+    comm.ExecuteNonQuery();
+
+    conn.Close();
+    scope.Complete();
+    return;
     /*
         #region dematerialize titulo_flujo_comun
         comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN'";

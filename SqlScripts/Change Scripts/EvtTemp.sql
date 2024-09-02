@@ -106,3 +106,17 @@ IF NOT EXISTS(
 	and name='TIPO_RENTA'
 )
 	alter table BVQ_BACKOFFICE.evtTemp ADD TIPO_RENTA int
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.evtTemp')
+	and name='EVP_COSTAS_JUDICIALES'
+)
+	alter table BVQ_BACKOFFICE.evtTemp ADD EVP_COSTAS_JUDICIALES float
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.evtTemp')
+	and name='EVP_COSTAS_JUDICIALES_REFERENCIA'
+)
+	alter table BVQ_BACKOFFICE.evtTemp ADD EVP_COSTAS_JUDICIALES_REFERENCIA varchar(200)

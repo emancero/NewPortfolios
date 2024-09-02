@@ -9,6 +9,7 @@
 			when 'intAcc' then intAcc
 				+case when ipr_es_cxc=1 then isnull(ufo_uso_fondos,0) else 0 end
 			when 'valnom' then coalesce(case when htp_tiene_valnom=0 then -specialValnom end,case when e.evp_abono=1 and e.es_vencimiento_interes=0 then e.vep_valor_efectivo end,capMonto,-montooper)
+			when 'costas' then EVP_COSTAS_JUDICIALES
 		end
 		,forced_por_id=case when p.prefijo='2.1.02.'
 			--títulos reclasificados
@@ -59,7 +60,9 @@
 
 		--select vint=1, rpref='7.6.','valnom' rubro,3 ord ,0 deterioro, null rcxc union
 		select vint=0, rpref='D.7.5.2.','amountcxc' rubro,0 ord ,1 deterioro, null rcxc union
-		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc
+		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc union
+		select vint=0, rpref='1.2.90.','costas' rubro,0 ord ,0 deterioro, null rcxc union
+		select vint=1, rpref='1.2.90.','costas' rubro,0 ord ,0 deterioro, null rcxc
 	) rub on
 	(
 		es_vencimiento_interes=vint

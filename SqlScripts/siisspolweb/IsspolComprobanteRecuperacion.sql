@@ -30,6 +30,7 @@
 			,tipo=max(cis.tipo)
 			,por_ord=max(por_ord)
 			,imf_sicav=max(imf_sicav)
+			,EVP_COSTAS_JUDICIALES_REFERENCIA=max(EVP_COSTAS_JUDICIALES_REFERENCIA)
 			from BVQ_BACKOFFICE.Comprobante_Isspol CIS
 			--excepción a la cuenta de depósitos por indentificar
 			left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
@@ -93,6 +94,7 @@
 
 				or r.sir_codigo_configuracion=ri and not (ri='DIDENT' and edpi_id is not null or forced_por_id is not null) 
 				or r.sir_codigo_configuracion='DIDENT02' and edpi_id is not null
+				or r.sir_codigo_configuracion='COSTAS' and cis.rubro='COSTAS'--icr_codigo='PROV'--cis.rubro='prov'
 			)
 			and (cis.cuenta not in ('7.1.5.90.99','7.5.2.04.05','7.5.2.04.09') or r.sir_codigo_configuracion like 'DETERIORO%' or r.sir_codigo_configuracion='inte')
 			and not (cis.cuenta like '7.6.%' and r.sir_codigo_configuracion like 'DETERIORO%')
