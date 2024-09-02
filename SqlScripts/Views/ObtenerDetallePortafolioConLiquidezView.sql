@@ -127,7 +127,7 @@
 	,TPO_FECHA_VENCIMIENTO_ANTERIOR
 	,TPO_TABLA_AMORTIZACION
 	,originalProvision			=
-						case when evt.es_vencimiento_interes=0 and (tasa_cupon<>0 or tasa_cupon is null) then 0 else
+						case when evt.es_vencimiento_interes=0 and (tasa_cupon<>0 or tasa_cupon is null) or ipr_es_cxc=1 and fecha>='20240825' then 0 else
 							case when coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO) is not null then
 								case when evt.tiv_subtipo=3 and tasa_cupon=0 and 1=0 then 0 else coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO) end
 							when saldo is not null and tfl_fecha_inicio_orig is not null then
