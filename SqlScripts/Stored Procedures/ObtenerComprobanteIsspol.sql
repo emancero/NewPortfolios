@@ -1,13 +1,10 @@
-﻿
-CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerComprobanteIsspol
-(
+﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerComprobanteIsspol
 	@i_tpo_numeracion varchar(250),
 	@i_tiv_id int, 
 	@i_fecha datetime, 
 	@i_fecha_original datetime,
 	@i_efectivo_siempre bit=false, 
 	@i_lga_id int=null
-)
 AS
 BEGIN
 	SELECT
