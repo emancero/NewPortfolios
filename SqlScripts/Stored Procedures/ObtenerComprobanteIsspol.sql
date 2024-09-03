@@ -15,8 +15,10 @@ BEGIN
 	,ref.fecha
 	,ref.fecha_original
 	,ref.valord
-	,ref.referencia
-
+	,referencia=coalesce(
+			ref.referencia
+		,CASE WHEN ci.rubro='COSTAS' THEN ci.EVP_COSTAS_JUDICIALES_REFERENCIA END
+		,'')--isnull(ref.referencia,'')
 	FROM(
 		SELECT  
 		 tpo_numeracion  
@@ -67,6 +69,8 @@ BEGIN
 		,ri=max(ri)
 		,TFL_PERIODO=max(TFL_PERIODO)
 		,comisiones=sum(comisiones)
+		,EVP_COSTAS_JUDICIALES_REFERENCIA=max(EVP_COSTAS_JUDICIALES_REFERENCIA)
+		,EVP_COBRADO=max(EVP_COBRADO)
 		FROM BVQ_BACKOFFICE.ComprobanteIsspol ci
 		left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
 		on edpi.edpi_numeracion=ci.tpo_numeracion and ci.cuenta='2.1.90.03'
