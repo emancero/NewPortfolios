@@ -42,6 +42,7 @@ begin
 	,forced_por_id
 	,FON_ID
 	,EVP_COSTAS_JUDICIALES_REFERENCIA
+	,EVP_COBRADO
 	)
 	select
 	tpo_numeracion
@@ -84,5 +85,6 @@ begin
 	,forced_por_id
 	,FON_ID
 	,EVP_COSTAS_JUDICIALES_REFERENCIA
+	,EVP_COBRADO
 	from bvq_backoffice.comprobanteisspol where fecha>='20230101'
 end

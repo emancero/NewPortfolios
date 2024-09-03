@@ -31,6 +31,7 @@
 			,por_ord=max(por_ord)
 			,imf_sicav=max(imf_sicav)
 			,EVP_COSTAS_JUDICIALES_REFERENCIA=max(EVP_COSTAS_JUDICIALES_REFERENCIA)
+			,EVP_COBRADO=max(EVP_COBRADO)
 			from BVQ_BACKOFFICE.Comprobante_Isspol CIS
 			--excepción a la cuenta de depósitos por indentificar
 			left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi

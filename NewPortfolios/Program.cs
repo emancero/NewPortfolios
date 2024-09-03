@@ -66,6 +66,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("IsspolComprobanteRecuperacion", "siisspolweb", suffix: false, plural:false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEnvioRecuperacionISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEnvioRecuperacionISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerConfAsientoRecuperacion'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerConfAsientoRecuperacion", "siisspolweb", suffix: false, plural: false);

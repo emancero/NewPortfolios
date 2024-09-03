@@ -76,4 +76,5 @@ BEGIN
 
 
 			WHERE CIS.fecha BETWEEN @i_fechaInicio AND @i_fechaFin and oper=1
+			and EVP_COBRADO=1
 END
