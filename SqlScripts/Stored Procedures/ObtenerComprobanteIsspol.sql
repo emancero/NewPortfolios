@@ -119,7 +119,13 @@ BEGIN
 	-- unión con referencias -------------------------------------------
 	--left join bvq_backoffice.Liquidez_Referencias_table ref
 	left join (
-		select valor=sum(valor) over (partition by tpo_numeracion,fecha,fecha_original),tpo_numeracion,fecha,fecha_original,valord=valor,referencia
+		select
+			 valor=sum(valor) over (partition by tpo_numeracion,fecha,fecha_original)
+			,tpo_numeracion
+			,fecha
+			,fecha_original
+			,valord=valor
+			,referencia
 		from bvq_backoffice.liquidez_referencias_table
 	) ref
 	on ci.tpo_numeracion=ref.tpo_numeracion and ci.fecha=ref.fecha
