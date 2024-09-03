@@ -12,7 +12,14 @@ AS
 BEGIN
 	SELECT
 	  debe=coalesce(case when ref.valord<>ref.valor then ref.valord end, debeTemp)
-	 ,*
+	,ci.*
+	,ref.valor
+	,ref.tpo_numeracion
+	,ref.fecha
+	,ref.fecha_original
+	,ref.valord
+	,ref.referencia
+
 	FROM(
 		SELECT  
 		 tpo_numeracion  
