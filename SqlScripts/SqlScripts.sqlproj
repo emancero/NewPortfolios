@@ -128,6 +128,8 @@
     <None Include="Views\CodigoCortoSicTit.sql" />
     <None Include="Stored Procedures\PrepararValoracionLinealCache.sql" />
     <None Include="siisspolweb\IsspolAbonarADeposito.sql" />
+    <None Include="Views\TotalRecuperacionesView.sql" />
+    <None Include="Stored Procedures\ObtenerTotalRecuperacionesPivot.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
