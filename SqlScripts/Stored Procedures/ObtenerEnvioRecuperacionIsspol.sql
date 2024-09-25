@@ -32,7 +32,8 @@ BEGIN
 			 +case when min(imf_sicav) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta fondo en Siisspolweb, ' else '' end
 			 +case when min(cis_cuenta) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta perfil en Sicav, ' else '' end
 			 +case when min(id_int_conf_fondo_cuenta) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta perfil en Siisspolweb,' else '' end
-
+			 +case when isnull(max(ref.valor) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion),0)<=0 then 'Sin referencia' else '' end
+			 ,tieneReferencia=case when isnull(max(ref.valor) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion),0)>0 then 1 else 0 end
 	FROM
 			--del0 bvq_backoffice.IsspolAInsertar SIC
 			/*left join inversion.r_int_inversion INV 
@@ -74,7 +75,16 @@ BEGIN
 			ON it.id_inversion = i.id_inversion 
 			*/
 
+			left join (
+				select valor=sum(valor) over (partition by tpo_numeracion,fecha,fecha_original),tpo_numeracion,fecha,fecha_original,valord=valor,referencia
+				from bvq_backoffice.liquidez_referencias_table
+			) ref
+			on cis.tpo_numeracion=ref.tpo_numeracion
+			and datediff(hh,cis.fecha,ref.fecha)=0
+				and cis.ri in ('DIDENT','DIDENT02')
+				and round(debe,0)=round(ref.valor,0)
 
 			WHERE CIS.fecha BETWEEN @i_fechaInicio AND @i_fechaFin and oper=1
 			and EVP_COBRADO=1
+
 END
