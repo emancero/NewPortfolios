@@ -189,6 +189,12 @@ begin
 			where tpo.tpo_id=@tpo_id and datediff(d,r.fecha_original,@fecha_original)=0
 		end
 
+		--actualizar fecha en el control de envío a Siisspolweb
+		exec BVQ_BACKOFFICE.ActualizarFechaControlEnvioIsspol
+		 @i_fecha = @i_fecha
+		,@i_fecha_original = @fecha_original
+		,@i_tpo_id = @tpo_id
+
 
 		set @v_evp_id=scope_identity()
 		EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]

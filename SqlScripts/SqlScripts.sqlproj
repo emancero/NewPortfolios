@@ -130,6 +130,7 @@
     <None Include="siisspolweb\IsspolAbonarADeposito.sql" />
     <None Include="Views\TotalRecuperacionesView.sql" />
     <None Include="Stored Procedures\ObtenerTotalRecuperacionesPivot.sql" />
+    <None Include="Stored Procedures\ActualizarFechaControlEnvioIsspol.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
