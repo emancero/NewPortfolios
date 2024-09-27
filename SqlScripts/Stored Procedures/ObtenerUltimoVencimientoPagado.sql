@@ -5,19 +5,31 @@
 	@i_lga_id int
 as
 begin
+	if exists(
+		select * from bvq_backoffice.titulos_portafolio tpo
+		join bvq_administracion.titulo_valor tiv on tpo.tiv_id=tiv.tiv_id
+		where tiv_tipo_renta=154 and tpo_numeracion=@i_numeracion
+	)
+	begin
+		select * from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
+		where oper=0
+		--and fecha=@i_fecha
+		and tpo_numeracion=@i_numeracion
+	return
+	end
+
 	--borrar temporalmente el default que hace que un título vencido
 	--aparezca en cuentas por cobrar
 	update d set fecha='29991231'
 	from bvq_backoffice.EventoPortafolioDefaults d
-	where fecha=@i_fecha and tpo_numeracion=@i_numeracion
-
+	where datediff(hh,htp_fecha_operacion,@i_fecha)=0 and tpo_numeracion=@i_numeracion
 	if @@ROWCOUNT>0
 	begin
+		exec bvq_backoffice.GenerarCompraVentaFlujo
 		exec bvq_backoffice.prepararliquidezcache null
 	end
 
 	select * from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
-	where oper=1
-	and fecha=@i_fecha
+	where fecha=@i_fecha
 	and tpo_numeracion=@i_numeracion
 end
