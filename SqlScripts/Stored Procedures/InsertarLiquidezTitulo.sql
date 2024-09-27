@@ -1,5 +1,4 @@
 ﻿CREATE PROCEDURE BVQ_BACKOFFICE.InsertarLiquidezTitulo
-	(
 		@i_evt_id	   BIGINT,
 		--@i_htp_numero  VARCHAR(100),
 		@i_fecha_cobro DATETIME,
@@ -11,7 +10,6 @@
 		@i_evp_costas_judiciales float = NULL,
 		@i_evp_costas_judiciales_referencia varchar(100) = NULL,
 		@i_lga_id	   INT = NULL
-	)
 AS
 	BEGIN
 		DECLARE @v_evt_id INT,
@@ -47,7 +45,7 @@ AS
 			@i_evp_costas_judiciales = @i_evp_costas_judiciales,
 			@i_evp_costas_judiciales_referencia = @i_evp_costas_judiciales_referencia
 		--recuperar default borrado temporalmente si existe (es decir si es cxc)
-		update d set fecha=@i_fecha_cobro
+		update d set fecha=convert(date,@i_fecha_cobro)
 		from bvq_backoffice.EventoPortafolioDefaults d
 		where d.htp_id=@i_evt_id and fecha='29991231'
 
