@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Functions\BVQ_BACKOFFICE.tfEstadoDeCuentaPortafolio.UserDefinedFunction.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.GenerarCompraVentaFlujo.StoredProcedure.sql" />
+    <None Include="Stored Procedures\GenerarCompraVentaFlujo.sql" />
     <None Include="Views\BVQ_BACKOFFICE.EventoPortafolioCorte.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.CompraVentaFlujo.View.sql" />
     <None Include="Change Scripts\Campos para GenerarCompraVentaFlujo.sql" />
