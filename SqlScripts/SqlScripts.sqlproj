@@ -134,6 +134,7 @@
     <None Include="ObtenerReferenciasDeposito.sql" />
     <None Include="Views\EventoPortafolioDefaults.sql" />
     <None Include="Stored Procedures\InsertarHistoricoActivosInmobiliarios.sql" />
+    <None Include="Stored Procedures\GenerarVectores.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

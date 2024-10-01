@@ -483,7 +483,7 @@
 						join
 						bvq_administracion.vector_precio vpr
 						on t.tiv_id=vpr.tiv_id and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
-					on t.tiv_id=tpo.tiv_id
+					on (t.tiv_id=tpo.tiv_id or t.tiv_id=7093 and tpo.tiv_id=7755)
 					and c=t.cc
  
 					--bde_perfil_contable
