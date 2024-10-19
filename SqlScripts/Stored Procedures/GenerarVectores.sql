@@ -8,7 +8,11 @@ begin
 	BVQ_ADMINISTRACION.VECTOR_PRECIO vpr
 	inner join bvq_backoffice.titulos_portafolio tpo on tpo.tiv_id=vpr.tiv_id
 	union
-	select vpr_fecha,tiv_id,vpr_id,null from bvq_administracion.VECTOR_PRECIO where tiv_id=7093
+	select vpr_fecha,vpr.tiv_id,vpr_id,null 
+	from bvq_administracion.VECTOR_PRECIO vpr
+	join bvq_administracion.titulo_valor tiv on tiv.tiv_split_de=vpr.tiv_id
+	join bvq_backoffice.titulos_portafolio tpo on tiv.tiv_id=tpo.tiv_id
+	join corteslist on c between tpo_fecha_ingreso and tiv_fecha_vencimiento
 
 	exec dropifexists 'bvq_backoffice.htpcortes'
 	select *
