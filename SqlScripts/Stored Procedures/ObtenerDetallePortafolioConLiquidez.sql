@@ -1,11 +1,12 @@
-﻿create procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez(
+﻿create procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez
 	 @i_idPortfolio		int				--Identificador del portafolio
 	,@i_fechaIni		datetime
 	,@i_fechaFin		datetime
 	,@i_client_id		int
 	,@i_public			bit=0
+	,@i_mostrar			bit=1
 	,@i_lga_id			int=null
-)as
+as
 begin
  
 	/*if exists(
@@ -240,6 +241,10 @@ begin
 	from bvq_backoffice.evtTemp with(tablockx)
 	where (abs(round(amount,2))>0.05e or oper=2)
 
+	--si no se debe mostrar valores salir
+	if @i_mostrar<>1 or @i_mostrar is null
+		return
+
 	select *,TPO_REESTRUCTURACION=CASE WHEN TPO_NUMERACION='2014-4933' THEN 1 ELSE 0 END
 	,(iAmortizacion+amount) AS 'total_cuota'
 	,diasTran=dbo.fnDiasEu(case when tpo_fecha_ingreso>TFL_FECHA_INICIO then tpo_fecha_ingreso else tfl_fecha_inicio end,dateadd(d,-day(fecha),fecha),355)
@@ -301,6 +306,7 @@ begin
 	and (@i_public=0 OR por_public=1)
 	and (abs(round(amount,2))>0.05e or oper=2)
 	--and por_id in (180,135,181,182,183) --PORTAFOLIOS DE ADVFINSA
+
 	--obtener saldos iniciales
 	select por_id,saldo_liquidez from(
 		select row_number() over (partition by por_id order by fecha desc,oper asc,htp_id desc,es_vencimiento_interes desc) rn
