@@ -9,6 +9,7 @@
 		@i_evp_rendimiento float = NULL,
 		@i_evp_costas_judiciales float = NULL,
 		@i_evp_costas_judiciales_referencia varchar(100) = NULL,
+		@i_fecha_default_a_restaurar datetime=NULL,
 		@i_lga_id	   INT = NULL
 AS
 	BEGIN
@@ -45,7 +46,8 @@ AS
 			@i_evp_costas_judiciales = @i_evp_costas_judiciales,
 			@i_evp_costas_judiciales_referencia = @i_evp_costas_judiciales_referencia
 		--recuperar default borrado temporalmente si existe (es decir si es cxc)
-		update d set fecha=convert(date,@i_fecha_cobro)
+		update d set fecha=convert(date,@i_fecha_default_a_restaurar)
+		--,tiv_id=-abs(tiv_id) --desactivar
 		from bvq_backoffice.EventoPortafolioDefaults d
 		where d.htp_id=@i_evt_id and fecha='29991231'
 
