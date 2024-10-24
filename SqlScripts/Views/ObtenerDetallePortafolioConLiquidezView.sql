@@ -168,7 +168,10 @@
 		and
 		(
 			evp.oper_id=evt.oper and
-			evp.es_vencimiento_interes=evt.es_vencimiento_interes
+			(
+				evp.es_vencimiento_interes=evt.es_vencimiento_interes
+				or evp.evp_abono=1 and iamortizacion=0 and evp.es_vencimiento_interes=1
+			)
 			or
 			evt.tvl_codigo in ('ACC','CDP','ENC')
 			and evp.evp_abono=1
@@ -189,6 +192,7 @@
 		vep.oper_id=evt.oper and
 		vep.es_vencimiento_interes=isnull(evt.es_vencimiento_interes,0)*/
 	where abs(isnull(evt.montoOper,0)+isnull(evt.iAmortizacion,0))>5e-9
+	or evp.evp_abono=1
 	union all
 
 	select

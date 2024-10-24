@@ -304,7 +304,7 @@ begin
 	and (@i_idPortfolio=por_id or @i_idPortfolio=-1)
 	--Columna por_public
 	and (@i_public=0 OR por_public=1)
-	and (abs(round(amount,2))>0.05e or oper=2)
+	and (abs(round(amount,2))>0.05e or oper=2 or evp_abono=1)
 	--and por_id in (180,135,181,182,183) --PORTAFOLIOS DE ADVFINSA
 
 	--obtener saldos iniciales
