@@ -152,7 +152,11 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    case when min_tiene_valnom=1 or min_tiene_valnom=0 and httpo_id<1500 then
 	  isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0) + [htp_compra]*[htp_precio_compra]/case when [tiv_tipo_renta]=153 then 100e else 1e end
    end,    
-   YIELD=CASE WHEN [TVL_CODIGO] in ('FAC','PCO','OBL','OCA','VCC') THEN [HTP_RENDIMIENTO] ELSE [TIV_TASA_INTERES] END/100.0,    
+   YIELD =
+   CASE
+        WHEN [TVL_CODIGO] in ('FAC','PCO','OBL','OCA','VCC') THEN [HTP_RENDIMIENTO]
+        ELSE [TIV_TASA_INTERES]
+   END / 100.0,    
    PRECIO=htp_precio_compra,    
    SECTOR=CASE [sector_general] WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END,    
    MONTO_EMITIDO= [TIV_MONTO_EMISION],    
