@@ -273,7 +273,7 @@ BEGIN
                                                 ,prEfectivo
 											   ,YIELD =
 												CASE
-													WHEN pcorte.[tvl_codigo] IN ('FAC', 'PCO') THEN [HTP_RENDIMIENTO]
+													WHEN pcorte.[tvl_codigo] IN ('FAC','PCO','OBL','OCA','VCC') THEN [HTP_RENDIMIENTO]
 													ELSE [tiv_tasa_interes]
 												END / 100.0
                                                ,NUEVO_VALOR_NOMINAL=
