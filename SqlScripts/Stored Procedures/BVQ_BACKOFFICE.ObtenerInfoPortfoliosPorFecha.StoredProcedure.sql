@@ -234,35 +234,36 @@ BEGIN
                                                     ,[TCA_VALOR]
                                                     ,'NO DISPONIBLE')
                                                 ,PRECIO_DE_HOY=
-                                                     iif(
-                                                        case
-                                                        when [TPO_MANTIENE_VECTOR_PRECIO]=1 or
-                                                        isnull([IPR_ES_CXC],0)=0 
-                                                        or pcorte.tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end<>''
-                                                        ,
-                                                        case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end
-                                                        ,
-                                                        pcorte.htp_precio_compra/100.0
-                                                    )+
-                                                    datediff(d,fecha_ultima_compra,tfcorte)
-	                                                * (
-                                                        1.0-
-                                                        iif(
-                                                            case
-                                                            when [TPO_MANTIENE_VECTOR_PRECIO]=1 or
-                                       isnull([IPR_ES_CXC],0)=0 
-                                                            or pcorte.tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end<>''
-	                                                        ,
-                                                            case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end
-                                                            ,
-                                                            pcorte.htp_precio_compra/100.0
-	                                                    )
-                                                    )
-	                                                /
-                                                    datediff(d,fecha_ultima_compra,tiv_fecha_vencimiento)
+													case when pcorte.tiv_tipo_renta=154 then pcorte.tiv_precio else
+														iif(
+															case
+															when [TPO_MANTIENE_VECTOR_PRECIO]=1 or
+															isnull([IPR_ES_CXC],0)=0 
+															or pcorte.tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end<>''
+															,
+															case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end
+															,
+															pcorte.htp_precio_compra/100.0
+														)+
+														datediff(d,fecha_ultima_compra,tfcorte)
+														* (
+															1.0-
+															iif(
+																case
+																when [TPO_MANTIENE_VECTOR_PRECIO]=1 or isnull([IPR_ES_CXC],0)=0 
+																or pcorte.tvl_codigo in ('SWAP') then rtrim([TIV_CODIGO_VECTOR]) end<>''
+																,
+																case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end
+																,
+																pcorte.htp_precio_compra/100.0
+															)
+														)
+														/
+														datediff(d,fecha_ultima_compra,tiv_fecha_vencimiento)
+													end
                                                ,INTERES_GANADO=
                                                     case
-                                                        when pcorte.tvl_codigo in
+                    when pcorte.tvl_codigo in
                                                             ('FAC','PCO') and
                                                             pcorte.tiv_tipo_base=355 and
                                                             latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
