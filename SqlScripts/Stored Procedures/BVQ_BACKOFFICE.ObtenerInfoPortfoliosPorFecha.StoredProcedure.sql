@@ -263,7 +263,7 @@ BEGIN
 													end
                                                ,INTERES_GANADO=
                                                     case
-                    when pcorte.tvl_codigo in
+                                                    when pcorte.tvl_codigo in
                                                             ('FAC','PCO') and
                                                             pcorte.tiv_tipo_base=355 and
                                                             latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
@@ -284,6 +284,7 @@ BEGIN
                                                         case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal
                                                         else 1 end
                                                     end
+                                                ,SECTOR=CASE [sector_general] WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END
 
 												--into #x
                 from @tbPortafolioCorte pcorte 
