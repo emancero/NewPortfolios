@@ -97,7 +97,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
   s.tiv_split_de,
   s.tfcorte,
   SECTOR_DETALLADO=case when max(SECTOR_GENERAL)='SEC_PRI_FIN' then
-	case when EMS_NOMBRE like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
+	case when EMS_NOMBRE like 'COOPERATIVA DE AHORRO Y CRÉDITO%' collate modern_spanish_ci_ai THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
   else SECTOR END
   from(
    select     
@@ -133,7 +133,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    case when tvl_codigo='BE' then
         tvl_codigo+' '+isnull(tpo_acta,'')
    else
-        replace([EMS_NOMBRE] + isnull('/' + [ACP_NOMBRE],''),'COOPERATIVA DE AHORRO Y CRÉDITO','CAC')
+        replace([EMS_NOMBRE] + isnull('/' + [ACP_NOMBRE],'') collate modern_spanish_ci_ai,'COOPERATIVA DE AHORRO Y CRÉDITO','CAC')
    end,
    --DECRETO_EMISOR= [EMS_NOMBRE] + isnull('/' + [ACP_NOMBRE],''),    
    INTERVINIENTES=TPO_INTERVINIENTES,    
