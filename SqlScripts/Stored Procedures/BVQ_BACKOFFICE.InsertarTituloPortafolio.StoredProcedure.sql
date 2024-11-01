@@ -68,6 +68,8 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_tpo_fecha_encargo datetime = null		
 	,@i_tpo_boletin varchar(20) = null
 	,@i_tiv_id_origen	int = null
+	,@i_fon_numero_liquidacion varchar(10) = null
+	,@i_fon_procedencia char(1) = null
 	,@i_lga_id int		
 AS
 BEGIN
@@ -122,9 +124,21 @@ BEGIN
 			)
 			if @v_fon_id is null
 			begin
-				insert into bvq_backoffice.fondo(fon_tiv_id,fon_numeracion) values (@i_tiv_id,@i_numeracion)
+				insert into bvq_backoffice.fondo(
+					  fon_tiv_id
+					, fon_numeracion
+					, FON_NUMERO_LIQUIDACION
+					, FON_PROCEDENCIA
+					)
+				values (
+					  @i_tiv_id
+					, @i_numeracion
+					, @i_fon_numero_liquidacion
+					, @i_fon_procedencia
+				)
 				set @v_fon_id=scope_identity()
 			end
+
 			INSERT INTO [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO]
            (
 				USR_ID,
