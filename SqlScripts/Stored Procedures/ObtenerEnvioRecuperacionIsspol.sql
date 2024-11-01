@@ -28,11 +28,14 @@ BEGIN
 			,CIS.idemisor
 			,CIS.tiv_id
 			,CIS.htp_fecha_operacion
-			 ,errores=case when min(id_tipo_papel) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta tipo de papel en Siisspolweb, ' else '' end
-			 +case when min(imf_sicav) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta fondo en Siisspolweb, ' else '' end
-			 +case when min(cis_cuenta) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta perfil en Sicav, ' else '' end
-			 +case when min(id_int_conf_fondo_cuenta) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion) is null then 'Falta perfil en Siisspolweb,' else '' end
-			 +case when isnull(max(ref.valor) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion),0)<=0 then 'Sin referencia' else '' end
+			 ,errores=case when min(isnull(id_tipo_papel,-1)) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion)=-1 then 'Falta tipo de papel en Siisspolweb, ' else '' end
+			 +case when min(isnull(imf_sicav,-1)) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion)=-1 then 'Falta fondo en Siisspolweb, ' else '' end
+			 +case when min(isnull(cis_cuenta,'')) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion)='' then 'Falta perfil en Sicav, ' else '' end
+			 +case when min(isnull(id_int_conf_fondo_cuenta,-1)) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion)=-1 then 'Falta perfil en Siisspolweb,' else '' end
+			 +case when
+				isnull(max(ref.valor) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion),0)<=0
+				and not min(isnull(id_int_conf_fondo_cuenta,-1)) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion)=-1
+			 then 'Sin referencia' else '' end
 			 ,tieneReferencia=case when isnull(max(ref.valor) over (partition by cis.tpo_numeracion,cis.tiv_id,cis.fecha,cis.htp_fecha_operacion),0)>0 then 1 else 0 end
 	FROM
 			--del0 bvq_backoffice.IsspolAInsertar SIC
