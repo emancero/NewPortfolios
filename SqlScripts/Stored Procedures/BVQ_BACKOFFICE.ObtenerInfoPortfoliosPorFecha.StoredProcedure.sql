@@ -56,6 +56,7 @@ BEGIN
                                                 ,valefeConRendimiento float
 												,HTP_RENDIMIENTO float
 												,tpo_fecha_compra_anterior datetime
+												,sector_general varchar(20)
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -91,6 +92,7 @@ BEGIN
                         ,valefeConRendimiento
 						,HTP_RENDIMIENTO
 						,tpo_fecha_compra_anterior
+						,sector_general
 				from bvq_backoffice.portafoliocorte
 
 				insert into @tbPortafolioComitente
@@ -142,7 +144,7 @@ BEGIN
                                                ,tvl.tvl_descripcion
                                                ,rent.itc_descripcion as renta
                                                ,tta.tta_nombre
-                                               ,por.por_tipo_nombre
+              ,por.por_tipo_nombre
                    ,por.por_codigo
                                                ,pcorte.tiv_precio
                                                ,pcorte.por_id
@@ -198,7 +200,7 @@ BEGIN
                                                     ,coalesce(pcorte.prEfectivo*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
 			                                        ,CASE
 				                                        WHEN valefeConRendimiento is not null then
-					                         valefeConRendimiento
+					             valefeConRendimiento
 				                                        WHEN [TPO_F1] = (SELECT TOP 1
 							                                        kf1
 						                                        FROM keyf1
@@ -261,15 +263,16 @@ BEGIN
 														/
 														datediff(d,fecha_ultima_compra,tiv_fecha_vencimiento)
 													end
-                                               ,INTERES_GANADO=
-                                                    case
-                                                    when pcorte.tvl_codigo in
+                                               ,INTERES_GANADO=isnull(
+													case
+													when pcorte.tvl_codigo in
                                                             ('FAC','PCO') and
                                                             pcorte.tiv_tipo_base=355 and
                                                             latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
                                                         else pcorte.dias_al_corte
                                                     end
-		                                            /360.0e0 * sal * tiv_tasa_interes/100.0    
+		                                            /360.0e0 * sal * tiv_tasa_interes/100.0
+												,0)
                                                 ,prEfectivo
 											   ,YIELD =
 												CASE
@@ -284,7 +287,9 @@ BEGIN
                                                         case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal
                                                         else 1 end
                                                     end
-                                                ,SECTOR=CASE [sector_general] WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END
+                                                ,SECTOR=CASE [sector_general] collate modern_spanish_ci_ai WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN
+												'PUBLICO' WHEN 'SEC_PUB_NFIN'
+												 THEN 'PUBLICO' END
 
 												--into #x
                 from @tbPortafolioCorte pcorte 
