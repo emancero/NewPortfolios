@@ -101,9 +101,18 @@ begin
 		declare @o_secuencial varchar(50)
 		EXEC [BVQ_ADMINISTRACION].[ObtenerSecuencialDocumento]	@fns_codigo, @o_secuencial OUTPUT;
 		insert into bvq_backoffice.comprobante_gestion_negocio(
-			CTI_ID,COM_DESCRIPCION,COM_ESTADO,COM_FECHA_APLICACION,COM_FECHA_CREACION,COM_FECHA_REVERSO,COM_FECHA_REVISION,COM_MODO_REGISTRO,COM_NUMERO_COMPROBANTE,COM_TOTAL_CREDITOS,COM_TOTAL_DEBITOS,COM_ORIGEN,COM_MOTIVO_RECHAZO,COM_MOTIVO_ANULACION,SUC_ID,USR_ID,COM_DOCUMENTO_ORIGEN,tpo_id_c
+			 CTI_ID,COM_DESCRIPCION,COM_ESTADO,COM_FECHA_APLICACION
+			,COM_FECHA_CREACION,COM_FECHA_REVERSO,COM_FECHA_REVISION
+			,COM_MODO_REGISTRO,COM_NUMERO_COMPROBANTE
+			,COM_TOTAL_CREDITOS,COM_TOTAL_DEBITOS,COM_ORIGEN,COM_MOTIVO_RECHAZO
+			,COM_MOTIVO_ANULACION,SUC_ID,USR_ID,COM_DOCUMENTO_ORIGEN,tpo_id_c
 		)
-		select CTI_ID,COM_DESCRIPCION,COM_ESTADO,COM_FECHA_APLICACION,COM_FECHA_CREACION,COM_FECHA_REVERSO,COM_FECHA_REVISION,COM_MODO_REGISTRO,'R - ' + @o_secuencial,COM_TOTAL_CREDITOS,COM_TOTAL_DEBITOS,COM_ORIGEN,COM_MOTIVO_RECHAZO,COM_MOTIVO_ANULACION,SUC_ID,USR_ID,@v_com_numero_comprobante,tpo_id_c
+		select
+		 CTI_ID,COM_DESCRIPCION,COM_ESTADO,COM_FECHA_APLICACION
+		,COM_FECHA_CREACION,COM_FECHA_REVERSO,COM_FECHA_REVISION
+		,COM_MODO_REGISTRO,'R - ' + @o_secuencial
+		,COM_TOTAL_CREDITOS,COM_TOTAL_DEBITOS,COM_ORIGEN,COM_MOTIVO_RECHAZO
+		,COM_MOTIVO_ANULACION,SUC_ID,USR_ID,@v_com_numero_comprobante,tpo_id_c
 		from bvq_backoffice.comprobante_gestion_negocio where com_id=@o_com_id
 
 		insert into bvq_backoffice.asiento_bancos(
@@ -133,9 +142,14 @@ begin
 		@i_idAfectado = @i_evp_id;
 	
 		IF(@i_duplica = 0 OR @i_duplica IS NULL)
-		delete from bvq_backoffice.evento_portafolio where evp_id=@i_evp_id --or isnull(@i_evp_id,-1)=-1 and evt_id=@i_evt_id and oper_id=@i_oper_id and es_vencimiento_interes=@i_es_vencimiento_interes
+		begin
+			delete from bvq_backoffice.evento_portafolio where evp_id=@i_evp_id --or isnull(@i_evp_id,-1)=-1 and evt_id=@i_evt_id and oper_id=@i_oper_id and es_vencimiento_interes=@i_es_vencimiento_interes
+			delete from bvq_backoffice.eventos_relacion where evp_id=@i_evp_id
+		end
 
 		delete from bvq_backoffice.evento_portafolio where evp_id=@i_evp_id and evp_abono=1 --si es abono borrar siempre
+		delete evr from bvq_backoffice.eventos_relacion evr join bvq_backoffice.evento_portafolio evp on evp.evp_id=evr.evp_id
+		where evr.evp_id=@i_evp_id and evp_abono=1
 		
 		declare @tpo_id int
 		set @tpo_id=@i_evt_id % 10000000
@@ -180,6 +194,18 @@ begin
 			,@i_evp_costas_judiciales_referencia
 		)
 
+		set @v_evp_id=scope_identity()
+		insert into bvq_backoffice.eventos_relacion(
+			 htp_id
+			,es_vencimiento_interes
+			,evp_id
+		)
+		values (
+			 @i_evt_id
+			,@i_es_vencimiento_interes
+			,@v_evp_id
+		)
+		
 		--actualizar referencia si cambia la fecha (y no es abono)
 		if @abono=0
 		begin
@@ -196,7 +222,6 @@ begin
 		,@i_tpo_id = @tpo_id
 
 
-		set @v_evp_id=scope_identity()
 		EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
 		@i_lga_id = @i_lga_id,
 		@i_tabla = 'EVENTO_PORTAFOLIO',
