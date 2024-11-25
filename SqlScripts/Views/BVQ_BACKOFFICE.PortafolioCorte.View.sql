@@ -197,7 +197,7 @@
 	,TCA.TCA_VALOR
 	--,TIV.TIV_ACTA
 	,TIV.TIV_CLASE
-	,tiv_codigo_vector=coalesce(case when datediff(d,c,tiv_fecha_vencimiento)>365 then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
+	,HTP.tiv_codigo_vector--=coalesce(case when datediff(d,c,tiv_fecha_vencimiento)>365 then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
 	,TIV.TIV_MONTO_EMISION
 	,HTP.TPO_CUPON_VECTOR
 	,HTP.TPO_FECHA_SUSC_CONVENIO
@@ -251,10 +251,10 @@
 
 	,fecha_ultima_compra=
 	case when isnull(ipr_es_cxc,0)=0 then
-		case when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
+		case when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
 		lastValDate
-		when isnull(rtrim(tiv_codigo_vector),'')='' then [fecha_compra]
-		when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
+		when isnull(rtrim(htp.tiv_codigo_vector),'')='' then [fecha_compra]
+		when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
 			htp.c
 		end
 	else
@@ -475,6 +475,7 @@
 					,TPO.TPO_AJUSTE_DIAS_DE_INTERES_GANADO
 					,e.interesCoactivo
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
+					,tiv_codigo_vector=coalesce(case when datediff(d,c,e.tiv_fecha_vencimiento)>365 then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
 					join bvq_administracion.titulo_valor tiv on tiv.tiv_id=tpo.tiv_id
