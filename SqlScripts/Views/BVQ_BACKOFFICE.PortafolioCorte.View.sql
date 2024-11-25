@@ -477,12 +477,12 @@
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
- 
+					join bvq_administracion.titulo_valor tiv on tiv.tiv_id=tpo.tiv_id
 					left join
 						BVQ_ADMINISTRACION.VALORACION_LINEAL_CACHE t
 						join
 						bvq_administracion.vector_precio vpr
-						on t.tiv_id=vpr.tiv_id and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
+						on vpr.tiv_id in (t.tiv_id) and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
 					on (t.tiv_id=tpo.tiv_id or t.tiv_id=7093 and tpo.tiv_id=7755)
 					and c=t.cc
  
@@ -544,7 +544,13 @@
 	) enc on enc.r=1 and isnull(tiv.tiv_codigo_titulo_sic,'')<>'' and tiv.tiv_codigo_titulo_sic=enc.enc_numero_corto_emision
 	left join bvq_administracion.calificadoras cal on cal.cal_id=coalesce(tca.cal_id,enc.cal_id)
 	left join BVQ_BACKOFFICE.ISSPOL_PROGS progs	on HTP.TPO_PROG=progs.IPR_NOMBRE_PROG
-	left join (select tfl_fecha_inicio_orig2=tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id2=htp_tpo_id from bvq_backoffice.EventoPortafolio where htp_tiene_valnom=1) ev on htp.c between ev.tfl_fecha_inicio_orig2 and ev.tfl_fecha_vencimiento2 and ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0
+	--left join (select tfl_fecha_inicio_orig2=tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id2=htp_tpo_id from bvq_backoffice.EventoPortafolio where htp_tiene_valnom=1) ev on htp.c between ev.tfl_fecha_inicio_orig2 and ev.tfl_fecha_vencimiento2 and ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0
+	left join (
+		select ncorte=cl.c,tfl_fecha_inicio_orig2=min(tfl_fecha_inicio_orig),tfl_fecha_vencimiento2=max(tfl_fecha_vencimiento2),htp_tpo_id2=htp_tpo_id from bvq_backoffice.EventoPortafolioAprox e
+		join corteslist cl on cl.c between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2
+		where htp_tiene_valnom=1
+		group by htp_tpo_id,cl.c
+	) ev on htp.c=ncorte and ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0
 
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
