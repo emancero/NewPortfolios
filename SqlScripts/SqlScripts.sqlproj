@@ -136,8 +136,8 @@
     <None Include="Stored Procedures\InsertarHistoricoActivosInmobiliarios.sql" />
     <None Include="Stored Procedures\GenerarVectores.sql" />
     <None Include="Stored Procedures\ObtenerDetallePortafolioConValoresIniciales.sql" />
-    <None Include="Views\IsspolAsiento.sql" />
     <None Include="Change Scripts\Tabla eventos_relacion.sql" />
+    <None Include="Views\IsspolMasiva.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
