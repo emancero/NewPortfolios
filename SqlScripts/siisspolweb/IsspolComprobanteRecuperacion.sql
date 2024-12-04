@@ -32,6 +32,7 @@
 			,imf_sicav=max(imf_sicav)
 			,EVP_COSTAS_JUDICIALES_REFERENCIA=max(EVP_COSTAS_JUDICIALES_REFERENCIA)
 			,EVP_COBRADO=max(EVP_COBRADO)
+
 			from BVQ_BACKOFFICE.Comprobante_Isspol CIS
 			--excepción a la cuenta de depósitos por indentificar
 			left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
@@ -54,7 +55,7 @@
 
 			left join [siisspolweb].siisspolweb.inversion.vis_emisor_calificacion e on e.identificacion=pju_identificacion
 			join bvq_administracion.isspol_mapa_fondos imf on imf.imf_sicav=coalesce(CIS.forced_por_id,tpo.por_id)
-
+			left join inversion.r_int_inversion ii on ii.nombre=tpo.TPO_NUMERACION
 			--unión con la inversión
 			left join [siisspolweb].siisspolweb.[inversion].[inversion] i				
 				join [siisspolweb].siisspolweb.[inversion].[inversion_titulo] it on it.id_inversion = i.id_inversion and it.estado='L'								
@@ -68,7 +69,9 @@
 					or (cis.tippap='FI' and i.fecha=cis.tiv_fecha_emision)
 				)
 				or cis.tpo_numeracion='SGE-2023-03-31' and i.id_inversion=175
-			) and i.id_inversion not in (229,230,231,233,234,235,246,115)
+			) and i.id_inversion not in (229,230,231,233,234,235,246,115,270,271)
+			or
+			ii.id_inversion in (270,271) and ii.id_inversion=i.id_inversion
 			--fin unión con la inversión
 
 			join [siisspolweb].siisspolweb.[inversion].[fondo_inversion] fi 
