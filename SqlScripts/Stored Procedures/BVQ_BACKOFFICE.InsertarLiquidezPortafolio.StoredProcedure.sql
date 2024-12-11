@@ -28,6 +28,7 @@ CREATE procedure [BVQ_BACKOFFICE].[InsertarLiquidezPortafolio]
 	@i_evp_rendimiento float = null,
 	@i_evp_costas_judiciales float = null,
 	@i_evp_costas_judiciales_referencia varchar(100) = null,
+	@i_fecha_identificadora datetime = null,
 	@i_lga_id int
 AS
 begin
