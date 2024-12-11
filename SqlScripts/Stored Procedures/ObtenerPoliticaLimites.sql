@@ -56,7 +56,7 @@ begin
 		when tvl_codigo in ('FAC') then 'FACTURAS COMERCIALES'
 		when tvl_codigo in ('ACC','ENC') then 'ACCIONES Y ENCARGO FID'
 		when tvl_codigo in ('FI') then 'FONDOS DE INVERSIÓN'
-		when tvl_codigo in ('CDP') then 'VALORES DE PARTICIPACIÓN'
+		when tvl_codigo in ('CDP','VTP') then 'VALORES DE PARTICIPACIÓN'
 		end--,*
 		--when 
 		from bvq_backoffice.portafoliocorte pc where isnull(ipr_es_cxc,0)=0 and sal>0
@@ -69,18 +69,19 @@ begin
 	,r=row_number() over (partition by sec.TIPO_RENTA order by ord desc)
 	from
 	(values
-		 ('RENTA FIJA'		,'ESTADO'							,10,0.30,0.05)
-		,('RENTA FIJA'		,'FINANCIERO'						,20,0.25,0.05)
-		,('RENTA FIJA'		,'OBLIGACIONES Y PAPEL COMERCIAL'	,30,0.20,0.05)
-		,('RENTA FIJA'		,'REPORTOS'							,40,0.15,0.05)
-		,('RENTA FIJA'		,'TITULARIZACIONES'					,50,0.05,0.02)
-		,('RENTA FIJA'		,'FACTURAS COMERCIALES'				,60,0.05,0.02)
+		 ('RENTA FIJA'		,'ESTADO'							, 10, 0.30, 0.05)
+		,('RENTA FIJA'		,'FINANCIERO'						, 20, 0.25, 0.05)
+		,('RENTA FIJA'		,'OBLIGACIONES Y PAPEL COMERCIAL'	, 30, 0.20, 0.05)
+		,('RENTA FIJA'		,'REPORTOS'							, 40, 0.15, 0.05)
+		,('RENTA FIJA'		,'TITULARIZACIONES'					, 50, 0.05, 0.02)
+		,('RENTA FIJA'		,'FACTURAS COMERCIALES'				, 60, 0.05, 0.02)
 
-		,('RENTA VARIABLE'	,'ACCIONES Y ENCARGO FID'			,70,0.30,0.05)
-		,('RENTA VARIABLE'	,'FONDOS DE INVERSIÓN'				,80,0.30,0.05)
-		,('RENTA VARIABLE'	,'VALORES DE PARTICIPACIÓN'			,90,0.40,0.05)
+		,('RENTA VARIABLE'	,'ACCIONES Y ENCARGO FID'			, 70, 0.30, 0.05)
+		,('RENTA VARIABLE'	,'FONDOS DE INVERSIÓN'				, 80, 0.30, 0.05)
+		,('RENTA VARIABLE'	,'VALORES DE PARTICIPACIÓN'			, 90, 0.40, 0.05)
 	) sec(TIPO_RENTA,SECTOR,ord,PCT,alert)
 	left join a
 	on sec.SECTOR=a.sector
 	group by sec.sector,sec.tipo_renta,pct,ord,alert order by ord
+
 end

@@ -72,7 +72,7 @@ BEGIN
 
 			)pfc
 			INNER JOIN BVQ_ADMINISTRACION.TIPO_VALOR tvd
-				on tvd.TVL_CODIGO = pfc.tvl_codigo AND tvd.TVL_CODIGO IN ('ACC','BE','CD','CI','CT','DER','CDP','FAC','OBL','OCA','PCO','REP','VCC','PAC')
+				on tvd.TVL_CODIGO = pfc.tvl_codigo AND tvd.TVL_CODIGO IN ('ACC','BE','CD','CI','CT','DER','CDP','FAC','OBL','OCA','PCO','REP','VCC','PAC','VTP')
 			INNER JOIN BVQ_BACKOFFICE.LISTA_ITEMS_CONTABILIDAD DOC
 				ON pfc.tvl_codigo  = DOC.CODIGO AND DOC.ESTADO='A' AND DOC.TIPO = 'Documento' 
 			inner join BVQ_BACKOFFICE.LISTA_ITEMS_CONTABILIDAD seg
@@ -121,7 +121,7 @@ BEGIN
 		on per1.tipPap = cte.Codigo1 and per1.p_por_id = cte.por_id1 and per1.prefijo='7.1.5.'--acreedora = '7.1.5.90.90'
 		LEFT JOIN BVQ_BACKOFFICE.PERFILES_ISSPOL per2
 		on per2.tipPap = cte.Codigo1 and per2.p_por_id = cte.por_id1 and per2.prefijo = '7.5.'
-		where RTRIM(cte.TITULO) not IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ')
+		where RTRIM(cte.TITULO) not IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ','VALORES DE TITULARIZACIÓN DE PARTICIPACIÓN')
 		group by cte.orden_doc, cte.orden_seg, per1.acreedora,  per2.acreedora, per1.acreedoraAux, per2.acreedoraAux, cte.TITULO,cte.nombre_etiqueta, cte.distribucion, cte.provision--,htp_numeracion
 		order by orden_doc asc, orden_seg asc 
 
@@ -133,8 +133,8 @@ BEGIN
 		  AND NOT (
             (doc.Nombre_Contabilidad IS NULL OR doc.Nombre_Contabilidad = '')
             AND (
-                doc.NOMBRE IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ') OR
-             doc.Nombre_Contabilidad IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ')
+                doc.NOMBRE IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ','VALORES DE TITULARIZACIÓN DE PARTICIPACIÓN') OR
+             doc.Nombre_Contabilidad IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ','VALORES DE TITULARIZACIÓN DE PARTICIPACIÓN')
             )
        )
 		 order by orden asc
