@@ -10,7 +10,7 @@
 	evt.tiv_fecha_vencimiento,
 	evt.tiv_tipo_valor,
 	evt.tpo_numeracion,
-	oper= case when evt.tvl_codigo in ('ACC','CDP','ENC')
+	oper= case when evt.tvl_codigo in ('ACC','CDP','ENC','VTP')
 		and evp.evp_abono=1 then
 			1
 		else evt.oper end,
@@ -173,7 +173,7 @@
 				or evp.evp_abono=1 and iamortizacion=0 and evp.es_vencimiento_interes=1
 			)
 			or
-			evt.tvl_codigo in ('ACC','CDP','ENC')
+			evt.tvl_codigo in ('ACC','CDP','ENC','VTP')
 			and evp.evp_abono=1
 		)
 	--evp_change_4
