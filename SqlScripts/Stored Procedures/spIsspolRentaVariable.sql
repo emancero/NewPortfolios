@@ -92,7 +92,8 @@
                     AND tpo_estado = 352
               ORDER BY por.por_ord
               FOR XML PATH('')), 1, 1, '')
- )   
+ ),
+ PRECIO_INFO_BASICA=MAX(PRECIO_INFO_BASICA)
   from(  
    select   
  TVL_NOMBRE=COALESCE(TVLH_TIPOSC, TVL_CODIGO ),  
@@ -146,7 +147,7 @@
  INTERES_AL_VENCIMIENTO_ORIGINAL_=CASE WHEN [TPO_FECHA_SUSC_CONVENIO] is not null THEN [sal]*datediff(d,[FECHA_COMPRA],[TIV_FECHA_VENCIMIENTO])/360.0*CASE WHEN [TVL_CODIGO] in ('FAC','PCO') THEN 0/*[HTP_RENDIMIENTO]*/ ELSE [TIV_TASA_INTERES] END/100.0 END
 
 
-  
+
   
   
   
