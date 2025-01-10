@@ -193,7 +193,7 @@
  COMISIONES=TPO_COMISION_BOLSA,  
  TPO_PROG=[TPO_PROG],  
  RECURSOS=[TPO_RECURSOS],  
- TIV_VALOR_NOMINAL=[TIV_VALOR_NOMINAL],  
+ TIV_VALOR_NOMINAL=coalesce(VNU_VALOR,[TIV_VALOR_NOMINAL]),  
  HTP_COMPRA=[htp_compra],  
  ABONO_INTERES=TPO_ABONO_INTERES,  
  VALNOM_ANTERIOR=TPO_VALNOM_ANTERIOR,  
@@ -221,6 +221,7 @@ PRECIO_INFO_BASICA=1.0
     ) emical on emical.emi_id=tiv_emisor and emical.r=1--(tvl_generico=1 or tiv_tipo_valor in (/*10,*/13)) and emical.emi_id=tiv_emisor and emical.r=1  
       left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H  
       ON PC.tvl_codigo = H.TVLH_CODIGO  
+	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pc.TIV_ID and pc.tfcorte>=VNU.VNU_FECHA_INICIO and pc.tfcorte<VNU.VNU_FECHA_FIN
   
    where sal>0  
    and  
