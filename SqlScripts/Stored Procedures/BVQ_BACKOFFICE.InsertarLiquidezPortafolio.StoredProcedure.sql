@@ -208,13 +208,15 @@ begin
 		)
 		
 		--actualizar referencia si cambia la fecha (y no es abono)
-		if @abono=0
-		begin
-			update r set fecha=@i_fecha
-			from bvq_backoffice.liquidez_referencias_table r
-			join bvq_backoffice.titulos_portafolio tpo on r.tpo_numeracion=tpo.tpo_numeracion
-			where tpo.tpo_id=@tpo_id and datediff(d,r.fecha_original,@fecha_original)=0
-		end
+		update r set fecha=@i_fecha
+		from bvq_backoffice.liquidez_referencias_table r
+		join bvq_backoffice.titulos_portafolio tpo on r.tpo_numeracion=tpo.tpo_numeracion
+		where tpo.tpo_id=@tpo_id and
+		(
+			@abono=0 and datediff(d,r.fecha_original,@fecha_original)=0
+			or
+			@abono=1 and datediff(d,r.fecha,@i_fecha_identificadora)=0 and convert(time,r.fecha)=convert(time,@i_fecha_identificadora)
+		)
 
 		--actualizar fecha en el control de envío a Siisspolweb
 		exec BVQ_BACKOFFICE.ActualizarFechaControlEnvioIsspol
