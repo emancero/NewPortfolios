@@ -176,7 +176,7 @@ BEGIN
                                                         then sal*htp_precio_compra
                                                     else
                                                         sal*
-                                                        case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal
+                                                        case when tiv_tipo_renta=154 then coalesce(VNU.VALOR,pcorte.tiv_valor_nominal)
                                                         else 1 end
                                                     end
                                                ,IPR_ES_CXC
@@ -306,6 +306,7 @@ BEGIN
 	on emscal.enc_numero_corto_emision=pcorte.TIV_CODIGO_TITULO_SIC
     left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
     ON pcorte.tvl_codigo = H.[TVLH_CODIGO]    
+    left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pc.TIV_ID and pcorte.tfcorte>=VNU.VNU_FECHA_INICIO and pcorte.tfcorte<VNU.VNU_FECHA_FIN
 
                 where sal>0 or round(salNewValNom,2)>0 --and prop.por_id is null -- para que no incluya portafolio propio
                 order by tvl_descripcion,ems_nombre,fecha_compra
