@@ -1,4 +1,6 @@
-﻿-- =============================================
+﻿Text
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- =============================================
 -- Author:			Patricio Villacis
 -- Create date:		08/01/2017
 -- Description:		Obtiene el detalle de todos los portafolios a una fecha corte
@@ -176,7 +178,7 @@ BEGIN
                                                         then sal*htp_precio_compra
                                                     else
                                                         sal*
-                                                        case when tiv_tipo_renta=154 then coalesce(VNU.VALOR,pcorte.tiv_valor_nominal)
+                                                        case when tiv_tipo_renta=154 then coalesce(VNU.VNU_VALOR,pcorte.tiv_valor_nominal)
                                                         else 1 end
                                                     end
                                                ,IPR_ES_CXC
@@ -197,8 +199,8 @@ BEGIN
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
                                                     */
                                                     iif(isnull(ipr_es_cxc,0)=0 or pcorte.tpo_fecha_compra_anterior>='20220601'
-                                                    ,coalesce(pcorte.prEfectivo*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
-			                                        ,CASE
+                                                    ,coalesce(case when pcorte.tiv_id=1240 and pcorte.por_id=9 and pcorte.tfcorte>='20241230' then 4600 else pcorte.prEfectivo end*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
+			           ,CASE
 				                                        WHEN valefeConRendimiento is not null then
 					             valefeConRendimiento
 				                                        WHEN [TPO_F1] = (SELECT TOP 1
@@ -263,7 +265,7 @@ BEGIN
 														/
 														datediff(d,fecha_ultima_compra,tiv_fecha_vencimiento)
 													end
-                                               ,INTERES_GANADO=isnull(
+                              ,INTERES_GANADO=isnull(
 													case
 													when pcorte.tvl_codigo in
                                                             ('FAC','PCO') and
@@ -306,7 +308,7 @@ BEGIN
 	on emscal.enc_numero_corto_emision=pcorte.TIV_CODIGO_TITULO_SIC
     left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
     ON pcorte.tvl_codigo = H.[TVLH_CODIGO]    
-    left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pc.TIV_ID and pcorte.tfcorte>=VNU.VNU_FECHA_INICIO and pcorte.tfcorte<VNU.VNU_FECHA_FIN
+    left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pcorte.TIV_ID and pcorte.tfcorte>=VNU.VNU_FECHA_INICIO and pcorte.tfcorte<VNU.VNU_FECHA_FIN
 
                 where sal>0 or round(salNewValNom,2)>0 --and prop.por_id is null -- para que no incluya portafolio propio
                 order by tvl_descripcion,ems_nombre,fecha_compra
