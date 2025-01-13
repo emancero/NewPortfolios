@@ -48,7 +48,9 @@ AS
          A.creacion_usuario                                                                     AS [CREACION USUARIO],  
          A.modifica_usuario                                                                     AS [MODIFICA USUARIO],  
    id_asiento=null,
-   A.id_periodo
+   A.id_periodo,
+   m_creacion_fecha=null,
+   m_modifica_fecha=null
 FROM siisspolweb.siisspolweb.contabilidad.saldo A   INNER JOIN siisspolweb.siisspolweb.contabilidad.cuenta 
 		ON a.id_cuenta = cuenta.id_cuenta			INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per  
 		ON A.id_periodo = per.id_periodo
@@ -109,7 +111,9 @@ FROM siisspolweb.siisspolweb.contabilidad.saldo A   INNER JOIN siisspolweb.siiss
          A.creacion_usuario                                                                      AS [CREACION USUARIO],  
          A.modifica_usuario                                                                      AS [MODIFICA USUARIO],  
    A.id_asiento,
-   id_periodo = null
+   id_periodo = null,
+   m_creacion_fecha=M.creacion_fecha,
+   m_modifica_fecha=M.modifica_fecha
   FROM siisspolweb.siisspolweb.contabilidad.asiento A  
          INNER JOIN siisspolweb.siisspolweb.contabilidad.movimiento M ON A.id_asiento = M.id_asiento  
          LEFT JOIN siisspolweb.siisspolweb.contabilidad.movimiento_presupuesto P ON M.id_asiento = P.id_asiento AND M.SEC = P.sec  
