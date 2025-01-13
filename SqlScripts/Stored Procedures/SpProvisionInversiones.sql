@@ -49,6 +49,7 @@ BEGIN
 		   ,sum(isnull((TPO_COMISION_BOLSA),0) + valEfeOper) valEfectivo
 		   ,tfl_fecha_inicio_orig2
 		   ,MAX(latest_inicio) latest_inicio
+		   ,tvl_codigo
 	 into ##tablaInversionesIsspol 
 	 from BVQ_BACKOFFICE.portafoliocorte i
 	 --join (select tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id from bvq_backoffice.EventoPortafolio) e on @i_fechaCorte between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_tpo_id=i.httpo_id
@@ -73,7 +74,7 @@ end*/
 
 		  isnull( 
 		  CASE WHEN CODIGO = 'PAPEL COMERCIAL CERO CUPON'  AND TASA = 0
-			OR CODIGO='CERTIFICADO DE TESORERÍA'
+			OR tvl_codigo='CT'
 		  THEN (((CAPITAL - VALEFECTIVO)/PLAZO )  * ( CASE WHEN FECHA_INTERES>HASTA THEN 0 
 		        WHEN FECHA_INTERES<DESDE THEN @v_diasMes --30
 				ELSE DATEDIFF(DAY, FECHA_INTERES,HASTA) END))
