@@ -139,6 +139,7 @@
     <None Include="Change Scripts\Tabla eventos_relacion.sql" />
     <None Include="Views\IsspolMasiva.sql" />
     <None Include="Stored Procedures\ProcesarMovimientoContableIsspol.sql" />
+    <None Include="Views\vis_movimiento_contable_sicav.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
