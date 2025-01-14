@@ -33,7 +33,9 @@ BEGIN
 		   sum(salNewValNom) as 'CAPITAL', 	       	
 	       tiv_tasa_interes/100 as 'TASA',
 		   dbo.fnDias(fecha_compra , tiv_fecha_vencimiento, tiv_tipo_base)
-			+case when TVL_DESCRIPCION = 'PAPEL COMERCIAL' AND tiv_tasa_interes = 0 then
+			+case when TVL_DESCRIPCION = 'PAPEL COMERCIAL' AND tiv_tasa_interes = 0
+				or tvl_codigo not in ('PCO') and tiv_subtipo=3
+				then
 					bvq_administracion.fncalcularsiguientediatrabajo(dateadd(d,-1,tiv_fecha_vencimiento),1)-1
 			else 0 end
 		   'PLAZO',		
@@ -50,11 +52,12 @@ BEGIN
 		   ,tfl_fecha_inicio_orig2
 		   ,MAX(latest_inicio) latest_inicio
 		   ,tvl_codigo
+		   ,tiv_subtipo
 	 into ##tablaInversionesIsspol 
 	 from BVQ_BACKOFFICE.portafoliocorte i
 	 --join (select tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id from bvq_backoffice.EventoPortafolio) e on @i_fechaCorte between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_tpo_id=i.httpo_id
 	 where isnull(ipr_es_cxc,0)=0 and tiv_tipo_renta=153
-	 group by htp_numeracion,tvl_codigo,tiv_tasa_interes,dias_al_corte,fecha_compra,ult_fecha_interes,tiv_fecha_vencimiento,ems_nombre,TVL_DESCRIPCION, tiv_tipo_base,tfl_fecha_inicio_orig2
+	 group by htp_numeracion,tvl_codigo,tiv_tasa_interes,dias_al_corte,fecha_compra,ult_fecha_interes,tiv_fecha_vencimiento,ems_nombre,TVL_DESCRIPCION, tiv_tipo_base,tfl_fecha_inicio_orig2,tiv_subtipo
 	 HAVING sum(salNewValNom)>0
 	 order by tvl_codigo
 /*	 select * from ##tablaInversionesIsspol	 	 
@@ -74,7 +77,7 @@ end*/
 
 		  isnull( 
 		  CASE WHEN CODIGO = 'PAPEL COMERCIAL CERO CUPON'  AND TASA = 0
-			OR tvl_codigo='CT'
+			OR tvl_codigo not in ('PCO') and tiv_subtipo=3
 		  THEN (((CAPITAL - VALEFECTIVO)/PLAZO )  * ( CASE WHEN FECHA_INTERES>HASTA THEN 0 
 		        WHEN FECHA_INTERES<DESDE THEN @v_diasMes --30
 				ELSE DATEDIFF(DAY, FECHA_INTERES,HASTA) END))

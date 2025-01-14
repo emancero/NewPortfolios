@@ -38,7 +38,7 @@ BEGIN
 			,SUM(pfc.salNewValNom) DISTRIBUCION
 			,sum(
 			isnull(
-			CASE WHEN pfc.tvl_codigo = 'PCO'  AND TASA = 0 or pfc.tvl_codigo in ('CT') THEN (((CAPITAL - VALEFECTIVO)/PLAZO )  * ( CASE WHEN FECHA_INTERES>HASTA THEN 0
+			CASE WHEN pfc.tvl_codigo = 'PCO'  AND TASA = 0 or pfc.tvl_codigo not in ('PCO') and pfc.tiv_subtipo=3 THEN (((CAPITAL - VALEFECTIVO)/PLAZO )  * ( CASE WHEN FECHA_INTERES>HASTA THEN 0
 				WHEN FECHA_INTERES<DESDE THEN @v_diasMes --30
 				ELSE DATEDIFF(DAY, FECHA_INTERES,HASTA) END))
 				ELSE (
@@ -52,7 +52,9 @@ BEGIN
 				select *,
 				tiv_tasa_interes/100 as 'TASA',		 
 				dbo.fnDias(fecha_compra , tiv_fecha_vencimiento, tiv_tipo_base)
-				+case when TVL_DESCRIPCION = 'PAPEL COMERCIAL' AND tiv_tasa_interes = 0 then
+				+case when TVL_DESCRIPCION = 'PAPEL COMERCIAL' AND tiv_tasa_interes = 0
+				or tvl_codigo not in ('PCO') and tiv_subtipo=3
+				then
 						bvq_administracion.fncalcularsiguientediatrabajo(dateadd(d,-1,tiv_fecha_vencimiento),1)-1
 				else 0 end
 				'PLAZO',		
