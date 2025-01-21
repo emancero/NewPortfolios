@@ -69,6 +69,67 @@ BEGIN
 				,convert(varchar,tiv_fecha_vencimiento,106) as 'FECHAVENCIMIENTO'
 				,capital=salNewValNom
 				,valefectivo=isnull((TPO_COMISION_BOLSA),0) + valEfeOper
+
+				--costo amortizado ---------------------------------------------------------------------------------
+				,costoAmortizado=0
+				--(
+				--		select
+				--		valpre=sum(
+				--			(cvf.amortizacion+cvf.iamortizacion)/
+				--			power
+				--			(
+				--					1
+				--					+
+				--					cvf.TIR
+				--				,
+				--					case when cvf.tiv_tipo_base<>354 then 1 else cvf.tiv_frecuencia end
+				--					*
+				--					((
+				--						dbo.fndias(c,cvf.tfl_fin,cvf.tiv_tipo_base)-
+				--						case when month(cvf.c)=2 and day(c) in (28,29) then 30-day(cvf.c) else 0 end --ajuste NASD
+				--					)/360.0)
+				--			)
+				--		)
+						--adicional para cálculo de intereses transcurridos
+						--+power(1+max(tir),--TIR,
+						--			case when i.tiv_tipo_base<>354 then 1 else max(tiv_frecuencia) end
+						--			*
+						--			((
+						--				dbo.fndias(coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio),tfcorte,i.tiv_tipo_base)-
+						--				case when month(coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio))=2 and day(coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio)) in (28,29) then 30-day(coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio)) else 0 end --ajuste NASD
+						--			)/360.0)
+						--)
+				--		from(
+				--			select
+				--			 tfl_inicio=tfl_fecha_inicio_orig
+				--			,tfl_fin=tfl_fecha_vencimiento2
+
+				--			,cvf.tfl_capital
+				--			,cvf.htp_fecha_operacion
+				--			,cvf.tiv_tipo_base
+				--			,cvf.tiv_frecuencia
+				--			,cvf.amortizacion
+				--			,cvf.iamortizacion
+
+				--			,TIR=case when cvf.tiv_tipo_base<>354 then
+				--				cvf.htp_tir
+				--			else
+				--				isnull(cvf.htp_rendimiento_retorno,cvf.itasa_interes)
+				--			end
+				--			/100.0
+				--			/case when cvf.tfl_capital=0 then 1 else case when cvf.tiv_tipo_base<>354 then 1 else cvf.tiv_frecuencia end end
+				--			,c=coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio)
+				--			from 
+				--			bvq_backoffice.compraventaflujo
+				--			cvf
+				--			where cvf.htp_tpo_id=i.httpo_id
+				--			and datediff(d,coalesce(i.tfl_fecha_inicio_orig2,i.latest_inicio),tfl_fecha_vencimiento)>0
+				--		) cvf where tfl_capital>0-- where tfl_fecha_vencimiento>=c
+				--		--valoraba títulos que todavía no estaban comprados
+				--		and htp_fecha_operacion<=c
+				--)
+				--FIN costo amortizado ------------------------------------------------------------------------------------------
+
 				from BVQ_BACKOFFICE.PortafolioCorte i--PortafolioCorte
 				where salNewValNom>0
 
