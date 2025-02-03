@@ -161,8 +161,13 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    SECTOR=CASE [sector_general] WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END,    
    MONTO_EMITIDO= [TIV_MONTO_EMISION],    
    PATRIMONIO=[VBA_PATRIMONIO_TECNICO],    
-   CALIFICADORA_DE_RIESGO=coalesce(rtrim(emical.eca_nombre)+' - '+convert(varchar,emical.eca_fecha_resolucion,103), rtrim(emscal.eca_nombre)+' - '+convert(varchar,emscal.ENC_FECHA_DESDE,103),[CAL_NOMBRE],'NO DISPONIBLE'),    
-   CALIFICACION_DE_RIESGO=coalesce(eca_valor,pc.[ENC_VALOR],[TCA_VALOR],'NO DISPONIBLE'),       
+   CALIFICADORA_DE_RIESGO=coalesce(
+		 rtrim(emscal.enc_nombre)+' - '+convert(varchar,emscal.ENC_FECHA_DESDE,103),[CAL_NOMBRE]
+		,rtrim(emical.eca_nombre)+' - '+convert(varchar,emical.eca_fecha_resolucion,103)
+		,'NO DISPONIBLE'),    
+
+   CALIFICACION_DE_RIESGO=coalesce(emscal.[ENC_VALOR],eca_valor,[TCA_VALOR],'NO DISPONIBLE'),       
+
    VALOR_PROVISIONADO=case when isnull(ipr_es_cxc,0)=1 then sal*[TIV_PRECIO]/100.0 else 0 end,    
    FECHA_DE_PAGO_ULTIMO_CUPON=latest_inicio,    
    DIAS_DE_INTERES_GANADO=
@@ -229,7 +234,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
 	tfcorte
    end,
 
-   BASE_DIAS_INTERES=CASE WHEN    
+ BASE_DIAS_INTERES=CASE WHEN    
       [TIV_TIPO_BASE]=354    
       OR    
       isnull([IPR_ES_CXC],0)=0 AND [TVL_CODIGO] in ('CD','CI','PAC')--NOT IN ('PCO')
@@ -296,14 +301,14 @@ ABONO_INTERES=TPO_ABONO_INTERES,
     left join    
     (    
     
-     select row_number() over (partition by eca.enc_numero_corto_emision order BY eca.ENC_FECHA_DESDE  desc,eca.ENC_ID desc) r,enc_numero_corto_emision    
-     ,eca.ENC_VALOR 
-     ,cal_nombre eca_nombre    
-     ,cal_nombre_personalizado eca_nombre_personalizado    
-     ,eca.ENC_FECHA_DESDE    
-     FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION eca   
-     join bvq_administracion.calificadoras cal on eca.CAL_ID=cal.CAL_ID    
-     where eca.ENC_ESTADO=21 and (eca.ENC_FECHA_DESDE is null or eca.ENC_FECHA_DESDE<=(select c from corteslist))    
+     select row_number() over (partition by enc.enc_numero_corto_emision order BY enc.ENC_FECHA_DESDE  desc,enc.ENC_ID desc) r,enc_numero_corto_emision    
+     ,enc.ENC_VALOR 
+     ,cal_nombre enc_nombre    
+     ,cal_nombre_personalizado enc_nombre_personalizado    
+     ,enc.ENC_FECHA_DESDE    
+     FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION enc   
+     join bvq_administracion.calificadoras cal on enc.CAL_ID=cal.CAL_ID    
+     where enc.ENC_ESTADO=21 and (enc.ENC_FECHA_DESDE is null or enc.ENC_FECHA_DESDE<=(select c from corteslist))    
     ) emscal on emscal.enc_numero_corto_emision=pc.TIV_CODIGO_TITULO_SIC and emscal.r=1  
     left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
     ON PC.tvl_codigo = H.[TVLH_CODIGO]    
@@ -311,7 +316,7 @@ ABONO_INTERES=TPO_ABONO_INTERES,
    and    
    isnull(IPR_ES_CXC,0)=0    
    and    
-   TIV_TIPO_RENTA=153    
+   TIV_TIPO_RENTA=153 
    --ORDER BY TVL_CODIGO,EMS_NOMBRE,TIV_FECHA_VENCIMIENTO    
   ) s    
   group by  TVL_NOMBRE,CUENTA_CONTABLE,VECTOR_PRECIO,TIPO,CUPON,PLAZO_PACTADO,FECHA_VENCIMIENTO_CONVENIO_PAGO,FECHA_SUSCRIPCION_CONVENIO_PAGO    
