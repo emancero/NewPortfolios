@@ -97,10 +97,10 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
   s.tiv_split_de,
   s.tfcorte,
   SECTOR_DETALLADO=case when max(SECTOR_GENERAL)='SEC_PRI_FIN' then
-	case when EMS_NOMBRE like 'COOPERATIVA DE AHORRO Y CRÉDITO%' collate modern_spanish_ci_ai THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
-  else SECTOR END
+	case when EMS_NOMBRE collate modern_spanish_ci_ai like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
+	else SECTOR END
   from(
-   select     
+   select    
    TVL_NOMBRE=
         COALESCE(case when TVL_CODIGO='PCO' and tiv_subtipo=4 then 'PCI' end, TVLH_TIPOSC, TVL_CODIGO )
         +case when tiv_split_de is not null and tiv_split_de not in ('0','') then
@@ -239,7 +239,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    CUPON2=case when tiv_codigo_vector not in ('0','') then [TIV_TASA_INTERES]/100.0 end,    
    CODIGO_TITULO=[TIV_CODIGO_VECTOR],    
    TIPO2=
-   case when isnull(ipr_es_cxc,0)=0 then
+  case when isnull(ipr_es_cxc,0)=0 then
         COALESCE(TVLH_TIPOSC, TVL_CODIGO ) + isnull(' '+TIV_SERIE,'') + isnull(' '+TPO_ACTA,'')
    else
         case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [TVL_CODIGO] + ' ' + CASE WHEN [tvl_codigo]='swap' THEN [TPO_ACTA] else [TIV_CLASE] END end
