@@ -90,6 +90,7 @@
 	,htpcupon.tiv_tipo_renta
 	,totalUfoUsoFondos=null
 	,totalUfoRendimiento=null
+	,fecha_vencimiento_original=null
 	from bvq_backoffice.htpcupon
 	left join bvq_backoffice.defaults def on htpcupon.por_id=def.por_id and htpcupon.tiv_id=def.tiv_id
 	and datediff(m,def.fecha,htpcupon.cupoper_tfl_fecha_inicio)>=0
@@ -172,6 +173,7 @@
 	,tiv_tipo_renta=max(tiv_tipo_renta)
 	,totalUfoUsoFondos=max(totalUfoUsoFondos)
 	,totalUfoRendimiento=max(totalUfoRendimiento)
+	,fecha_vencimiento_original=tfl_fecha_vencimiento2
 	from bvq_backoffice.compraventaflujo
 	--where htp_tiene_valnom=1
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento
