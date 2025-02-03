@@ -1,7 +1,7 @@
 ﻿//Ejecuta scripts en el orden correcto
 using Microsoft.Data.SqlClient;
 using System.Transactions;
-
+return; //prevenir ejecución accidental
 string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
 {
