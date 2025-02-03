@@ -5,7 +5,7 @@ as
 begin
 
 
-	declare @v_fecha_base datetime = EOMONTH(@i_fecha_corte,-1)--'2024-06-28T10:09:40', -1)
+	declare @v_fecha_base datetime = dateadd(s,-1,dateadd(d,1,convert(datetime,EOMONTH(@i_fecha_corte,-1))))
 	if exists(select * from bvq_administracion.parametro where par_codigo='POLITICA_MES' and par_valor='NO')
 		set @v_fecha_base=DATEADD(yy, DATEDIFF(yy, 0, @i_fecha_corte), -1)
 	
@@ -43,7 +43,19 @@ begin
 	tipoRenta=null
 	,baseSal=sum(mov_saldo)
 	,baseFecha=formatmessage('INVERSIONES PRIVATIVAS (%s)',format(@v_fecha_base,'dd/MM/yyyy'))
-	from BVQ_BACKOFFICE.isspol_saldo_inicial s where datediff(MM,@v_fecha_base,mov_fecha)=1 and mov_cuenta_contable like '71303%'
+	from
+	--BVQ_BACKOFFICE.isspol_saldo_inicial
+	(
+		select mov_fecha=per.fecha_hasta,mov_saldo=saldo_ini,mov_cuenta_contable=cuenta.cuenta
+		FROM siisspolweb.siisspolweb.contabilidad.saldo A   INNER JOIN siisspolweb.siisspolweb.contabilidad.cuenta 
+				ON a.id_cuenta = cuenta.id_cuenta			INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per  
+				ON A.id_periodo = per.id_periodo
+		  WHERE /*id_periodo =167  
+			AND*/ 1=1--cuenta.movimiento = 1  
+		and cuenta.cuenta='71303'
+	)
+	s
+	where datediff(MM,@v_fecha_base,mov_fecha)=1 and mov_cuenta_contable like '71303%'
 	order by tipoRenta
 
 	
@@ -53,8 +65,8 @@ begin
 
 	;with a as(
 		select tpo_recursos
-		,vn=sal*case when tiv_tipo_renta=154 then tiv_valor_nominal else 1 end
-		,pai=case when tpo_recursos='pai' then 1 else 0 end*sal*case when tiv_tipo_renta=154 then tiv_valor_nominal else 1 end
+		,vn=sal*case when tiv_tipo_renta=154 then coalesce(VNU.VNU_VALOR,tiv_valor_nominal) else 1 end
+		,pai=case when tpo_recursos='pai' then 1 else 0 end*sal*case when tiv_tipo_renta=154 then coalesce(VNU.VNU_VALOR,tiv_valor_nominal) else 1 end
 		,excedentes=case when tpo_recursos='Excedentes de liquidez' then 1 else 0 end*sal*case when tiv_tipo_renta=154 then tiv_valor_nominal else 1 end
 		,sinClasificar=case when tpo_recursos is null or tpo_recursos not in ('Excedentes de liquidez','pai') then 1 else 0 end*sal*case when tiv_tipo_renta=154 then tiv_valor_nominal else 1 end
 		,TIPO_RENTA=tiv_tipo_renta
@@ -71,7 +83,9 @@ begin
 		when tvl_codigo in ('CDP','VTP') then 'VALORES DE PARTICIPACIÓN'
 		end--,*
 		--when 
-		from bvq_backoffice.portafoliocorte pc where isnull(ipr_es_cxc,0)=0 and sal>0
+		from bvq_backoffice.portafoliocorte pc
+		left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pc.TIV_ID and pc.tfcorte>=VNU.VNU_FECHA_INICIO and pc.tfcorte<VNU.VNU_FECHA_FIN
+		where isnull(ipr_es_cxc,0)=0 and sal>0
 	) select
 		 sal=isnull(sum(vn),0)
 		,pai=isnull(sum(pai),0)
