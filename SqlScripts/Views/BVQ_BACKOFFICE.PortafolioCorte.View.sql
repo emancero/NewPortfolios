@@ -548,7 +548,7 @@
 	--left join (select tfl_fecha_inicio_orig2=tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id2=htp_tpo_id from bvq_backoffice.EventoPortafolio where htp_tiene_valnom=1) ev on htp.c between ev.tfl_fecha_inicio_orig2 and ev.tfl_fecha_vencimiento2 and ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0
 	left join (
 		select ncorte=cl.c,tfl_fecha_inicio_orig2=min(tfl_fecha_inicio_orig),tfl_fecha_vencimiento2=max(tfl_fecha_vencimiento2),htp_tpo_id2=htp_tpo_id from bvq_backoffice.EventoPortafolioAprox e
-		join corteslist cl on cl.c between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2
+		join corteslist cl on cl.c between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_id<>8829100001533
 		where htp_tiene_valnom=1
 		group by htp_tpo_id,cl.c
 	) ev on htp.c=ncorte and ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0

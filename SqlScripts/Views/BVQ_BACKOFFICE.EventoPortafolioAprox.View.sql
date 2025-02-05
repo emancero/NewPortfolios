@@ -123,7 +123,7 @@
 	def_cobrado,
 	base_denominador,
 	itasa_interes=max(itasa_interes),
-	tfl_fecha_vencimiento2=vencimiento,
+	tfl_fecha_vencimiento2=case when htp_tpo_id=1533 and vencimiento='20241030' then '20250125' else vencimiento end,
 	liq_numero_bolsa=null,
 	liq_comision_bolsa=null,
 	liq_comision_casa=null,
