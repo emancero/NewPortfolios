@@ -70,10 +70,12 @@
 					or (cis.tippap='FI' and i.fecha=cis.tiv_fecha_emision)
 				)
 				or cis.tpo_numeracion='SGE-2023-03-31' and i.id_inversion=175
-			) and i.id_inversion not in (229,230,231,233,234,235,246,115,270,271) and tpo.tpo_fecha_ingreso<'20240501'
+			) and i.id_inversion not in (229,230,231,233,234,235,246,115,270,271,101,266) and tpo.tpo_fecha_ingreso<'20240424'--501'
+			or cis.tpo_numeracion='AEA-2022-11-10' and i.id_inversion=101
+			or cis.tpo_numeracion='AEA-2023-11-28' and i.id_inversion=266
 			or
 			(
-				ii.id_inversion in (270,271) or tpo.tpo_fecha_ingreso>='20240501'
+				ii.id_inversion in (270,271) or tpo.tpo_fecha_ingreso>='20240424'--501'
 			) and ii.id_inversion=i.id_inversion
 			--fin unión con la inversión
 
@@ -151,4 +153,3 @@
 			,htp_fecha_operacion
 			having (sum(debe)>0 or sum(haber)>0)
 --			and cis.fecha between '20241217' and '2024-12-17T23:59:59'
-	
