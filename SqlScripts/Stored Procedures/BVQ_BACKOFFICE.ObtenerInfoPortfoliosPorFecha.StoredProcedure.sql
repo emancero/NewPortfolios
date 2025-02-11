@@ -197,7 +197,10 @@ BEGIN
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
                                                     */
                                                     iif(isnull(ipr_es_cxc,0)=0 or pcorte.tpo_fecha_compra_anterior>='20220601'
-                                                    ,coalesce(coalesce(PRE.PRE_VALOR, pcorte.prEfectivo)*pcorte.salNewValNom,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
+                                                    ,coalesce(
+														 case when htp_numeracion like 'MONTECRISTI-2015-12-29-2' then tiv_precio/100.0 end * pcorte.salnewvalnom
+														,coalesce(PRE.PRE_VALOR, pcorte.prEfectivo)*pcorte.salNewValNom
+														,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
 			           ,CASE
 				                                        WHEN valefeConRendimiento is not null then
 					             valefeConRendimiento
@@ -266,7 +269,7 @@ BEGIN
                               ,INTERES_GANADO=isnull(
 													case
 													when pcorte.tvl_codigo in
-                                                            ('FAC','PCO') and
+                                                      ('FAC','PCO') and
                                                             pcorte.tiv_tipo_base=355 and
                                                             latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
                                                         else pcorte.dias_al_corte
