@@ -327,13 +327,13 @@
 										100.0
 									end
 								end,
- 
-					prVpr=
+								
+ 					prVpr=
 					coalesce
 					(
 						case
  
- 
+
 						when
 										exists(select * from bvq_administracion.parametro where par_codigo='C_AMORTIZADO_02' and par_valor='SI')
 										and isnull(tpo.tpo_tipo_valoracion,0)=1
@@ -372,6 +372,14 @@
 						--select val_lineal from bvq_administracion.fnValoracionLineal(htp_precio_compra,fecha_compra,tiv_fecha_vencimiento,c)
 								(e.htp_precio_compra-100.0)/datediff(d,fecha_compra,e.tiv_fecha_vencimiento)*datediff(d,c,e.tiv_fecha_vencimiento)+100.0
 							end
+						when datediff(d,c,e.tiv_fecha_vencimiento)>365 and tiv.tiv_split_de<>0
+						then
+							(
+								select vpr_precio from
+								bvq_administracion.vector_precio vpr 
+								where vpr.tiv_id=tiv.tiv_split_de and datediff(d,vpr_fecha,c)=0
+							)
+
 						end
 						,nullif(vpr_precio,0)
 					),
