@@ -217,9 +217,9 @@
 	,HTP.TPO_INTERES_TRANSCURRIDO
 	,HTP.TPO_OTROS_COSTOS
 	,HTP.TPO_COMISIONES
-	,HTP.TPO_RECURSOS
+	--,HTP.TPO_RECURSOS
 	,TPO_RECURSOS=case when
-		datediff(yy,fecha_compra,c)>=0 and c>='20250101' AND TPO_RECURSOS='Excedentes de liquidez'
+		datediff(yy,fecha_compra,c)>0 and c>='20250101' AND TPO_RECURSOS='Excedentes de liquidez'
 		then 'PAI' else TPO_RECURSOS end
 	,HTP.TPO_ABONO_INTERES
 	,HTP.TPO_VALNOM_ANTERIOR
