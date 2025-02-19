@@ -12,7 +12,8 @@ begin
 	)
 	begin
 		select * from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
-		where oper=0
+		where --oper=0
+		fecha=htp_fecha_operacion
 		--and fecha=@i_fecha
 		and tpo_numeracion=@i_numeracion
 	return
@@ -30,6 +31,6 @@ begin
 	end
 
 	select * from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
-	where fecha=@i_fecha
+	where fecha_original=@i_fecha
 	and tpo_numeracion=@i_numeracion
 end
