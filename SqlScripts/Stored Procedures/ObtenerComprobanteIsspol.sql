@@ -135,6 +135,7 @@ BEGIN
 			,valord=valor
 			,referencia
 		from bvq_backoffice.liquidez_referencias_table
+		where not (tpo_numeracion='ATX-2023-10-25-2' and valor=14586.25)
 	) ref
 	on ci.tpo_numeracion=ref.tpo_numeracion and ci.fecha=ref.fecha
 		and ci.ri in ('DIDENT','DIDENT02')
