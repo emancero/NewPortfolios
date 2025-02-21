@@ -30,6 +30,7 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 	left join (
 		select valor=sum(valor) over (partition by tpo_numeracion,fecha,fecha_original),tpo_numeracion,fecha,fecha_original,valord=valor,referencia
 		from bvq_backoffice.liquidez_referencias_table
+		where not (tpo_numeracion='ATX-2023-10-25-2' and valor=14586.25)
 	) ref
 	on icr.tpo_numeracion=ref.tpo_numeracion
 	and datediff(hh,icr.fecha,ref.fecha)=0
