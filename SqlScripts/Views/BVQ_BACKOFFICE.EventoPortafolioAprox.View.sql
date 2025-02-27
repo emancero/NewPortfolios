@@ -85,15 +85,16 @@
 	,FON_ID=null
 	,HTP_TIENE_VALNOM
 	,specialValnom=montooper
-	,ufo_uso_fondos=null
-	,ufo_rendimiento=null
+	,ufo_uso_fondos=case when totalUfoUsoFondos is not null and htp_tpo_id in (2240,2241,2242,2243) then 0 end
+	,ufo_rendimiento=case when totalUfoRendimiento is not null and htp_tpo_id in (2240,2241,2242,2243) then 0 end
 	,htpcupon.tiv_tipo_renta
-	,totalUfoUsoFondos=null
-	,totalUfoRendimiento=null
+	,totalUfoUsoFondos--=null
+	,totalUfoRendimiento--=null
 	,fecha_vencimiento_original=null
 	from bvq_backoffice.htpcupon
 	left join bvq_backoffice.defaults def on htpcupon.por_id=def.por_id and htpcupon.tiv_id=def.tiv_id
 	and datediff(m,def.fecha,htpcupon.cupoper_tfl_fecha_inicio)>=0
+	left join (select distinct ufo_tpo_id=tpo_id,totalUfoRendimiento,totalUfoUsoFondos from bvq_backoffice.UsoFondosView/*uso_fondos*/) ufo on ufo.ufo_tpo_id=htp_tpo_id
 	--where htp_tiene_valnom=1
 	union
 	
