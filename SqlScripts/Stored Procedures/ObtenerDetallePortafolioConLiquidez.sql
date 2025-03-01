@@ -290,7 +290,7 @@ begin
 		end
 	,diasIntTran=case when tpo_fecha_ingreso>TFL_FECHA_INICIO then dbo.fnDiasEu(tfl_fecha_inicio,tpo_fecha_ingreso,354) end
 	,referenceInLiquidity=(
-		select dbo.stringagg(format(valor,'c','es-EC'),'; ')
+		select top 1 dbo.stringagg(format(valor,'c','es-EC'),'; ')
 		from bvq_backoffice.Liquidez_Referencias_table
 		--where --tpo_numeracion like 'inb%' --and fecha='20240429'
 		--fecha between '20240429' and '2024-04-29T23:59:59'
