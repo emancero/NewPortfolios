@@ -85,8 +85,8 @@
 	,FON_ID=null
 	,HTP_TIENE_VALNOM
 	,specialValnom=montooper
-	,ufo_uso_fondos=case when totalUfoUsoFondos is not null and htp_tpo_id in (2240,2241,2242,2243) then 0 end
-	,ufo_rendimiento=case when totalUfoRendimiento is not null and htp_tpo_id in (2240,2241,2242,2243) then 0 end
+	,ufo_uso_fondos=case when totalUfoUsoFondos is not null and htp_numeracion like 'PLAZA_PROYECTA-2025-02-14%' then 0 end
+	,ufo_rendimiento=case when totalUfoRendimiento is not null and htp_numeracion like 'PLAZA_PROYECTA-2025-02-14%' then 0 end
 	,htpcupon.tiv_tipo_renta
 	,totalUfoUsoFondos--=null
 	,totalUfoRendimiento--=null
