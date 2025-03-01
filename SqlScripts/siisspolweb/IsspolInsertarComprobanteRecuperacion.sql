@@ -72,7 +72,9 @@ begin
 					
 			---///////////////
 			select @w_id_recuperacion, id_int_conf_fondo_cuenta, 
-			case when cis.tipo_rubro_movimiento='D' then cis.debe else cis.haber end, 
+			case when
+				case when cis.debe>0 and cis.tipo_rubro_movimiento='C' then 'D' else cis.tipo_rubro_movimiento end='D'
+			then cis.debe else cis.haber end, 
 			@i_usuario, 
 			GETDATE(), 
 			@i_maquina, 
@@ -96,7 +98,9 @@ begin
 			--insertar en int_recuperacion_detalle -------------------------------------------------
 			INSERT INTO [siisspolweb].siisspolweb.inversion.int_recuperacion_detalle (id_int_inversion_recuperacion, id_int_conf_fondo_cuenta, valor, creacion_usuario, creacion_fecha,creacion_equipo,modifica_usuario,modifica_fecha,modifica_equipo)
 			select @w_id_recuperacion, id_int_conf_fondo_cuenta, 
-			case when cis.tipo_rubro_movimiento='D' then cis.debe else cis.haber end, 
+			case when
+				case when cis.debe>0 and cis.tipo_rubro_movimiento='C' then 'D' else cis.tipo_rubro_movimiento end='D'
+			then cis.debe else cis.haber end, 
 			@i_usuario, 
 			GETDATE(), 
 			@i_maquina, 

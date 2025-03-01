@@ -16,7 +16,7 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 
 	SELECT
 		 @AS_MOV_CUENTA = COALESCE(@AS_MOV_CUENTA + ';', '') + convert(varchar(100), icr.[codigo_lista_rubro] ),
-		 @AS_MOV_TIPO = COALESCE(@AS_MOV_TIPO + ';', '') + convert(varchar(100),icr.[tipo_rubro_movimiento] ),
+		 @AS_MOV_TIPO = COALESCE(@AS_MOV_TIPO + ';', '') + convert(varchar(100),case when debe>0 and icr.tipo_rubro_movimiento='C' then 'D' else icr.[tipo_rubro_movimiento] end),
 		 @AS_MOV_VALOR = COALESCE(@AS_MOV_VALOR + ';', '') + convert(varchar(100),CAST(coalesce(case when ref.valord<>ref.valor then ref.valord end, debe, haber) AS money) ),
 		 @AS_MOV_REFERENCIA= COALESCE(@AS_MOV_REFERENCIA + ';', '') +  convert(varchar(100)
 			,coalesce(

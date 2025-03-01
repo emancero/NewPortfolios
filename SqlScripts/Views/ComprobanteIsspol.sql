@@ -1,5 +1,5 @@
-﻿CREATE  view [BVQ_BACKOFFICE].[ComprobanteIsspol] as  
-with LiqComprob as(  
+﻿CREATE view [BVQ_BACKOFFICE].[ComprobanteIsspol] as  
+ with LiqComprob as(  
   select
    tpo_numeracion  
   ,tiv_id  
@@ -14,7 +14,7 @@ with LiqComprob as(
   ,cuenta=case when tipo='C' then acreedoraSinAux when tipo='D' then deudoraSinAux end  
   ,aux=case when tipo='C' then acreedoraAux when tipo='D' then deudoraAux end  
   ,nombre=case when tipo='C' then nomAcreedora when tipo='D' then nomDeudora end  
-  ,debe=case when tpo_numeracion='ATX-2023-10-25-2' and prefijo='7.5.' and round(monto,2)=-16.66 then -monto when tipo='D' and forced_por_id is null or tipo='C' and forced_por_id is not null then round(monto,2) end  
+  ,debe=case when tpo_numeracion='ATX-2023-10-25-2' and prefijo='7.5.' and round(monto,2)=-16.66 then -round(monto,2) when tipo='D' and forced_por_id is null or tipo='C' and forced_por_id is not null then round(monto,2) end  
   ,haber=case when tpo_numeracion='ATX-2023-10-25-2' and prefijo='7.5.' and round(monto,2)=-16.66 then null when tipo='C' and forced_por_id is null or tipo='D' and forced_por_id is not null then round(monto,2) end  
   ,saldo,htp_compra  
   ,ems_nombre
