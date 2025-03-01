@@ -64,8 +64,8 @@
   <ItemGroup>
     <None Include="Functions\BVQ_BACKOFFICE.tfEstadoDeCuentaPortafolio.UserDefinedFunction.sql" />
     <None Include="Stored Procedures\GenerarCompraVentaFlujo.sql" />
-    <None Include="Views\BVQ_BACKOFFICE.EventoPortafolioCorte.View.sql" />
-    <None Include="Views\BVQ_BACKOFFICE.CompraVentaFlujo.View.sql" />
+    <None Include="Views\EventoPortafolioCorte.sql" />
+    <None Include="Views\CompraVentaFlujo.sql" />
     <None Include="Change Scripts\Campos para GenerarCompraVentaFlujo.sql" />
     <None Include="Change Scripts\Tabla titulo_flujo_comun_raw.sql" />
     <None Include="Views\BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN.View.sql" />
@@ -73,10 +73,10 @@
     <None Include="Stored Procedures\BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha.StoredProcedure.sql" />
     <Build Include="Views\BVQ_BACKOFFICE.ISSPOL_PROGS.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.PortafolioCorteProg.View.sql" />
-    <None Include="Views\BVQ_BACKOFFICE.PortafolioCorte.View.sql" />
-    <None Include="Views\BVQ_BACKOFFICE.HtpCupon.View.sql" />
+    <None Include="Views\PortafolioCorte.sql" />
+    <None Include="Views\HtpCupon.sql" />
     <None Include="Views\BVQ_ADMINISTRACION.TituloFlujoComun.View.sql" />
-    <None Include="Views\BVQ_BACKOFFICE.EventoPortafolioAprox.View.sql" />
+    <None Include="Views\EventoPortafolioAprox.sql" />
     <None Include="Change Scripts\Campo dias_cupon y TIV_FECHA_EMISION en LIQUIDEZ_CACHE y evtTemp.sql" />
     <None Include="Change Scripts\compra_htp_id en evttemp.sql" />
     <None Include="Change Scripts\RETR_CAPITAL y RETR_INTERES.sql" />
