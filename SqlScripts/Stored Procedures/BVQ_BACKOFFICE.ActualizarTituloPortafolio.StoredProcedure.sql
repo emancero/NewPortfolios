@@ -170,6 +170,16 @@ BEGIN
 	AND TIV_ID = @i_tiv_id
 	AND	HTP_CUPON = @i_cobro_cupon
 */
+	update tpo set tpo_fecha_compra_anterior=s.fecha_compra, tpo_fecha_vencimiento_anterior=s.fecha_vencimiento,tpo_prog=isnull(tpo_prog,'normal')
+	from bvq_backoffice.titulos_portafolio tpo-- where tpo_id=2241
+	join (
+		select htp_tpo_id, sal=sum(montooper),fecha_compra=min(htp_fecha_operacion),fecha_vencimiento=max(e.tiv_fecha_vencimiento)
+		from bvq_backoffice.eventoportafolio e
+		where e.htp_tpo_id=@v_tpoId_Org and htp_fecha_operacion<@i_fecha group by htp_tpo_id
+	) s on s.htp_tpo_id=tpo.tpo_id_anterior--bvq_backoffice.portafoliocorte pc on tpo.tpo_id=pc.httpo_id
+
+
+
 		EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
 		@i_lga_id = @i_lga_id,
 		@i_tabla = N'TITULOS_PORTAFOLIO',
