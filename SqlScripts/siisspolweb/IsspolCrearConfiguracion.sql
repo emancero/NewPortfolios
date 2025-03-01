@@ -49,7 +49,7 @@ begin
 			where
 			(
 				@i_all is null and(
-					icr.tpo_numeracion=@i_nombre and icr.fecha=@i_fecha
+					icr.tpo_numeracion=@i_nombre and datediff(s,icr.fecha,@i_fecha)=0
 					and @i_id_inversion is null
 					or icr.id_inversion=@i_id_inversion
 				)
@@ -160,4 +160,3 @@ begin
 
 	commit tran
 end
-
