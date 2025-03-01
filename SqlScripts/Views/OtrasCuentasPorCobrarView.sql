@@ -253,7 +253,7 @@
 		   ,CALIFICACION_DE_RIESGO = COALESCE([ENC_VALOR], [TCA_VALOR])
 		   ,VALOR_PROVISIONADO = sal * [tiv_precio] / 100.0
 		   ,FECHA_DE_PAGO_ULTIMO_CUPON = 
-				case when TPO_FECHA_SUSC_CONVENIO is not null then
+				case when TPO_FECHA_SUSC_CONVENIO is not null or HTP_NUMERACION like 'CDD-%' then
 					fechaInicioOriginal
 				else
 					latest_inicio

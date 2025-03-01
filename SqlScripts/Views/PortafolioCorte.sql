@@ -17,7 +17,8 @@
 	dias_al_corte=
 		dbo.fnDias2(
 			--latest_inicio
-			case when tpo_fecha_susc_convenio is not null then fechaInicioOriginal
+			case when tpo_fecha_susc_convenio is not null then
+				fechaInicioOriginal
 			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2
 			else latest_inicio end
 			,c,case when tiv_accrual_365=1 then 355 when tiv_tipo_valor in (5,6,11) then 354 else tiv.tiv_tipo_base end)
@@ -477,7 +478,7 @@
 					,e.MIN_TIENE_VALNOM
 					,e.prEfectivo
 					,TPO.TPO_FECHA_VENCIMIENTO_ANTERIOR
-					,e.fechaInicioOriginal
+					,fechaInicioOriginal=case when (TPO.TPO_FECHA_SUSC_CONVENIO='20221031' and tpo_numeracion like 'PLAZA_PROYECTA-%' OR TPO.TPO_NUMERACION LIKE 'CDD-%') THEN '20221031' else e.fechaInicioOriginal end
 					,e.totalUfoUsoFondos
 					,e.totalUfoRendimiento
 					,TPO.TPO_FECHA_COMPRA_ANTERIOR
