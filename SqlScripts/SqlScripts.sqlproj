@@ -142,6 +142,8 @@
     <None Include="Views\vis_movimiento_contable_sicav.sql" />
     <None Include="Stored Procedures\spResumenAlCorte.sql" />
     <None Include="Stored Procedures\InsertarPrecioEfectivo.sql" />
+    <None Include="Stored Procedures\InsertarAvaluoActivosInmobiliarios.sql" />
+    <None Include="Stored Procedures\ObtenerActivosInmobiliariosISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
