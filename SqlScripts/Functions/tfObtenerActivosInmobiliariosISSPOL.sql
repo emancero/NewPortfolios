@@ -1,0 +1,35 @@
+﻿create function BVQ_BACKOFFICE.tfObtenerActivosInmobiliariosISSPOL(@i_fecha_corte date) returns table as
+return (
+		SELECT
+				IMB.[IMB_ID],
+				[POR_CODIGO],
+				[IMB_TIPO],
+				[IMB_PROVINCIA],
+				[IMB_UBICACION],
+				IMB_VALOR_LIBROS=IMB_VALOR_LIBROS+ISNULL(SUM(HAI_VALOR),0),
+				[IMB_VALOR_AVALUO]=coalesce(AAI_VALOR,IMB_VALOR_AVALUO),
+				[IMB_FECHA_ULT_AVALUO]=coalesce(AAI_FECHA,IMB_FECHA_ULT_AVALUO),
+				[IMB_FECHA_ESCRITURA]
+		FROM
+		[BVQ_BACKOFFICE].[ACTIVOS_INMOBILIARIOS] IMB
+		left join BVQ_BACKOFFICE.HISTORICO_ACTIVOS_INMOBILIARIOS HAI ON HAI.IMB_ID=IMB.IMB_ID
+		AND HAI_FECHA<=@i_fecha_corte 
+		left join (
+			select row_number() over (partition by imb_id order by AAI_FECHA desc) r, AAI_VALOR, AAI_FECHA, IMB_ID
+			from BVQ_BACKOFFICE.AVALUO_ACTIVOS_INMOBILIARIOS
+			where AAI_FECHA<=@i_fecha_corte
+		) AAI ON AAI.IMB_ID=IMB.IMB_ID
+		AND r=1
+		group by
+				IMB.[IMB_ID],
+				[POR_CODIGO],
+				[IMB_TIPO],
+				[IMB_PROVINCIA],
+				[IMB_UBICACION],
+				[IMB_VALOR_LIBROS],
+				[IMB_VALOR_AVALUO],
+				[IMB_FECHA_ULT_AVALUO],
+				[IMB_FECHA_ESCRITURA],
+				AAI_VALOR,
+				AAI_FECHA
+)
