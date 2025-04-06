@@ -7,10 +7,10 @@
 
 CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha]
 --declare
-                @i_fechaCorte datetime='2024-04-01T23:59:59',
+                @i_fechaCorte datetime='2025-01-17T23:59:59',
                 @i_lga_id	int
 
-AS
+as
 BEGIN
                 SET NOCOUNT ON;
 
@@ -37,7 +37,7 @@ BEGIN
                                                 ,TPO_PRECIO_ULTIMA_COMPRA	float
                                                 ,TPO_CUPON_VECTOR	float
                                                 ,TPO_MANTIENE_VECTOR_PRECIO	bit
-                                                ,TPO_ACTA varchar(10)
+                                                ,TPO_ACTA varchar(20)
                                                 ,TPO_COMISIONES float
                                                 ,TPO_INTERES_TRANSCURRIDO float
 												,TPO_COMISION_BOLSA float
@@ -57,6 +57,7 @@ BEGIN
 												,HTP_RENDIMIENTO float
 												,tpo_fecha_compra_anterior datetime
 												,sector_general varchar(20)
+												,TPO_NOMBRE_BONO_GLOBAL varchar(100)
                                                 )
 												
 				declare @tbPortafolioComitente table (ctc_id int, ctc_inicial_tipo varchar(2), identificacion varchar(25), nombre varchar(max), por_id int, por_codigo varchar(100), por_tipo int, por_tipo_nombre varchar(100)
@@ -93,6 +94,7 @@ BEGIN
 						,HTP_RENDIMIENTO
 						,tpo_fecha_compra_anterior
 						,sector_general
+						,TPO_NOMBRE_BONO_GLOBAL
 				from bvq_backoffice.portafoliocorte
 
 				insert into @tbPortafolioComitente
@@ -143,9 +145,9 @@ BEGIN
                                                ,pcorte.ems_nombre
                                                ,tvl.tvl_descripcion
                                                ,rent.itc_descripcion as renta
-                                               ,tta.tta_nombre
+                             ,tta.tta_nombre
               ,por.por_tipo_nombre
-                   ,por.por_codigo
+    ,por.por_codigo
                                                ,pcorte.tiv_precio
                                                ,pcorte.por_id
                                                ,pcorte.tiv_id
@@ -170,7 +172,7 @@ BEGIN
                                                ,por.POR_DESCRIPCION
                                                ,isnull(por.por_subtipo_nombre,'SIN CLASIFICAR') as SBP_DESCRIPCION
                                                
-                                               ,VALOR_UNITARIO=case when tiv_tipo_renta=154 then pcorte.tiv_valor_nominal else 1 end
+                                               ,VALOR_UNITARIO=case when tiv_tipo_renta=154 then coalesce(VNU.VNU_VALOR,pcorte.tiv_valor_nominal) else 1 end
                                                ,VALOR_NOMINAL=
                                                     case when pcorte.tvl_codigo='FI'
                                                         then sal*htp_precio_compra
@@ -198,10 +200,12 @@ BEGIN
                                                     */
                                                     iif(isnull(ipr_es_cxc,0)=0 or pcorte.tpo_fecha_compra_anterior>='20220601'
                                                     ,coalesce(
-														 case when htp_numeracion like 'MONTECRISTI-2015-12-29-2' then tiv_precio/100.0 end * pcorte.salnewvalnom
-														,coalesce(PRE.PRE_VALOR, pcorte.prEfectivo)*pcorte.salNewValNom
-														,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0))
-			           ,CASE
+														--case when htp_numeracion like 'MONTECRISTI-2015-12-29-2' then tiv_precio/100.0 end * pcorte.salnewvalnom
+														--,
+														coalesce(PRE.PRE_VALOR, pcorte.prEfectivo)*pcorte.salNewValNom
+														,pcorte.htp_precio_compra/100.0*pcorte.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
+													)
+														,CASE
 				                                        WHEN valefeConRendimiento is not null then
 					             valefeConRendimiento
 				                                        WHEN [TPO_F1] = (SELECT TOP 1
@@ -271,10 +275,10 @@ BEGIN
 													when pcorte.tvl_codigo in
                                                       ('FAC','PCO') and
                                                             pcorte.tiv_tipo_base=355 and
-                                                            latest_inicio=fecha_compra and ipr_es_cxc=1 then datediff(d,tiv_fecha_vencimiento,tfcorte)
+                                                            latest_inicio=pcorte.fecha_compra and pcorte.ipr_es_cxc=1 then datediff(d,pcorte.tiv_fecha_vencimiento,pcorte.tfcorte)
                                                         else pcorte.dias_al_corte
                                                     end
-		                                            /360.0e0 * sal * tiv_tasa_interes/100.0
+		                                            /360.0e0 * pcorte.sal * pcorte.tiv_tasa_interes/100.0
 												,0)
                                                 ,prEfectivo
 											   ,YIELD =
@@ -293,7 +297,18 @@ BEGIN
                                                 ,SECTOR=CASE [sector_general] collate modern_spanish_ci_ai WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN
 												'PUBLICO' WHEN 'SEC_PUB_NFIN'
 												 THEN 'PUBLICO' END
-
+                              ,INTERES_GANADO_2=
+													case
+													when pcorte.tvl_codigo in
+                                                      ('FAC','PCO') and
+                                                            pcorte.tiv_tipo_base=355 and
+                                                            latest_inicio=pcorte.fecha_compra and pcorte.ipr_es_cxc=1 then null--datediff(d,pcorte.tiv_fecha_vencimiento,pcorte.tfcorte)
+                                                        else 1--pcorte.dias_al_corte
+                                                    end
+		                                            /360.0e0 * pcorte.sal * pcorte.tiv_tasa_interes/100.0
+												,pcorte.tiv_tipo_base
+												,NOMBRE_BONO=coalesce(pcorte.TPO_NOMBRE_BONO_GLOBAL,pcorte.TPO_ACTA)
+												,TPO_F1
 												--into #x
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
@@ -312,8 +327,12 @@ BEGIN
     left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pcorte.TIV_ID and pcorte.tfcorte>=VNU.VNU_FECHA_INICIO and pcorte.tfcorte<VNU.VNU_FECHA_FIN
     left join BVQ_BACKOFFICE.PRECIO_EFECTIVO PRE ON PRE.TIV_ID=pcorte.TIV_ID and PRE.POR_ID=pcorte.POR_ID and pcorte.tfcorte>=PRE.PRE_FECHA_INICIO and pcorte.tfcorte<PRE.PRE_FECHA_FIN
 
-                where sal>0 or round(salNewValNom,2)>0 --and prop.por_id is null -- para que no incluya portafolio propio
-                order by tvl_descripcion,ems_nombre,fecha_compra
+                where (sal>0 or round(salNewValNom,2)>0) --and prop.por_id is null -- para que no incluya portafolio propio
+				--and ems_nombre like '%cr%'
+                order by tvl_descripcion,ems_nombre
+				,coalesce(pcorte.TPO_NOMBRE_BONO_GLOBAL,pcorte.TPO_ACTA)
+				,fecha_compra
+				,tpo_f1
 				--and por.por_tipo<>@v_portfolio_oc	-- para ocultar portafolios ocultos
                 --order by pcorte.por_codigo,pcorte.tiv_tipo_valor,pcorte.tiv_id
 end
