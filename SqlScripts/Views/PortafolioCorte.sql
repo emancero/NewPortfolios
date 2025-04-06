@@ -1,4 +1,4 @@
-﻿CREATE view [BVQ_BACKOFFICE].[PortafolioCorte] as
+﻿create view [BVQ_BACKOFFICE].[PortafolioCorte] as
 	select
 	tva_valor_tasa,
 	arranqueValLineal,
@@ -236,7 +236,7 @@
 	,tiv.tiv_split_de
 	,htp.TPO_TABLA_AMORTIZACION
 	,tiv.TIV_CODIGO_TITULO_SIC
-	,htp.salNewValNom
+	,case when abs(round(salNewValNom,2))<=0.02 then 0 else round(salNewValNom,case when c>='2020-04-01' and tiv_tipo_valor in (17,10000006) then 100 else 2 end) end salNewValNom
 	,htp.valnomCompraAnterior
 	,htp.precioCompraAnterior
 	,htp.UFO_USO_FONDOS
@@ -280,6 +280,7 @@
 
 	/*,
 	tpo_categoria_inversion*/
+	,TPO_NOMBRE_BONO_GLOBAL
 	from
 	(
 					------------- VALORACIONES ---------------
@@ -488,6 +489,7 @@
 					,e.interesCoactivo
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
 					,tiv_codigo_vector=coalesce(case when datediff(d,c,e.tiv_fecha_vencimiento)>365 then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
+					,TPO.TPO_NOMBRE_BONO_GLOBAL
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
 					join bvq_administracion.titulo_valor tiv on tiv.tiv_id=tpo.tiv_id
