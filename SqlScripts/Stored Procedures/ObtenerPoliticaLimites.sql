@@ -41,21 +41,23 @@ begin
 	union
 	select
 	tipoRenta=null
-	,baseSal=sum(mov_saldo)
+	,baseSal=sum(saldo)
 	,baseFecha=formatmessage('INVERSIONES PRIVATIVAS (%s)',format(@v_fecha_base,'dd/MM/yyyy'))
 	from
 	--BVQ_BACKOFFICE.isspol_saldo_inicial
 	(
-		select mov_fecha=per.fecha_hasta,mov_saldo=saldo_ini,mov_cuenta_contable=cuenta.cuenta
-		FROM siisspolweb.siisspolweb.contabilidad.saldo A   INNER JOIN siisspolweb.siisspolweb.contabilidad.cuenta 
-				ON a.id_cuenta = cuenta.id_cuenta			INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per  
+		select per.fecha_hasta,saldo,cuenta.cuenta
+		FROM siisspolweb.siisspolweb.contabilidad.saldo A with (nolock)
+		INNER JOIN siisspolweb.siisspolweb.contabilidad.cuenta with (nolock)
+				ON a.id_cuenta = cuenta.id_cuenta
+		INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per with (nolock)
 				ON A.id_periodo = per.id_periodo
-		  WHERE /*id_periodo =167  
-			AND*/ 1=1--cuenta.movimiento = 1  
+		WHERE /*id_periodo =167  
+		AND*/ 1=1--cuenta.movimiento = 1  
 		and cuenta.cuenta='71303'
 	)
 	s
-	where datediff(MM,@v_fecha_base,mov_fecha)=1 and mov_cuenta_contable like '71303%'
+	where datediff(MM,@v_fecha_base,fecha_hasta)=0
 	order by tipoRenta
 
 	
