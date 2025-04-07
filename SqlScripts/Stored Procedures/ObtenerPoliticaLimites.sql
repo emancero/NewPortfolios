@@ -1,5 +1,5 @@
 ﻿create procedure BVQ_BACKOFFICE.ObtenerPoliticaLimites
-	 @i_fecha_corte datetime
+	 	 @i_fecha_corte datetime
 	,@i_lga_id int = null
 as
 begin
@@ -12,9 +12,16 @@ begin
 	--exec bvq_backoffice.generarcompraventaflujo
 
 	--montos al corte anterior
+	delete from corteslist
+	insert into corteslist values (@v_fecha_base,1)
+	exec bvq_backoffice.GenerarCompraVentaFlujo
+	exec bvq_administracion.GenerarVectores
+	exec bvq_administracion.PrepararValoracionLinealCache
 	truncate table [_temp].[ObtenerInfoPortfoliosPorFechaResult]
-	insert into [_temp].[ObtenerInfoPortfoliosPorFechaResult]
-	exec [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha] @v_fecha_base,null
+	insert into [_temp].[ObtenerInfoPortfoliosPorFechaResult](VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO)
+	select VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO from BVQ_BACKOFFICE.PortafolioCortePrcInt
+	where isnull(ipr_es_cxc,0)=0 and (sal>0 or round(salNewValNom,2)>0)
+	--exec [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha] @v_fecha_base,null
 
 	
 	
