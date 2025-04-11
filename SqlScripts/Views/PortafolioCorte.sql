@@ -281,6 +281,12 @@
 	/*,
 	tpo_categoria_inversion*/
 	,TPO_NOMBRE_BONO_GLOBAL
+    ,SECTOR_DETALLADO=case when itcsector.itc_codigo='SEC_PRI_FIN' then
+		case when EMS_NOMBRE collate modern_spanish_ci_ai like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
+	else
+		case itcsector.itc_codigo WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END
+	END
+
 	from
 	(
 					------------- VALORACIONES ---------------

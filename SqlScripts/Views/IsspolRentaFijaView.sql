@@ -96,9 +96,10 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
   s.tiv_id,
   s.tiv_split_de,
   s.tfcorte,
-  SECTOR_DETALLADO=case when max(SECTOR_GENERAL)='SEC_PRI_FIN' then
-	case when EMS_NOMBRE collate modern_spanish_ci_ai like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
-	else SECTOR END
+ -- SECTOR_DETALLADO=case when max(SECTOR_GENERAL)='SEC_PRI_FIN' then
+	--case when EMS_NOMBRE collate modern_spanish_ci_ai like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
+	--else SECTOR END
+  SECTOR_DETALLADO=max(s.sector_detallado)
   from(
    select    
    TVL_NOMBRE=
@@ -242,7 +243,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    BASE_TASA_INTERES=360,    
    PRECIO2=case when TPO_MANTIENE_VECTOR_PRECIO=1 OR tiv_codigo_vector<>'' then [tiv_precio]/100.0 end,    
    CUPON2=case when tiv_codigo_vector not in ('0','') then [TIV_TASA_INTERES]/100.0 end,    
-   CODIGO_TITULO=[TIV_CODIGO_VECTOR],    
+ CODIGO_TITULO=[TIV_CODIGO_VECTOR],    
    TIPO2=
   case when isnull(ipr_es_cxc,0)=0 then
         COALESCE(TVLH_TIPOSC, TVL_CODIGO ) + isnull(' '+TIV_SERIE,'') + isnull(' '+TPO_ACTA,'')
@@ -284,6 +285,7 @@ ABONO_INTERES=TPO_ABONO_INTERES,
    ,pc.tiv_split_de
    ,pc.tfcorte
    ,pc.SECTOR_GENERAL
+   ,pc.sector_detallado
    from bvq_backoffice.portafoliocorte pc    
   join BVQ_BACKOFFICE.PORTAFOLIO port on pc.por_id = port.POR_ID  
     left join    
@@ -305,7 +307,7 @@ ABONO_INTERES=TPO_ABONO_INTERES,
      ,enc.ENC_VALOR 
      ,cal_nombre enc_nombre    
      ,cal_nombre_personalizado enc_nombre_personalizado    
-     ,enc.ENC_FECHA_DESDE    
+     ,enc.ENC_FECHA_DESDE  
      FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION enc   
      join bvq_administracion.calificadoras cal on enc.CAL_ID=cal.CAL_ID    
      where enc.ENC_ESTADO=21 and (enc.ENC_FECHA_DESDE is null or enc.ENC_FECHA_DESDE<=(select c from corteslist))    
