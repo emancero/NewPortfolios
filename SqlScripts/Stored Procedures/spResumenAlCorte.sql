@@ -3,7 +3,8 @@
 -- Create date: 18/04/2024
 -- Description:	Para elaborar el reporte de resumen del ISSPOL
 -- ============================================= 
-CREATE PROCEDURE [BVQ_BACKOFFICE].[spResumenAlCorte] (@i_fechaCorte DATETIME = NULL, @i_lga_id INT = NULL)
+
+alter PROCEDURE [BVQ_BACKOFFICE].[spResumenAlCorte] (@i_fechaCorte DATETIME = NULL, @i_lga_id INT = NULL)
 AS
 BEGIN
 	DELETE FROM corteslist
@@ -28,9 +29,19 @@ BEGIN
 		   ,'FIJA'
 		FROM (SELECT
 				VALOR_NOMINAL = sal
+			   ,VALOR_EFECTIVO =
+				CASE
+					WHEN [TPO_F1] = (SELECT TOP 1
+								kf1
+							FROM keyf1
+							WHERE natkey LIKE 'MINISTERIO DE FINANZAS|20240620|20160108|%'
+							AND kf1 = 339) THEN 377916.44 / 873855.24 * sal
+					WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
+					ELSE sal * [tiv_precio] / 100.0
+				END
 			   ,SECTOR =
 				CASE [sector_general]
-					WHEN 'SEC_PRI_FIN' THEN 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA'
+					WHEN 'SEC_PRI_FIN' THEN sector_detallado--'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA'
 					WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO'
 					WHEN 'SEC_PUB_FIN' THEN 'PUBLICO'
 					WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO'
@@ -69,25 +80,18 @@ BEGIN
 		UNION
 		SELECT
 			'TOTAL_AI'
-		   ,SUM(ai.IMB_VALOR_LIBROS+isnull(ai.IMB_VALOR_AVALUO,0))
+		   ,SUM(/*ai.IMB_VALOR_LIBROS+*/isnull(ai.IMB_VALOR_AVALUO,0))
 		   ,@i_fechaCorte
 		   ,'INMUEBLE'
-		FROM BVQ_BACKOFFICE.ACTIVOS_INMOBILIARIOS ai
+		--FROM BVQ_BACKOFFICE.ACTIVOS_INMOBILIARIOS ai
+		FROM BVQ_BACKOFFICE.tfObtenerActivosInmobiliariosISSPOL(@i_fechaCorte) ai
 		WHERE ai.IMB_VALOR_LIBROS > 0
 
 	SELECT
-		Sector=etiquetas
-	   ,Valor=isnull(Valor,0)
-	   ,FechaCorte=@i_fechaCorte
+		Sector
+	   ,Valor
+	   ,FechaCorte
 	   ,TipoRenta
-	FROM (
-					values
-					('PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA'),
-					('PRIVADO NO FINANCIERO'),
-					('PUBLICO'),
-					('TOTAL_AI'),
-					('TOTAL_RV')
-	) v(etiquetas) left join
-	@tblResumenr on Sector=v.etiquetas
+	FROM @tblResumenr
 
 END
