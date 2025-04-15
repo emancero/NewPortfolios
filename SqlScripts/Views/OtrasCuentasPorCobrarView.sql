@@ -236,7 +236,7 @@
 		   ,YIELD =
 			CASE
 				WHEN [tvl_codigo] in ('DER','PAG') THEN NULL
-				WHEN [tvl_codigo] IN ('FAC', 'PCO') THEN [HTP_RENDIMIENTO]
+				WHEN [tvl_codigo] IN ('FAC', 'PCO') or (tvl_codigo in ('OBL') and fecha_compra>='20240424') THEN [HTP_RENDIMIENTO]
 				ELSE [tiv_tasa_interes]
 			END / 100.0
 		   ,PRECIO = coalesce(case when tvl_codigo not in ('OBL') then tpo_precio_compra_anterior end,htp_precio_compra)
