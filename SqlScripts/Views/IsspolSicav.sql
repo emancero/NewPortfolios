@@ -9,9 +9,9 @@
 	,tiv_clase,tiv_tasa_interes
 	,tiv_tipo_renta
 	,tfl_fecha_inicio
-	,htp.*
+	,htp.htp_compra,htp.htp_fecha_operacion,htp.tiv_id--*
 	,precioCompra=htp_precio_compra/case when tiv_tipo_renta=153 then 100.0 else 1.0 end
-	,ems.*
+	,ems.ems_nombre,ems.ems_codigo--,*
 	,tvl.tvl_codigo
 	,tvl.tvl_nombre
 	,tpo_numeracion
