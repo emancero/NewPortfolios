@@ -146,6 +146,7 @@
     <None Include="Stored Procedures\ObtenerActivosInmobiliariosISSPOL.sql" />
     <None Include="Functions\tfObtenerActivosInmobiliariosISSPOL.sql" />
     <None Include="Views\PortafolioCortePrcInt.sql" />
+    <None Include="Views\IsspolConcesionesHistoricas.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
