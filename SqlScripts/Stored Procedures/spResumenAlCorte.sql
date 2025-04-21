@@ -4,7 +4,7 @@
 -- Description:	Para elaborar el reporte de resumen del ISSPOL
 -- ============================================= 
 
-alter PROCEDURE [BVQ_BACKOFFICE].[spResumenAlCorte] (@i_fechaCorte DATETIME = NULL, @i_lga_id INT = NULL)
+CREATE PROCEDURE [BVQ_BACKOFFICE].[spResumenAlCorte] (@i_fechaCorte DATETIME = NULL, @i_lga_id INT = NULL)
 AS
 BEGIN
 	DELETE FROM corteslist
