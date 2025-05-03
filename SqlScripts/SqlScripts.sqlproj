@@ -70,7 +70,7 @@
     <None Include="Change Scripts\Tabla titulo_flujo_comun_raw.sql" />
     <None Include="Views\BVQ_ADMINISTRACION.TITULO_FLUJO_COMUN.View.sql" />
     <None Include="Stored Procedures\BVQ_ADMINISTRACION.GenerarTituloFlujoComun.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha.StoredProcedure.sql" />
+    <None Include="Stored Procedures\ObtenerInfoPortfoliosPorFecha.StoredProcedure.sql" />
     <Build Include="Views\BVQ_BACKOFFICE.ISSPOL_PROGS.View.sql" />
     <None Include="Views\BVQ_BACKOFFICE.PortafolioCorteProg.View.sql" />
     <None Include="Views\PortafolioCorte.sql" />
@@ -152,17 +152,17 @@
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTituloPortafolio.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarTitulosPortafolioLiquidacion.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.CancelarMovimientoTituloPortafolio.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.CancelarTituloPortafolio.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.InsertarLiquidezPortafolio.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.InsertarTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\ActualizarTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\ActualizarTitulosPortafolioLiquidacion.StoredProcedure.sql" />
+    <None Include="Stored Procedures\CancelarMovimientoTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\CancelarTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\InsertarLiquidezPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\InsertarTituloPortafolio.StoredProcedure.sql" />
     <Build Include="Schemas\BVQ_BACKOFFICE.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.ReversarLiquidacion.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.ReliquidarReporto.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.InsertarRetrasos.StoredProcedure.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.ActualizarEstadoCuentaPortafolioVenta.StoredProcedure.sql" />
+    <None Include="Stored Procedures\ReversarLiquidacion.StoredProcedure.sql" />
+    <None Include="Stored Procedures\ReliquidarReporto.StoredProcedure.sql" />
+    <None Include="Stored Procedures\InsertarRetrasos.StoredProcedure.sql" />
+    <None Include="Stored Procedures\ActualizarEstadoCuentaPortafolioVenta.StoredProcedure.sql" />
     <Build Include="Schemas\BVQ_ADMINISTRACION.sql" />
     <Build Include="Stored Procedures\GenerarTituloFlujoComun.sql" />
     <Build Include="Change Scripts\RETRASO.sql" />
