@@ -70,6 +70,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_tiv_id_origen	int = null
 	,@i_fon_numero_liquidacion varchar(10) = null
 	,@i_fon_procedencia char(1) = null
+	,@i_nombre_bono_global varchar(100) = null
 	,@i_lga_id int		
 AS
 BEGIN
@@ -174,7 +175,8 @@ BEGIN
 				TPO_VALNOM_ANTERIOR,
 				TPO_FECHA_ENCARGO,
 				TPO_BOLETIN,
-				tpo_id_anterior
+				tpo_id_anterior,
+				TPO_NOMBRE_BONO_GLOBAL
            )
 			 VALUES
            (
@@ -212,7 +214,8 @@ BEGIN
 				@i_tpo_valnom_anterior,	
 				@i_tpo_fecha_encargo,
 				@i_tpo_boletin,
-				@v_tpoId_org
+				@v_tpoId_org,
+				@i_nombre_bono_global
            )
 			set @v_tpo_id=scope_identity()
 	end

@@ -49,5 +49,14 @@ tva_valor_tasa,arranqueValLineal,tvl_codigo,tvl_generico,tiv_fecha_emision,tiv_f
                                                     end
 		                                            /360.0e0 * pcorte.sal * pcorte.tiv_tasa_interes/100.0
 												,0)
+                              ,INTERES_GANADO_2=
+													case
+													when pcorte.tvl_codigo in
+                                                      ('FAC','PCO') and
+                                                            pcorte.tiv_tipo_base=355 and
+                                                            latest_inicio=pcorte.fecha_compra and pcorte.ipr_es_cxc=1 then null--datediff(d,pcorte.tiv_fecha_vencimiento,pcorte.tfcorte)
+                                                        else 1--pcorte.dias_al_corte
+                                                    end
+		                                            /360.0e0 * pcorte.sal * pcorte.tiv_tasa_interes/100.0
 from bvq_backoffice.portafoliocorte pcorte
 left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pcorte.TIV_ID and pcorte.tfcorte>=VNU.VNU_FECHA_INICIO and pcorte.tfcorte<VNU.VNU_FECHA_FIN

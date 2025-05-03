@@ -62,6 +62,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarTituloPortafolio]
 	,@i_tpo_fecha_encargo datetime = null	
 	,@i_tpo_boletin varchar(20)  =null
 	,@i_tiv_id_origen	int = null
+	,@i_nombre_bono_global varchar(100)=null
 	,@i_lga_id int
 	
 AS
@@ -130,7 +131,8 @@ BEGIN
 		,TPO_ABONO_INTERES = @i_tpo_abono_interes
 		,TPO_VALNOM_ANTERIOR = @i_tpo_valnom_anterior
 		,TPO_FECHA_ENCARGO = @i_tpo_fecha_encargo
-		 ,TPO_BOLETIN = @i_tpo_boletin
+		,TPO_BOLETIN = @i_tpo_boletin
+		,TPO_NOMBRE_BONO_GLOBAL = @i_nombre_bono_global
 		  -- NUEVO CAMPO LÍNEA 98
 		  --,TPO_FECHA_VEN_CONVENIO = @i_fecha_ven_convenio
 		,tpo_id_anterior= case when @v_tpoId_org is null then tpo_id_anterior else @v_tpoId_org end
