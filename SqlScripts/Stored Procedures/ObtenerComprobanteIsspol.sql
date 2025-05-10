@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerComprobanteIsspol
-	@i_tpo_numeracion varchar(250),
+		@i_tpo_numeracion varchar(250),
 	@i_tiv_id int, 
 	@i_fecha datetime, 
 	@i_fecha_original datetime,
@@ -75,7 +75,8 @@ BEGIN
 		left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
 		on edpi.edpi_numeracion=ci.tpo_numeracion and ci.cuenta='2.1.90.03'
 		WHERE tpo_numeracion=@i_tpo_numeracion and tiv_id=@i_tiv_id
-		and datediff(hh,fecha,@i_fecha)=0
+		--and datediff(hh,fecha,@i_fecha)=0
+		and convert(varchar,@i_fecha,20)=convert(varchar,fecha,20)
 		and datediff(hh,htp_fecha_operacion,@i_fecha_original)=0
 		and not (@i_efectivo_siempre=0 and isnull(debe,0)=0 and isnull(haber,0)=0) --excluir mov sin afectación
 		group by
