@@ -228,7 +228,14 @@
 					end
 					,fecha_compra
 				)
-		   ,VALOR_EFECTIVO_HISTORICO = ISNULL([TPO_INTERES_TRANSCURRIDO], 0) + ISNULL([TPO_COMISION_BOLSA], 0) + coalesce(valnomCompraAnterior,[htp_compra]) * coalesce(precioCompraAnterior, [htp_precio_compra]) /
+		   ,VALOR_EFECTIVO_HISTORICO = ISNULL([TPO_INTERES_TRANSCURRIDO], 0) + ISNULL([TPO_COMISION_BOLSA], 0)
+		   + coalesce(
+				 --null
+				 case when pc.EMS_ABR<>'PURA_VIDA' then nullif(TPO_VALNOM_ANTERIOR,0) end
+				,valnomCompraAnterior
+				,[htp_compra]
+		   )
+		   * coalesce(precioCompraAnterior, [htp_precio_compra]) /
 			CASE
 				WHEN [tiv_tipo_renta] = 153 THEN 100e
 				ELSE 1e
