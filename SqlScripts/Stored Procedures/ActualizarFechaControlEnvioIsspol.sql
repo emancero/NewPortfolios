@@ -11,5 +11,5 @@ begin
 	join bvq_backoffice.titulos_portafolio tpo on isr.isr_numeracion=tpo.tpo_numeracion
 	where
 	tpo.tpo_id=@i_tpo_id
-	and datediff(mi,isr.isr_fecha,@i_fecha_original)=0
+	and convert(varchar,isr.isr_fecha,20)=convert(varchar,@i_fecha_original,20)
 end
