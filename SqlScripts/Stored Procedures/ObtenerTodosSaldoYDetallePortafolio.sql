@@ -86,13 +86,13 @@ BEGIN
                         TPO_COMISION_EVALUACION,--=0.0,
                         TPO_PARTICIPACION,--=0.0,
                         TPO_MONTO_EMISION,--=0.0,
-                        TPO_OBJETO='',
+                        TPO_OBJETO,--='',
                         TPO_AMORTIZAR_MONTO_TOTAL=null,
                         TPO_SALDO_EN_FILA_ANTERIOR=null,
 						HTP_TIR,
 						HTP_RENDIMIENTO_RETORNO,
 						TPO_OFERTA_ID,
-						HTP.tpo_id_c AS TPO_ID2,
+						HTP.htp_tpo_id AS TPO_ID2,
 
 						 
 						TPOR.TPO_FECHA_VEN_CONVENIO,
@@ -109,7 +109,9 @@ BEGIN
 						TPOR.TPO_FECHA_ENCARGO,
 						TPOR.TPO_RECURSOS,
 						TPOR.TPO_BOLETIN,
-						tpoAnt.tiv_id_origen
+						tpoAnt.tiv_id_origen,
+						FON.FON_NUMERO_LIQUIDACION,
+						FON.FON_PROCEDENCIA
                         FROM BVQ_BACKOFFICE.TITULOS_PORTAFOLIO AS TPOR 
                              INNER JOIN BVQ_ADMINISTRACION.TITULO_VALOR AS TIT ON TPOR.TIV_ID = TIT.TIV_ID 
                              INNER JOIN BVQ_ADMINISTRACION.EMISOR AS EMISOR ON TIT.TIV_EMISOR = EMISOR.EMS_ID 
@@ -120,6 +122,7 @@ BEGIN
                              join BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP on HTP.HTP_TPO_ID=TPOR.TPO_ID
 							 join [bvq_backoffice].[tfObtenerSaldoTituloPortafolio] (@i_fecha) tfn on htp.htp_tpo_id=tfn.htp_tpo_id
 							 left join (select tiv_id_origen=tiv_id, tpo_id_anterior=tpo_id from BVQ_BACKOFFICE.TITULOS_PORTAFOLIO) tpoAnt on tpoAnt.tpo_id_anterior=TPOR.TPO_ID_ANTERIOR
+							 left join BVQ_BACKOFFICE.FONDO FON ON FON.FON_ID=TPOR.FON_ID
                              WHERE /*(
 								 --TPOR.POR_ID <> @i_por_id
 								 @i_por_id is null
@@ -147,7 +150,7 @@ BEGIN
 							-case when tiv_tipo_base=354 and month(@i_fecha)=2 and day(@i_fecha) in (28,29) then 30-day(@i_fecha) else 0 end,
                         coalesce(TIT.TIV_SERIE,TIT.TIV_DECRETO,'') TIV_SERIE,  
                         EMISOR.EMS_NOMBRE AS TIV_NOMBRE_EMISOR, 
-                        TITULO.TVL_NOMBRE AS TIV_NOMBRE_TITULO, 
+						TITULO.TVL_NOMBRE AS TIV_NOMBRE_TITULO, 
                         MON.MON_NOMBRE,
 						TPO_SALDO=(select sum(montooper-isnull(remaining,0)) from bvq_backoffice.eventoportafolio e
 							join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id						
