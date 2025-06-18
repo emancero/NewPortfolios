@@ -73,11 +73,11 @@ BEGIN
 
 	EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
 		@i_lga_id = @i_lga_id,
-		@i_tabla = N'TITULOS_PORTAFOLIO',
+		@i_tabla = N'HISTORICO_TITULOS_PORTAFOLIO',
 		@i_esquema = N'BVQ_BACKOFFICE',
 		@i_operacion = N'U',
 		@i_subTipo = N'A',
-		@i_columIdName = N'TPO_ID',
+		@i_columIdName = N'HTP_ID',
 		@i_idAfectado = @i_tpo_id;
 		
 	IF(@i_tiv_id_origen IS NOT NULL)
@@ -87,6 +87,13 @@ BEGIN
 		INNER JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO EST ON EST.ITC_ID = TP.TPO_ESTADO AND EST.ITC_CODIGO = 'A'
 		WHERE TP.TIV_ID=@i_tiv_id_origen AND TP.POR_ID = @i_por_id
 	END
+
+	--EMN: 18-jun-2025
+	UPDATE FON SET FON_ACCIONES_REALIZADAS=@i_objeto
+	FROM BVQ_BACKOFFICE.FONDO FON
+	JOIN BVQ_BACKOFFICE.TITULOS_PORTAFOLIO TPO ON TPO.FON_ID=FON.FON_ID
+	JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
+	WHERE HTP.HTP_ID = @i_tpo_id;
 
 	UPDATE [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO]
 	SET [USR_ID] = @i_usr_id
@@ -184,11 +191,11 @@ BEGIN
 
 		EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
 		@i_lga_id = @i_lga_id,
-		@i_tabla = N'TITULOS_PORTAFOLIO',
+		@i_tabla = N'HISTORICO_TITULOS_PORTAFOLIO',
 		@i_esquema = N'BVQ_BACKOFFICE',
 		@i_operacion = N'U',
 		@i_subTipo = N'N',
-		@i_columIdName = N'TPO_ID',
+		@i_columIdName = N'HTP_ID',
 		@i_idAfectado = @i_tpo_id;
 		
 	if exists(select * from BVQ_ADMINISTRACION.PARAMETRO WHERE PAR_CODIGO='SEPARAR_EN_COMPRAS' AND PAR_VALOR='SI')

@@ -5,7 +5,7 @@
 -- Parametros:  
 -- Historial:   
 -- =============================================
-create procedure [BVQ_BACKOFFICE].[ObtenerTodosSaldoYDetallePortafolio]
+CREATE procedure [BVQ_BACKOFFICE].[ObtenerTodosSaldoYDetallePortafolio]
 	@i_por_id int     
 	,@i_fecha datetime=null
 	,@i_lga_id int
@@ -86,7 +86,7 @@ BEGIN
                         TPO_COMISION_EVALUACION,--=0.0,
                         TPO_PARTICIPACION,--=0.0,
                         TPO_MONTO_EMISION,--=0.0,
-                        TPO_OBJETO,--='',
+                        TPO_OBJETO=FON.FON_ACCIONES_REALIZADAS,
                         TPO_AMORTIZAR_MONTO_TOTAL=null,
                         TPO_SALDO_EN_FILA_ANTERIOR=null,
 						HTP_TIR,

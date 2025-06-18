@@ -122,8 +122,8 @@
 		order by htp_fecha_operacion asc,htp_id asc
 	) htp_rendimiento
 	,hiperb=(select sum(hiperb) from [BVQ_ADMINISTRACION].[valoracionCostoAmortizado] val where val.htp_tpo_id=e.htp_tpo_id and val.fechaVal=c.c and val.htp_fecha_operacion<=c.c)
-	,ufo_uso_fondos=sum(ufo_uso_fondos)
-	,ufo_rendimiento=sum(ufo_rendimiento)
+	,ufo_uso_fondos=sum(case when htp_tpo_id in (1688,1689,1691,1692) and evt_fecha is not null and datediff(d,evt_fecha,'20241212')<>0 and datediff(d,evt_fecha,'20250214')<>0 then 0 else ufo_uso_fondos end)
+	,ufo_rendimiento=sum(case when htp_tpo_id in (1688,1689,1691,1692) and evt_fecha is not null and datediff(d,evt_fecha,'20241212')<>0 and datediff(d,evt_fecha,'20250214')<>0 then 0 else ufo_rendimiento end)
 	,MIN_TIENE_VALNOM=min(HTP_TIENE_VALNOM)
 	,prEfectivo=min(prEfectivo)
 	,fechaInicioOriginal=max(case when coalesce(evt_fecha,cupoper_tfl_fecha_inicio)<=c then coalesce(evt_fecha,cupoper_tfl_fecha_inicio) end)
@@ -139,6 +139,7 @@
 		and evt_fecha<=c
 		and evp.evp_tpo_id=e.htp_tpo_id
 	)
+	,FON_ID=MAX(FON_ID)
 	from bvq_backoffice.EventoPortafolio e
 	join corteslist c on
 	coalesce(

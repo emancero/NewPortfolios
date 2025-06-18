@@ -199,7 +199,7 @@
 	--,TIV.TIV_ACTA
 	,TIV.TIV_CLASE
 	,HTP.tiv_codigo_vector--=coalesce(case when datediff(d,c,tiv_fecha_vencimiento)>365 then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
-	,TIV.TIV_MONTO_EMISION
+	,TIV_MONTO_EMISION=coalesce(etvl.etvl_monto_emision, TIV.TIV_MONTO_EMISION)
 	,HTP.TPO_CUPON_VECTOR
 	,HTP.TPO_FECHA_SUSC_CONVENIO
 	,HTP.TPO_FECHA_VEN_CONVENIO
@@ -281,12 +281,12 @@
 	/*,
 	tpo_categoria_inversion*/
 	,TPO_NOMBRE_BONO_GLOBAL
-    ,SECTOR_DETALLADO=case when itcsector.itc_codigo='SEC_PRI_FIN' then
+  ,SECTOR_DETALLADO=case when itcsector.itc_codigo='SEC_PRI_FIN' then
 		case when EMS_NOMBRE collate modern_spanish_ci_ai like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
 	else
 		case itcsector.itc_codigo WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END
 	END
-
+	,FON_ID
 	from
 	(
 					------------- VALORACIONES ---------------
@@ -496,6 +496,7 @@
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
 					,tiv_codigo_vector=coalesce(case when datediff(d,c,e.tiv_fecha_vencimiento)>365 then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
 					,TPO.TPO_NOMBRE_BONO_GLOBAL
+					,e.FON_ID
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
 					join bvq_administracion.titulo_valor tiv on tiv.tiv_id=tpo.tiv_id
@@ -522,6 +523,8 @@
 	) htp
  
 	inner join bvq_administracion.titulo_valor tiv on htp.tiv_id=tiv.tiv_id
+	left join bvq_administracion.emisor_tipo_valor etvl on etvl.ETVL_CODIGO_SIC2=tiv_codigo_sic and tiv_tipo_valor=10 and fecha_compra>='20250414'--tiv_codigo_sic in (37543,37114)
+
 	--left join bvq_administracion.bde_perfil_contable prf on datediff(d,c,tiv_fecha_vencimento) between prf_dias_desde and prf_dias_hasta and prf_categoria_inversion
 
 	--start
@@ -546,7 +549,7 @@
  
  
 	inner join bvq_administracion.tipo_valor tvl on tvl.tvl_id=tiv_tipo_valor
-	inner join bvq_administracion.emisor ems on tiv_emisor=ems_id
+	inner join bvq_administracion.emisor ems on tiv_emisor=ems.ems_id
 	left join  bvq_administracion.item_catalogo itcpais on ems_pais=itcpais.itc_id
 	left join  bvq_administracion.item_catalogo itcsector on ems_sector=itcsector.itc_id
 	inner join bvq_backoffice.portafolio por on por.por_id=htp.por_id

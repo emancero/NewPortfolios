@@ -1,4 +1,4 @@
-﻿create view bvq_backoffice.OtrasCuentasPorCobrarView as
+﻿CREATE view bvq_backoffice.OtrasCuentasPorCobrarView as
 	SELECT
 		TVL_NOMBRE = TVL_NOMBRE
 	   ,CUENTA_CONTABLE = CUENTA_CONTABLE
@@ -108,8 +108,8 @@
 		,s.fechaInicioOriginal
 	    ,SECTOR_DETALLADO=case when max(SECTOR_GENERAL)='SEC_PRI_FIN' then
 		case when EMS_NOMBRE like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
-  else SECTOR END
-
+		else SECTOR END
+		,FON_ACCIONES_REALIZADAS=max(s.FON_ACCIONES_REALIZADAS)
 	FROM (SELECT
 			TVL_NOMBRE = TVL_DESCRIPCION
 		   ,CUENTA_CONTABLE = '7.1.5.90.90'
@@ -136,7 +136,7 @@
 				coalesce(
 					case when tvl_codigo='SWAP' then
 						convert(datetime,'20341228')
-					when tvl_codigo <> 'OBL' then
+					when tvl_codigo <> 'OBL' or htp_numeracion in ('CFR-2023-10-25-22','CFR-2023-10-25-11') then
 						TPO_FECHA_VENCIMIENTO_ANTERIOR
 					end
 					,
@@ -155,7 +155,7 @@
 				coalesce(
 					case when tvl_codigo='SWAP' then
 						convert(datetime,'20341228')
-					when tvl_codigo<>'OBL' then
+					when tvl_codigo<>'OBL'  or htp_numeracion in ('CFR-2023-10-25-22','CFR-2023-10-25-11') then
 						TPO_FECHA_VENCIMIENTO_ANTERIOR
 					end
 					,tiv_fecha_vencimiento
@@ -173,11 +173,11 @@
 			CASE
 				WHEN valefeConRendimiento is not null then
 					valefeConRendimiento
-				WHEN [TPO_F1] = (SELECT TOP 1
+				WHEN [TPO_F1] = (339/*SELECT TOP 1
 							kf1
 						FROM keyf1
 						WHERE natkey LIKE 'MINISTERIO DE FINANZAS|20240620|20160108|%'
-						AND kf1 = 339) THEN
+						AND kf1 = 339*/) THEN
 							(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885 * sal
 						--377916.44 / 873855.24 * sal
 				WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
@@ -491,9 +491,11 @@
 		   ,pc.valefe
 		   ,pc.fechaInicioOriginal
 		   ,pc.SECTOR_GENERAL
+		   ,FON.FON_ACCIONES_REALIZADAS
 		FROM BVQ_BACKOFFICE.PortafolioCorte pc
 		JOIN BVQ_BACKOFFICE.PORTAFOLIO port
 			ON pc.por_id = port.POR_ID
+		LEFT JOIN BVQ_BACKOFFICE.FONDO FON ON FON.FON_ID=pc.FON_ID
 		WHERE sal > 0
 		AND IPR_ES_CXC = ISNULL(1, '0')
 		AND tiv_tipo_renta = 153
@@ -558,7 +560,7 @@
 			--,htp_numeracion--(case when TPO_DESGLOSAR_F1 = 1 then htp_numeracion end)
 			,desglosarB--(case when TPO_DESGLOSAR_F1 = 1 then s.htp_numeracion end)--
 			,f1group
-		    ,s.ems_abr
+		 ,s.ems_abr
 		    ,s.min_tiene_valnom
 		    ,s.tiv_id
 		    ,s.tiv_split_de
