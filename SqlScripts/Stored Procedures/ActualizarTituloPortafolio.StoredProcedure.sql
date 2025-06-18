@@ -172,7 +172,7 @@ BEGIN
 	AND TIV_ID = @i_tiv_id
 	AND	HTP_CUPON = @i_cobro_cupon
 */
-	update tpo set tpo_fecha_compra_anterior=s.fecha_compra, tpo_fecha_vencimiento_anterior=s.fecha_vencimiento,tpo_prog=isnull(tpo_prog,'normal')
+	update tpo set tpo_fecha_compra_anterior=s.fecha_compra, tpo_fecha_vencimiento_anterior=s.fecha_vencimiento--,tpo_prog=isnull(tpo_prog,'normal')
 	from bvq_backoffice.titulos_portafolio tpo-- where tpo_id=2241
 	join (
 		select htp_tpo_id, sal=sum(montooper),fecha_compra=min(htp_fecha_operacion),fecha_vencimiento=max(e.tiv_fecha_vencimiento)
