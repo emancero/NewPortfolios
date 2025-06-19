@@ -176,7 +176,8 @@ BEGIN
 				TPO_FECHA_ENCARGO,
 				TPO_BOLETIN,
 				tpo_id_anterior,
-				TPO_NOMBRE_BONO_GLOBAL
+				TPO_NOMBRE_BONO_GLOBAL,
+				TPO_RECURSOS
            )
 			 VALUES
            (
@@ -215,7 +216,8 @@ BEGIN
 				@i_tpo_fecha_encargo,
 				@i_tpo_boletin,
 				@v_tpoId_org,
-				@i_nombre_bono_global
+				@i_nombre_bono_global,
+				@i_recursos
            )
 			set @v_tpo_id=scope_identity()
 	end
@@ -235,7 +237,8 @@ BEGIN
 		TPO_RENOVADO_DE = @i_renovadopor,
 		TPO_COMISION_BOLSA = @i_comisionBolsa,
 		TPO_OFERTA_ID = @i_oferta_id,
-		tpo_id_anterior = @v_tpoId_org
+		tpo_id_anterior = @v_tpoId_org,
+		TPO_RECURSOS = @i_recursos
 		where
 			POR_ID = @i_por_id and
 			TIV_ID = @i_tiv_id and
@@ -305,6 +308,16 @@ BEGIN
 		,@i_liq_id
 	)
 
+	EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
+	@i_lga_id = @i_lga_id,
+	@i_tabla = 'HISTORICO_TITULOS_PORTAFOLIO',
+	@i_esquema = N'BVQ_BACKOFFICE',
+	@i_operacion = N'I',
+	@i_subTipo = N'N',
+	@i_columIdName = 'HTP_ID',
+	@i_idAfectado = @@IDENTITY;
+
+
 	if exists(select * from bvq_administracion.parametro where par_codigo='SEPARAR_EN_COMPRAS' and par_valor='SI')
 	begin
 		declare @v_numeracion varchar(250);
@@ -355,16 +368,8 @@ BEGIN
 	where tpo.tpo_id=@v_tpo_id and tpo.tpo_numeracion like 'plaza_proyec%'
 	--
 
-	update tpo set tpo_prog='normal'
-	from bvq_backoffice.titulos_portafolio tpo where tpo_prog is null and tpo_id_anterior is not null
+	--update tpo set tpo_prog='normal'
+	--from bvq_backoffice.titulos_portafolio tpo where tpo_prog is null and tpo_id_anterior is not null
 
 
-	EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
-	@i_lga_id = @i_lga_id,
-	@i_tabla = 'HISTORICO_TITULOS_PORTAFOLIO',
-	@i_esquema = N'BVQ_BACKOFFICE',
-	@i_operacion = N'I',
-	@i_subTipo = N'N',
-	@i_columIdName = 'HTP_ID',
-	@i_idAfectado = @@IDENTITY;
 END
