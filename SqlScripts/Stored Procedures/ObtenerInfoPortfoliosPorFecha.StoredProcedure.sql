@@ -145,7 +145,7 @@ BEGIN
                                                ,pcorte.ems_nombre
                                                ,tvl.tvl_descripcion
                                                ,rent.itc_descripcion as renta
-                             ,tta.tta_nombre
+             ,tta.tta_nombre
               ,por.por_tipo_nombre
     ,por.por_codigo
                                                ,pcorte.tiv_precio
@@ -295,6 +295,9 @@ BEGIN
                                                         else 1 end
                                                     end
                                                 ,SECTOR=CASE [sector_general] collate modern_spanish_ci_ai WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN
+
+
+
 												'PUBLICO' WHEN 'SEC_PUB_NFIN'
 												 THEN 'PUBLICO' END
                               ,INTERES_GANADO_2=
@@ -307,7 +310,7 @@ BEGIN
                                                     end
 		                                            /360.0e0 * pcorte.sal * pcorte.tiv_tasa_interes/100.0
 												,pcorte.tiv_tipo_base
-												,NOMBRE_BONO=coalesce(pcorte.TPO_NOMBRE_BONO_GLOBAL,pcorte.TPO_ACTA)
+												,NOMBRE_BONO=coalesce(nullif(pcorte.TPO_NOMBRE_BONO_GLOBAL,''),pcorte.TPO_ACTA)
 												,TPO_F1
 												--into #x
                 from @tbPortafolioCorte pcorte 
@@ -330,7 +333,7 @@ BEGIN
                 where (sal>0 or round(salNewValNom,2)>0) --and prop.por_id is null -- para que no incluya portafolio propio
 				--and ems_nombre like '%cr%'
                 order by tvl_descripcion,ems_nombre
-				,coalesce(pcorte.TPO_NOMBRE_BONO_GLOBAL,pcorte.TPO_ACTA)
+				,coalesce(nullif(pcorte.TPO_NOMBRE_BONO_GLOBAL,''),pcorte.TPO_ACTA)
 				,fecha_compra
 				,tpo_f1
 				--and por.por_tipo<>@v_portfolio_oc	-- para ocultar portafolios ocultos
