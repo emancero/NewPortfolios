@@ -4,8 +4,12 @@
 -- Description:	Para elaborar el reporte de resumen del ISSPOL
 -- ============================================= 
 
-CREATE PROCEDURE [BVQ_BACKOFFICE].[spResumenAlCorte] (@i_fechaCorte DATETIME = NULL, @i_lga_id INT = NULL)
+CREATE PROCEDURE [BVQ_BACKOFFICE].[spResumenAlCorte]
+--declare
+  @i_fechaCorte DATETIME = '2025-06-30T23:59:59'
+, @i_lga_id INT = NULL
 AS
+
 BEGIN
 	DELETE FROM corteslist
 	INSERT INTO corteslist (c, cortenum)
@@ -88,10 +92,10 @@ BEGIN
 		WHERE ai.IMB_VALOR_LIBROS > 0
 
 	SELECT
-		Sector
-	   ,Valor
-	   ,FechaCorte
-	   ,TipoRenta
-	FROM @tblResumenr
-
+		Sector=coalesce(Sector,sectorDim)
+	   ,Valor=isnull(Valor,0)
+	   ,FechaCorte=coalesce(FechaCorte,@i_fechaCorte)
+	   ,TipoRenta=coalesce(TipoRenta,TipoRentaDim)
+	FROM @tblResumenr t
+	full join (values ('ECONOMÍA POPULAR Y SOLIDARIA','FIJA')) v (sectorDim, tipoRentaDim) on Sector=v.sectorDim
 END
