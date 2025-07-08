@@ -49,7 +49,8 @@ begin
 			where
 			(
 				@i_all is null and(
-					icr.tpo_numeracion=@i_nombre and datediff(s,icr.fecha,@i_fecha)=0
+					icr.tpo_numeracion=@i_nombre
+					and convert(varchar,icr.fecha,20)=convert(varchar,@i_fecha,20)--datediff(s,icr.fecha,@i_fecha)=0
 					and @i_id_inversion is null
 					or icr.id_inversion=@i_id_inversion
 				)
@@ -109,6 +110,17 @@ begin
 			into #icr
 			from bvq_backoffice.isspolcomprobanterecuperacion where fecha>='20231030'
 
+			--elimina el lista_rubro_detalle existente
+			delete ld
+			from (select * from bvq_backoffice.isspolcomprobanterecuperacion where fecha>='20231030') icr
+			join siisspolweb.siisspolweb.contautom.lista_rubro l on l.codigo=codigo_lista_rubro and l.id_tipo_rubro_contable='INVERSION-R'
+			join siisspolweb.siisspolweb.contautom.lista_rubro_detalle ld on ld.id_lista_rubro=l.id_lista_rubro
+			where
+			icr.tpo_numeracion=@i_nombre
+			and convert(varchar,icr.fecha,20)=convert(varchar,@i_fecha,20)--datediff(s,icr.fecha,@i_fecha)=0
+			and @i_id_inversion is null
+			or icr.id_inversion=@i_id_inversion
+
 			--inserta en lista_rubro detalle las cuentas contables de cada rubro
 			insert into siisspolweb.siisspolweb.contautom.lista_rubro_detalle(
 					id_lista_rubro,id_cuenta_contable,id_grupo_cuenta,id_cuenta_presupuesto,id_centro_costo
@@ -145,6 +157,9 @@ begin
 			and ld.id_lista_rubro is null
 			--fin crear lista_rubro_detalle
 
+			declare @v_log_envio varchar(max)= 'Fin envío i_usuario:' + @i_usuario
+			exec BVQ_ADMINISTRACION.IsspolEnvioLog @v_log_envio
+			
 			/*
 			declare @max_id_int_conf_fondo_cuenta int = (select max(id_int_conf_fondo_cuenta) from siisspolweb.siisspolweb.inversion.int_conf_fondo_cuenta)
 			declare @CONF_MSJ varchar(500), @retConf int
