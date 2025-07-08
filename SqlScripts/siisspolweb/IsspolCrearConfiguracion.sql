@@ -132,7 +132,12 @@ begin
 			from #icr icr
 			join siisspolweb.siisspolweb.contautom.lista_rubro l on l.codigo=codigo_lista_rubro and l.id_tipo_rubro_contable='INVERSION-R'
 			left join siisspolweb.siisspolweb.contabilidad.cuenta c on c.cuenta_formato=cis_cuenta+'.'+cis_aux--(tipo_rubro_movimiento='D' and c.cuenta_formato=deudora or tipo_rubro_movimiento='C' and c.cuenta_formato=acreedora)
-			left join siisspolweb.siisspolweb.contabilidad.relacion_cuenta_ct_pre cp on c.id_cuenta=cp.id_cuenta and cp.id_ejercicio=34 and codigo_configuracion='INTE' and tipo_rubro_movimiento='C'
+			left join siisspolweb.siisspolweb.contabilidad.relacion_cuenta_ct_pre cp
+			on c.id_cuenta=cp.id_cuenta and cp.id_ejercicio=(
+				select id_ejercicio from siisspolweb.siisspolweb.contabilidad.ejercicio e
+				where @i_fecha between fecha_desde and fecha_hasta
+			)--36
+			and (codigo_configuracion='INTE' or codigo_configuracion='VALEFE') and tipo_rubro_movimiento='C'
 			left join siisspolweb.siisspolweb.contabilidad.cuenta_presupuestaria pre on pre.id_cuenta_presupuestaria=cp.id_cuenta_presupuestaria
 			left join siisspolweb.siisspolweb.contabilidad.presupuesto p on p.id_cuenta_presupuestaria=cp.id_cuenta_presupuestaria and cp.id_ejercicio=p.id_ejercicio
 			left join siisspolweb.siisspolweb.contautom.lista_rubro_detalle ld on ld.id_lista_rubro=l.id_lista_rubro
