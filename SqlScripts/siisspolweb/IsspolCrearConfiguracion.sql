@@ -108,7 +108,14 @@ begin
 				drop table #icr
 			select distinct tippap,por_id,codigo_lista_rubro,tipo_rubro_movimiento,codigo_configuracion,cis_cuenta,cis_aux
 			into #icr
-			from bvq_backoffice.isspolcomprobanterecuperacion where fecha>='20231030'
+			from bvq_backoffice.isspolcomprobanterecuperacion icr where fecha>='20231030'
+			--EMN: 14-jul-2025 ya no se va a utilizar para generar todos, solo generar el perfil asociado al comprobante específico
+			and(
+					icr.tpo_numeracion=@i_nombre
+					and convert(varchar,icr.fecha,20)=convert(varchar,@i_fecha,20)--datediff(s,icr.fecha,@i_fecha)=0
+					and @i_id_inversion is null
+					or icr.id_inversion=@i_id_inversion
+			)
 
 			--elimina el lista_rubro_detalle existente
 			delete ld
@@ -150,7 +157,11 @@ begin
 				where @i_fecha between fecha_desde and fecha_hasta
 			)--36
 			and (codigo_configuracion='INTE' or codigo_configuracion='VALEFE') and tipo_rubro_movimiento='C'
-			left join siisspolweb.siisspolweb.contabilidad.cuenta_presupuestaria pre on pre.id_cuenta_presupuestaria=cp.id_cuenta_presupuestaria
+			left join siisspolweb.siisspolweb.contabilidad.cuenta_presupuestaria pre
+				--EMN: 14-jul-2025 solo aplicar cuenta presupuestaria si esta es de ingreso
+				join siisspolweb.siisspolweb.contabilidad.tipo_cuenta tipPre
+				on tipPre.id_tipo_cuenta=pre.id_tipo_cuenta and tipPre.codigo='C' --INGRESO
+			on pre.id_cuenta_presupuestaria=cp.id_cuenta_presupuestaria
 			left join siisspolweb.siisspolweb.contabilidad.presupuesto p on p.id_cuenta_presupuestaria=cp.id_cuenta_presupuestaria and cp.id_ejercicio=p.id_ejercicio
 			left join siisspolweb.siisspolweb.contautom.lista_rubro_detalle ld on ld.id_lista_rubro=l.id_lista_rubro
 			where c.id_cuenta is not null-- and cp.id_cuenta_presupuestaria is not null--id_centro_costo is not null
