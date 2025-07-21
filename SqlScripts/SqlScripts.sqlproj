@@ -148,6 +148,7 @@
     <None Include="Views\PortafolioCortePrcInt.sql" />
     <None Include="Views\IsspolConcesionesHistoricas.sql" />
     <None Include="Change Scripts\Detectar errores y actualizar acciones realizadas en fondo.sql" />
+    <None Include="Stored Procedures\spOtrasCuentasPorCobrar.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
@@ -181,6 +182,7 @@
     <Build Include="Change Scripts\Campos BQV_BACKOFFICE.evento_portafolio.sql" />
     <None Include="siisspolweb\IsspolComprobanteRecuperacion.sql" />
     <None Include="siisspolweb\IsspolInsertarComprobanteRecuperacion.sql" />
+    <Build Include="Stored Procedures\SpIsspolRentaFija.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

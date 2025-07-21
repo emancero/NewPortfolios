@@ -4,6 +4,7 @@
 	@i_lga_id int = null
 AS
 BEGIN
+begin tran
 	DECLARE @v_fechaCorte datetime
 	DECLARE @v_fechaDesde datetime
 	declare @v_diasMes as int = 30
@@ -98,4 +99,5 @@ end*/
 		   FECHAVENCIMIENTO
 		   ,VALEFECTIVO AS 'VALOR EFECTIVO'
 	from ##tablaInversionesIsspol
+commit tran
 END
