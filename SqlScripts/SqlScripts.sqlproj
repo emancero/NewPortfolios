@@ -150,6 +150,7 @@
     <None Include="Change Scripts\Detectar errores y actualizar acciones realizadas en fondo.sql" />
     <None Include="Stored Procedures\spOtrasCuentasPorCobrar.sql" />
     <None Include="Views\ISSPOL_DETALLE_CLIENTES.sql" />
+    <None Include="SpLimites.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
