@@ -1,5 +1,5 @@
 ﻿create procedure BVQ_BACKOFFICE.ObtenerPoliticaLimites
-	 	 @i_fecha_corte datetime
+	 @i_fecha_corte datetime = '2025-06-30T23:59:59'
 	,@i_lga_id int = null
 as
 begin
@@ -18,8 +18,8 @@ begin
 	exec bvq_administracion.GenerarVectores
 	exec bvq_administracion.PrepararValoracionLinealCache
 	truncate table [_temp].[ObtenerInfoPortfoliosPorFechaResult]
-	insert into [_temp].[ObtenerInfoPortfoliosPorFechaResult](VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO)
-	select VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO from BVQ_BACKOFFICE.PortafolioCortePrcInt
+	insert into [_temp].[ObtenerInfoPortfoliosPorFechaResult](VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO,INTERES_GANADO_2,latest_inicio)
+	select VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO,INTERES_GANADO_2,latest_inicio from BVQ_BACKOFFICE.PortafolioCortePrcInt
 	where isnull(ipr_es_cxc,0)=0 and (sal>0 or round(salNewValNom,2)>0)
 	--exec [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha] @v_fecha_base,null
 
@@ -34,7 +34,7 @@ begin
 		--fin caso excepcional
 		else
 			sum(sal*
-				isnull(PRECIO_DE_HOY,1)+isnull(INTERES_GANADO,0))--,sum(valor_nominal)--isnull(sum(sal*case when tipo_renta='RENTA VARIABLE' then tiv_valor_nominal else 1 end),0)
+				isnull(PRECIO_DE_HOY,1)+isnull(INTERES_GANADO_2*dbo.fnDias3(latest_inicio,@v_fecha_base,354),0))--,sum(valor_nominal)--isnull(sum(sal*case when tipo_renta='RENTA VARIABLE' then tiv_valor_nominal else 1 end),0)
 		end
 	,baseFecha=
 	formatmessage('INVERSIONES NO PRIVATIVAS (%s)'
@@ -103,20 +103,13 @@ begin
 		,sec.TIPO_RENTA,sec.SECTOR,PCT,alert
 	,r=row_number() over (partition by sec.TIPO_RENTA order by ord desc)
 	from
-	(values
-		 ('RENTA FIJA'		,'ESTADO'							, 10, 0.30, 0.05)
-		,('RENTA FIJA'		,'FINANCIERO'						, 20, 0.25, 0.05)
-		,('RENTA FIJA'		,'OBLIGACIONES Y PAPEL COMERCIAL'	, 30, 0.20, 0.05)
-		,('RENTA FIJA'		,'REPORTOS'							, 40, 0.03, 0.05)
-		,('RENTA FIJA'		,'TITULARIZACIONES'					, 50, 0.05, 0.02)
-		,('RENTA FIJA'		,'FACTURAS COMERCIALES'				, 60, 0.01, 0.02)
-
-		,('RENTA VARIABLE'	,'ACCIONES Y ENCARGO FID'			, 70, 0.03, 0.05)
-		,('RENTA VARIABLE'	,'FONDOS DE INVERSIÓN COLECTIVO / COTIZADO'				, 80, 0.05, 0.05)
-		,('RENTA VARIABLE'	,'VALORES DE PARTICIPACIÓN'			, 90, 0.08, 0.05)
-	) sec(TIPO_RENTA,SECTOR,ord,PCT,alert)
+	(values (1,'19000101','2999-12-31T23:59:59')) lim(LIM_ID, LIM_DESDE, LIM_HASTA)
+	join
+	BVQ_BACKOFFICE.ISSPOL_DETALLE_LIMITES sec
+	on sec.LIM_ID=lim.LIM_ID
 	left join a
 	on sec.SECTOR=a.sector
+	where @i_fecha_corte between LIM_DESDE and LIM_HASTA
 	group by sec.sector,sec.tipo_renta,pct,ord,alert order by ord
 
 end
