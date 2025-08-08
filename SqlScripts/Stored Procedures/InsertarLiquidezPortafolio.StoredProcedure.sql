@@ -249,13 +249,19 @@ begin
 				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
 			)
 			begin
-				insert into bvq_backoffice.retraso(retr_tpo_id,retr_fecha_esperada,retr_fecha_cobro,RETR_INTERES,retr_capital)
+				insert into bvq_backoffice.retraso(
+					  retr_tpo_id
+					, retr_fecha_esperada
+					, retr_fecha_cobro
+					, RETR_INTERES
+					, RETR_CAPITAL
+				)
 				select
 				 @i_evt_id%10000000
 				,tfl_fecha_vencimiento
-				,retr_fecha_cobro=case when @i_duplica=1 then '29991231' else convert(date,@i_fecha) end
-				,case when @i_es_vencimiento_interes=1 then 1 else 0 end
-				,case when @i_es_vencimiento_interes=0 then 1 else 0 end
+				,retr_fecha_cobro = case when @i_duplica=1 then '29991231' else convert(date,@i_fecha) end
+				,RETR_INTERES = case when @i_es_vencimiento_interes=1 then 1 else 0 end
+				,RETR_CAPITAL = case when @i_es_vencimiento_interes=0 then 1 else 0 end
 				from bvq_administracion.titulo_flujo tfl where tfl_id=@i_evt_id/10000000 and
 				datediff(d,tfl_fecha_vencimiento,@i_fecha)<>0
 
@@ -284,9 +290,10 @@ begin
 				@i_idAfectado = @v_retr_id;
 
 				--delete retr
-				update retr set retr_fecha_cobro=case when @i_duplica=1 then retr_fecha_cobro else convert(date,@i_fecha) end
-				,retr_interes=case when @i_es_vencimiento_interes=1 then 1 else retr_interes end
-				,retr_capital=case when @i_es_vencimiento_interes=0 then 1 else retr_capital end
+				update retr set
+				  retr_fecha_cobro = case when @i_duplica=1 then retr_fecha_cobro else convert(date,@i_fecha) end
+				, RETR_INTERES = case when @i_es_vencimiento_interes=1 then 1 else retr_interes end
+				, RETR_CAPITAL = case when @i_es_vencimiento_interes=0 then 1 else retr_capital end
 				from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
 				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
 
