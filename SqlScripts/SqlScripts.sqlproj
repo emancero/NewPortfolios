@@ -151,6 +151,7 @@
     <None Include="Stored Procedures\spOtrasCuentasPorCobrar.sql" />
     <None Include="Views\ISSPOL_DETALLE_CLIENTES.sql" />
     <None Include="SpLimites.sql" />
+    <None Include="Views\CajaHist.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
