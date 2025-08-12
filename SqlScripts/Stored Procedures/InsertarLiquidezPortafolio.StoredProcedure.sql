@@ -238,8 +238,26 @@ begin
 
 		if @i_oper_id=1
 		begin
+			declare @prevRetraso as table (RETR_ID int, RETR_CAPITAL bit, RETR_INTERES bit)
 			if(@i_cobrado=0 and isnull(@i_duplica,0) = 0)
 			begin
+				--EMN: 12-ago-2025 insertar en prevRetraso para poder recuperar el valor anterior
+				insert into @prevRetraso
+				select RETR_ID, RETR_CAPITAL, RETR_INTERES
+				from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
+				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
+
+				-- borrar retr
+				declare @v_deleted_retr_id int = (select top 1 RETR_ID from @prevRetraso)
+				EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
+				@i_lga_id = @i_lga_id,
+				@i_tabla = 'RETRASO',
+				@i_esquema = N'BVQ_BACKOFFICE',
+				@i_operacion = N'D',
+				@i_subTipo = N'A',
+				@i_columIdName = 'RETR_ID',
+				@i_idAfectado = @v_deleted_retr_id;
+
 				delete retr from bvq_backoffice.retraso retr join bvq_administracion.titulo_flujo tfl on datediff(d,tfl_fecha_vencimiento,retr_fecha_esperada)=0
 				where tfl_id=@i_evt_id/10000000 and retr_tpo_id=@i_evt_id%10000000
 			end
@@ -260,9 +278,11 @@ begin
 				 @i_evt_id%10000000
 				,tfl_fecha_vencimiento
 				,retr_fecha_cobro = case when @i_duplica=1 then '29991231' else convert(date,@i_fecha) end
-				,RETR_INTERES = case when @i_es_vencimiento_interes=1 then 1 else 0 end
-				,RETR_CAPITAL = case when @i_es_vencimiento_interes=0 then 1 else 0 end
-				from bvq_administracion.titulo_flujo tfl where tfl_id=@i_evt_id/10000000 and
+				,RETR_INTERES = case when @i_es_vencimiento_interes=1 then 1 else coalesce(prev.RETR_INTERES,0) end
+				,RETR_CAPITAL = case when @i_es_vencimiento_interes=0 then 1 else coalesce(prev.RETR_CAPITAL,0) end
+				from bvq_administracion.titulo_flujo tfl
+				left join (select top 1 RETR_CAPITAL, RETR_INTERES from @prevRetraso) prev on 1=1 --Recuperar retraso de interés y capital anterior
+				where tfl_id=@i_evt_id/10000000 and
 				datediff(d,tfl_fecha_vencimiento,@i_fecha)<>0
 
 				EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
