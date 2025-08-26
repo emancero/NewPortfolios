@@ -120,3 +120,10 @@ IF NOT EXISTS(
 	and name='EVP_COSTAS_JUDICIALES_REFERENCIA'
 )
 	alter table BVQ_BACKOFFICE.evtTemp ADD EVP_COSTAS_JUDICIALES_REFERENCIA varchar(200)
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.evtTemp')
+	and name='EVP_SALDO'
+)
+	alter table BVQ_BACKOFFICE.evtTemp ADD EVP_SALDO float
