@@ -62,6 +62,8 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarTituloPortafolio]
 	,@i_tpo_fecha_encargo datetime = null	
 	,@i_tpo_boletin varchar(20)  =null
 	,@i_tiv_id_origen	int = null
+	,@i_fon_numero_liquidacion varchar(10) = null
+	,@i_fon_procedencia char(1) = null
 	,@i_nombre_bono_global varchar(100)=null
 	,@i_lga_id int
 	
@@ -90,6 +92,8 @@ BEGIN
 
 	--EMN: 18-jun-2025
 	UPDATE FON SET FON_ACCIONES_REALIZADAS=@i_objeto
+	, FON_NUMERO_LIQUIDACION=@i_fon_numero_liquidacion
+	, FON_PROCEDENCIA=@i_fon_procedencia
 	FROM BVQ_BACKOFFICE.FONDO FON
 	JOIN BVQ_BACKOFFICE.TITULOS_PORTAFOLIO TPO ON TPO.FON_ID=FON.FON_ID
 	JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
