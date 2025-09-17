@@ -1,4 +1,9 @@
-﻿create view BVQ_BACKOFFICE.LiqIntProv as
+﻿Text
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+CREATE view BVQ_BACKOFFICE.LiqIntProv as
 	with LiqProp as
 	(
 		select
@@ -110,7 +115,7 @@
 				-
 				case when isnull(evp_abono,0)=0 then case when isnull(ipr_es_cxc,0)=0 then -1 else 1 end * isnull(UFO_USO_FONDOS,0) else 0 end
 				-case when isnull(evp_abono,0)=0 then pr else 0 end
-				-case when tpo_fecha_ingreso>TFL_FECHA_INICIO then ISNULL(itrans,0) else 0 end
+				-case when tpo_fecha_ingreso>TFL_FECHA_INICIO and htp_tpo_id not in (2268,2269) then ISNULL(itrans,0) else 0 end
 			else
 				orgIAmortizacion-pr
 			end
