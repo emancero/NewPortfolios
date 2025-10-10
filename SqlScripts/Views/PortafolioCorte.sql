@@ -494,7 +494,9 @@
 					,TPO.TPO_AJUSTE_DIAS_DE_INTERES_GANADO
 					,e.interesCoactivo
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
-					,tiv_codigo_vector=coalesce(case when datediff(d,c,e.tiv_fecha_vencimiento)>365 then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
+					,tiv_codigo_vector=coalesce(case when datediff(d,c,e.tiv_fecha_vencimiento)>365
+						or c>='20250910'
+						then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
 					,TPO.TPO_NOMBRE_BONO_GLOBAL
 					,e.FON_ID
 					from bvq_backoffice.EventoPortafolioCorte e
@@ -504,7 +506,7 @@
 						BVQ_ADMINISTRACION.VALORACION_LINEAL_CACHE t
 						join
 						bvq_administracion.vector_precio vpr
-						on vpr.tiv_id in (t.tiv_id) and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
+						on vpr.tiv_id = coalesce(case when t.cc>='20250910' then nullif(t.tiv_split_de,0) end,t.tiv_id) and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
 					on (t.tiv_id=tpo.tiv_id or t.tiv_id=7093 and tpo.tiv_id=7755)
 					and c=t.cc
  
