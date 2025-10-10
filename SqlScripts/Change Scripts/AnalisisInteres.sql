@@ -18,9 +18,11 @@
 				+case when hist_fecha_compra>tfl_fecha_inicio_orig then isnull(itrans,0) else 0 end
 				+case when oper=0 then itrans else 0 end
 
---INTERÉS:
+--INTERÉS rubros:
 			when 'intAcc' then intAcc
 				+case when ipr_es_cxc=1 then isnull(ufo_uso_fondos,0) else 0 end
+
+--INTERÉS liqintprov:
 
 					--depósito total capital+interés
 					--depósito de interés:
