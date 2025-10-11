@@ -256,7 +256,10 @@
 	,fecha_ultima_compra=
 	case when isnull(ipr_es_cxc,0)=0 then
 		case when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
-		lastValDate
+			coalesce(
+				lastValDate
+				,case when 1=1 and htp.c>='20250910' then [fecha_compra] end
+			)
 		when isnull(rtrim(htp.tiv_codigo_vector),'')='' then [fecha_compra]
 		when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
 			htp.c
@@ -507,7 +510,7 @@
 						join
 						bvq_administracion.vector_precio vpr
 						on vpr.tiv_id = coalesce(case when t.cc>='20250910' then nullif(t.tiv_split_de,0) end,t.tiv_id) and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
-					on (t.tiv_id=tpo.tiv_id or t.tiv_id=7093 and tpo.tiv_id=7755)
+					on (t.tiv_id=tpo.tiv_id and tpo.tiv_id<>7755 or t.tiv_id=7093 and tpo.tiv_id=7755)
 					and c=t.cc
  
 					--bde_perfil_contable
@@ -526,7 +529,7 @@
  
 	inner join bvq_administracion.titulo_valor tiv on htp.tiv_id=tiv.tiv_id
 	left join bvq_administracion.emisor_tipo_valor etvl on etvl.ETVL_CODIGO_SIC2=tiv_codigo_sic and tiv_tipo_valor=10 and fecha_compra>='20250414'--tiv_codigo_sic in (37543,37114)
-
+	
 	--left join bvq_administracion.bde_perfil_contable prf on datediff(d,c,tiv_fecha_vencimento) between prf_dias_desde and prf_dias_hasta and prf_categoria_inversion
 
 	--start

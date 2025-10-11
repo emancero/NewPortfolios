@@ -241,7 +241,10 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    
   FECHA_ULTIMA_COMPRA=
    case when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,tfCorte,tiv_fecha_vencimiento)<=365 then
-	lastValDate
+		coalesce(
+            lastValDate
+            ,case when 1=1 and tfcorte>='20250910' then [fecha_compra] end
+        )
    when isnull(rtrim(tiv_codigo_vector),'')='' then [fecha_compra]
    when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,tfCorte,tiv_fecha_vencimiento)>365 then
 	tfcorte
