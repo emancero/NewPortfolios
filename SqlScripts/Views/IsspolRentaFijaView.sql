@@ -152,8 +152,18 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    VALOR_EFECTIVO_HISTORICO=
    case when min_tiene_valnom=1 or min_tiene_valnom=0 and httpo_id<1500 then
 	  isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
-      + [htp_compra]*[htp_precio_compra]
-      /case when [tiv_tipo_renta]=153 then 100e else 1e end
+	  --+ [htp_compra]*[htp_precio_compra]
+      +
+	  coalesce(
+        case when htp_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
+        then valnomCompraAnterior end,[htp_compra]
+      )
+      *
+      coalesce(
+        case when htp_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
+        then precioCompraAnterior end, [htp_precio_compra]
+      )
+	  /case when [tiv_tipo_renta]=153 then 100e else 1e end
    end,    
    YIELD =
    CASE
