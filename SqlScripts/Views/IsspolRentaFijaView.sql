@@ -239,7 +239,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    PRECIO_ULTIMA_COMPRA=TPO_PRECIO_ULTIMA_COMPRA,    
    --FECHA_ULTIMA_COMPRA=case when ipr_es_cxc=0 then tfcorte when tvl_codigo not in ('DER','OBL','PAG') then [fecha_compra] end,    
    
-  FECHA_ULTIMA_COMPRA=
+  pc.FECHA_ULTIMA_COMPRA/*=
    case when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,tfCorte,tiv_fecha_vencimiento)<=365 then
 		coalesce(
             lastValDate
@@ -248,7 +248,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    when isnull(rtrim(tiv_codigo_vector),'')='' then [fecha_compra]
    when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,tfCorte,tiv_fecha_vencimiento)>365 then
 	tfcorte
-   end,
+   end*/,
 
  BASE_DIAS_INTERES=CASE WHEN    
       [TIV_TIPO_BASE]=354    
