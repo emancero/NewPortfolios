@@ -9,7 +9,7 @@
 				then isnull(itrans,0) else 0 end
 				+case when oper=0 then itrans else 0 end
 			when 'intAcc' then intAcc
-				+case when ipr_es_cxc=1 then isnull(ufo_uso_fondos,0) else 0 end
+				+case when ipr_es_cxc=1 or x.xTpoId is not null then isnull(ufo_uso_fondos,0) else 0 end --Obtener excepciones de subconsulta "x"
 			when 'valnom' then coalesce(case when htp_tiene_valnom=0 then -specialValnom end,case when e.evp_abono=1 and e.es_vencimiento_interes=0 then e.vep_valor_efectivo end,capMonto,-montooper)
 			when 'costas' then case when es_vencimiento_interes=1 then EVP_COSTAS_JUDICIALES else 0 end
 		end
@@ -21,6 +21,7 @@
 		end
 		,*
 	from bvq_backoffice.LiqIntProv e
+	left join (select 215 xTpoId,convert(datetime,'20250730') xFecha union all select 222,'20250730' union all select 1516,'2025-10-16T10:19:00') x on x.xTpoid=htp_tpo_id and convert(varchar,e.fecha,20)=convert(varchar,x.xFecha,20) --Obtener excepciones de subconsulta "x"
 	left join bvq_backoffice.isspol_cuenta_requerida icr on 1=0
 		--e.tvl_codigo not in ('FAC','PCO') and (es_vencimiento_interes=0 and icr_codigo in ('VALNOM','MONTO') or es_vencimiento_interes=1 and icr_codigo in ('INT','PROV'))
 		--or e.tvl_codigo in ('FAC','PCO')
