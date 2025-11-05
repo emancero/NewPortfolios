@@ -9,7 +9,12 @@
 				then isnull(itrans,0) else 0 end
 				+case when oper=0 then itrans else 0 end
 			when 'intAcc' then intAcc
-				+case when ipr_es_cxc=1 or x.xTpoId is not null then isnull(ufo_uso_fondos,0) else 0 end --Obtener excepciones de subconsulta "x"
+				--el uso de fondos se incluye cuando es portafolio de cxc,
+				--o en portafolios vigentes cuando no son abonos como se puede ver en liqintprov		
+				+case when ipr_es_cxc=1
+				--o en casos excepcionales
+				or x.xTpoId is not null
+				then isnull(ufo_uso_fondos,0) else 0 end --Obtener excepciones de subconsulta "x"
 			when 'valnom' then coalesce(case when htp_tiene_valnom=0 then -specialValnom end,case when e.evp_abono=1 and e.es_vencimiento_interes=0 then e.vep_valor_efectivo end,capMonto,-montooper)
 			when 'costas' then case when es_vencimiento_interes=1 then EVP_COSTAS_JUDICIALES else 0 end
 		end
