@@ -4,7 +4,9 @@
 			when 'amount' then amountCosto
 			when 'amountcxc' then amountCosto
 			when 'prov' then prov
-				+case when hist_fecha_compra>tfl_fecha_inicio_orig then isnull(itrans,0) else 0 end
+				+case when hist_fecha_compra>tfl_fecha_inicio_orig
+				and htp_tpo_id not in (2268,2269) --Excepción para fondos de inversión
+				then isnull(itrans,0) else 0 end
 				+case when oper=0 then itrans else 0 end
 			when 'intAcc' then intAcc
 				+case when ipr_es_cxc=1 then isnull(ufo_uso_fondos,0) else 0 end
@@ -69,6 +71,7 @@
 		or tiv_subtipo=3 and tasa_cupon=0 and isnull(ipr_es_cxc,0)=0
 		or oper=0 and rubro='prov'
 		or oper=1 and tiv_tipo_renta=154 and rubro='intAcc'
+		and tiv_tipo_valor<>10000006 --Excepción para fondos de inversión
 	)
 	and p.prefijo=rub.rpref
 	--empatar con vigente (0 o null) o cxc (1)
