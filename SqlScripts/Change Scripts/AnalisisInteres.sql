@@ -1,4 +1,8 @@
-﻿
+﻿--view ObtenerDetallePortafolioConLiquidezView
+	 ,UFO_USO_FONDOS=coalesce(evp.evp_uso_fondos,evt.UFO_USO_FONDOS)
+	 ,UFO_RENDIMIENTO=coalesce(evp.evp_rendimiento,evt.UFO_RENDIMIENTO)
+
+
 --PROVISIÓN:
 
 	--
@@ -24,7 +28,7 @@
 
 --INTERÉS liqintprov:
 
-					--depósito total capital+interés
+				--depósito total capital+interés
 					--depósito de interés:
 					coalesce(nullif(e.vep_valor_efectivo,0), amount)
 					+
