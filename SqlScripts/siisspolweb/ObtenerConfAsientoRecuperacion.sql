@@ -38,7 +38,10 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 		and round(debe,0)=round(ref.valor,0)
 	where icr.tpo_numeracion=--'MDF-2013-04-25-2'
 		@AS_NOMBRE
-	and datediff(hh,icr.fecha,@AD_FECHA)=0
+
+	--and datediff(hh,icr.fecha,@AD_FECHA)=0
+	and convert(varchar,@AD_FECHA,20)=convert(varchar,icr.fecha,20)
+
 	and (
 		@AD_FECHA_ORIGINAL is null
 		OR datediff(hh,icr.htp_fecha_operacion,@AD_FECHA_ORIGINAL)=0
