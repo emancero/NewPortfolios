@@ -15,20 +15,24 @@ begin
 DECLARE @LS_FECHA_ACTUAL  DATETIME
 
 	SELECT
-		 @AS_MOV_CUENTA = COALESCE(@AS_MOV_CUENTA + ';', '') + convert(varchar(100), icr.[codigo_lista_rubro] ),
-		 @AS_MOV_TIPO = COALESCE(@AS_MOV_TIPO + ';', '') + convert(varchar(100),case when debe>0 and icr.tipo_rubro_movimiento='C' then 'D' else icr.[tipo_rubro_movimiento] end),
-		 @AS_MOV_VALOR = COALESCE(@AS_MOV_VALOR + ';', '') + convert(varchar(100),CAST(coalesce(case when ref.valord<>ref.valor then ref.valord end, debe, haber) AS money) ),
-		 @AS_MOV_REFERENCIA= COALESCE(@AS_MOV_REFERENCIA + ';', '') +  convert(varchar(100)
-			,coalesce(
-				 ref.referencia
-				,CASE WHEN icr.rubro='COSTAS' THEN icr.EVP_COSTAS_JUDICIALES_REFERENCIA END
-				,'')--isnull(ref.referencia,'')
-		 ) 
+		 @AS_MOV_CUENTA = COALESCE(@AS_MOV_CUENTA + ';', '')
+			+ convert(varchar(100), icr.[codigo_lista_rubro] ),
+		 @AS_MOV_TIPO = COALESCE(@AS_MOV_TIPO + ';', '')
+			+ convert(varchar(100),case when debe>0 and icr.tipo_rubro_movimiento='C' then 'D' else icr.[tipo_rubro_movimiento] end),
+		@AS_MOV_VALOR = COALESCE(@AS_MOV_VALOR + ';', '')
+		+ convert(varchar(100),CAST(coalesce(case when ref.valord<>ref.valor then ref.valord end, debe, haber) AS money) ),
+		 @AS_MOV_REFERENCIA= COALESCE(@AS_MOV_REFERENCIA + ';', '')
+			+  convert(varchar(100)
+				,coalesce(
+					 ref.referencia
+					,CASE WHEN icr.rubro='COSTAS' THEN icr.EVP_COSTAS_JUDICIALES_REFERENCIA END
+					,'')--isnull(ref.referencia,'')
+			) 
 	from bvq_backoffice.IsspolComprobanteRecuperacion icr
 
---	left join bvq_backoffice.Liquidez_Referencias_table ref
 	left join (
-		select valor=sum(valor) over (partition by tpo_numeracion,fecha,fecha_original),tpo_numeracion,fecha,fecha_original,valord=valor,referencia
+		select valor=sum(valor) over (partition by tpo_numeracion, fecha, fecha_original)
+		,tpo_numeracion,fecha,fecha_original,valord=valor,referencia
 		from bvq_backoffice.liquidez_referencias_table
 		where not (tpo_numeracion='ATX-2023-10-25-2' and valor=14586.25)
 	) ref
