@@ -64,7 +64,8 @@ BEGIN
 			*/
 			left join [siisspolweb].siisspolweb.[inversion].[int_inversion_recuperacion] ir
 			on ir.id_inversion=cis.id_inversion and datediff(d,ir.fecha_recuperacion,CIS.fecha)=0-- between 0 and 20
-			left join bvq_backoffice.isspol_recuperacion isr on datediff(hh,isr_fecha,cis.fecha)=0 and isr.ISR_NUMERACION=cis.tpo_numeracion
+			--left join bvq_backoffice.isspol_recuperacion isr on datediff(hh,isr_fecha,cis.fecha)=0 and isr.ISR_NUMERACION=cis.tpo_numeracion
+			left join bvq_backoffice.isspol_recuperacion isr on convert(varchar,cis.fecha,20)=convert(varchar,isr_fecha,20)and isr.ISR_NUMERACION=cis.tpo_numeracion
 
 
 			/*
@@ -83,7 +84,7 @@ BEGIN
 				from bvq_backoffice.liquidez_referencias_table
 			) ref
 			on cis.tpo_numeracion=ref.tpo_numeracion
-			and datediff(hh,cis.fecha,ref.fecha)=0
+			and convert(varchar,cis.fecha,20)=convert(varchar,ref.fecha,20)--datediff(hh,cis.fecha,ref.fecha)=0
 				and cis.ri in ('DIDENT','DIDENT02')
 				and round(debe,0)=round(ref.valor,0)
 
