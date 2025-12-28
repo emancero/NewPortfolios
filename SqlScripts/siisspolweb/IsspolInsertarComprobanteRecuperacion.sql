@@ -202,7 +202,8 @@ begin
 		--referencias -------------------------------
 		declare CUR_REFS cursor for
 		select valor,idMasivasTransaccion,referencia from bvq_backoffice.liquidez_referencias_table lrt
-		where tpo_numeracion=@i_nombre and datediff(hh,fecha,@i_fecha)=0-- and fecha_original=@i_fecha_original
+		where tpo_numeracion=@i_nombre
+		and convert(varchar,fecha,20)=convert(varchar,@i_fecha,20)--datediff(hh,fecha,@i_fecha)=0-- and fecha_original=@i_fecha_original
 
 		declare @v_total float, @v_id_masivas_transaccion int, @v_referencia2 varchar(50), @v_sec int
 		open CUR_REFS
