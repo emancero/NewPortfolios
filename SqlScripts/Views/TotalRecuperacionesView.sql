@@ -11,6 +11,7 @@
 		,[Numeración]=cir.tpo_numeracion
 		,Estado=case when isnull(ipr_es_cxc,0)=0 then 'Vigente' else 'CxC' end
 		,Emisor=ems_nombre
+		,[Uso de fondos]=case when cir.rubro in ('intacc') then cir.UFO_USO_FONDOS end
 	FROM BVQ_BACKOFFICE.ComprobanteIsspolRubros cir
 	WHERE cir.rubro IN ('AMOUNT', 'amountcxc','INTAcc', 'PROV')
 	AND monto IS NOT NULL
