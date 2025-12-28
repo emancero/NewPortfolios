@@ -274,3 +274,14 @@ begin catch
 end catch*/
 
 end;
+--test
+--select top 1 * from bvq_backoffice.comprobante_isspol c where fecha<getdate() order by fecha desc
+--select top 10 * from siisspolweb.siisspolweb.inversion.int_inversion_recuperacion where id_inversion=213
+--select top 1 tpo_numeracion,fecha,id_inversion from bvq_backoffice.isspolComprobanteRecuperacion where tpo_numeracion='CER-2023-06-26' and fecha='20251226'-- order by fecha desc
+--select * from bvq_backoffice.Liquidez_Referencias_table where tpo_numeracion='CER-2023-06-26'
+--select * from [siisspolweb].siisspolweb.banco.masiva_detalle_deposito_noidentif where id_masivas_transaccion=173213
+--declare @MSJ varchar(500)
+--exec [BVQ_BACKOFFICE].[IsspolInsertarComprobanteRecuperacion] 213,1,'','',1,null,'20250626','CER-2023-06-26',@MSJ out,@i_lga_id=null
+--select top 10 * from siisspolweb.siisspolweb.inversion.int_inversion_recuperacion where id_inversion=213
+--select * from [siisspolweb].siisspolweb.banco.masiva_detalle_deposito_noidentif where id_masivas_transaccion=173213
+--end test
