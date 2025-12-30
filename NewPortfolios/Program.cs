@@ -11,7 +11,17 @@ using (TransactionScope scope = new TransactionScope())
     conn.Open();
 
     comm.CommandType = System.Data.CommandType.Text;
-
+    
+    //commandos
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.TotalRecuperacionesView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("TotalRecuperacionesView", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    //fin comandos
+    conn.Close();
+    scope.Complete();
+    return;
+    
     comm.CommandText = (new GetObjectCode()).GetCode("Campos de evento_portafolio", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
