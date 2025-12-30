@@ -127,7 +127,7 @@
    tipo='C' or tipo='D' and cuenta<>'2.1.90.03'  
   )  
   and not (  
-   tipo='D' and cuenta='2.1.90.03'  
+      tipo='D' and cuenta='2.1.90.03'  
    or tipo='D' and cuenta like'7.1.5.03.%'  
    or tipo='C' and cuenta like'2.1.02.%'  
   )  
