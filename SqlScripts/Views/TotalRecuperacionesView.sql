@@ -1,4 +1,4 @@
-﻿alter view BVQ_BACKOFFICE.TotalRecuperacionesView as
+﻿create view BVQ_BACKOFFICE.TotalRecuperacionesView as
 	SELECT
 		 [Tipo de título]=cir.tvl_nombre
 		--,cir.por_id
@@ -14,21 +14,30 @@
 		,[Uso de fondos]=case when cir.rubro in ('intacc') then cir.UFO_USO_FONDOS end
 		,oper
 		,htp_id
-		,coalesce(edpi.EDPI_CUENTA,cir.deudoraSinAux) depSinAux
-		,coalesce(edpi.EDPI_AUX,cir.deudoraAux) depAux
-		,coalesce(edpi.EDPI_NOM_CUENTA,cir.nomDeudora) depNombre
+		,coalesce(edpi.EDPI_CUENTA+'.'+edpi.EDPI_AUX,cir.deudoraSinAux+'.'+deudoraAux) NumCtaDepNoIdent
+		,coalesce(edpi.EDPI_NOM_CUENTA,cir.nomDeudora) CtaDepNoIdent
 		,referencias
+		,cuenta_bancaria NumCtaDep
+		,cuenta_bancaria_descr CtaDep
+		--EDPI_NOM_CUENTA
+	--select *
 	FROM BVQ_BACKOFFICE.ComprobanteIsspolRubros cir
 	left join
 	BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
 		on edpi.edpi_numeracion=CIr.tpo_numeracion-- and CIr.cuenta='2.1.90.03'
 	left join (
-		select referencias=dbo.stringagg(referencia+': '+format(valor,'c','es-EC'),'; ')
+		select referencias=dbo.stringagg(refTab.referencia+': '+format(refTab.valor,'c','es-EC'),', ')
+		,cuenta_bancaria=max(cb.cuenta)
+		,cuenta_bancaria_descr=max(cb.descripcion)
 		,tpo_numeracion
 		,refFecha=convert(varchar,refTab.fecha,20)
 		--,tpo_numeracion,fecha,fecha_original,valord=valor,referencia
 		from bvq_backoffice.liquidez_referencias_table refTab
-		where not (tpo_numeracion='ATX-2023-10-25-2' and valor=14586.25)
+		left join siisspolweb.siisspolweb.banco.masivas_transaccion mt
+			join siisspolweb.siisspolweb.banco.masivas_lote ml on ml.id_masivas_lote=mt.id_masivas_lote
+			join siisspolweb.siisspolweb.banco.cuenta cb on cb.id_cuenta=ml.id_cuenta_banco
+		on mt.id_masivas_transaccion=refTab.idMasivasTransaccion
+		where not (tpo_numeracion='ATX-2023-10-25-2' and refTab.valor=14586.25)
 		group by tpo_numeracion, convert(varchar,refTab.fecha,20)
 	) ref
 	on cir.tpo_numeracion=ref.tpo_numeracion
