@@ -118,7 +118,16 @@
 				WHEN [TPO_MANTIENE_VECTOR_PRECIO] = 1 OR
 					ISNULL([IPR_ES_CXC], 0) = 0 THEN [tiv_codigo_vector]
 			END
-		   ,TIPO = TVL_DESCRIPCION
+		   ,TIPO =
+		    case when TVL_CODIGO='PACTO' then
+				isnull(TPO_NOMBRE_BONO_GLOBAL + ' - ','') + 'Pacto de Recompra'
+			when TVL_CODIGO='SWAP' then
+				'BE ' + isnull(TPO_ACTA + ' - ','') + ' Operación ' + TVL_DESCRIPCION
+			when TVL_CODIGO='BE' then
+				TPO_NOMBRE_BONO_GLOBAL
+			else
+				TVL_DESCRIPCION
+			end
 		   ,CUPON = case when tiv_subtipo=3 then 0 else [tiv_tasa_interes] / 100.0 end
 		   ,PLAZO_PACTADO =
 		    --pc.plazo_anterior
@@ -178,7 +187,9 @@
 						FROM keyf1
 						WHERE natkey LIKE 'MINISTERIO DE FINANZAS|20240620|20160108|%'
 						AND kf1 = 339*/) THEN
-							(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885 * sal
+							iif(tfcorte<'20251231'
+							,(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885 * sal
+							,(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12-71172.91)/796712.09*sal)
 						--377916.44 / 873855.24 * sal
 				WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
 				ELSE sal * [tiv_precio] / 100.0
