@@ -187,9 +187,8 @@
 						FROM keyf1
 						WHERE natkey LIKE 'MINISTERIO DE FINANZAS|20240620|20160108|%'
 						AND kf1 = 339*/) THEN
-							iif(tfcorte<'20251231'
-							,(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885 * sal
-							,(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12-71172.91)/796712.09*sal)
+							iif(tfcorte<'20251231',(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885 * sal
+							,(select ve.valor from bvq_administracion.ValorEfectivoBonoUtilidad ve where ve.por_id=pc.por_id and tfcorte>=ve.fechaDesde and tfcorte<fechaHasta))
 						--377916.44 / 873855.24 * sal
 				WHEN [tvl_codigo] IN ('PCO') THEN sal * [htp_precio_compra] / 100.0
 				ELSE sal * [tiv_precio] / 100.0
