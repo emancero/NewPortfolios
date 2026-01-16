@@ -12,6 +12,8 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha]
 
 as
 BEGIN
+	--set transaction isolation level serializable;
+	begin tran
                 SET NOCOUNT ON;
 
                 truncate table corteslist
@@ -143,10 +145,10 @@ BEGIN
 
                 select distinct 				por.nombre as comitente
                                                ,pcorte.ems_nombre
-                                               ,tvl.tvl_descripcion
-                                               ,rent.itc_descripcion as renta
+    ,tvl.tvl_descripcion
+    ,rent.itc_descripcion as renta
              ,tta.tta_nombre
-              ,por.por_tipo_nombre
+     ,por.por_tipo_nombre
     ,por.por_codigo
                                                ,pcorte.tiv_precio
                                                ,pcorte.por_id
@@ -208,13 +210,16 @@ BEGIN
 														,CASE
 				                                        WHEN valefeConRendimiento is not null then
 					             valefeConRendimiento
-				                                        WHEN [TPO_F1] = (SELECT TOP 1
+				                                        WHEN [TPO_F1] = (339/*SELECT TOP 1
 							                                        kf1
 						                                        FROM keyf1
 						                                        WHERE natkey LIKE 'MINISTERIO DE FINANZAS|20240620|20160108|%'
-						                                        AND kf1 = 339) THEN
-							                                        (1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885
-                                                                    * salNewValnom
+						                                        AND kf1 = 339*/) THEN
+							                                        --(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885
+                                                                    --* salNewValnom
+																	iif(tfcorte<'20251231',(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12)/867885 * sal
+																	--,(1954061.2-1567189.4-895.53-3582.15-895.53-3582.15-2985.12-2985.12-71172.91)/796712.09*sal)
+																	,(select ve.valor from bvq_administracion.ValorEfectivoBonoUtilidad ve where ve.por_id=pcorte.por_id and tfcorte>=ve.fechaDesde and tfcorte<fechaHasta))
 						                                        --377916.44 / 873855.24 * sal
 				                                        WHEN pcorte.[tvl_codigo] IN ('PCO') THEN
                                                             salNewValnom
@@ -283,7 +288,9 @@ BEGIN
                                                 ,prEfectivo
 											   ,YIELD =
 												CASE
-													WHEN pcorte.[tvl_codigo] IN ('FAC','PCO','OBL','OCA','VCC') THEN [HTP_RENDIMIENTO]
+													WHEN pcorte.[tvl_codigo] IN ('FAC','PCO','OBL','OCA','VCC')
+														 or pcorte.[tvl_codigo] IN ('BE') and (pcorte.fecha_compra>='20251128' or TPO_ACTA like 'BE%')
+													THEN [HTP_RENDIMIENTO]
 													ELSE [tiv_tasa_interes]
 												END / 100.0
                                                ,NUEVO_VALOR_NOMINAL=
@@ -338,4 +345,5 @@ BEGIN
 				,tpo_f1
 				--and por.por_tipo<>@v_portfolio_oc	-- para ocultar portafolios ocultos
                 --order by pcorte.por_codigo,pcorte.tiv_tipo_valor,pcorte.tiv_id
+	commit tran
 end

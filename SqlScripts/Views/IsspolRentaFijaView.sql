@@ -167,7 +167,9 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    end,    
    YIELD =
    CASE
-        WHEN [TVL_CODIGO] in ('FAC','PCO','OBL','OCA','VCC') THEN [HTP_RENDIMIENTO]
+        WHEN [TVL_CODIGO] in ('FAC','PCO','OBL','OCA','VCC')
+			 or [TVL_CODIGO] in ('BE') and (fecha_compra>='20251118' or tpo_acta like 'BE%')
+		THEN [HTP_RENDIMIENTO]
         ELSE [TIV_TASA_INTERES]
    END / 100.0,    
    PRECIO=htp_precio_compra,    
@@ -243,7 +245,7 @@ VALNOM_ANTERIOR=VALNOM_ANTERIOR,
    case when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,tfCorte,tiv_fecha_vencimiento)<=365 then
 		coalesce(
             lastValDate
-            ,case when 1=1 and tfcorte>='20250910' then [fecha_compra] end
+            ,case when 1=1 and tfcorte>='20251001' then [fecha_compra] end
         )
    when isnull(rtrim(tiv_codigo_vector),'')='' then [fecha_compra]
    when isnull(rtrim(tiv_codigo_vector),'')<>'' and datediff(d,tfCorte,tiv_fecha_vencimiento)>365 then
