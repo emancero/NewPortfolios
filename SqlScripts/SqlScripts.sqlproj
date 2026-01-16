@@ -155,6 +155,7 @@
     <None Include="Change Scripts\AnalisisInteres.sql" />
     <None Include="Views\tituloValorUltVal2.sql" />
     <None Include="Views\ComprobanteIsspolAll.sql" />
+    <None Include="Views\ValorEfectivoBonoUtilidad.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
