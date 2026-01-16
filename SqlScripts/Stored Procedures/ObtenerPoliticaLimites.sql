@@ -18,8 +18,16 @@ begin
 	exec bvq_administracion.GenerarVectores
 	exec bvq_administracion.PrepararValoracionLinealCache
 	truncate table [_temp].[ObtenerInfoPortfoliosPorFechaResult]
-	insert into [_temp].[ObtenerInfoPortfoliosPorFechaResult](VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO,INTERES_GANADO_2,latest_inicio)
-	select VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO,INTERES_GANADO_2,latest_inicio from BVQ_BACKOFFICE.PortafolioCortePrcInt
+	insert into [_temp].[ObtenerInfoPortfoliosPorFechaResult](VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO,INTERES_GANADO_2,latest_inicio
+	,tiv_tipo_base
+	,htp_numeracion
+	,TVL_CODIGO
+	)
+	select VALOR_NOMINAL,sal,PRECIO_DE_HOY,INTERES_GANADO,INTERES_GANADO_2,latest_inicio
+	,tiv_tipo_base
+	,htp_numeracion
+	,TVL_CODIGO
+	from BVQ_BACKOFFICE.PortafolioCortePrcInt
 	where isnull(ipr_es_cxc,0)=0 and (sal>0 or round(salNewValNom,2)>0)
 	--exec [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha] @v_fecha_base,null
 
@@ -34,7 +42,16 @@ begin
 		--fin caso excepcional
 		else
 			sum(sal*
-				isnull(PRECIO_DE_HOY,1)+isnull(INTERES_GANADO_2*dbo.fnDias3(latest_inicio,@v_fecha_base,354),0))--,sum(valor_nominal)--isnull(sum(sal*case when tipo_renta='RENTA VARIABLE' then tiv_valor_nominal else 1 end),0)
+				isnull(PRECIO_DE_HOY,1)
+				+isnull(
+					INTERES_GANADO_2
+					*dbo.fnDias3(
+						 latest_inicio
+						,@v_fecha_base
+						,iif(TVL_CODIGO='PCO' and @v_fecha_base>='2025-12-31T23:59:59',tiv_tipo_base,354)
+					)
+				,0)
+			)--,sum(valor_nominal)--isnull(sum(sal*case when tipo_renta='RENTA VARIABLE' then tiv_valor_nominal else 1 end),0)
 		end
 	,baseFecha=
 	formatmessage('INVERSIONES NO PRIVATIVAS (%s)'
@@ -88,7 +105,7 @@ begin
 		when tvl_codigo in ('VCC') then 'TITULARIZACIONES'
 		when tvl_codigo in ('FAC') then 'FACTURAS COMERCIALES'
 		when tvl_codigo in ('ACC','ENC') then 'ACCIONES Y ENCARGO FID'
-		when tvl_codigo in ('FI') then 'FONDOS DE INVERSIÓN COLECTIVO / COTIZADO'
+		when tvl_codigo in ('FI') or tfcorte>='20251126' and tvl_codigo='CDP' then 'FONDOS DE INVERSIÓN COLECTIVO / COTIZADO'
 		when tvl_codigo in ('CDP','VTP') then 'VALORES DE PARTICIPACIÓN'
 		end--,*
 		--when 
@@ -103,7 +120,10 @@ begin
 		,sec.TIPO_RENTA,sec.SECTOR,PCT,alert
 	,r=row_number() over (partition by sec.TIPO_RENTA order by ord desc)
 	from
-	(values (1,'19000101','2999-12-31T23:59:59')) lim(LIM_ID, LIM_DESDE, LIM_HASTA)
+	(values
+		 (1,'19000101','2025-12-08T23:59:59')
+		,(2,'20251209','2999-12-31T23:59:59')
+	) lim(LIM_ID, LIM_DESDE, LIM_HASTA)
 	join
 	BVQ_BACKOFFICE.ISSPOL_DETALLE_LIMITES sec
 	on sec.LIM_ID=lim.LIM_ID
