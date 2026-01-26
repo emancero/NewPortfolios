@@ -156,6 +156,7 @@
 	,evt.TIV_TIPO_RENTA
 	,evp.EVP_COSTAS_JUDICIALES
 	,evp.EVP_COSTAS_JUDICIALES_REFERENCIA
+	,movsCupon.movs_evp_valor_efectivo
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -188,6 +189,17 @@
 		left join bvq_backoffice.comprobante_gestion_negocio com on com.com_id=vep.com_id
 	on
 		vep.evp_id=evp.evp_id
+
+	--movimientos de cupón
+	left join (
+			select movs_evp_valor_efectivo=sum(evp_valor_efectivo), evp_tpo_id, evp_fecha_original
+			from bvq_backoffice.evento_portafolio e
+			where evt_fecha<'29991231' and es_vencimiento_interes=0 and EVP_ABONO=1
+			group by evp_tpo_id,evp_fecha_original
+			--having evp_tpo_id=2193
+		) movsCupon
+		on evt_fecha='29991231' and movsCupon.evp_tpo_id=evp.evp_tpo_id and movsCupon.evp_fecha_original=evp.evp_fecha_original
+
 	/*	vep.evt_id=evt.htp_id and --evt.htp_id cache key!
 		vep.oper_id=evt.oper and
 		vep.es_vencimiento_interes=isnull(evt.es_vencimiento_interes,0)*/
@@ -308,6 +320,7 @@
 	,TIV_TIPO_RENTA=null
 	,EVP_COSTAS_JUDICIALES=null
 	,EVP_COSTAS_JUDICIALES_REFERENCIA=null
+	,movs_evp_valor_efectivo=null
 	from
 	bvq_backoffice.evento_portafolio evp
 
