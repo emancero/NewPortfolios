@@ -1,7 +1,7 @@
 ﻿//Ejecuta scripts en el orden correcto
 using Microsoft.Data.SqlClient;
 using System.Transactions;
-return; //prevenir ejecución accidental
+//return; //prevenir ejecución accidental
 string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
 {
@@ -13,11 +13,15 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     
     //commandos
+
+    //30-dic-2025
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.TotalRecuperacionesView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("TotalRecuperacionesView", "View", suffix: false);
     comm.ExecuteNonQuery();
+
     //fin comandos
+
     conn.Close();
     scope.Complete();
     return;
