@@ -156,6 +156,10 @@
     <None Include="Views\tituloValorUltVal2.sql" />
     <None Include="Views\ComprobanteIsspolAll.sql" />
     <None Include="Views\ValorEfectivoBonoUtilidad.sql" />
+    <None Include="Change Scripts\ESTRUCTURA_ISSPOL_G04.sql" />
+    <None Include="Change Scripts\ESTRUCTURA_ISSPOL_G05.sql" />
+    <None Include="Stored Procedures\ObtenerEstructuraIsspolG04.sql" />
+    <None Include="Stored Procedures\ObtenerEstructuraIsspolG05.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

@@ -20,7 +20,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("TotalRecuperacionesView", "View", suffix: false);
     comm.ExecuteNonQuery();
 
-    //26-ene-2025
+    //26-ene-2026
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioAprox'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EventoPortafolioAprox", "View", suffix: false);
@@ -39,6 +39,24 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidezView", "View", suffix: false);
     comm.ExecuteNonQuery();
 
+    //27-ene-2026
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G04'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ESTRUCTURA_ISSPOL_G04", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G05'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ESTRUCTURA_ISSPOL_G05", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    /*comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG04'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG04", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G05'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG05", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    */
     //fin comandos
 
     conn.Close();
