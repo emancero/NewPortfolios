@@ -127,6 +127,7 @@ begin
 	,TIPO_RENTA
 	,EVP_COSTAS_JUDICIALES
 	,EVP_COSTAS_JUDICIALES_REFERENCIA
+	,EVP_SALDO
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -224,11 +225,20 @@ begin
 	,TIV_TIPO_RENTA
 	,EVP_COSTAS_JUDICIALES
 	,EVP_COSTAS_JUDICIALES_REFERENCIA
+	,EVP_SALDO=
+		case
+		when en_espera=1 then
+			0e0
+		when fecha='29991231' then
+			max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
+		else
+			sum(amount) over (partition by htp_tpo_id, fecha_original)
+		end
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--join bvq_administracion.parametro parIsspol on parIsspol.par_codigo='PAR_ISSPOL'
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
 	--where (parIsspol.PAR_VALOR='NO' or oper=1)
- 
+
 	--create clustered index ix01 on bvq_backoffice.evtTemp(por_id,fecha,oper,htp_id,es_vencimiento_interes)
  
 	declare @prevPorId int,@accSalLiq float
@@ -294,7 +304,7 @@ begin
 		from bvq_backoffice.Liquidez_Referencias_table
 		--where --tpo_numeracion like 'inb%' --and fecha='20240429'
 		--fecha between '20240429' and '2024-04-29T23:59:59'
-		group by tpo_numeracion,fecha having tpo_numeracion=evtTemp.tpo_numeracion and datediff(hh,fecha,evtTemp.Fecha)=0
+		group by tpo_numeracion,fecha having tpo_numeracion=evtTemp.tpo_numeracion and convert(varchar,fecha,20)=convert(varchar,evtTemp.Fecha,20)
 	)
 	from bvq_backoffice.evtTemp
 	left join (select capMonto=nullif(vep_valor_efectivo,0),capHtpId=htp_id,capFecha=fecha from bvq_backoffice.evtTemp where es_vencimiento_interes=0 and htp_tiene_valnom=1) eCap
