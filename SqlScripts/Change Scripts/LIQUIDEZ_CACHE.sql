@@ -95,3 +95,13 @@ IF NOT EXISTS(
 	and name='TIV_TIPO_RENTA'
 )
 	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD TIV_TIPO_RENTA INT
+
+IF NOT EXISTS(
+	select * from sys.columns
+	where object_id=object_id('BVQ_BACKOFFICE.LIQUIDEZ_CACHE')
+	and name='liq_rendimiento'
+)
+begin
+	print 'liq_rendimiento'
+	alter table BVQ_BACKOFFICE.LIQUIDEZ_CACHE ADD liq_rendimiento float
+end

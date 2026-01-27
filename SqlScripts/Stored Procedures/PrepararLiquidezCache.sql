@@ -86,6 +86,7 @@
 		,HTP_TIENE_VALNOM
 		,specialValnom
 		,TIV_TIPO_RENTA
+		,liq_rendimiento
 		--,
 		--vep.vep_fecha,
 
@@ -201,6 +202,7 @@
 		,evt.HTP_TIENE_VALNOM
 		,evt.specialValnom
 		,evt.TIV_TIPO_RENTA
+		,evt.liq_rendimiento
 		--select *
 		from
 		bvq_backoffice.eventoPortafolio evt

@@ -1,4 +1,4 @@
-﻿create view bvq_backoffice.EventoPortafolioAprox as
+﻿CREATE view bvq_backoffice.EventoPortafolioAprox as
 	select
 	0 amortizacion,
 	0 amortizacion2,
@@ -134,7 +134,7 @@
 	dias_cupon,
 	tfl_id,
 	htp_reportado=null,
-	liq_rendimiento=null,
+	liq_rendimiento=max(liq_rendimiento),
 	liq_retencion=null,
 	liq_retencion_casa=null,
 	htp_precio_compra=null
