@@ -160,6 +160,8 @@
     <None Include="Change Scripts\ESTRUCTURA_ISSPOL_G05.sql" />
     <None Include="Stored Procedures\ObtenerEstructuraIsspolG04.sql" />
     <None Include="Stored Procedures\ObtenerEstructuraIsspolG05.sql" />
+    <None Include="Change Scripts\VALORACION_SB.sql" />
+    <None Include="Stored Procedures\GenerarValoracionSB.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

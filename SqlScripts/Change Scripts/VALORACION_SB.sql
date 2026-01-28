@@ -1,0 +1,23 @@
+﻿CREATE TABLE BVQ_BACKOFFICE.VALORACION_SB (
+	[htp_fecha_operacion] [datetime] NOT NULL,
+	[montooper] [float] NULL,
+	[itrans] [float] NULL,
+	[tpo_numeracion] [varchar](250) NOT NULL,
+	[oper] [int] NOT NULL,
+	[htp_precio_compra] [float] NULL,
+	[tasa_cupon] [float] NULL,
+	[liq_rendimiento] [float] NULL,
+	[valorEfectivo] [float] NULL,
+	[tiv_id] [int] NOT NULL,
+	[fon_id] [int] NULL,
+	[esCxc] [int] NULL,
+	[tpo_acta] [varchar](20) NULL,
+	[valor_pago_capital] [int] NULL,
+	[valor_pago_cupon] [int] NULL,
+	[Fecha_Ultimo_Pago] [int] NULL,
+	[Saldo_Valor_Nominal] [float] NULL,
+	[Precio_de_mercado] [float] NULL,
+	[Valor_Mercado] [float] NULL,
+	[TPO_MANTIENE_VECTOR_PRECIO] [int] NULL,
+	[evp_fecha_compra] [datetime] NULL
+) ON [PRIMARY]
