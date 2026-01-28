@@ -40,6 +40,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //27-ene-2026
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "StoredProcedure", suffix: false);
+    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G04'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ESTRUCTURA_ISSPOL_G04", "Change Script", suffix: false);
@@ -48,15 +52,26 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ESTRUCTURA_ISSPOL_G05", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
-    /*comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG04'";
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG04'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG04", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G05'";
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG05'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG05", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
-    */
+    comm.CommandText = (new GetObjectCode()).GetCode("LIQUIDEZ_CACHE", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiqIntProv'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ComprobanteIsspolRubros'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ComprobanteIsspolRubros", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+
     //fin comandos
 
     conn.Close();

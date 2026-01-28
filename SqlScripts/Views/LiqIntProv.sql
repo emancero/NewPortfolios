@@ -18,6 +18,7 @@
 		,itrans=sum(itrans)
 		,evp_referencia=max(evp_referencia)
 		,plazo_anterior=max(plazo_anterior)
+		,liq_rendimiento=max(liq_rendimiento)
 		from
 		(
 			--cross product

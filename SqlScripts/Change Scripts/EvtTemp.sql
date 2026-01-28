@@ -127,3 +127,11 @@ IF NOT EXISTS(
 	and name='EVP_SALDO'
 )
 	alter table BVQ_BACKOFFICE.evtTemp ADD EVP_SALDO float
+
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'liq_rendimiento'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.evtTemp')
+)
+BEGIN
+    alter table BVQ_BACKOFFICE.evtTemp ADD liq_rendimiento float
+END 

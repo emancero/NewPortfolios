@@ -128,6 +128,7 @@ begin
 	,EVP_COSTAS_JUDICIALES
 	,EVP_COSTAS_JUDICIALES_REFERENCIA
 	,EVP_SALDO
+	,liq_rendimiento
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -234,6 +235,7 @@ begin
 		else
 			sum(amount) over (partition by htp_tpo_id, fecha_original)
 		end
+	,liq_rendimiento
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--join bvq_administracion.parametro parIsspol on parIsspol.par_codigo='PAR_ISSPOL'
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
