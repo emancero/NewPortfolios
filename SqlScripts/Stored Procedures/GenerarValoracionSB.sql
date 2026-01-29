@@ -1,7 +1,6 @@
 ﻿CREATE procedure BVQ_BACKOFFICE.GenerarValoracionSB AS
 BEGIN
-	if object_id('BVQ_BACKOFFICE.VALORACION_SB') is not null
-		drop table BVQ_BACKOFFICE.VALORACION_SB
+	truncate table BVQ_BACKOFFICE.VALORACION_SB
 	insert into BVQ_BACKOFFICE.VALORACION_SB(
 		 htp_fecha_operacion
 		,montooper
