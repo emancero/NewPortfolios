@@ -11,8 +11,8 @@
 	--tfl_fecha_inicio,
 	--tfl_fecha_vencimiento,
 	latest_inicio
-	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then
-		case when fecha_ultimo_pago>tfl_fecha_inicio_orig2 then fecha_ultimo_pago else tfl_fecha_inicio_orig2 end
+	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213) then
+		case when fecha_ultimo_pago>tfl_fecha_inicio_orig2 or htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else tfl_fecha_inicio_orig2 end
 	else latest_inicio end
 	,
 	--latest_vencimiento,
@@ -21,7 +21,8 @@
 			--latest_inicio
 			case when tpo_fecha_susc_convenio is not null then
 				fechaInicioOriginal
-			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2
+			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213) then
+				case when htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else tfl_fecha_inicio_orig2 end
 			else latest_inicio end
 			,c,case when tiv_accrual_365=1 then 355 when tiv_tipo_valor in (5,6,11) then 354 else tiv.tiv_tipo_base end)
 		+case when tiv_accrual_365=1 then 1 else 0 end
@@ -584,7 +585,7 @@
 		join corteslist cl on cl.c between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_id<>8829100001533
 		where htp_tiene_valnom=1
 		group by htp_tpo_id,cl.c
-	) ev on htp.c=ncorte and ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0
+	) ev on htp.c=ncorte and (ev.htp_tpo_id2=htp.tpo_id_anterior and isnull(progs.ipr_es_cxc,0)=0 or htp.tpo_id_anterior=213 and ev.htp_tpo_id2=htp.tpo_id_anterior)
 
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
