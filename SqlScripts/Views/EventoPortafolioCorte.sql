@@ -140,6 +140,18 @@
 		and evp.evp_tpo_id=e.htp_tpo_id
 	)
 	,FON_ID=MAX(FON_ID)
+	,fecha_ultimo_pago=(
+		select max(evp_fecha_original)
+		from bvq_backoffice.evento_portafolio e
+		join bvq_backoffice.retraso retr on 
+		evp_tpo_id=retr_tpo_id
+		and evt_fecha>=retr_fecha_esperada
+		and evt_fecha<c
+		and es_vencimiento_interes=1
+		join (select xtpo_id=1516) x on htp_tpo_id=x.xtpo_id
+		where evp_tpo_id=htp_tpo_id
+		and c>='20251031'
+	)
 	from bvq_backoffice.EventoPortafolio e
 	join corteslist c on
 	coalesce(
