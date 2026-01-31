@@ -1,4 +1,4 @@
-﻿create view [BVQ_BACKOFFICE].[PortafolioCorte] as
+﻿CREATE view [BVQ_BACKOFFICE].[PortafolioCorte] as
 	select
 	tva_valor_tasa,
 	arranqueValLineal,
@@ -11,7 +11,9 @@
 	--tfl_fecha_inicio,
 	--tfl_fecha_vencimiento,
 	latest_inicio
-	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then tfl_fecha_inicio_orig2 else latest_inicio end
+	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null then
+		case when fecha_ultimo_pago>tfl_fecha_inicio_orig2 then fecha_ultimo_pago else tfl_fecha_inicio_orig2 end
+	else latest_inicio end
 	,
 	--latest_vencimiento,
 	dias_al_corte=
@@ -258,7 +260,7 @@
 		case when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
 			coalesce(
 				lastValDate
-				,case when 1=1 and htp.c>='20250910' then [fecha_compra] end
+				,case when 1=1 and htp.c>='20251001' or htp.c>='20250910' and htp.tpo_id in (2301) then [fecha_compra] end
 			)
 		when isnull(rtrim(htp.tiv_codigo_vector),'')='' then [fecha_compra]
 		when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
@@ -301,7 +303,9 @@
 								where retr_tpo_id=htp_tpo_id and RETR_FECHA_COBRO=latest_vencimiento order by retr_fecha_esperada desc
 							)
 						when datediff(d,fecha_compra,latest_vencimiento)=0 then cupoper_tfl_fecha_inicio
-						else latest_vencimiento end,
+						else
+								latest_vencimiento
+						end,
 					isnull(tpo_numeracion,'') htp_numeracion,
 					tpo.por_id,
 					tpo.tiv_id,
@@ -498,10 +502,11 @@
 					,e.interesCoactivo
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
 					,tiv_codigo_vector=coalesce(case when datediff(d,c,e.tiv_fecha_vencimiento)>365
-						or c>='20250910'
+						or c>='20251001' or c>='20250910' and e.htp_tpo_id in (2301)
 						then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
 					,TPO.TPO_NOMBRE_BONO_GLOBAL
 					,e.FON_ID
+					,e.fecha_ultimo_pago
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
 					join bvq_administracion.titulo_valor tiv on tiv.tiv_id=tpo.tiv_id
@@ -509,7 +514,7 @@
 						BVQ_ADMINISTRACION.VALORACION_LINEAL_CACHE t
 						join
 						bvq_administracion.vector_precio vpr
-						on vpr.tiv_id = coalesce(case when t.cc>='20250910' then nullif(t.tiv_split_de,0) end,t.tiv_id) and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
+						on vpr.tiv_id = coalesce(case when t.cc>='20251001' or t.cc>'20250910' and t.tiv_id in (9210) then nullif(t.tiv_split_de,0) end,t.tiv_id) and convert(int,vpr_fecha)*1e8+vpr.vpr_id=f
 					on (t.tiv_id=tpo.tiv_id and tpo.tiv_id<>7755 or t.tiv_id=7093 and tpo.tiv_id=7755)
 					and c=t.cc
  
