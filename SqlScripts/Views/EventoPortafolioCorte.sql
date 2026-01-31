@@ -148,11 +148,12 @@
 		and evt_fecha>=retr_fecha_esperada
 		and evt_fecha<c
 		and es_vencimiento_interes=1
-		join (select xtpo_id=1516) x on htp_tpo_id=x.xtpo_id
-		where evp_tpo_id=htp_tpo_id
+		join (select xtpo_id=1516) x on x.xtpo_id in (max(tpo.tpo_id_anterior),htp_tpo_id)
+		where evp_tpo_id in (max(tpo.tpo_id_anterior),htp_tpo_id)
 		and c>='20251031'
 	)
 	from bvq_backoffice.EventoPortafolio e
+	join (select tpo_id_anterior, tpo_id from bvq_backoffice.titulos_portafolio) tpo on e.htp_tpo_id=tpo.tpo_id
 	join corteslist c on
 	coalesce(
 	evt_fecha,
