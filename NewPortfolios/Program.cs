@@ -85,6 +85,23 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG03", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
 
+    //1-feb-2026
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerSaldoYDetallePortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSaldoYDetallePortafolio", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerTodosSaldoYDetallePortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerTodosSaldoYDetallePortafolio", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarTituloPortafolio", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ActualizarTituloPortafolio", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
 
     //fin comandos
 

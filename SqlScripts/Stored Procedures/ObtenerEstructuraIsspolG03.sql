@@ -1,14 +1,20 @@
 ﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
-	@i_fechaCorte DateTime,
+--declare
+	@i_fechaCorte DateTime='20251130',
 	@i_lga_id int
 AS
 BEGIN
 	SET NOCOUNT ON;
 	declare @i_fechaIni DateTime=DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
-	/*delete from corteslist
-	insert into corteslist
-	values(@i_fechaFin,1)*/
-	--exec bvq_backoffice.GenerarCompraVentaFlujo
+
+	--GenCortesListByRange
+	delete from corteslist
+	;with a as(select @i_fechaIni i, num=1 union all select dateadd(d,1,a.i),num+1 from a where a.i<@i_fechaCorte)
+	insert into corteslist(c,cortenum)
+	select i,num from a
+	option(maxrecursion 0)
+	--end GenCortesListByRange
+
 	exec BVQ_BACKOFFICE.GenerarValoracionSB
 	select
 	 Interes_Acumulado
@@ -53,6 +59,7 @@ BEGIN
 	,Tipo_Transaccion
 	,Fecha_Transaccion
 	,Dias_Transcurridos
+	,Fuente_Cotizacion
 	,Dias_Vencer=Dias_por_vencer
 	,No_Acciones=Numero_Acciones
 	,Yield
