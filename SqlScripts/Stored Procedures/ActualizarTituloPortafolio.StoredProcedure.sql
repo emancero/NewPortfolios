@@ -65,6 +65,8 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarTituloPortafolio]
 	,@i_fon_numero_liquidacion varchar(10) = null
 	,@i_fon_procedencia char(1) = null
 	,@i_nombre_bono_global varchar(100)=null
+	,@i_dividendo bit
+	,@i_cxc bit
 	,@i_lga_id int
 	
 AS
@@ -147,6 +149,8 @@ BEGIN
 		  -- NUEVO CAMPO LÍNEA 98
 		  --,TPO_FECHA_VEN_CONVENIO = @i_fecha_ven_convenio
 		,tpo_id_anterior= case when @v_tpoId_org is null then tpo_id_anterior else @v_tpoId_org end
+		--,TPO_PROG = case when @i_cxc = 1 then 'normal' else TPO_PROG end
+		--,TPO_PROG = case when @i_cxc = 1 then 'normal' else NULL end
 	 FROM [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO] TPO
 	 JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
 	 WHERE HTP.HTP_ID = @i_tpo_id;
@@ -175,6 +179,8 @@ BEGIN
 		,HTP_TIR = @i_tir
 		,HTP_RENDIMIENTO_RETORNO = @i_rendimiento_retorno
 		,HTP_NUMERACION_2 = @i_numeracion2
+		,HTP_DIVIDENDO =@i_dividendo
+		,TIV_ID=@i_tiv_id
 	FROM BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP
 	--WHERE htp_id in (select htp_id from bvq_backoffice.htptpo where tpo_id=@i_tpo_id)
 	WHERE HTP_ID=@i_tpo_id
