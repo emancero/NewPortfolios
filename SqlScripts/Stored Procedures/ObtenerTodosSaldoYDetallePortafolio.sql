@@ -111,7 +111,9 @@ BEGIN
 						TPOR.TPO_BOLETIN,
 						tpoAnt.tiv_id_origen,
 						FON.FON_NUMERO_LIQUIDACION,
-						FON.FON_PROCEDENCIA
+						FON.FON_PROCEDENCIA,
+						HTP.HTP_DIVIDENDO,
+						TPOR.TPO_PROG
                         FROM BVQ_BACKOFFICE.TITULOS_PORTAFOLIO AS TPOR 
                              INNER JOIN BVQ_ADMINISTRACION.TITULO_VALOR AS TIT ON TPOR.TIV_ID = TIT.TIV_ID 
                              INNER JOIN BVQ_ADMINISTRACION.EMISOR AS EMISOR ON TIT.TIV_EMISOR = EMISOR.EMS_ID 
@@ -149,7 +151,7 @@ BEGIN
 						TIV_DIAS_PARA_VENCER=dbo.fnDias(@i_fecha,tiv_fecha_vencimiento,tiv_tipo_base)
 							-case when tiv_tipo_base=354 and month(@i_fecha)=2 and day(@i_fecha) in (28,29) then 30-day(@i_fecha) else 0 end,
                         coalesce(TIT.TIV_SERIE,TIT.TIV_DECRETO,'') TIV_SERIE,  
-                        EMISOR.EMS_NOMBRE AS TIV_NOMBRE_EMISOR, 
+           EMISOR.EMS_NOMBRE AS TIV_NOMBRE_EMISOR, 
 						TITULO.TVL_NOMBRE AS TIV_NOMBRE_TITULO, 
                         MON.MON_NOMBRE,
 						TPO_SALDO=(select sum(montooper-isnull(remaining,0)) from bvq_backoffice.eventoportafolio e
@@ -189,7 +191,8 @@ BEGIN
 						TPOR.TPO_VALNOM_ANTERIOR,
 						TPOR.TPO_FECHA_ENCARGO,
            						TPOR.TPO_RECURSOS,
-						POR_CODIGO
+						POR_CODIGO,
+						ipr.IPR_ES_CXC
 
                         FROM BVQ_BACKOFFICE.TITULOS_PORTAFOLIO AS TPOR
 							INNER JOIN BVQ_BACKOFFICE.PORTAFOLIO POR ON TPOR.POR_ID=POR.POR_ID
@@ -199,7 +202,8 @@ BEGIN
                             INNER JOIN BVQ_ADMINISTRACION.TIPO_VALOR AS TITULO ON TIT.TIV_TIPO_VALOR = TITULO.TVL_ID 
                             INNER JOIN BVQ_ADMINISTRACION.MONEDA AS MON ON TIT.TIV_MONEDA = MON.MON_ID 
                             INNER JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO ON TIT.TIV_TIPO_RENTA = BVQ_ADMINISTRACION.ITEM_CATALOGO.ITC_ID
-                            
+                            left join BVQ_BACKOFFICE.isspol_progs ipr on IPR_NOMBRE_PROG=tpo_prog
+
                              WHERE (/*TPOR.POR_ID <> @i_por_id 
                                          AND*/ TPOR.TPO_ESTADO<>@v_id_estado 
                                          AND TPOR.TPO_ESTADO<>@v_id_cancelado
