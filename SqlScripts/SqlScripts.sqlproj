@@ -169,12 +169,12 @@
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Stored Procedures\ActualizarTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\ActualizarTituloPortafolio.sql" />
     <None Include="Stored Procedures\ActualizarTitulosPortafolioLiquidacion.StoredProcedure.sql" />
     <None Include="Stored Procedures\CancelarMovimientoTituloPortafolio.StoredProcedure.sql" />
     <None Include="Stored Procedures\CancelarTituloPortafolio.StoredProcedure.sql" />
     <None Include="Stored Procedures\InsertarLiquidezPortafolio.StoredProcedure.sql" />
-    <None Include="Stored Procedures\InsertarTituloPortafolio.StoredProcedure.sql" />
+    <None Include="Stored Procedures\InsertarTituloPortafolio.sql" />
     <Build Include="Schemas\BVQ_BACKOFFICE.sql" />
     <None Include="Stored Procedures\ReversarLiquidacion.StoredProcedure.sql" />
     <None Include="Stored Procedures\ReliquidarReporto.StoredProcedure.sql" />
