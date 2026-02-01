@@ -163,6 +163,7 @@
     <None Include="Change Scripts\VALORACION_SB.sql" />
     <None Include="Stored Procedures\GenerarValoracionSB.sql" />
     <None Include="Stored Procedures\ObtenerEstructuraIsspolG03.sql" />
+    <None Include="Stored Procedures\ObtenerSaldoYDetallePortafolio.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
