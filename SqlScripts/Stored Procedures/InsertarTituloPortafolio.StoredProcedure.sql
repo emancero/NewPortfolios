@@ -71,7 +71,9 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_fon_numero_liquidacion varchar(10) = null
 	,@i_fon_procedencia char(1) = null
 	,@i_nombre_bono_global varchar(100) = null
-	,@i_lga_id int		
+	,@i_dividendo bit
+	,@i_cxc bit
+	,@i_lga_id int
 AS
 BEGIN
 
@@ -177,7 +179,8 @@ BEGIN
 				TPO_BOLETIN,
 				tpo_id_anterior,
 				TPO_NOMBRE_BONO_GLOBAL,
-				TPO_RECURSOS
+				TPO_RECURSOS,
+				TPO_PROG
            )
 			 VALUES
            (
@@ -217,7 +220,8 @@ BEGIN
 				@i_tpo_boletin,
 				@v_tpoId_org,
 				@i_nombre_bono_global,
-				@i_recursos
+				@i_recursos,
+				case when @i_cxc = 1 then 'normal' else null end
            )
 			set @v_tpo_id=scope_identity()
 	end
@@ -282,7 +286,8 @@ BEGIN
 		HTP_COMISION_BOLSA,
 		HTP_TIR,
 		HTP_RENDIMIENTO_RETORNO
-		,LIQ_ID
+		,LIQ_ID,
+		HTP_DIVIDENDO
 	)
 	VALUES
 	(
@@ -305,7 +310,8 @@ BEGIN
 		@i_comisionBolsa,
 		@i_tir,
 		@i_rendimiento_retorno
-		,@i_liq_id
+		,@i_liq_id,
+		@i_dividendo
 	)
 
 	EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
@@ -368,8 +374,6 @@ BEGIN
 	where tpo.tpo_id=@v_tpo_id and tpo.tpo_numeracion like 'plaza_proyec%'
 	--
 
-	--update tpo set tpo_prog='normal'
-	--from bvq_backoffice.titulos_portafolio tpo where tpo_prog is null and tpo_id_anterior is not null
 
 
 END

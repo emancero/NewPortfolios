@@ -266,8 +266,17 @@
 			END
 		   ,MONTO_EMITIDO = [TIV_MONTO_EMISION]
 		   ,PATRIMONIO = [VBA_PATRIMONIO_TECNICO]
-		   ,CALIFICADORA_DE_RIESGO = [CAL_NOMBRE]
-		   ,CALIFICACION_DE_RIESGO = COALESCE([ENC_VALOR], [TCA_VALOR])
+		   --,CALIFICADORA_DE_RIESGO = [CAL_NOMBRE]
+		   --,CALIFICACION_DE_RIESGO = COALESCE(pc.[ENC_VALOR], [TCA_VALOR])
+		   ,CALIFICADORA_DE_RIESGO=case when pc.httpo_id in (2487,2488) then
+				coalesce(
+				 rtrim(emscal.enc_nombre)+' - '+convert(varchar,emscal.ENC_FECHA_DESDE,103),[CAL_NOMBRE]
+				,rtrim(emical.eca_nombre)+' - '+convert(varchar,emical.eca_fecha_resolucion,103)
+				,'NO DISPONIBLE')
+				else rtrim(CAL_NOMBRE) end
+		   ,CALIFICACION_DE_RIESGO=case when pc.httpo_id in (2487,2488) then
+				coalesce(emscal.[ENC_VALOR],eca_valor,[TCA_VALOR],'NO DISPONIBLE')
+			else COALESCE(pc.[ENC_VALOR], [TCA_VALOR]) end
 		   ,VALOR_PROVISIONADO = sal * [tiv_precio] / 100.0
 		   ,FECHA_DE_PAGO_ULTIMO_CUPON = 
 				case when TPO_FECHA_SUSC_CONVENIO is not null or HTP_NUMERACION like 'CDD-%' then
@@ -505,6 +514,32 @@
 		FROM BVQ_BACKOFFICE.PortafolioCorte pc
 		JOIN BVQ_BACKOFFICE.PORTAFOLIO port
 			ON pc.por_id = port.POR_ID
+		left join    
+		(    
+    
+		 select row_number() over (partition by emi_id order by eca_fecha_resolucion desc,eca_id desc) r,emi_id    
+		 ,eca_valor     
+		 ,cal_nombre eca_nombre    
+		 ,cal_nombre_personalizado eca_nombre_personalizado    
+		 ,eca_fecha_resolucion    
+		 from bvq_administracion.emisores_calificacion eca    
+		 join bvq_administracion.calificadoras cal on eca.cal_id=cal.cal_id    
+		 where eca_estado=21 and (eca_fecha_resolucion is null or eca_fecha_resolucion<=(select c from corteslist))    
+		) emical on emical.emi_id=tiv_emisor and emical.r=1--(tvl_generico=1 or tiv_tipo_valor in (/*10,*/13)) and emical.emi_id=tiv_emisor and emical.r=1  
+		left join    
+		(    
+    
+		 select row_number() over (partition by enc.enc_numero_corto_emision order BY enc.ENC_FECHA_DESDE  desc,enc.ENC_ID desc) r,enc_numero_corto_emision    
+		 ,enc.ENC_VALOR 
+		 ,cal_nombre enc_nombre    
+		 ,cal_nombre_personalizado enc_nombre_personalizado    
+		 ,enc.ENC_FECHA_DESDE  
+		 FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION enc   
+		 join bvq_administracion.calificadoras cal on enc.CAL_ID=cal.CAL_ID    
+		 where enc.ENC_ESTADO=21 and (enc.ENC_FECHA_DESDE is null or enc.ENC_FECHA_DESDE<=(select c from corteslist))    
+		) emscal on emscal.enc_numero_corto_emision=pc.TIV_CODIGO_TITULO_SIC and emscal.r=1  
+		
+
 		LEFT JOIN BVQ_BACKOFFICE.FONDO FON ON FON.FON_ID=pc.FON_ID
 		WHERE sal > 0
 		AND IPR_ES_CXC = ISNULL(1, '0')
