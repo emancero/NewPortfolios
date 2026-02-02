@@ -40,6 +40,8 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //27-ene-2026
+    comm.CommandText = (new GetObjectCode()).GetCode("EvtTemp", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "StoredProcedure", suffix: false);
@@ -86,6 +88,8 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //1-feb-2026
+    comm.CommandText = (new GetObjectCode()).GetCode("HISTORICO_TITULOS_PORTAFOLIO", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerSaldoYDetallePortafolio'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSaldoYDetallePortafolio", "Stored Procedure", suffix: false);
