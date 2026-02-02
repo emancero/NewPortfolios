@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG01]
+﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
 	@lastReportDate datetime,
 	@i_lga_id int
 AS
