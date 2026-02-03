@@ -1,4 +1,4 @@
-﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
+﻿create PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
 --declare
 	@i_fechaCorte DateTime='20251130',
 	@i_lga_id int
@@ -73,5 +73,3 @@ BEGIN
 	and Fecha_transaccion between @i_fechaIni and @i_fechaCorte
 	--order by aru_opc_via,2
 END
-go
-exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03 '20251130',null

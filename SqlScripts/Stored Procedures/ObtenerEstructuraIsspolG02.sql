@@ -1,4 +1,4 @@
-﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG02]
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG02]
 		@fecha DateTime,
 		@i_todos_los_vigentes bit=0,
 		@i_lga_id int

@@ -168,6 +168,15 @@
     <None Include="Stored Procedures\ObtenerEstructuraIsspolG01.sql" />
     <None Include="Views\EstructuraIsspolView.sql" />
     <None Include="Stored Procedures\ObtenerEstructuraIsspolG02.sql" />
+    <None Include="Views\IsspolRentaFijaViewNew.sql" />
+    <None Include="Views\SB_CALIFICACIONES.sql" />
+    <None Include="Change Scripts\TIPO_VALOR_SB.sql" />
+    <None Include="Views\TipoValorSBMap.sql" />
+    <None Include="Change Scripts\CALIFICADORA_SB_MAP.sql" />
+    <None Include="Views\CalificadoraSbMap.sql" />
+    <None Include="Views\TituloFlujoCapital.sql" />
+    <None Include="Functions\GetIdentifierCode.sql" />
+    <None Include="Change Scripts\TITULO_VALOR.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

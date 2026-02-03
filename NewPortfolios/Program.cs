@@ -54,6 +54,57 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ESTRUCTURA_ISSPOL_G05", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.IsspolRentaFijaViewNew'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("IsspolRentaFijaViewNew", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.SB_CALIFICACIONES'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("SB_CALIFICACIONES", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TipoValorSBMap'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("TipoValorSBMap", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TIPO_VALOR_SB'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("TIPO_VALOR_SB", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.CalificadoraSbMap'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("CalificadoraSbMap", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.CALIFICADORA_SB_MAP'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("CALIFICADORA_SB_MAP", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TituloFlujoCapital'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("TituloFlujoCapital", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.GetIdentifierCode'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("GetIdentifierCode", "Function", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("TITULO_VALOR", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EstructuraIsspolView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("EstructuraIsspolView", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG01", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG02'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG02", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG04'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG04", "Stored Procedure", suffix: false);

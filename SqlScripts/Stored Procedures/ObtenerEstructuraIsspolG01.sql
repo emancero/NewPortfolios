@@ -1,4 +1,4 @@
-﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
+﻿create PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
 	@lastReportDate datetime,
 	@i_todos_los_vigentes bit=0,
 	@i_lga_id int=null
