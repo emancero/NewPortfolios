@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
+﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
 --declare
 	@i_fechaCorte DateTime='20251130',
 	@i_lga_id int
@@ -7,15 +7,8 @@ BEGIN
 	SET NOCOUNT ON;
 	declare @i_fechaIni DateTime=DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
 
-	--GenCortesListByRange
-	delete from corteslist
-	;with a as(select @i_fechaIni i, num=1 union all select dateadd(d,1,a.i),num+1 from a where a.i<@i_fechaCorte)
-	insert into corteslist(c,cortenum)
-	select i,num from a
-	option(maxrecursion 0)
-	--end GenCortesListByRange
 
-	exec BVQ_BACKOFFICE.GenerarValoracionSB
+	exec bvq_backoffice.ObtenerDetallePortafolioConLiquidez 1,@i_fechaIni,@i_fechaCorte,null
 	select
 	 Interes_Acumulado
 	,Vector_Precio
@@ -41,7 +34,7 @@ BEGIN
 	,Numero_Acciones
 	,Valor_AccionHoy=Valor_Accion
 	,Precio_Mercado
-	,Valor_Mercado
+	,Valor_Mercado=isnull(Valor_Mercado,0)
 	,Fecha_Precio_Mercado
 	,Fondo_Inversion
 	,Periodo_Amortizacion_codigo
@@ -51,27 +44,28 @@ BEGIN
 	,Casa_de_Valores_codigo
 	,Casa_Valores
 	,Tipo_Id_Custodio
-	,Resolucion_Decreto
+	,Documento_Aprobacion=replace(numero_resolucion,'-','')
+	,Resolucion_Decreto=replace(Resolucion_Decreto,'-','')
 	,Nro_de_Inscripcion_Decreto
 	,Inscripcion_CPMV
 	,Id_Custodio
 	,Numero_Liquidacion
 	,Tipo_Transaccion
 	,Fecha_Transaccion
-	,Dias_Transcurridos
+	,Dias_Transcurridos=isnull(Dias_Transcurridos,0)
 	,Fuente_Cotizacion
-	,Dias_Vencer=Dias_por_vencer
+	,Dias_Vencer=isnull(Dias_por_vencer,0)
 	,No_Acciones=Numero_Acciones
 	,Yield
-	,Valor_Capital=valor_pago_capital
-	,Valor_Pago_Cupon=valor_pago_cupon
+	,Valor_Capital=isnull(valor_pago_capital,0)
+	,Valor_Pago_Cupon=isnull(valor_pago_cupon,0)
 	,Fecha_Ultimo_Pago
-	,Saldo_Valor_Nominal
+	,Saldo_Valor_Nominal=isnull(Saldo_Valor_Nominal,0)
 	,Calificacion_Riesgo=Calificacion_Riesgo_Emision
 	,Calificadora_Riesgo=Calificadora_Riesgo_Emision
 	,Fecha_Ultima_Calificacion
-	,Pago_dividendo_en_acciones
-	,Pago_dividendo_efectivo
+	,Pago_dividendo_en_acciones=isnull(Pago_dividendo_en_acciones,0)
+	,Pago_dividendo_efectivo=isnull(Pago_dividendo_efectivo,0)
 	,tiv_tipo_renta
 	from BVQ_BACKOFFICE.EstructuraIsspolView
 	--where oper=0
@@ -79,3 +73,5 @@ BEGIN
 	and Fecha_transaccion between @i_fechaIni and @i_fechaCorte
 	--order by aru_opc_via,2
 END
+go
+exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03 '20251130',null

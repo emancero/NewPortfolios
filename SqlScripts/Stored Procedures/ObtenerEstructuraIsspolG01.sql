@@ -1,6 +1,7 @@
-﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
+﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
 	@lastReportDate datetime,
-	@i_lga_id int
+	@i_todos_los_vigentes bit=0,
+	@i_lga_id int=null
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -49,5 +50,7 @@ BEGIN
 		cca.fecha_desde between @i_fechaIni and tfcorte
 		or
 		eca.fecha_desde between @i_fechaIni and tfcorte
+		or
+		@i_todos_los_vigentes=1
 	)
 END
