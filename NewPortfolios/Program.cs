@@ -40,6 +40,8 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //27-ene-2026
+    comm.CommandText = (new GetObjectCode()).GetCode("FONDO", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EvtTemp", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
@@ -93,6 +95,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("TITULO_VALOR", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiqIntProv'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EstructuraIsspolView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EstructuraIsspolView", "View", suffix: false);
@@ -114,10 +121,6 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG05", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("LIQUIDEZ_CACHE", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiqIntProv'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
     comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ComprobanteIsspolRubros'";
     comm.ExecuteNonQuery();

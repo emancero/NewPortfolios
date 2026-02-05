@@ -67,6 +67,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarTituloPortafolio]
 	,@i_nombre_bono_global varchar(100)=null
 	,@i_dividendo bit
 	,@i_cxc bit
+	,@i_top_cva_id int
 	,@i_lga_id int
 	
 AS
@@ -96,6 +97,7 @@ BEGIN
 	UPDATE FON SET FON_ACCIONES_REALIZADAS=@i_objeto
 	, FON_NUMERO_LIQUIDACION=@i_fon_numero_liquidacion
 	, FON_PROCEDENCIA=@i_fon_procedencia
+	, FON_CVA_ID = @i_top_cva_id
 	FROM BVQ_BACKOFFICE.FONDO FON
 	JOIN BVQ_BACKOFFICE.TITULOS_PORTAFOLIO TPO ON TPO.FON_ID=FON.FON_ID
 	JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID

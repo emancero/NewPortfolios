@@ -177,6 +177,7 @@
     <None Include="Views\TituloFlujoCapital.sql" />
     <None Include="Functions\GetIdentifierCode.sql" />
     <None Include="Change Scripts\TITULO_VALOR.sql" />
+    <None Include="Change Scripts\FONDO.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

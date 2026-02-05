@@ -10,15 +10,24 @@ BEGIN
 	insert into corteslist
 	values(@fecha,1)
 
-	exec bvq_backoffice.GenerarCompraVentaFlujo
-	--GenCortesListByRange
-	delete from corteslist
-	;with a as(select @i_fechaIni i, num=1 union all select dateadd(d,1,a.i),num+1 from a where a.i<@fecha)
-	insert into corteslist(c,cortenum)
-	select i,num from a
-	option(maxrecursion 0)
-	--end GenCortesListByRange
-	exec BVQ_BACKOFFICE.GenerarValoracionSB
+	
+	declare @sysver bigint = isnull((select min(CTT_ULTIMA_VERSION) from BVQ_ADMINISTRACION.CT_TABLES),0)
+	if 1=1 or exists(
+		select 1 from changetable(changes bvq_backoffice.HISTORICO_TITULOS_PORTAFOLIO,@sysver) ct
+		union all select 1 from changetable(changes bvq_backoffice.TITULOS_PORTAFOLIO,@sysver) ct
+	)
+	begin
+		update bvq_administracion.ct_tables set ctt_ultima_version=change_tracking_current_version()
+		exec bvq_backoffice.GenerarCompraVentaFlujo
+		--GenCortesListByRange
+		delete from corteslist
+		;with a as(select @i_fechaIni i, num=1 union all select dateadd(d,1,a.i),num+1 from a where a.i<@fecha)
+		insert into corteslist(c,cortenum)
+		select i,num from a
+		option(maxrecursion 0)
+		--end GenCortesListByRange
+		exec BVQ_BACKOFFICE.GenerarValoracionSB
+	end
 
 	select
 	tiv_tipo_renta
@@ -57,7 +66,8 @@ BEGIN
 	,Casa_Valores
 	,Tipo_Id_Custodio
 	
-	,Resolucion_Decreto
+	,Documento_Aprobacion=replace(numero_resolucion,'-','')
+	,Resolucion_Decreto=replace(Resolucion_Decreto,'-','')
 	,Nro_de_Inscripcion_Decreto
 	,Inscripcion_CPMV
 	,Id_Custodio

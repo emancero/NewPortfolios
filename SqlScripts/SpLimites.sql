@@ -4,7 +4,7 @@
 ----	Description:	Obtiene información de limites ISSPOL
 ----	History:
 ---- =========================================================================
-create procedure [splimites]	
+CREATE procedure [splimites]	
 	  @i_fechaCorte datetime=NULL
 	, @i_lga_id int
 AS
@@ -51,9 +51,13 @@ BEGIN
 			,ems_tipo_emisor_desc=ems.EMS_TIPO_EMISOR
 			,ems_patrimonio_tecnico=vba.VBA_PATRIMONIO_TECNICO
 			,EMS_REGION=coalesce(EMS_REGION,CIU_REGION)
-			,emical.eca_valor
+			,eca_valor=coalesce(emscal.[ENC_VALOR],eca_valor,[TCA_VALOR],'NO DISPONIBLE')--,emical.eca_valor
 			,emical.eca_nombre
-			,emical.eca_fecha_resolucion
+			--,emical.eca_fecha_resolucion
+		   ,eca_fecha_resolucion=coalesce(
+				 emscal.ENC_FECHA_DESDE
+				,emical.eca_fecha_resolucion
+				)
 			,TPO_PROG
 			,TIV_DECRETO
 			,tvl.tvl_codigo
@@ -78,7 +82,7 @@ BEGIN
 			on tmp.tiv_tipo_valor=tvl.tvl_id
 		left join BVQ_ADMINISTRACION.VARIABLES_BALANCE vba 
 			on	ems.EMS_ID=vba.EMS_ID and 
-				datediff(dd,@v_fechaIni,VBA_FECHA_DESDE)<0 and
+				datediff(dd,@v_fechaIni,VBA_FECHA_DESDE)<=0 and
 				datediff(dd,@v_fechaIni,VBA_FECHA_HASTA)>0
 		left join BVQ_ADMINISTRACION.emisor_origen_tipo eot
 			on tmp.tiv_emisor=eot.EMS_ID
@@ -99,7 +103,20 @@ BEGIN
 					join bvq_administracion.calificadoras cal on eca.cal_id=cal.cal_id
 					where eca_estado=21 and (eca_fecha_resolucion is null or eca_fecha_resolucion<=@v_fechaIni)
 				) emical on (tmp.tvl_generico=1 or tmp.tiv_tipo_valor in (13)) and emical.emi_id=tmp.tiv_emisor and emical.r=1
-
+		left join    
+		(    
+    
+		 select row_number() over (partition by enc.enc_numero_corto_emision order BY enc.ENC_FECHA_DESDE  desc,enc.ENC_ID desc) r,enc_numero_corto_emision    
+		 ,enc.ENC_VALOR 
+		 ,cal_nombre enc_nombre    
+		 ,cal_nombre_personalizado enc_nombre_personalizado    
+		 ,enc.ENC_FECHA_DESDE  
+		 FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION enc   
+		 join bvq_administracion.calificadoras cal on enc.CAL_ID=cal.CAL_ID    
+		 where enc.ENC_ESTADO=21 and (enc.ENC_FECHA_DESDE is null or enc.ENC_FECHA_DESDE<=(select c from corteslist))    
+		) emscal on emscal.enc_numero_corto_emision=tmp.TIV_CODIGO_TITULO_SIC and emscal.r=1  
+		left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
+		ON tmp.tvl_codigo = H.[TVLH_CODIGO]    
 	where	round(sal,2)>0 and isnull(tmp.ipr_es_cxc,0)=0
 
 	--[+]	Limites por Bancos
@@ -116,6 +133,7 @@ BEGIN
 			,PATRIMONIO_COSTA=case when UPPER(ems_region)='COSTA' then ems_patrimonio_tecnico else 0 end
 			,CUPO_CALIFICADO_PCT=0.05
 			,CUPO_CALIFICADO_DOLARES=(isnull(ems_patrimonio_tecnico,0)*0.05)
+			,FECHA_RESOLUCION=ems_fecha_resolucion
 	from (
 			select 
 					ems_nombre
@@ -124,7 +142,7 @@ BEGIN
 					,max(EMS_REGION) as ems_region
 					,max(ems_patrimonio_tecnico) as ems_patrimonio_tecnico
 					,max(ECA_VALOR) as ems_calificacion
-			
+					,max(eca_fecha_resolucion) ems_fecha_resolucion
 			from #tmpInversiones tmp
 			where 
 				ems_nombre like '%banco%'
@@ -274,6 +292,7 @@ BEGIN
 			,PATRIMONIO_COSTA=case when UPPER(ems_region)='COSTA' then ems_patrimonio_tecnico else 0 end
 			,CUPO_CALIFICADO_PCT=0.05
 			,CUPO_CALIFICADO_DOLARES=(isnull(ems_patrimonio_tecnico,0)*0.05)
+			,FECHA_RESOLUCION=ems_fecha_resolucion
 	from (
 			select 
 					ems_nombre
@@ -283,6 +302,7 @@ BEGIN
 					,max(ems_patrimonio_tecnico) as ems_patrimonio_tecnico
 					,max(ECA_VALOR) as ems_calificacion
 					,TVL_CODIGO
+					,max(eca_fecha_resolucion) ems_fecha_resolucion
 
 			from #tmpInversiones tmp
 			where TVL_CODIGO IN ('OBL','PCO')

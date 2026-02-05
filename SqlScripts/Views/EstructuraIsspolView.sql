@@ -71,9 +71,9 @@
 		else 
 			(select top 1 Valor_Mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tiv_id=tiv.tiv_id and v.htp_fecha_operacion=evp.htp_fecha_operacion)
 		end
-	,[Fecha_Precio_Mercado]=case when tiv.tiv_tipo_renta=153 and datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) and esCxc=0 then
-		ult_valoracion
-	end 
+	,[Fecha_Precio_Mercado]=evp.htp_fecha_operacion--case when tiv.tiv_tipo_renta=153 and datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) and esCxc=0 then
+		--ult_valoracion
+	--end 
 	--sp_helptext 'bvq_administracion.prepararvaloracionlinealcache'
 	,[Fondo_Inversion]=null
 	
@@ -199,12 +199,21 @@
 	   ,fon_id=max(tpo.fon_id)
 	   ,esCxc=convert(bit,max(isnull(convert(int,ipr_es_cxc),0)))
 	   ,tpo_acta=max(tpo.tpo_acta)
+
+
+
+
 	   ,valor_pago_capital=sum(
 			case when isnull(htp_dividendo,0)=0 and es_vencimiento_interes=0 then
-				amount
+				case when evp_abono=1 then vep_valor_efectivo else amount end
 			end
 		)
-	   ,valor_pago_cupon=sum(case when tiv_tipo_renta<>154 and es_vencimiento_interes=1 then amount end)
+
+	   ,valor_pago_cupon=sum(
+			case when tiv_tipo_renta<>154 and es_vencimiento_interes=1 then
+				case when evp_abono=1 then isnull(prEfectivo*capMonto,0)+vep_valor_efectivo-isnull(capMonto,0) else amount end
+			end
+		)
 	   ,Fecha_Ultimo_Pago=evp.fecha
 	   ,Saldo_Valor_Nominal=sum(evp.saldo)-isnull(sum(case when es_vencimiento_interes=0 then amount end),0)
 	   ,Precio_de_mercado=null
@@ -353,3 +362,4 @@
 --
 	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU
 	ON VNU.TIV_ID=tiv.TIV_ID and evp.htp_fecha_operacion>=VNU.VNU_FECHA_INICIO and evp.htp_fecha_operacion<VNU.VNU_FECHA_FIN
+	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)

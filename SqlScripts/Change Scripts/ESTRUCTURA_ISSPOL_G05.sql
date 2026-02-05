@@ -24,6 +24,7 @@
 	[Saldo_Fiduciarios] [numeric](15, 2) NULL,
 	[Fecha_Liquidacion] [date] NULL,
 	[Valores_Restituidos_Efectivo] [numeric](15, 2) NULL,
-	[Valores_Restituidos_Bienes] [numeric](15, 2) NULL
+	[Valores_Restituidos_Bienes] [numeric](15, 2) NULL,
+	FON_ID int foreign key references BVQ_BACKOFFICE.FONDO(FON_ID)
 ) ON [PRIMARY]
 

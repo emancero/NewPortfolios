@@ -17,7 +17,7 @@
 --				PSA: 28/02/2024 Inserta tpoId origen
 -- =============================================
 CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
-	 @i_usr_id int
+	 	 @i_usr_id int
 	,@i_tiv_id int
 	,@i_por_id int
 	,@i_cantidad float
@@ -73,6 +73,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_nombre_bono_global varchar(100) = null
 	,@i_dividendo bit
 	,@i_cxc bit
+	,@i_top_cva_id int
 	,@i_lga_id int
 AS
 BEGIN
@@ -132,12 +133,14 @@ BEGIN
 					, fon_numeracion
 					, FON_NUMERO_LIQUIDACION
 					, FON_PROCEDENCIA
+					, FON_CVA_ID
 					)
 				values (
 					  @i_tiv_id
 					, @i_numeracion
 					, @i_fon_numero_liquidacion
 					, @i_fon_procedencia
+					, @i_top_cva_id
 				)
 				set @v_fon_id=scope_identity()
 			end
