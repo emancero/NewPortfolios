@@ -110,6 +110,7 @@
 	,tiv.tiv_tipo_renta
 	,[Pago_dividendo_en_acciones]=0
 	,[Pago_dividendo_efectivo]=0
+	,evp.FON_ID
 	--,fovf=convert(datetime,case when datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) then ult_valoracion else htp_fecha_operacion end)
 	from
 	(
@@ -281,7 +282,7 @@
 	join bvq_administracion.tipo_valor tvl on tvl.tvl_id=tiv.tiv_tipo_valor
 	join bvq_administracion.TituloValorUltVal2 tivVal on tivVal.tiv_id=tiv.tiv_id
 	join bvq_administracion.emisor ems on tiv.tiv_emisor=ems.ems_id
-	join bvq_administracion.PERSONA_JURIDICA pju on pju.pju_id=ems.pju_id
+	left join bvq_administracion.PERSONA_JURIDICA pju on pju.pju_id=ems.pju_id
 	join bvq_backoffice.fondo fon on fon.fon_id=evp.fon_id
 	--número de resolución isspol
 	--left join

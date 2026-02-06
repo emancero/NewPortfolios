@@ -20,9 +20,9 @@ BEGIN
 	,ECA_VALOR=isnull(ECA.codigo,30)
 	,eca.fecha_desde
 	,CAL_NOMBRE--*
+	,ECA.CSM_CODIGO
 	--,
-	from bvq_backoffice.isspolRentaFijaViewNew i
-	join bvq_administracion.emisor ems on i.id_emisor=ems.ems_id
+	from bvq_administracion.emisor ems
 	left join bvq_administracion.persona_juridica pju on ems.pju_id=pju.pju_id
 	left join (values
 		('PRIVADO FINANCIERO',1),('PRIVADO NO FINANCIERO',2),('PUBLICO',3),('ECONOMÍA POPULAR Y SOLIDARIA',4)
@@ -33,15 +33,18 @@ BEGIN
 		from BVQ_ADMINISTRACION.COMPOSICION_CAPITAL cca where CCA_ESTADO=21
 	) CCA on CCA.EMI_ID=EMS.EMS_ID and i.tfcorte>=cca.fecha_desde and i.tfcorte<cca.fecha_hasta
 	left join (
-		select EMI_ID, ECA_VALOR, CAL_ID
+		select EMI_ID, ECA_VALOR, CAL_ID, csm.CSM_CODIGO
 		,fecha_desde=ECA_FECHA_DESDE
 		,fecha_hasta=isnull(lead(ECA_FECHA_DESDE) over (partition by EMI_ID order by ECA_FECHA_DESDE),'99991231')
 		,codigo
 		from BVQ_ADMINISTRACION.EMISORES_CALIFICACION eca
+		left join BVQ_ADMINISTRACION.CALIFICADORAS CAL ON CAL.CAL_ID=ECA.CAL_ID
 		left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=ECA_VALOR
+		left join bvq_administracion.CALIFICADORA_SB_MAP csm on csm.csm_cal_id=eca.CAL_ID
 		where ECA_ESTADO=21
 	) ECA on ECA.EMI_ID=EMS.EMS_ID and i.tfcorte>=eca.fecha_desde and i.tfcorte<eca.fecha_hasta
-	left join BVQ_ADMINISTRACION.CALIFICADORAS CAL ON CAL.CAL_ID=ECA.CAL_ID
+	left join bvq_backoffice.isspolRentaFijaViewNew i on @i_todos_los_vigentes=1 and i.id_emisor=ems.ems_id
+
 	--left join (select max(fecha) f, emiid from #x group by emiid) x on x.emiid=ems.ems_id
 	where
 	(

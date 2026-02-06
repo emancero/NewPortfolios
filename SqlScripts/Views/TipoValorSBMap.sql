@@ -1,4 +1,8 @@
 ﻿create view BVQ_ADMINISTRACION.TipoValorSBMap as
+/*
+TABLA 62-B
+TIPOS DE INSTRUMENTO PARA SEGURIDAD SOCIAL
+*/
 	select codigo,descr,tipren,TVL_NOMBRE from(
 	VALUES
 	-- FIJA

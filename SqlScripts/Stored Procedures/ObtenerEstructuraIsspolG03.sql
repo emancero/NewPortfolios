@@ -4,6 +4,7 @@
 	@i_lga_id int
 AS
 BEGIN
+	SET TRANSACTION ISOLATION LEVEL READUNCOMMITTED
 	SET NOCOUNT ON;
 	declare @i_fechaIni DateTime=DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
 
