@@ -4,14 +4,16 @@
 	@i_lga_id int
 AS
 BEGIN
-	SET TRANSACTION ISOLATION LEVEL READUNCOMMITTED
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	SET NOCOUNT ON;
 	declare @i_fechaIni DateTime=DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
 
 
 	exec bvq_backoffice.ObtenerDetallePortafolioConLiquidez 1,@i_fechaIni,@i_fechaCorte,null
 	select
-	 Interes_Acumulado
+	 EMS_NOMBRE
+	,FON_ID
+	,Interes_Acumulado
 	,Vector_Precio
 	,Fecha_Vencimiento
 	,Fecha_Compra
@@ -33,7 +35,7 @@ BEGIN
 	,Calificacion_Riesgo_Emision
 	,Fecha_Ultima_Calificacion
 	,Numero_Acciones
-	,Valor_AccionHoy=Valor_Accion
+	,Valor_AccionHoy=Precio_Mercado--Valor_Accion
 	,Precio_Mercado
 	,Valor_Mercado=isnull(Valor_Mercado,0)
 	,Fecha_Precio_Mercado
@@ -62,13 +64,14 @@ BEGIN
 	,Valor_Pago_Cupon=isnull(valor_pago_cupon,0)
 	,Fecha_Ultimo_Pago
 	,Saldo_Valor_Nominal=isnull(Saldo_Valor_Nominal,0)
-	,Calificacion_Riesgo=Calificacion_Riesgo_Emision
 	,Calificadora_Riesgo=Calificadora_Riesgo_Emision
+	,Calificacion_Riesgo=sbc.codigo
 	,Fecha_Ultima_Calificacion
 	,Pago_dividendo_en_acciones=isnull(Pago_dividendo_en_acciones,0)
 	,Pago_dividendo_efectivo=isnull(Pago_dividendo_efectivo,0)
 	,tiv_tipo_renta
 	from BVQ_BACKOFFICE.EstructuraIsspolView
+	left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
 	--where oper=0
 	where esCxc=0
 	and Fecha_transaccion between @i_fechaIni and @i_fechaCorte

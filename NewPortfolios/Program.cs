@@ -100,6 +100,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.VALORACION_SB'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("VALORACION_SB", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EstructuraIsspolView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EstructuraIsspolView", "View", suffix: false);
@@ -128,10 +132,6 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //G03
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.VALORACION_SB'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("VALORACION_SB", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarValoracionSB'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("GenerarValoracionSB", "Stored Procedure", suffix: false);

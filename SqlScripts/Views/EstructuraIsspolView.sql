@@ -1,4 +1,4 @@
-﻿CREATE view BVQ_BACKOFFICE.EstructuraIsspolView as
+﻿alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	select
 	 Interes_Acumulado=evp.itrans
 	,[Vector_Precio]=tiv_codigo_vector
@@ -111,7 +111,10 @@
 	,[Pago_dividendo_en_acciones]=0
 	,[Pago_dividendo_efectivo]=0
 	,evp.FON_ID
+	,ems.EMS_NOMBRE
+	,ems.EMS_CODIGO
 	--,fovf=convert(datetime,case when datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) then ult_valoracion else htp_fecha_operacion end)
+	--into #y
 	from
 	(
 	--drop table _temp.pc
@@ -300,7 +303,7 @@
 		--from _temp.opc
 		--_temp.opc
 		--select CVA_CODIGO_SB='',PJU_RAZON_SOCIAL='',OPC_NUM_OPE='',OPC_ANO_OPE='',OPC_PROCEDENCIA='',OPC_VIA=''
-		select CVA_CODIGO_SB,PJU_RAZON_SOCIAL,OPC_NUM_OPE,OPC_ANO_OPE,OPC_PROCEDENCIA,OPC_VIA
+		select distinct CVA_CODIGO_SB,PJU_RAZON_SOCIAL,OPC_NUM_OPE,OPC_ANO_OPE,OPC_PROCEDENCIA,OPC_VIA
 		--into _temp.opc
 		from 
 		BVQ_BACKOFFICE.OPERACIONES_CERRADAS OPC
@@ -310,12 +313,12 @@
 	--on aru_opc_numope =coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP) and oper<>-1
 	--and year(evp.htp_fecha_operacion)=year(aru_opc_fchval)
 	--and aru_opc_Procedencia=fon.FON_PROCEDENCIA collate modern_spanish_ci_as-- and 1=0
-	on OPC_NUM_OPE =coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP) and oper<>-1
-	and year(evp.htp_fecha_operacion)=OPC_ANO_OPE--year(OPC_FCH_VAL)
-	and OPC_PROCEDENCIA=fon.FON_PROCEDENCIA collate modern_spanish_ci_as-- and 1=0
+	on OPC_NUM_OPE =coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP) --and oper<>-1
+	and year(evp.evp_fecha_compra)=OPC_ANO_OPE--year(OPC_FCH_VAL)
+	and OPC_PROCEDENCIA=fon.FON_PROCEDENCIA collate modern_spanish_ci_as
 	left join bvq_administracion.TIPO_VALOR_SB tvs on TVS.TVS_TVL_ID=tiv.TIV_TIPO_VALOR
-	left join bvq_administracion.periodicidadSB p on (tiv.tiv_tipo_base=354 and p.frec=tiv.tiv_frecuencia or tiv.tiv_tipo_base=355 and p.codigo='VC')-- and oper<>-1
---
+	left join bvq_administracion.periodicidadSB p on (tiv.tiv_tipo_base=354 and p.frec=tiv.tiv_frecuencia or tiv.tiv_tipo_base=355 and p.codigo='VC')
+--select * from bvq_administracion.periodicidadSB
     left join    
     (    
 		select
@@ -328,7 +331,7 @@
 		,eca.cal_id eca_cal_id
 		from bvq_administracion.emisores_calificacion eca    
 		join bvq_administracion.calificadoras cal on eca.cal_id=cal.cal_id    
-		where eca_estado=21 --and (eca_fecha_resolucion is null or eca_fecha_resolucion<=(select c from corteslist))    
+		where eca_estado=21 and eca_fecha_resolucion is not null--and (eca_fecha_resolucion is null or eca_fecha_resolucion<=(select c from corteslist))    
     ) emical on emical.emi_id=tiv_emisor and evp.htp_fecha_operacion>=isnull(eca_fecha_resolucion,0) and evp.htp_fecha_operacion<eca_fecha_hasta--emical.r=1--(tvl_generico=1 or tiv_tipo_valor in (/*10,*/13)) and emical.emi_id=tiv_emisor and emical.r=1  
     left join    
     (    
@@ -364,3 +367,22 @@
 	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU
 	ON VNU.TIV_ID=tiv.TIV_ID and evp.htp_fecha_operacion>=VNU.VNU_FECHA_INICIO and evp.htp_fecha_operacion<VNU.VNU_FECHA_FIN
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
+	
+	--where oper=-1 and datediff(d,htp_fecha_operacion,'20260208')=0
+	/*select precio_de_mercado,* from bvq_backoffice.valoracion_sb where htp_fecha_operacion='20260204'
+	select * from corteslist
+	exec bvq_administracion.generarvectores
+	sp_helptext 'bvq_administracion.generarvectores'
+	select precio_de_hoy,* from bvq_backoffice.portafoliocorteprcint pc where tvl_codigo='acc' and ems_nombre like 'corp%'
+	--where tfcorte='20260204'
+	*/
+/*
+	with a as(
+	select fon_id,count(*) c from #x where vector_precio is null group by fon_id
+	), b as(
+	select fon_id,count(*) c from #y where vector_precio is null group by fon_id
+	) --select * from a join b on a.fon_id=b.fon_id
+	--where a.c<>b.c
+select * from bvq_backoffice.EstructuraIsspolView e where e.fon_id in (select a.fon_id from a join b on a.fon_id=b.fon_id where a.c<>b.c)
+*/
+--select * from bvq_administracion.emisor where ems_codigo='bcn'

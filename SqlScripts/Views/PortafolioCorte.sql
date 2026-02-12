@@ -394,7 +394,7 @@
 						when datediff(d,c,e.tiv_fecha_vencimiento)>365 and tiv.tiv_split_de<>0
 						then
 							(
-								select vpr_precio from
+								select top 1 vpr_precio from
 								bvq_administracion.vector_precio vpr 
 								where vpr.tiv_id=tiv.tiv_split_de and datediff(d,vpr_fecha,c)=0
 							)

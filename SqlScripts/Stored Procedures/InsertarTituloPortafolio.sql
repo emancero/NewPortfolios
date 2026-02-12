@@ -144,6 +144,15 @@ BEGIN
 				)
 				set @v_fon_id=scope_identity()
 			end
+			else
+			begin
+				UPDATE FON SET
+					FON_PROCEDENCIA=@i_fon_procedencia
+					,FON_CVA_ID = @i_top_cva_id
+				FROM BVQ_BACKOFFICE.FONDO FON
+				WHERE FON.FON_ID = @v_fon_id;
+
+			end
 
 			INSERT INTO [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO]
            (

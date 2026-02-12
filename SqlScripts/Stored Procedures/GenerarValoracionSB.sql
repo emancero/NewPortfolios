@@ -46,8 +46,11 @@ BEGIN
 	,Valor_Mercado=sum(VALOR_NOMINAL)/sum(VALOR_UNITARIO)*sum(PRECIO_DE_HOY)+sum(INTERES_GANADO)
 	,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,pc.TPO_MANTIENE_VECTOR_PRECIO))
 	,evp_fecha_compra=min(pc.fecha_compra)
+	select precio_de_hoy,*
 	from bvq_backoffice.portafolioCortePrcInt pc
 	join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
 	where sal>0 and isnull(ipr_es_cxc,0)=0
+	and tpo_numeracion like 'slu%'
 	group by htp_numeracion,tfcorte,pc.tiv_id
+	
 END
