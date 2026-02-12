@@ -59,7 +59,7 @@
 
 			--unión con la inversión
 			left join [siisspolweb].siisspolweb.[inversion].[inversion] i				
-				join [siisspolweb].siisspolweb.[inversion].[inversion_titulo] it on it.id_inversion = i.id_inversion and it.estado='L'								
+				join [siisspolweb].siisspolweb.[inversion].[inversion_titulo] it on it.id_inversion = i.id_inversion and (it.estado='L' or i.fecha>='20240424')
 				join [siisspolweb].siisspolweb.[inversion].[titulo] t on it.id_titulo=t.id_titulo
 			on t.id_emisor=e.idemisor and
 			(
