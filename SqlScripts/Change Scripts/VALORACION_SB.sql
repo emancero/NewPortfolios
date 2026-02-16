@@ -14,7 +14,7 @@
 	[tpo_acta] [varchar](20) NULL,
 	[valor_pago_capital] [int] NULL,
 	[valor_pago_cupon] [int] NULL,
-	[Fecha_Ultimo_Pago] [int] NULL,
+	[Fecha_Ultimo_Pago] date NULL,
 	[Saldo_Valor_Nominal] [float] NULL,
 	[Precio_de_mercado] [float] NULL,
 	[Valor_Mercado] [float] NULL,

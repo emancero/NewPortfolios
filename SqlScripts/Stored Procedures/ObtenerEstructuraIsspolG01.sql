@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
+﻿create PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
 	@lastReportDate datetime,
 	@i_todos_los_vigentes bit=0,
 	@i_lga_id int=null
@@ -12,12 +12,17 @@ BEGIN
 	insert into corteslist
 	values(@fecha,1)
 
+	exec bvq_backoffice.GenerarCompraVentaFlujo
 	select distinct
-	 ems.EMS_NOMBRE
+	 Errores=
+	 case when isnull(Patrimonio,0)=0 and tipoEmisor.codigo<>3 then
+			'Sin patrimonio y no es público'
+		 end
+	,ems.EMS_NOMBRE
 	,pju_identificacion
 	,decreto_emisor,clasificacion=1,tipo_identificacion='R',pju_identificacion,pais='EC'
 	,tipo_emisor=tipoEmisor.codigo
-	,patrimonio=isnull(patrimonio,0)
+	,patrimonio=coalesce(patrimonio, vba.VBA_PATRIMONIO_TECNICO, 0)
 	,CCA_SUSCRITO=isnull(CCA_SUSCRITO,0)
 	,ECA_VALOR=isnull(ECA.codigo,30)
 	,eca.fecha_desde
@@ -66,7 +71,8 @@ BEGIN
 		where ECA_ESTADO=21
 	) ECA on ECA.EMI_ID=EMS.EMS_ID and htp.EMS_FECHA_PRIMER_USO>=eca.fecha_desde and htp.EMS_FECHA_PRIMER_USO<eca.fecha_hasta
 	left join bvq_backoffice.isspolRentaFijaViewNew i on @i_todos_los_vigentes=1 and i.id_emisor=ems.ems_id
-
+	left join bvq_administracion.variables_balance vba on EMS.EMS_ID=vba.ems_id and EMS_FECHA_PRIMER_USO between vba_fecha_desde and dateadd(s,-1,vba_fecha_hasta)
+	
 	--left join (select max(fecha) f, emiid from #x group by emiid) x on x.emiid=ems.ems_id
 	where
 	(

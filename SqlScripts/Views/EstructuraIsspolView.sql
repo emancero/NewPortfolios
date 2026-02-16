@@ -1,13 +1,15 @@
-﻿alter view BVQ_BACKOFFICE.EstructuraIsspolView as
+﻿create view BVQ_BACKOFFICE.EstructuraIsspolView as
 	select
+	tiv.tiv_id,
+	tiv.TIV_CODIGO_TITULO_SIC,evp.htp_fecha_operacion,
 	 Interes_Acumulado=evp.itrans
 	,[Vector_Precio]=tiv_codigo_vector
 	,[Fecha_Vencimiento]=tiv.TIV_FECHA_VENCIMIENTO
 	--,[Valor nominal]=valor_nominal
-	,[Fecha_Compra]=htp_fecha_operacion--fecha_valor_de_compra
+	,[Fecha_Compra]=evp_fecha_compra--htp_fecha_operacion--fecha_valor_de_compra
 
 	,[TIPO_ID_EMISOR]='R'
-	,[ID_EMISOR]=pju.pju_identificacion
+	,[ID_EMISOR]=iif(ems.EMS_CODIGO='MONTECRISTI','0993121401001',pju.pju_identificacion)
 	,[Codigo_Instrumento]=bvq_administracion.GetIdentifierCode(
 		 tiv_codigo_vector
 		,tiv_codigo_isin)
@@ -36,7 +38,7 @@
 		else tiv.tiv_tasa_margen + bvq_administracion.fnObtenerValorTasaPorTituloYFecha(tiv.tiv_id,evp.htp_fecha_operacion)
 		end
 	 end
-	,[Valor_Nominal]=evp.montooper * case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) end
+	,[Valor_Nominal]=evp.montooper * case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
 	,[Precio_Compra]=evp.htp_precio_compra
 	,[Valor_Efectivo_Libros]=evp.valorEfectivo
 	,[Plazo_Inicial]=dbo.fnDias(evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento,tiv.tiv_tipo_base)
@@ -56,7 +58,7 @@
 		 emscal.ENC_FECHA_DESDE
 		,tcacal.TCA_FECHA_DESDE
 		,emical.eca_fecha_resolucion
-		,'')
+		)
 	,[Numero_Acciones]=case when tiv.tiv_tipo_renta=154 then evp.montooper end
 	,[Valor_Accion]=case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) end
 	,[Precio_Mercado]=
@@ -81,7 +83,7 @@
 	,[Periodo_Amortizacion]=case when tiv.tiv_id in (7891) or tiv.tiv_id between 7906 and 7912 then 'ND - 2 periodos' else p.nombre end
 	,[Periodicidad_Cupon_codigo]=p.codigo
 	,[Periodicidad_Cupon]=p.nombre
-	,[Casa_de_Valores_codigo]=CVA_CODIGO_SB--sbCod
+	,[Casa_de_Valores_codigo]=coalesce(CVA_CODIGO_SB_DIRECTO,CVA_CODIGO_SB)--sbCod
 	,[Casa_Valores]=opc.PJU_RAZON_SOCIAL
 	,[Tipo_Id_Custodio]=case opc_Via when 0 then 'R' when 1 then 'R' end
 	,numero_resolucion=FON_NUMERO_RESOLUCION
@@ -111,8 +113,9 @@
 	,[Pago_dividendo_en_acciones]=0
 	,[Pago_dividendo_efectivo]=0
 	,evp.FON_ID
-	,ems.EMS_NOMBRE
+	,EMS_NOMBRE=iif(ems.EMS_CODIGO='MONTECRISTI','FIDEICOMISO SANTA CRUZ',ems.EMS_NOMBRE)
 	,ems.EMS_CODIGO
+	,TVS.TVS_DESCRIPCION
 	--,fovf=convert(datetime,case when datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) then ult_valoracion else htp_fecha_operacion end)
 	--into #y
 	from
@@ -316,37 +319,38 @@
 	on OPC_NUM_OPE =coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP) --and oper<>-1
 	and year(evp.evp_fecha_compra)=OPC_ANO_OPE--year(OPC_FCH_VAL)
 	and OPC_PROCEDENCIA=fon.FON_PROCEDENCIA collate modern_spanish_ci_as
+	left join (select CVA_CODIGO_SB_DIRECTO=CVA_CODIGO_SB, cva_id_directo=CVA_ID from bvq_administracion.casa_valores) cvadir on fon.FON_CVA_ID=cvadir.cva_id_directo
 	left join bvq_administracion.TIPO_VALOR_SB tvs on TVS.TVS_TVL_ID=tiv.TIV_TIPO_VALOR
 	left join bvq_administracion.periodicidadSB p on (tiv.tiv_tipo_base=354 and p.frec=tiv.tiv_frecuencia or tiv.tiv_tipo_base=355 and p.codigo='VC')
 --select * from bvq_administracion.periodicidadSB
-    left join    
+	left join 
     (    
 		select
 		 isnull(lead(eca_fecha_resolucion) over (partition by emi_id order by eca_fecha_resolucion desc,eca_id desc),'99991231') eca_fecha_hasta
-		,emi_id    
-		,eca_valor     
-		,cal_nombre eca_nombre    
-		,cal_nombre_personalizado eca_nombre_personalizado    
+		,emi_id 
+		,eca_valor
+		,cal_nombre eca_nombre
+		,cal_nombre_personalizado eca_nombre_personalizado
 		,eca_fecha_resolucion
 		,eca.cal_id eca_cal_id
-		from bvq_administracion.emisores_calificacion eca    
-		join bvq_administracion.calificadoras cal on eca.cal_id=cal.cal_id    
-		where eca_estado=21 and eca_fecha_resolucion is not null--and (eca_fecha_resolucion is null or eca_fecha_resolucion<=(select c from corteslist))    
-    ) emical on emical.emi_id=tiv_emisor and evp.htp_fecha_operacion>=isnull(eca_fecha_resolucion,0) and evp.htp_fecha_operacion<eca_fecha_hasta--emical.r=1--(tvl_generico=1 or tiv_tipo_valor in (/*10,*/13)) and emical.emi_id=tiv_emisor and emical.r=1  
+		from bvq_administracion.emisores_calificacion eca   
+		join bvq_administracion.calificadoras cal on eca.cal_id=cal.cal_id
+		where eca_estado=21 and eca_fecha_resolucion is not null--and (eca_fecha_resolucion is null or eca_fecha_resolucion<=(select c from corteslist))
+    ) emical on emical.emi_id=tiv_emisor and evp.htp_fecha_operacion>=isnull(eca_fecha_resolucion,0) and evp.htp_fecha_operacion<eca_fecha_hasta--emical.r=1--(tvl_generico=1 or tiv_tipo_valor in (/*10,*/13)) and emical.emi_id=tiv_emisor and emical.r=1
     left join    
     (    
 		select
 		 isnull(lead(ENC_FECHA_DESDE) over (partition by enc.enc_numero_corto_emision order BY enc.ENC_FECHA_DESDE,enc.ENC_ID),'99991231') ENC_FECHA_HASTA
 		,enc_numero_corto_emision
-		,enc.ENC_VALOR 
-		,cal_nombre enc_nombre    
-		,cal_nombre_personalizado enc_nombre_personalizado    
-		,enc.ENC_FECHA_DESDE  
+		,enc.ENC_VALOR
+		,cal_nombre enc_nombre
+		,cal_nombre_personalizado enc_nombre_personalizado
+		,enc.ENC_FECHA_DESDE
 		,enc.cal_id enc_cal_id
-		FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION enc   
-		join bvq_administracion.calificadoras cal on enc.CAL_ID=cal.CAL_ID    
-		where enc.ENC_ESTADO=21--and (enc.ENC_FECHA_DESDE is null or enc.ENC_FECHA_DESDE<=(select c from corteslist))    
-    ) emscal on emscal.enc_numero_corto_emision=tiv.TIV_CODIGO_TITULO_SIC and evp.htp_fecha_operacion>=isnull(enc_fecha_desde,0) and evp.htp_fecha_operacion<enc_fecha_hasta--emscal.r=1  
+		FROM BVQ_ADMINISTRACION.EMISION_CALIFICACION enc
+		join bvq_administracion.calificadoras cal on enc.CAL_ID=cal.CAL_ID
+		where enc.ENC_ESTADO=21--and (enc.ENC_FECHA_DESDE is null or enc.ENC_FECHA_DESDE<=(select c from corteslist))
+    ) emscal on emscal.enc_numero_corto_emision=tiv.TIV_CODIGO_TITULO_SIC and evp.htp_fecha_operacion>=isnull(enc_fecha_desde,0) and evp.htp_fecha_operacion<enc_fecha_hasta--emscal.r=1 
 	left join (
 		select
 		 isnull(lead(TCA_FECHA_DESDE) over (partition by tiv_id order by tca_fecha_desde,tca_id),'99991231') TCA_FECHA_HASTA
@@ -367,7 +371,6 @@
 	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU
 	ON VNU.TIV_ID=tiv.TIV_ID and evp.htp_fecha_operacion>=VNU.VNU_FECHA_INICIO and evp.htp_fecha_operacion<VNU.VNU_FECHA_FIN
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
-	
 	--where oper=-1 and datediff(d,htp_fecha_operacion,'20260208')=0
 	/*select precio_de_mercado,* from bvq_backoffice.valoracion_sb where htp_fecha_operacion='20260204'
 	select * from corteslist
@@ -386,3 +389,4 @@
 select * from bvq_backoffice.EstructuraIsspolView e where e.fon_id in (select a.fon_id from a join b on a.fon_id=b.fon_id where a.c<>b.c)
 */
 --select * from bvq_administracion.emisor where ems_codigo='bcn'
+--select * from INFORMATION_SCHEMA.columns where table_name='estructuraisspolview' and column_name in ('tipo_instrumento','tvl_codigo','tippap')

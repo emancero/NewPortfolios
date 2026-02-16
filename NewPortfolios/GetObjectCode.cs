@@ -12,4 +12,9 @@ class GetObjectCode
             + fullName
             + (suffix?@"."+type:"")+@".sql");
     }
+
+    public string ChangeAlterToCreate(string commandText)
+    {
+        return commandText.Substring(0, 5) == "alter" ? "create" + commandText.Substring(5) : commandText;
+    }
 }
