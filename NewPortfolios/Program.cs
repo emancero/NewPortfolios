@@ -143,6 +143,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GenerarValoracionSB'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("GenerarValoracionSB", "Stored Procedure", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03'";
     comm.ExecuteNonQuery();

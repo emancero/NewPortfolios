@@ -1,4 +1,4 @@
-﻿create PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
+﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
 --declare
 	@i_fechaCorte DateTime='20251130',
 	@i_lga_id int
@@ -16,7 +16,7 @@ BEGIN
 			 Errores=
 		 case when Tipo_Instrumento not in (4,5,9,13,20,21,22,23,24,26) and isnull(fecha_ultima_calificacion,0)=0 then
 			'Renta fija privada sin calificación.' else '' end
-		 +case when Tipo_Instrumento not in (20,21,22,24,26) and isnull(fecha_ultimo_pago,0)=0 then
+		 +case when Tipo_Instrumento not in (20,21,22,23,24,26) and isnull(fecha_ultimo_pago,0)=0 then
 			'Renta fija sin fecha de último pago.' else '' end
 		,EMS_NOMBRE
 		,FON_ID
@@ -94,55 +94,3 @@ BEGIN
 
 	select * from _temp.TempEstructuraIsspolViewG3
 END
-		select *
-		from BVQ_BACKOFFICE.EstructuraIsspolView
-		left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
-		--where oper=0
-		where esCxc=0 and fecha_transaccion between '20231201' and '20231231'
-		
-
---select * from BVQ_backoffice.valoracion_sb
-select * from _temp.TempEstructuraIsspolViewG3
-
-/*
-
-go
-
-exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03 '20231231',null
-select max(errores),fecha_ultimo_pago,isnull(fecha_ultimo_pago,0),count(*)
-
-select tipo_instrumento,* from _temp.TempEstructuraIsspolView
-where isnull(fecha_ultimo_pago,0)=0
-group by fecha_ultimo_pago
-having 
-
---where fecha_ultimo_pagoerrores<>''
-go
-set quoted_identifier off
-with a as(
-	select distinct inscripcion_cpmv=isnull(inscripcion_cpmv,''),ems_nombre,fecha_vencimiento=format(isnull(fecha_vencimiento,0),'dd-MM-yyyy')--fecha_ultima_calificacion,tipo_instrumento,*
-	--select errores,case when fecha_ultima_calificacion=0 then 1 end,*
-	from _temp.TempEstructuraIsspolView t-- where ems_nombre like '%montec%'
-	where errores<>''
-), b as( select msg=formatmessage("('%s','%s','%s')",inscripcion_cpmv,ems_nombre,fecha_vencimiento) from a
-),c as(
-	select vals=dbo.stringagg(msg,',') from b
-) select formatmessage("select * from (values %s) v(inscripcion_cpmv,ems_nombre,fecha_vencimiento)",vals) from c
---select * from BVQ_ADMINISTRACION.tipo_valor_sb
-	select distinct tiv_codigo_titulo_sic,tiv_id,inscripcion_cpmv=isnull(inscripcion_cpmv,''),ems_nombre,fecha_vencimiento=format(isnull(fecha_vencimiento,0),'dd-MM-yyyy')--fecha_ultima_calificacion,tipo_instrumento,*
-
-	update tiv set tiv_codigo_titulo_sic='02'+right(inscripcion_cpmv,5)
-	from _temp.TempEstructuraIsspolView t join bvq_administracion.titulo_valor tiv on TIV_NUMERO_RMV=inscripcion_cpmv
-	where errores<>'' and tiv_codigo_titulo_sic='0206258'
-select * from bvq_administracion.EMISION_CALIFICACION enc where enc_numero_corto_emision='0203866'
-select *
-from _temp.TempEstructuraIsspolView t
-where inscripcion_cpmv='2022.G.02.003427'
-
---select * from BVQ_ADMINISTRACION.SB_CALIFICACIONES
-
-
---exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03 '20231231',null
-select tiv_codigo_titulo_sic,* from bvq_administracion.titulo_valor tiv where tiv_numero_rmv='2022.Q.02.003561'
-select * from sys.computed_columns where name like 'tiv%'
-*/
