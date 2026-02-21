@@ -182,6 +182,7 @@
     <None Include="Change Scripts\Fixes estructuras.sql" />
     <None Include="Change Scripts\Patrimonios faltantes.sql" />
     <None Include="Stored Procedures\GenerarCortesListPorRango.sql" />
+    <None Include="Views\periodicidadSB.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

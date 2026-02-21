@@ -27,8 +27,8 @@ BEGIN
 	,ECA_VALOR=isnull(ECA.codigo,30)
 	,eca.fecha_desde
 	,eca.CAL_NOMBRE--*
-	,eca.Calificacion_Codigo
-	,eca.Calificadora_Codigo
+	,Calificacion_Codigo=isnull(eca.Calificacion_Codigo,30)
+	,Calificadora_Codigo=isnull(eca.Calificadora_Codigo,0)
 	--,
 	from (
 		select EMS_ID, EMS_NOMBRE

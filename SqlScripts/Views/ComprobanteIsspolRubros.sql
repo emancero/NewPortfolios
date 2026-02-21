@@ -21,6 +21,7 @@
 				then isnull(ufo_uso_fondos,0) else 0 end --Obtener excepciones de subconsulta "x"
 			when 'valnom' then coalesce(case when htp_tiene_valnom=0 then -specialValnom end,case when e.evp_abono=1 and e.es_vencimiento_interes=0 then e.vep_valor_efectivo end,capMonto,-montooper)
 			when 'costas' then case when es_vencimiento_interes=1 then EVP_COSTAS_JUDICIALES else 0 end
+			--when 'intnom' then valor_pago_cupon
 		end
 		,forced_por_id=case when p.prefijo='2.1.02.'
 			--títulos reclasificados
@@ -29,6 +30,7 @@
 			p.p_por_id
 		end
 		,*
+		,montoSinPerfil=case when rubro='intnom' then valor_pago_cupon end
 	from bvq_backoffice.LiqIntProv e
 	left join (select 215 xTpoId,convert(datetime,'20250730') xFecha union all select 222,'20250730' union all select 1516,'2025-10-16T10:19:00') x on x.xTpoid=htp_tpo_id and convert(varchar,e.fecha,20)=convert(varchar,x.xFecha,20) --Obtener excepciones de subconsulta "x"
 	left join bvq_backoffice.isspol_cuenta_requerida icr on 1=0
@@ -74,7 +76,8 @@
 		select vint=0, rpref='D.7.5.2.','amountcxc' rubro,0 ord ,1 deterioro, null rcxc union
 		select vint=1, rpref='R.7.5.2.','prov' rubro,2 ord ,1 deterioro, null rcxc union
 		select vint=0, rpref='1.2.90.','costas' rubro,0 ord ,0 deterioro, null rcxc union
-		select vint=1, rpref='1.2.90.','costas' rubro,0 ord ,0 deterioro, null rcxc
+		select vint=1, rpref='1.2.90.','costas' rubro,0 ord ,0 deterioro, null rcxc union
+		select vint=1, rpref='7.5.','intnom' rubro,0 ord ,0 deterioro, null rcxc
 	) rub on
 	(
 		es_vencimiento_interes=vint

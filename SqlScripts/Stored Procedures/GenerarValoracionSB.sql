@@ -26,14 +26,33 @@ BEGIN
 	)
 	select
 	 htp_fecha_operacion=tfcorte
-	,montooper=sum(sal)
+	,montooper=sum(htp_compra)
 	,itrans=sum(itrans)
 	,tpo_numeracion=htp_numeracion
 	,oper=-1
-	,htp_precio_compra=max(precio_de_hoy)
+	,htp_precio_compra=max(htp_precio_compra/case when tiv_tipo_renta=154 then 1 else 100 end)
 	,tasa_cupon=max(tiv_tasa_interes)
 	,liq_rendimiento=max(htp_rendimiento)
-	,valorEfectivo=sum(valEfeOper)
+	,valorEfectivo=--sum(valEfeOper)
+		sum(
+			(case when min_tiene_valnom=1 or min_tiene_valnom=0 and httpo_id<1500 then
+
+		  --isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
+		  --+ [htp_compra]*[htp_precio_compra]
+		  --+
+		  coalesce(
+			case when tpo_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
+			then valnomCompraAnterior end,[montooper]
+		  )
+		  *
+		  coalesce(
+			case when tpo_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
+			then precioCompraAnterior end, [htp_precio_compra]
+		  )
+		  /case when [tiv_tipo_renta]=153 then 100e else 1e end
+	   end)
+	   )
+
 	,pc.tiv_id
 	,fon_id=max(tpo.fon_id)
 	,esCxc=max(isnull(ipr_es_cxc,0))

@@ -10,7 +10,7 @@
 --								Se usa solamente desde la pantalla de modificar o crear el portafolio, es decir antes 
 --								de que se adjunte el contrato.
 --				JCH: 20/Abr/2010 Para insertar al categoria cuando se tenga ambinentes NIF
---				EMN: 14/Sep/2011 No consolida movimientos del mismo título en un solo movimiento si es portafolio propio,
+--				EMN: 14/Sep/2011 No consolida movimientos del mismo t?tulo en un solo movimiento si es portafolio propio,
 --								aunque no tenga contrato
 --				PSA: Insertar título portafolio
 --				PSA: Inserta campo renovado por
@@ -74,6 +74,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_dividendo bit
 	,@i_cxc bit
 	,@i_top_cva_id int
+	,@i_fon_numero_resolucion varchar(100) = null
 	,@i_lga_id int
 AS
 BEGIN
@@ -134,6 +135,7 @@ BEGIN
 					, FON_NUMERO_LIQUIDACION
 					, FON_PROCEDENCIA
 					, FON_CVA_ID
+					, FON_NUMERO_RESOLUCION
 					)
 				values (
 					  @i_tiv_id
@@ -141,6 +143,7 @@ BEGIN
 					, @i_fon_numero_liquidacion
 					, @i_fon_procedencia
 					, @i_top_cva_id
+					, @i_fon_numero_resolucion
 				)
 				set @v_fon_id=scope_identity()
 			end

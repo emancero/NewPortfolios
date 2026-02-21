@@ -120,6 +120,13 @@
 	,fechaIni=fecha,prop=convert(float,day(e.fecha))/e.dias_cupon
 	,e.*
 	,prov2=orgIAmortizacion-pr
+	,valor_pago_cupon=
+		case when tiv_tipo_renta<>154 and es_vencimiento_interes=1 then
+			case when evp_abono=1 then isnull(prEfectivo*capMonto,0)+vep_valor_efectivo-isnull(capMonto,0)--in=ve+ie-vn
+			else
+				coalesce(nullif(e.vep_valor_efectivo,0),amount)
+			end
+		end
 	from
 	(
 		select

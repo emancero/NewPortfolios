@@ -1,7 +1,8 @@
-﻿create view BVQ_BACKOFFICE.TotalRecuperacionesView as
+﻿CREATE view BVQ_BACKOFFICE.TotalRecuperacionesView as
+--with a as(
 	SELECT
 		 [Tipo de título]=cir.tvl_nombre
-		--,cir.por_id
+		,cir.por_id
 		,[Cuenta]=cir.acreedora
 		,[Cuenta nombre]=cir.nomAcreedora
 		,[Capital]=CASE WHEN cir.rubro in ('amount','amountcxc') THEN cir.monto END
@@ -19,6 +20,9 @@
 		,referencias
 		,cuenta_bancaria NumCtaDep
 		,cuenta_bancaria_descr CtaDep
+		,[CapitalNominal]=CASE WHEN cir.rubro in ('valnom') THEN cir.monto END
+		,[InteresNominal]=cir.montoSinPerfil
+		,cir.rubro
 		--EDPI_NOM_CUENTA
 	--select *
 	FROM BVQ_BACKOFFICE.ComprobanteIsspolRubros cir
@@ -47,8 +51,18 @@
 	WHERE
 	cir.tipo = 'C'
 	AND cir.acreedoraSinAux NOT LIKE '2%'
-	AND monto IS NOT NULL
+	AND (
+		monto IS NOT NULL
+		--or montoSinPerfil is not null --feature_intnom
+	)
     --AND left(prefijo,1) not in ('D','R')--
+
 	AND deterioro=0--(ipr_es_cxc = 1 or (ipr_es_cxc is null or ipr_es_cxc = 0 ) and deterioro = 0)
-	AND (cir.en_espera = 1 or cir.fecha<'20240301')
-	AND cir.rubro IN ('AMOUNT', 'amountcxc','INTAcc', 'PROV')
+	AND (
+		cir.en_espera = 1 or cir.fecha<'20240301'
+		--or montoSinPerfil is not null --feature_intnom
+		)
+	AND cir.rubro IN ('AMOUNT', 'amountcxc','INTAcc', 'PROV','valnom'
+		--,'intnom' --feature_intnom
+	)
+--) select sum(interesNominal) from a where fecha between '20240501' and '20240531'

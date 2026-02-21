@@ -1,4 +1,5 @@
-﻿create view BVQ_BACKOFFICE.EstructuraIsspolView as
+﻿select id_instrumento,* from BVQ_BACKOFFICE.EstructuraIsspolView where oper=-1 and fecha
+alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	select
 	tiv.tiv_id,
 	tiv.TIV_CODIGO_TITULO_SIC,evp.htp_fecha_operacion,
@@ -11,16 +12,16 @@
 	,[TIPO_ID_EMISOR]='R'
 	,[ID_EMISOR]=iif(ems.EMS_CODIGO='MONTECRISTI','0993121401001',pju.pju_identificacion)
 	,[Codigo_Instrumento]=bvq_administracion.GetIdentifierCode(
-		 tiv_codigo_vector
+		 coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original)
 		,tiv_codigo_isin)
 	,[Tipo_Instrumento]=TVS.TVS_CODIGO
-	,[id_Instrumento]=case bvq_administracion.GetIdentifierCode(tiv_codigo_vector,TIV_CODIGO_ISIN)
-		when '07' then rtrim(TIV_CODIGO_VECTOR)
+	,[id_Instrumento]=case bvq_administracion.GetIdentifierCode(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original),TIV_CODIGO_ISIN)
+		when '07' then rtrim(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original))
 		when '01' then TIV_CODIGO_ISIN
-		when '00' then ''
+		when '00' then fon.FON_NUMERACION
 	 end
-	,[Bolsa_Valores]=case opc_procedencia when 'G' then 'Y' else opc_procedencia end
-	,[Fecha_Emision]=tiv.TIV_FECHA_EMISION
+	,[Bolsa_Valores]=case coalesce(fon_procedencia_null,opc_procedencia) when 'G' then 'Y' else coalesce(fon_procedencia_null,opc_procedencia) end
+	,[Fecha_Emision]=coalesce(tiv.TIV_FECHA_EMISION,iif(tiv.tiv_tipo_renta=154,TIV_FECHA_INSCRIPCION_SIC,null))
 	,[Tipo_Tasa]=case when tiv.tiv_tipo_renta=153 then
 		case
 		when tiv.tiv_subtipo=3 then 'C'
@@ -39,9 +40,9 @@
 		end
 	 end
 	,[Valor_Nominal]=evp.montooper * case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
-	,[Precio_Compra]=evp.htp_precio_compra
+	,[Precio_Compra]=case when tiv.tiv_tipo_renta=154 then 0 else evp.htp_precio_compra end
 	,[Valor_Efectivo_Libros]=evp.valorEfectivo
-	,[Plazo_Inicial]=dbo.fnDias(evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento,tiv.tiv_tipo_base)
+	,[Plazo_Inicial]=convert(int,dbo.fnDias(evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento,tiv.tiv_tipo_base))
 
 	,Calificadora_Riesgo_Emision=csm.CSM_CODIGO
 		--coalesce(
@@ -79,8 +80,8 @@
 	--sp_helptext 'bvq_administracion.prepararvaloracionlinealcache'
 	,[Fondo_Inversion]=null
 	
-	,[Periodo_Amortizacion_codigo]=case when tiv.tiv_id in (7891) or tiv.tiv_id between 7906 and 7912 then null else p.codigo end
-	,[Periodo_Amortizacion]=case when tiv.tiv_id in (7891) or tiv.tiv_id between 7906 and 7912 then 'ND - 2 periodos' else p.nombre end
+	,[Periodo_Amortizacion_codigo]=p.codigo--case when tiv.tiv_id in (7891) or tiv.tiv_id between 7906 and 7912 then null else p.codigo end
+	,[Periodo_Amortizacion]=p.nombre--case when tiv.tiv_id in (7891) or tiv.tiv_id between 7906 and 7912 then 'ND - 2 periodos' else p.nombre end
 	,[Periodicidad_Cupon_codigo]=p.codigo
 	,[Periodicidad_Cupon]=p.nombre
 	,[Casa_de_Valores_codigo]=coalesce(CVA_CODIGO_SB_DIRECTO,CVA_CODIGO_SB)--sbCod
@@ -110,12 +111,13 @@
 	,Fecha_Ultimo_Pago
 	,Saldo_Valor_Nominal
 	,tiv.tiv_tipo_renta
-	,[Pago_dividendo_en_acciones]=0
-	,[Pago_dividendo_efectivo]=0
+	,[Pago_dividendo_en_acciones]=dividendo_en_efectivo
+	,[Pago_dividendo_efectivo]=dividendo_en_acciones
 	,evp.FON_ID
 	,EMS_NOMBRE=iif(ems.EMS_CODIGO='MONTECRISTI','FIDEICOMISO SANTA CRUZ',ems.EMS_NOMBRE)
 	,ems.EMS_CODIGO
 	,TVS.TVS_DESCRIPCION
+	,opc.CVA_SIGLAS
 	--,fovf=convert(datetime,case when datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) then ult_valoracion else htp_fecha_operacion end)
 	--into #y
 	from
@@ -132,11 +134,11 @@
 		,liq_rendimiento=max(liq_rendimiento)
 		,valorEfectivo=
 		sum(
-			--(case when min_tiene_valnom=1 or min_tiene_valnom=0 and httpo_id<1500 then
+			(case when htp_tiene_valnom=1 or htp_tiene_valnom=0 and htp_tpo_id<1500 then
 
-		  isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
+		  --isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
 		  --+ [htp_compra]*[htp_precio_compra]
-		  +
+		  --+
 		  coalesce(
 			case when tpo_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
 			then valnomCompraAnterior end,[montooper]
@@ -147,7 +149,7 @@
 			then precioCompraAnterior end, [htp_precio_compra]
 		  )
 		  /case when [tiv_tipo_renta]=153 then 100e else 1e end
-	   --end)
+	   end)
 	   )
 	   ,tpo.tiv_id
 	   ,fon_id=max(tpo.fon_id)
@@ -162,6 +164,7 @@
 	   ,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,tpo_mantiene_vector_precio))
 	   ,evp_fecha_compra=htp_fecha_operacion
 	   ,dividendo_en_efectivo=null
+	   ,dividendo_en_acciones=null
 	   --,evt_fecha
 	   --select tfl_fecha_inicio,tfl_fecha_inicio_orig,htp_fecha_operacion,tiv_tipo_base--*
 	   --into _temp.pc
@@ -169,7 +172,9 @@
 		join bvq_backoffice.titulos_portafolio tpo on tpo.tpo_id=evp.htp_tpo_id
 		left join bvq_backoffice.ISSPOL_PROGS ipr on ipr.IPR_NOMBRE_PROG=tpo.tpo_prog
 		left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
-		where montooper>0 and oper=0 --and htp_fecha_operacion between '20251101' and '2025-11-30T23:59:59'
+		where --montooper>0 and
+		oper=0 --and htp_fecha_operacion between '20251101' and '2025-11-30T23:59:59'
+		and datediff(d,htp_fecha_operacion,tpo_fecha_ingreso)=0
 		group by tpo_numeracion,oper,htp_fecha_operacion,tpo.tiv_id
 		--having 1=0
 		union all
@@ -207,19 +212,23 @@
 	   ,esCxc=convert(bit,max(isnull(convert(int,ipr_es_cxc),0)))
 	   ,tpo_acta=max(tpo.tpo_acta)
 
-
-
-
 	   ,valor_pago_capital=sum(
-			case when isnull(htp_dividendo,0)=0 and es_vencimiento_interes=0 then
-				case when evp_abono=1 then vep_valor_efectivo else amount end
-			end
+			coalesce(
+					case when htp_dividendo=1 or es_vencimiento_interes=1 then 0 end
+				,
+					case when evp.htp_tiene_valnom=0
+					then -specialValnom end
+				,
+					case when evp_abono=1 and es_vencimiento_interes=0 then
+						vep_valor_efectivo
+					end
+				,capMonto
+				,-evp.montooper
+			)
 		)
-
+		
 	   ,valor_pago_cupon=sum(
-			case when tiv_tipo_renta<>154 and es_vencimiento_interes=1 then
-				case when evp_abono=1 then isnull(prEfectivo*capMonto,0)+vep_valor_efectivo-isnull(capMonto,0) else amount end
-			end
+			evp.valor_pago_cupon
 		)
 	   ,Fecha_Ultimo_Pago=evp.fecha
 	   ,Saldo_Valor_Nominal=sum(evp.saldo)-isnull(sum(case when es_vencimiento_interes=0 then amount end),0)
@@ -231,6 +240,7 @@
 	   ,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,tpo_mantiene_vector_precio))
 	   ,evp_fecha_compra=min(case when oper=0 then evp.htp_fecha_operacion end)
 	   ,dividendo_en_efectivo=sum(case when tiv_tipo_renta=154 and es_vencimiento_interes=1 then amount end)
+	   ,dividendo_en_acciones=sum(case when tiv_tipo_renta=154 and htp_dividendo=1 then amount end)
 		from bvq_backoffice.LiqIntProv evp
 		left join BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO htp on evp.oper=0 and evp.htp_id=htp.htp_id and htp_dividendo=1
 			--join (
@@ -273,6 +283,7 @@
 		,TPO_MANTIENE_VECTOR_PRECIO--=max(convert(int,pc.TPO_MANTIENE_VECTOR_PRECIO))
 		,evp_fecha_compra--=min(pc.fecha_compra)
 		,dividendo_en_efectivo=null
+		,dividendo_en_acciones=null
 		from BVQ_BACKOFFICE.VALORACION_SB--_temp.valoracionSB
 		--from bvq_backoffice.portafolioCortePrcInt pc
 		--join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
@@ -285,11 +296,12 @@
 	--from
 	--_temp.pc evp
 	join bvq_administracion.titulo_valor tiv on tiv.tiv_id=evp.tiv_id
+	left join (select codigo_vector_original=tiv_codigo_vector,tiv_id_original=tiv_id from bvq_administracion.titulo_valor) org on tiv.tiv_split_de=org.tiv_id_original
 	join bvq_administracion.tipo_valor tvl on tvl.tvl_id=tiv.tiv_tipo_valor
 	join bvq_administracion.TituloValorUltVal2 tivVal on tivVal.tiv_id=tiv.tiv_id
 	join bvq_administracion.emisor ems on tiv.tiv_emisor=ems.ems_id
 	left join bvq_administracion.PERSONA_JURIDICA pju on pju.pju_id=ems.pju_id
-	join bvq_backoffice.fondo fon on fon.fon_id=evp.fon_id
+	join (select fon_procedencia_null=nullif(fon_procedencia,''), * from bvq_backoffice.fondo) fon on fon.fon_id=evp.fon_id
 	--número de resolución isspol
 	--left join
 	--	siisspolweb.siisspolweb.inversion.inversion i
@@ -306,7 +318,7 @@
 		--from _temp.opc
 		--_temp.opc
 		--select CVA_CODIGO_SB='',PJU_RAZON_SOCIAL='',OPC_NUM_OPE='',OPC_ANO_OPE='',OPC_PROCEDENCIA='',OPC_VIA=''
-		select distinct CVA_CODIGO_SB,PJU_RAZON_SOCIAL,OPC_NUM_OPE,OPC_ANO_OPE,OPC_PROCEDENCIA,OPC_VIA
+		select distinct CVA_CODIGO_SB,PJU_RAZON_SOCIAL,OPC_NUM_OPE,OPC_ANO_OPE,OPC_PROCEDENCIA,OPC_VIA,CVA_SIGLAS
 		--into _temp.opc
 		from 
 		BVQ_BACKOFFICE.OPERACIONES_CERRADAS OPC
@@ -321,7 +333,11 @@
 	and OPC_PROCEDENCIA=fon.FON_PROCEDENCIA collate modern_spanish_ci_as
 	left join (select CVA_CODIGO_SB_DIRECTO=CVA_CODIGO_SB, cva_id_directo=CVA_ID from bvq_administracion.casa_valores) cvadir on fon.FON_CVA_ID=cvadir.cva_id_directo
 	left join bvq_administracion.TIPO_VALOR_SB tvs on TVS.TVS_TVL_ID=tiv.TIV_TIPO_VALOR
-	left join bvq_administracion.periodicidadSB p on (tiv.tiv_tipo_base=354 and p.frec=tiv.tiv_frecuencia or tiv.tiv_tipo_base=355 and p.codigo='VC')
+	left join bvq_administracion.periodicidadSB p on (
+		tiv.tiv_tipo_base=354 and p.frec=tiv.tiv_frecuencia
+		or tiv.tiv_tipo_base=355 and p.codigo='VC'
+		or tiv.tiv_tipo_renta=154 and p.codigo='RV'
+	)
 --select * from bvq_administracion.periodicidadSB
 	left join 
     (    
