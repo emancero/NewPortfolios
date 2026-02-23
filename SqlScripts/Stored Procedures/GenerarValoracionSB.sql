@@ -37,7 +37,7 @@ BEGIN
 		sum(
 			(
 			   case when min_tiene_valnom=1 or min_tiene_valnom=0 and httpo_id<1500 then
-				  isnull(pc.[TPO_INTERES_TRANSCURRIDO],0) + isnull(pc.[TPO_COMISION_BOLSA],0)
+				  --isnull(pc.[TPO_INTERES_TRANSCURRIDO],0) + isnull(pc.[TPO_COMISION_BOLSA],0)
 				  --+ [htp_compra]*[htp_precio_compra]
 				  +
 				  coalesce(
