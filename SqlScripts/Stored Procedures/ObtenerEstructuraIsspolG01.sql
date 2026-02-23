@@ -1,4 +1,4 @@
-﻿create PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
+﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
 	@lastReportDate datetime,
 	@i_todos_los_vigentes bit=0,
 	@i_lga_id int=null
@@ -84,4 +84,40 @@ BEGIN
 		or
 		@i_todos_los_vigentes=1 and i.id_emisor is not null
 	)
+	union all
+	select
+	 Errores=null
+	,EMS_NOMBRE='DECEVALE'
+	,pju_identificacion='0991283765001'
+	,decreto_emisor=null
+	,clasificacion=2
+	,tipo_identificacion='R'
+	,pju_identificacion='0991283765001'
+	,pais='EC'
+	,tipo_emisor=1--3-público--02--tipoEmisor.codigo
+	,patrimonio=3327694.18--coalesce(patrimonio, vba.VBA_PATRIMONIO_TECNICO, 0)
+	,CCA_SUSCRITO=2700000--isnull(CCA_SUSCRITO,0)
+	,ECA_VALOR=null--isnull(ECA.codigo,30)
+	,fecha_desde=null
+	,CAL_NOMBRE=null--*
+	,Calificacion_Codigo=30--isnull(eca.Calificacion_Codigo,30)
+	,Calificadora_Codigo=0--isnull(eca.Calificadora_Codigo,0)
+	union all select
+	 Errores=null
+	,EMS_NOMBRE='DCV-BCE'
+	,pju_identificacion='1760002600001'
+	,decreto_emisor=null
+	,clasificacion=2
+	,tipo_identificacion='R'
+	,pju_identificacion='1760002600001'
+	,pais='EC'
+	,tipo_emisor=3--3-público--02--tipoEmisor.codigo
+	,patrimonio=0--coalesce(patrimonio, vba.VBA_PATRIMONIO_TECNICO, 0)
+	,CCA_SUSCRITO=0--isnull(CCA_SUSCRITO,0)
+	,ECA_VALOR=null--isnull(ECA.codigo,30)
+	,fecha_desde=null
+	,CAL_NOMBRE=null--*
+	,Calificacion_Codigo=30--isnull(eca.Calificacion_Codigo,30)
+	,Calificadora_Codigo=0--isnull(eca.Calificadora_Codigo,0)
+
 END

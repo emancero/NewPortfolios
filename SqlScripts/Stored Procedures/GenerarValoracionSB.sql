@@ -35,22 +35,23 @@ BEGIN
 	,liq_rendimiento=max(htp_rendimiento)
 	,valorEfectivo=--sum(valEfeOper)
 		sum(
-			(case when min_tiene_valnom=1 or min_tiene_valnom=0 and httpo_id<1500 then
-
-		  --isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
-		  --+ [htp_compra]*[htp_precio_compra]
-		  --+
-		  coalesce(
-			case when tpo_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
-			then valnomCompraAnterior end,[montooper]
-		  )
-		  *
-		  coalesce(
-			case when tpo_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
-			then precioCompraAnterior end, [htp_precio_compra]
-		  )
-		  /case when [tiv_tipo_renta]=153 then 100e else 1e end
-	   end)
+			(
+			   case when min_tiene_valnom=1 or min_tiene_valnom=0 and httpo_id<1500 then
+				  isnull(pc.[TPO_INTERES_TRANSCURRIDO],0) + isnull(pc.[TPO_COMISION_BOLSA],0)
+				  --+ [htp_compra]*[htp_precio_compra]
+				  +
+				  coalesce(
+					case when htp_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
+					then valnomCompraAnterior end,[htp_compra]
+				  )
+				  *
+				  coalesce(
+					case when htp_numeracion in ('ATX-2025-04-24','ATX-2025-04-25')
+					then precioCompraAnterior end, [htp_precio_compra]
+				  )
+				  /case when [tiv_tipo_renta]=153 then 100e else 1e end
+			   end
+			)
 	   )
 
 	,pc.tiv_id

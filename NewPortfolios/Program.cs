@@ -98,6 +98,16 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("VALORACION_SB", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.erroresInversion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("erroresInversion", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.inversion'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("inversion", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EstructuraIsspolView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EstructuraIsspolView", "View", suffix: false);

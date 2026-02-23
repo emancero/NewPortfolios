@@ -24,7 +24,9 @@ select * from bvq_administracion.CAMPO_TABLA_CENTRALIZADA order by ctc_id desc--
 /*
 ;
 update tiv set TIV_FECHA_ACTUALIZACION=getdate()
---,TIV_FECHA_INSCRIPCION_SIC=fec
+update tiv set TIV_FECHA_INSCRIPCION_SIC=fec
+--
+--select tiv_fecha_inscripcion_sic,*
 from bvq_administracion.titulo_valor tiv join  (
 VALUES
 (1240, '20100326'),

@@ -1,7 +1,7 @@
 ﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG02]
 --declare
-		@fecha DateTime='20240831',
-		@i_todos_los_vigentes bit=0,
+		@fecha DateTime='20231231',--40831',
+		@i_todos_los_vigentes bit=1,--0,
 		@i_lga_id int=null
 AS
 BEGIN
@@ -61,14 +61,14 @@ BEGIN
 			,Precio_Compra
 			,Valor_Efectivo_Libros
 			,Plazo_Inicial=isnull(Plazo_Inicial,0)
-			,Calificadora_Riesgo_Emision=isnull(Calificadora_Riesgo_Emision,0)
+			,Calificadora_Riesgo_Emision=iif(isnull(sbc.codigo,30)=30,0,isnull(Calificadora_Riesgo_Emision,0))
 			,Calificacion_Riesgo_Emision=isnull(sbc.codigo,30)
-			,Fecha_Ultima_Calificacion
+			,Fecha_Ultima_Calificacion=iif(isnull(sbc.codigo,30)=30,null,Fecha_Ultima_Calificacion)
 			,Numero_Acciones
-			,Valor_Accion=case when tiv_tipo_renta=154 then Precio_Mercado else 0 end
+			,Valor_Accion--=case when tiv_tipo_renta=154 then Precio_Mercado else 0 end
 			,Precio_Mercado=case when tiv_tipo_renta=154 then 0 else Precio_Mercado end
 	
-			,Fecha_Precio_Mercado
+			,Fecha_Precio_Mercado=iif(case when tiv_tipo_renta=154 then 0 else Precio_Mercado end=0,null,Fecha_Precio_Mercado)
 			,Fondo_Inversion
 			,Periodo_Amortizacion_codigo
 			,Periodo_Amortizacion
@@ -79,9 +79,9 @@ BEGIN
 			,Tipo_Id_Custodio
 	
 			,Documento_Aprobacion=numero_resolucion
-			,Resolucion_Decreto
+			,Resolucion_Decreto=case when Codigo_Instrumento='07' then Resolucion_Decreto end
 			,Nro_de_Inscripcion_Decreto
-			,Inscripcion_CPMV
+			,Inscripcion_CPMV=case when Codigo_Instrumento='07' then Inscripcion_CPMV end
 			,Id_Custodio
 			,Numero_liquidacion
 			,Tipo_transaccion
@@ -93,7 +93,8 @@ BEGIN
 			into _temp.TempEstructuraIsspolViewG2
 			from BVQ_BACKOFFICE.EstructuraIsspolView
 			left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
-			where esCxc=0 and oper=0
+			where esCxc=0
+			and oper=0
 			and (
 				Fecha_transaccion between @i_fechaIni and @fecha
 				or @i_todos_los_vigentes=1
@@ -126,14 +127,14 @@ BEGIN
 			,Precio_Compra
 			,Valor_Efectivo_Libros
 			,Plazo_Inicial=isnull(Plazo_Inicial,0)
-			,Calificadora_Riesgo_Emision=isnull(Calificadora_Riesgo_Emision,0)
+			,Calificadora_Riesgo_Emision=iif(isnull(sbc.codigo,30)=30,0,isnull(Calificadora_Riesgo_Emision,0))
 			,Calificacion_Riesgo_Emision=isnull(sbc.codigo,30)
-			,Fecha_Ultima_Calificacion
+			,Fecha_Ultima_Calificacion=iif(isnull(sbc.codigo,30)=30,null,Fecha_Ultima_Calificacion)
 			,Numero_Acciones
-			,Valor_Accion=case when tiv_tipo_renta=154 then Precio_Mercado else 0 end
+			,Valor_Accion--=case when tiv_tipo_renta=154 then Precio_Mercado else 0 end
 			,Precio_Mercado=case when tiv_tipo_renta=154 then 0 else Precio_Mercado end
 	
-			,Fecha_Precio_Mercado
+			,Fecha_Precio_Mercado=iif(case when tiv_tipo_renta=154 then 0 else Precio_Mercado end=0,null,Fecha_Precio_Mercado)
 			,Fondo_Inversion
 			,Periodo_Amortizacion_codigo
 			,Periodo_Amortizacion
@@ -144,9 +145,9 @@ BEGIN
 			,Tipo_Id_Custodio
 	
 			,Documento_Aprobacion=numero_resolucion
-			,Resolucion_Decreto
+			,Resolucion_Decreto=case when Codigo_Instrumento='07' then Resolucion_Decreto end
 			,Nro_de_Inscripcion_Decreto
-			,Inscripcion_CPMV
+			,Inscripcion_CPMV=case when Codigo_Instrumento='07' then Inscripcion_CPMV end
 			,Id_Custodio
 			,Numero_liquidacion
 			,Tipo_transaccion
@@ -158,14 +159,14 @@ BEGIN
 			into _temp.TempEstructuraIsspolViewG2
 			from BVQ_BACKOFFICE.EstructuraIsspolView
 			left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
-			where esCxc=0 and oper=-1
+			where esCxc=0
+			and oper=-1
 			and datediff(d,fecha_transaccion,@fecha)=0 -- 1 para T-1
 	end
 
 	select * from _temp.TempEstructuraIsspolViewG2
 
 END
-select * from BVQ_ADMINISTRACION.SB_CALIFICACIONES
 /*
 go
 exec [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG02] '20231231',1,null

@@ -183,6 +183,8 @@
     <None Include="Change Scripts\Patrimonios faltantes.sql" />
     <None Include="Stored Procedures\GenerarCortesListPorRango.sql" />
     <None Include="Views\periodicidadSB.sql" />
+    <None Include="Views\ErroresInversion.sql" />
+    <None Include="Views\inversion.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

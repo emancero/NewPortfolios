@@ -1,9 +1,8 @@
-﻿select id_instrumento,* from BVQ_BACKOFFICE.EstructuraIsspolView where oper=-1 and fecha
-alter view BVQ_BACKOFFICE.EstructuraIsspolView as
+﻿alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	select
 	tiv.tiv_id,
 	tiv.TIV_CODIGO_TITULO_SIC,evp.htp_fecha_operacion,
-	 Interes_Acumulado=evp.itrans
+	 Interes_Acumulado=evp.itrans*errVNFactor
 	,[Vector_Precio]=tiv_codigo_vector
 	,[Fecha_Vencimiento]=tiv.TIV_FECHA_VENCIMIENTO
 	--,[Valor nominal]=valor_nominal
@@ -18,7 +17,7 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	,[id_Instrumento]=case bvq_administracion.GetIdentifierCode(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original),TIV_CODIGO_ISIN)
 		when '07' then rtrim(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original))
 		when '01' then TIV_CODIGO_ISIN
-		when '00' then fon.FON_NUMERACION
+		when '00' then replace(fon.FON_NUMERACION,'MONTECRISTI','SANTACRUZ')
 	 end
 	,[Bolsa_Valores]=case coalesce(fon_procedencia_null,opc_procedencia) when 'G' then 'Y' else coalesce(fon_procedencia_null,opc_procedencia) end
 	,[Fecha_Emision]=coalesce(tiv.TIV_FECHA_EMISION,iif(tiv.tiv_tipo_renta=154,TIV_FECHA_INSCRIPCION_SIC,null))
@@ -40,9 +39,10 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 		end
 	 end
 	,[Valor_Nominal]=evp.montooper * case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
+		*errVNFactor
 	,[Precio_Compra]=case when tiv.tiv_tipo_renta=154 then 0 else evp.htp_precio_compra end
-	,[Valor_Efectivo_Libros]=evp.valorEfectivo
-	,[Plazo_Inicial]=convert(int,dbo.fnDias(evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento,tiv.tiv_tipo_base))
+	,[Valor_Efectivo_Libros]=evp.valorEfectivo*errVNFactor
+	,[Plazo_Inicial]=convert(int,dbo.fnDias(evp.evp_fecha_compra,tiv.tiv_fecha_vencimiento,355))--tiv.tiv_tipo_base))
 
 	,Calificadora_Riesgo_Emision=csm.CSM_CODIGO
 		--coalesce(
@@ -60,8 +60,8 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 		,tcacal.TCA_FECHA_DESDE
 		,emical.eca_fecha_resolucion
 		)
-	,[Numero_Acciones]=case when tiv.tiv_tipo_renta=154 then evp.montooper end
-	,[Valor_Accion]=case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) end
+	,[Numero_Acciones]=case when tiv.tiv_tipo_renta=154 and TVL_CODIGO not in ('ENC')  then evp.montooper end
+	,[Valor_Accion]=case when tiv.tiv_tipo_renta=154 and TVL_CODIGO not in ('ENC') then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) end
 	,[Precio_Mercado]=
 		case when oper=-1 then
 			precio_de_mercado
@@ -73,7 +73,7 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 			Valor_Mercado
 		else 
 			(select top 1 Valor_Mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tiv_id=tiv.tiv_id and v.htp_fecha_operacion=evp.htp_fecha_operacion)
-		end
+		end*errVNFactor
 	,[Fecha_Precio_Mercado]=evp.htp_fecha_operacion--case when tiv.tiv_tipo_renta=153 and datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) and esCxc=0 then
 		--ult_valoracion
 	--end 
@@ -93,7 +93,7 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	,[Inscripcion_CPMV]=tiv_numero_rmv
 	,Id_Custodio=case opc_Via when 0 then '0991283765001' when 1 then '1760002600001' end
 
-	,[Numero_liquidacion]=coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
+	,[Numero_liquidacion]=fon.FON_NUMERO_LIQUIDACION--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
 	,[Tipo_transaccion]=case oper when 0 then 'L' when 1 then 'P' when -1 then 'V' end
 	,[Fecha_transaccion]=htp_fecha_operacion
 	,[Dias_transcurridos]=dbo.fnDias(tfl.TFL_FECHA_INICIO,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
@@ -106,10 +106,10 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 		then liq_rendimiento end
 	,oper
 	,esCxc
-	,valor_pago_capital
-	,valor_pago_cupon
+	,valor_pago_capital=valor_pago_capital*errVNFactor
+	,valor_pago_cupon=valor_pago_cupon*errVNFactor
 	,Fecha_Ultimo_Pago
-	,Saldo_Valor_Nominal
+	,Saldo_Valor_Nominal=Saldo_Valor_Nominal*errVNFactor
 	,tiv.tiv_tipo_renta
 	,[Pago_dividendo_en_acciones]=dividendo_en_efectivo
 	,[Pago_dividendo_efectivo]=dividendo_en_acciones
@@ -120,6 +120,7 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	,opc.CVA_SIGLAS
 	--,fovf=convert(datetime,case when datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) then ult_valoracion else htp_fecha_operacion end)
 	--into #y
+	,OPC_VIA
 	from
 	(
 	--drop table _temp.pc
@@ -165,6 +166,7 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	   ,evp_fecha_compra=htp_fecha_operacion
 	   ,dividendo_en_efectivo=null
 	   ,dividendo_en_acciones=null
+	   ,opSec=row_number() over (partition by tpo_numeracion order by htp_fecha_operacion)
 	   --,evt_fecha
 	   --select tfl_fecha_inicio,tfl_fecha_inicio_orig,htp_fecha_operacion,tiv_tipo_base--*
 	   --into _temp.pc
@@ -172,9 +174,12 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 		join bvq_backoffice.titulos_portafolio tpo on tpo.tpo_id=evp.htp_tpo_id
 		left join bvq_backoffice.ISSPOL_PROGS ipr on ipr.IPR_NOMBRE_PROG=tpo.tpo_prog
 		left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
+		left join(values
+			(46,'20140612')
+		) errTpoFechaIngreso(errTpoId,errTpoFechaIngreso) on tpo.tpo_id=errTpoId
 		where --montooper>0 and
 		oper=0 --and htp_fecha_operacion between '20251101' and '2025-11-30T23:59:59'
-		and datediff(d,htp_fecha_operacion,tpo_fecha_ingreso)=0
+		--and datediff(d,htp_fecha_operacion,coalesce(errTpoFechaIngreso,tpo_fecha_ingreso))=0
 		group by tpo_numeracion,oper,htp_fecha_operacion,tpo.tiv_id
 		--having 1=0
 		union all
@@ -241,6 +246,7 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	   ,evp_fecha_compra=min(case when oper=0 then evp.htp_fecha_operacion end)
 	   ,dividendo_en_efectivo=sum(case when tiv_tipo_renta=154 and es_vencimiento_interes=1 then amount end)
 	   ,dividendo_en_acciones=sum(case when tiv_tipo_renta=154 and htp_dividendo=1 then amount end)
+	   ,opSec=1
 		from bvq_backoffice.LiqIntProv evp
 		left join BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO htp on evp.oper=0 and evp.htp_id=htp.htp_id and htp_dividendo=1
 			--join (
@@ -262,14 +268,14 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 		--drop table _temp.pc
 		select
 		 htp_fecha_operacion--=tfcorte
-		,montooper--=sum(sal)
+		,montooper
 		,itrans--=sum(itrans)
 		,tpo_numeracion--=htp_numeracion
 		,oper--=-1
 		,htp_precio_compra--=max(precio_de_hoy)
 		,tasa_cupon--=max(tiv_tasa_interes)
 		,liq_rendimiento--=max(htp_rendimiento)
-		,valorEfectivo--=sum(valEfeOper)
+		,valorEfectivo
 		,tiv_id
 		,fon_id--=max(tpo.fon_id)
 	    ,esCxc--=max(isnull(ipr_es_cxc,0))
@@ -284,7 +290,8 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 		,evp_fecha_compra--=min(pc.fecha_compra)
 		,dividendo_en_efectivo=null
 		,dividendo_en_acciones=null
-		from BVQ_BACKOFFICE.VALORACION_SB--_temp.valoracionSB
+		,opSec=1
+		from BVQ_BACKOFFICE.VALORACION_SB v--_temp.valoracionSB
 		--from bvq_backoffice.portafolioCortePrcInt pc
 		--join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
 		--where sal>0
@@ -301,7 +308,9 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	join bvq_administracion.TituloValorUltVal2 tivVal on tivVal.tiv_id=tiv.tiv_id
 	join bvq_administracion.emisor ems on tiv.tiv_emisor=ems.ems_id
 	left join bvq_administracion.PERSONA_JURIDICA pju on pju.pju_id=ems.pju_id
-	join (select fon_procedencia_null=nullif(fon_procedencia,''), * from bvq_backoffice.fondo) fon on fon.fon_id=evp.fon_id
+	join bvq_backoffice.inversion fon on fon.fon_id=evp.fon_id
+	cross apply(values(iif(errValNom is not null,errValNom/montooper, 1))) errVNFactor(errVNFactor)
+
 	--número de resolución isspol
 	--left join
 	--	siisspolweb.siisspolweb.inversion.inversion i
@@ -322,16 +331,17 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 		--into _temp.opc
 		from 
 		BVQ_BACKOFFICE.OPERACIONES_CERRADAS OPC
-		left join bvq_administracion.casa_valores cva on opc.OPC_ABR_CAS_VAL=CVA.CVA_SIGLAS
+		left join bvq_administracion.casa_valores cva on iif(opc.OPC_ABR_CAS_VAL='MDF','ISP',opc.OPC_ABR_CAS_VAL)=CVA.CVA_SIGLAS
 		left join bvq_administracion.PERSONA_JURIDICA cvapju on cvapju.pju_id=cva.pju_id
 	) opc
 	--on aru_opc_numope =coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP) and oper<>-1
 	--and year(evp.htp_fecha_operacion)=year(aru_opc_fchval)
 	--and aru_opc_Procedencia=fon.FON_PROCEDENCIA collate modern_spanish_ci_as-- and 1=0
+	--FON_NUMLIQ_TEMP nunca tiene el código real de Guayaquil
 	on OPC_NUM_OPE =coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP) --and oper<>-1
 	and year(evp.evp_fecha_compra)=OPC_ANO_OPE--year(OPC_FCH_VAL)
-	and OPC_PROCEDENCIA=fon.FON_PROCEDENCIA collate modern_spanish_ci_as
-	left join (select CVA_CODIGO_SB_DIRECTO=CVA_CODIGO_SB, cva_id_directo=CVA_ID from bvq_administracion.casa_valores) cvadir on fon.FON_CVA_ID=cvadir.cva_id_directo
+	and OPC_PROCEDENCIA=fon.FON_PROCEDENCIA_NULL collate modern_spanish_ci_as
+	left join (select CVA_CODIGO_SB_DIRECTO=CVA_CODIGO_SB, cva_id_directo=CVA_ID from bvq_administracion.casa_valores) cvadir on iif(fon.FON_CVA_ID=38,20,fon.FON_CVA_ID)=cvadir.cva_id_directo
 	left join bvq_administracion.TIPO_VALOR_SB tvs on TVS.TVS_TVL_ID=tiv.TIV_TIPO_VALOR
 	left join bvq_administracion.periodicidadSB p on (
 		tiv.tiv_tipo_base=354 and p.frec=tiv.tiv_frecuencia
@@ -385,7 +395,7 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	on tiv.tiv_id=tfl.tiv_id and evp.htp_fecha_operacion>=isnull(tfl.tfl_fecha_inicio,0) and evp.htp_fecha_operacion<tfl.tfl_fecha_vencimiento
 --
 	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU
-	ON VNU.TIV_ID=tiv.TIV_ID and evp.htp_fecha_operacion>=VNU.VNU_FECHA_INICIO and evp.htp_fecha_operacion<VNU.VNU_FECHA_FIN
+	ON VNU.TIV_ID=tiv.TIV_ID and evp.evp_fecha_compra>=VNU.VNU_FECHA_INICIO and evp.evp_fecha_compra<VNU.VNU_FECHA_FIN
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
 	--where oper=-1 and datediff(d,htp_fecha_operacion,'20260208')=0
 	/*select precio_de_mercado,* from bvq_backoffice.valoracion_sb where htp_fecha_operacion='20260204'
