@@ -86,12 +86,14 @@
 	,[Periodicidad_Cupon]=p.nombre
 	,[Casa_de_Valores_codigo]=coalesce(CVA_CODIGO_SB_DIRECTO,CVA_CODIGO_SB)--sbCod
 	,[Casa_Valores]=opc.PJU_RAZON_SOCIAL
-	,[Tipo_Id_Custodio]=case opc_Via when 0 then 'R' when 1 then 'R' end
+	,[Tipo_Id_Custodio]=coalesce(case opc_Via when 0 then 'R' when 1 then 'R' end
+		,case tiv.tiv_camara when 'Decevale' then 'R' when 'DCV-BCE' then 'R' when 'DCV' then 'R' end)
 	,numero_resolucion=FON_NUMERO_RESOLUCION
 	,[Resolucion_Decreto]=case when tiv.tiv_tipo_valor=3 then evp.tpo_acta else tiv_numero_supercias end
 	,[Nro_de_Inscripcion_Decreto]=null
 	,[Inscripcion_CPMV]=tiv_numero_rmv
-	,Id_Custodio=case opc_Via when 0 then '0991283765001' when 1 then '1760002600001' end
+	,Id_Custodio=isnull(case opc_Via when 0 then '0991283765001' when 1 then '1760002600001' end
+		, case tiv.tiv_camara when 'Decevale' then '0991283765001' when 'DCV-BCE' then '1760002600001' when 'DCV' then '1760002600001' end)
 
 	,[Numero_liquidacion]=fon.FON_NUMERO_LIQUIDACION--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
 	,[Tipo_transaccion]=case oper when 0 then 'L' when 1 then 'P' when -1 then 'V' end
@@ -121,6 +123,9 @@
 	--,fovf=convert(datetime,case when datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) then ult_valoracion else htp_fecha_operacion end)
 	--into #y
 	,OPC_VIA
+	,OPC_NUM_OPE
+	,TPO_INTERES_TRANSCURRIDO
+	,TPO_COMISION_BOLSA
 	from
 	(
 	--drop table _temp.pc
@@ -167,6 +172,8 @@
 	   ,dividendo_en_efectivo=null
 	   ,dividendo_en_acciones=null
 	   ,opSec=row_number() over (partition by tpo_numeracion order by htp_fecha_operacion)
+	   ,TPO_INTERES_TRANSCURRIDO=null
+	   ,TPO_COMISION_BOLSA=null
 	   --,evt_fecha
 	   --select tfl_fecha_inicio,tfl_fecha_inicio_orig,htp_fecha_operacion,tiv_tipo_base--*
 	   --into _temp.pc
@@ -247,6 +254,8 @@
 	   ,dividendo_en_efectivo=sum(case when tiv_tipo_renta=154 and es_vencimiento_interes=1 then amount end)
 	   ,dividendo_en_acciones=sum(case when tiv_tipo_renta=154 and htp_dividendo=1 then amount end)
 	   ,opSec=1
+	   ,TPO_INTERES_TRANSCURRIDO=null
+	   ,TPO_COMISION_BOLSA=null
 		from bvq_backoffice.LiqIntProv evp
 		left join BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO htp on evp.oper=0 and evp.htp_id=htp.htp_id and htp_dividendo=1
 			--join (
@@ -291,6 +300,8 @@
 		,dividendo_en_efectivo=null
 		,dividendo_en_acciones=null
 		,opSec=1
+		,TPO_INTERES_TRANSCURRIDO
+		,TPO_COMISION_BOLSA
 		from BVQ_BACKOFFICE.VALORACION_SB v--_temp.valoracionSB
 		--from bvq_backoffice.portafolioCortePrcInt pc
 		--join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
@@ -338,7 +349,7 @@
 	--and year(evp.htp_fecha_operacion)=year(aru_opc_fchval)
 	--and aru_opc_Procedencia=fon.FON_PROCEDENCIA collate modern_spanish_ci_as-- and 1=0
 	--FON_NUMLIQ_TEMP nunca tiene el código real de Guayaquil
-	on OPC_NUM_OPE =coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP) --and oper<>-1
+	on OPC_NUM_OPE =coalesce(fon.fixNumeroLiquidacion, fon.fixNumLiqTemp) --and oper<>-1
 	and year(evp.evp_fecha_compra)=OPC_ANO_OPE--year(OPC_FCH_VAL)
 	and OPC_PROCEDENCIA=fon.FON_PROCEDENCIA_NULL collate modern_spanish_ci_as
 	left join (select CVA_CODIGO_SB_DIRECTO=CVA_CODIGO_SB, cva_id_directo=CVA_ID from bvq_administracion.casa_valores) cvadir on iif(fon.FON_CVA_ID=38,20,fon.FON_CVA_ID)=cvadir.cva_id_directo

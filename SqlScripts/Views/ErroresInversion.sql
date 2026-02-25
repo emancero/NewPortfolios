@@ -1,4 +1,4 @@
-﻿create view bvq_backoffice.erroresInversion as
+﻿alter view bvq_backoffice.erroresInversion as
 	select errFonId, errProcedencia, errNumLiq, errNumLiqTmp, errValNom
 	from
 	(VALUES

@@ -19,5 +19,7 @@
 	[Precio_de_mercado] [float] NULL,
 	[Valor_Mercado] [float] NULL,
 	[TPO_MANTIENE_VECTOR_PRECIO] [int] NULL,
-	[evp_fecha_compra] [datetime] NULL
+	[evp_fecha_compra] [datetime] NULL,
+	[TPO_INTERES_TRANSCURRIDO] float NULL,
+	[TPO_COMISION_BOLSA] float NULL
 ) ON [PRIMARY]

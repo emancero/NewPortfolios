@@ -40,6 +40,8 @@ BEGIN
 				'Renta fija privada sin calificación.' else '' end
 			+case when isnull(Casa_de_Valores_codigo,'')='' and CVA_SIGLAS not in ('MDF') then
 				'Sin casa de valores.' else '' end
+			+case when isnull(Bolsa_Valores,'') not in ('','N') and isnull(Id_Custodio,'')='' then
+				'Bursátil sin custodio. ' else '' end
 			,EMS_NOMBRE
 			,FON_ID
 			,tiv_tipo_renta
@@ -90,6 +92,8 @@ BEGIN
 			,Dias_por_vencer
 			,Yield
 			,TVS_DESCRIPCION
+			,TPO_INTERES_TRANSCURRIDO
+			,TPO_COMISION_BOLSA
 			into _temp.TempEstructuraIsspolViewG2
 			from BVQ_BACKOFFICE.EstructuraIsspolView
 			left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
@@ -99,13 +103,16 @@ BEGIN
 				Fecha_transaccion between @i_fechaIni and @fecha
 				or @i_todos_los_vigentes=1
 			)
+		--@i_todos_los_vigentes=1:
 		else
 			select
 			 Errores=
 			 case when Tipo_Instrumento not in (4,5,9,13,20,21,22,23,24,26) and isnull(fecha_ultima_calificacion,0)=0 then
-				'Renta fija privada sin calificación.' else '' end
+				'Renta fija privada sin calificación. ' else '' end
 			+case when isnull(Casa_de_Valores_codigo,'')='' and CVA_SIGLAS not in ('MDF') then
-				'Sin casa de valores.' else '' end
+				'Sin casa de valores. ' else '' end
+			+case when isnull(Bolsa_Valores,'') not in ('','N') and isnull(Id_Custodio,'')='' then
+				'Bursátil sin custodio. ' else '' end
 			,EMS_NOMBRE
 			,FON_ID
 			,tiv_tipo_renta
@@ -156,6 +163,8 @@ BEGIN
 			,Dias_por_vencer
 			,Yield
 			,TVS_DESCRIPCION
+			,TPO_INTERES_TRANSCURRIDO
+			,TPO_COMISION_BOLSA
 			into _temp.TempEstructuraIsspolViewG2
 			from BVQ_BACKOFFICE.EstructuraIsspolView
 			left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
