@@ -4,7 +4,7 @@
 -- Description:		Obtiene el detalle de todos los portafolios a una fecha corte
 -- Modificacion:    PV:	Se implementa tabla temporal para evitar bloqueos y acelerar respuesta.
 -- =============================================
-
+--sp_helptext '[BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha]'
 CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha]
 --declare
                 @i_fechaCorte datetime='2025-01-17T23:59:59',
@@ -289,7 +289,7 @@ BEGIN
 											   ,YIELD =
 												CASE
 													WHEN pcorte.[tvl_codigo] IN ('FAC','PCO','OBL','OCA','VCC')
-														 or pcorte.[tvl_codigo] IN ('BE') and (pcorte.fecha_compra>='20251128' or TPO_ACTA like 'BE%')
+														 or pcorte.[tvl_codigo] IN ('BE') and (pcorte.fecha_compra>='20251118' or TPO_ACTA like 'BE%')
 													THEN [HTP_RENDIMIENTO]
 													ELSE [tiv_tasa_interes]
 												END / 100.0
