@@ -1,8 +1,9 @@
-﻿create procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez
-	 @i_idPortfolio		int				--Identificador del portafolio
-	,@i_fechaIni		datetime
-	,@i_fechaFin		datetime
-	,@i_client_id		int
+﻿CREATE procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez
+--declare
+	 @i_idPortfolio		int=-1				--Identificador del portafolio
+	,@i_fechaIni		datetime='29991231'
+	,@i_fechaFin		datetime='2999-12-31T23:59:59'
+	,@i_client_id		int=null
 	,@i_public			bit=0
 	,@i_mostrar			bit=1
 	,@i_lga_id			int=null
@@ -128,7 +129,6 @@ begin
 	,EVP_COSTAS_JUDICIALES
 	,EVP_COSTAS_JUDICIALES_REFERENCIA
 	,EVP_SALDO
-	,liq_rendimiento
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -235,12 +235,10 @@ begin
 		else
 			sum(amount) over (partition by htp_tpo_id, fecha_original)
 		end
-	,liq_rendimiento
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--join bvq_administracion.parametro parIsspol on parIsspol.par_codigo='PAR_ISSPOL'
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0
 	--where (parIsspol.PAR_VALOR='NO' or oper=1)
-
 	--create clustered index ix01 on bvq_backoffice.evtTemp(por_id,fecha,oper,htp_id,es_vencimiento_interes)
  
 	declare @prevPorId int,@accSalLiq float
