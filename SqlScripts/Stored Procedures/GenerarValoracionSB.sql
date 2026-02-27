@@ -66,7 +66,7 @@ BEGIN
 	,valor_pago_cupon=null
 	,Fecha_Ultimo_Pago=max(latest_inicio)
 	,Saldo_Valor_Nominal=sum(sal)
-	,Precio_de_mercado=sum(PRECIO_DE_HOY)
+	,Precio_de_mercado=max(PRECIO_DE_HOY)
 	,Valor_Mercado=sum(VALOR_NOMINAL)/sum(VALOR_UNITARIO)*sum(PRECIO_DE_HOY)+sum(INTERES_GANADO)
 	,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,pc.TPO_MANTIENE_VECTOR_PRECIO))
 	,evp_fecha_compra=min(pc.fecha_compra)

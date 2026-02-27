@@ -15,8 +15,8 @@
 		,tiv_codigo_isin)
 	,[Tipo_Instrumento]=TVS.TVS_CODIGO
 	,[id_Instrumento]=case bvq_administracion.GetIdentifierCode(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original),TIV_CODIGO_ISIN)
-		when '07' then rtrim(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original))
-		when '01' then TIV_CODIGO_ISIN
+		when '07' then rtrim(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original))+'-'+fon.FON_NUMERACION
+		when '01' then TIV_CODIGO_ISIN+'-'+fon.FON_NUMERACION
 		when '00' then replace(fon.FON_NUMERACION,'MONTECRISTI','SANTACRUZ')
 	 end
 	,[Bolsa_Valores]=case coalesce(fon_procedencia_null,opc_procedencia) when 'G' then 'Y' else coalesce(fon_procedencia_null,opc_procedencia) end
