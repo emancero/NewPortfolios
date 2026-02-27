@@ -200,7 +200,21 @@
 			--having evp_tpo_id=2193
 		) movsCupon
 		on evt_fecha='29991231' and movsCupon.evp_tpo_id=evp.evp_tpo_id and movsCupon.evp_fecha_original=evp.evp_fecha_original
-
+		/*
+	left join (
+			select movs_evp_valor_efectivo=sum(
+				evp_valor_efectivo
+			)
+			, evp_tpo_id, evp_fecha_original
+			from bvq_backoffice.evento_portafolio ecap
+			left join (select capMonto=nullif(vep_valor_efectivo,0),capHtpId=htp_id,capFecha=fecha from bvq_backoffice.evtTemp where es_vencimiento_interes=0 and htp_tiene_valnom=1) eCap
+			on ecap.capHtpId=evtTemp.htp_id and capFecha=evtTemp.fecha
+			where evt_fecha<'29991231' and es_vencimiento_interes=0 and EVP_ABONO=1
+			group by evp_tpo_id,evp_fecha_original
+			--having evp_tpo_id=2193
+		) movsCuponInt
+		on evt_fecha='29991231' and movsCuponInt.evp_tpo_id=evp.evp_tpo_id and movsCuponInt.evp_fecha_original=evp.evp_fecha_original
+		*/
 	/*	vep.evt_id=evt.htp_id and --evt.htp_id cache key!
 		vep.oper_id=evt.oper and
 		vep.es_vencimiento_interes=isnull(evt.es_vencimiento_interes,0)*/
