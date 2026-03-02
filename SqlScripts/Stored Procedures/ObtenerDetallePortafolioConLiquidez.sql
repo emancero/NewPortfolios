@@ -234,7 +234,7 @@ begin
 			max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
 			+case when fecha_original>='20260216' then
 				max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=1 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)
-				-- -isnull(movs_evp_valor_efectivo,0)
+				-isnull(movs_evp_interes_nominal,0)
 			else 0
 			end
 		else
