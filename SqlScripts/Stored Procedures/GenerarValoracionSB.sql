@@ -67,7 +67,7 @@ BEGIN
 	,Fecha_Ultimo_Pago=max(latest_inicio)
 	,Saldo_Valor_Nominal=sum(sal)
 	,Precio_de_mercado=max(PRECIO_DE_HOY)
-	,Valor_Mercado=sum(VALOR_NOMINAL)/sum(VALOR_UNITARIO)*sum(PRECIO_DE_HOY)+sum(INTERES_GANADO)
+	,Valor_Mercado=sum(VALOR_NOMINAL)/sum(VALOR_UNITARIO)*max(PRECIO_DE_HOY)+sum(INTERES_GANADO)
 	,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,pc.TPO_MANTIENE_VECTOR_PRECIO))
 	,evp_fecha_compra=min(pc.fecha_compra)
 	,TPO_INTERES_TRANSCURRIDO=sum(case when ingValnom=1 then isnull(pc.TPO_INTERES_TRANSCURRIDO,0) end)

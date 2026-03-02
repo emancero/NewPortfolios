@@ -15,7 +15,7 @@
 		,tiv_codigo_isin)
 	,[Tipo_Instrumento]=TVS.TVS_CODIGO
 	,[id_Instrumento]=case bvq_administracion.GetIdentifierCode(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original),TIV_CODIGO_ISIN)
-		when '07' then rtrim(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original))+'-'+fon.FON_NUMERACION
+		when '07' then rtrim(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original))+'-'+coalesce(fixNumeracion,fon.FON_NUMERACION)
 		when '01' then TIV_CODIGO_ISIN+'-'+fon.FON_NUMERACION
 		when '00' then replace(fon.FON_NUMERACION,'MONTECRISTI','SANTACRUZ')
 	 end
@@ -29,7 +29,7 @@
 		end
 	 end
 	,[Base_Tasa_Interes]=case when tiv.tiv_tipo_renta=153 then
-		iif(tiv.tiv_tipo_base=354,1,2)
+		iif(tiv.tiv_tipo_base in (354,355),1,2)
 	 end
 
 	 
@@ -363,7 +363,7 @@
 	left join 
     (    
 		select
-		 isnull(lead(eca_fecha_resolucion) over (partition by emi_id order by eca_fecha_resolucion desc,eca_id desc),'99991231') eca_fecha_hasta
+		 isnull(lead(eca_fecha_resolucion) over (partition by emi_id order by eca_fecha_resolucion,eca_id),'99991231') eca_fecha_hasta
 		,emi_id 
 		,eca_valor
 		,cal_nombre eca_nombre

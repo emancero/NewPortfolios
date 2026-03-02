@@ -15,4 +15,4 @@
 			  COALESCE(errorInvs.errNumLiqTmp,   f.FON_NUMLIQ_TEMP),
 			  COALESCE(errorInvs.errNumeracion,   f.FON_NUMERACION)
 			)
-		) AS fixInvs(fixProcedencia, fixNumeroLiquidacion, fixNumLiqTemp)
+		) AS fixInvs(fixProcedencia, fixNumeroLiquidacion, fixNumLiqTemp, fixNumeracion)
