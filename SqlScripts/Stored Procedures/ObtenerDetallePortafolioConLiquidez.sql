@@ -1,4 +1,4 @@
-﻿CREATE procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez
+﻿alter procedure bvq_backoffice.ObtenerDetallePortafolioConLiquidez
 --declare
 	 @i_idPortfolio		int=-1				--Identificador del portafolio
 	,@i_fechaIni		datetime='29991231'
@@ -231,11 +231,15 @@ begin
 		when en_espera=1 then
 			0e0
 		when fecha='29991231' then
-			max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
-			+case when fecha_original>='20260216' then
-				max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=1 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)
-				-isnull(movs_evp_interes_nominal,0)
-			else 0
+			case when es_vencimiento_interes=0 then
+				max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
+			when es_vencimiento_interes=1 then
+				case when fecha_original>='20260216' then
+					max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=1 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)
+					-isnull(movs_evp_interes_nominal,0)
+				else 0 end
+			else
+				0
 			end
 		else
 			sum(amount) over (partition by htp_tpo_id, fecha_original)
