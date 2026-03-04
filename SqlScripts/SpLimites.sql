@@ -328,6 +328,8 @@ BEGIN
 	-- Límites
 	select SECTOR, PCT
 	from bvq_backoffice.isspol_detalle_limites detlim
+	join bvq_backoffice.isspol_limite lim on lim.lim_id=detlim.lim_id
+	where @i_fecha_corte between lim.LIM_DESDE and lim.LIM_HASTA
 
 	--saldo renta fija
 	select VALOR_DE_MERCADO =
