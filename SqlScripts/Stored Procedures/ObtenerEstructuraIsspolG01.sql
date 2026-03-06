@@ -23,7 +23,10 @@ BEGIN
 	,decreto_emisor,clasificacion=1,tipo_identificacion='R',pju_identificacion,pais='EC'
 	,tipo_emisor=tipoEmisor.codigo
 	,patrimonio=coalesce(patrimonio, vba.VBA_PATRIMONIO_TECNICO, 0)
-	,CCA_SUSCRITO=isnull(CCA_SUSCRITO,0)
+	,CCA_SUSCRITO=
+		case when CCA_SUSCRITO is not null then CCA_SUSCRITO
+		when tipoEmisor.codigo=4 then vba.VBA_PATRIMONIO_TECNICO
+		else 0 end
 	,ECA_VALOR=isnull(ECA.codigo,30)
 	,eca.fecha_desde
 	,eca.CAL_NOMBRE--*
@@ -55,7 +58,7 @@ BEGIN
 	left join (
 		select EMI_ID, CCA_SUSCRITO, fecha_desde=CCA_FECHA_ACTUALIZACION
 		,fecha_hasta=isnull(lead(CCA_FECHA_ACTUALIZACION) over (partition by EMI_ID order by CCA_FECHA_ACTUALIZACION),'99991231')
-		from BVQ_ADMINISTRACION.COMPOSICION_CAPITAL cca where CCA_ESTADO=21
+		from BVQ_ADMINISTRACION.COMPOSICION_CAPITAL cca --where CCA_ESTADO=21
 	) CCA on CCA.EMI_ID=EMS.EMS_ID and htp.EMS_FECHA_PRIMER_USO>=cca.fecha_desde and htp.EMS_FECHA_PRIMER_USO<cca.fecha_hasta
 	left join (
 		select EMI_ID, ECA_VALOR, eca.CAL_ID
