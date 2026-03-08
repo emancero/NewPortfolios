@@ -41,7 +41,7 @@ BEGIN
 		,Calificadora_Riesgo_Emision
 		,Calificacion_Riesgo_Emision
 		,Numero_Acciones
-		,Valor_AccionHoy=Precio_Mercado--Valor_Accion
+		,Valor_AccionHoy=Valor_Accion
 		,Precio_Mercado
 		,Valor_Mercado=isnull(Valor_Mercado,0)
 		,Fecha_Precio_Mercado
