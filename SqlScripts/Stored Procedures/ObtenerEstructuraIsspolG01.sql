@@ -1,6 +1,8 @@
-﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
-	@lastReportDate datetime,
-	@i_todos_los_vigentes bit=0,
+﻿--exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01 '2023-12-31T23:59:59',1
+alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
+	--declare
+	@lastReportDate datetime='20231231',
+	@i_todos_los_vigentes bit=1,
 	@i_lga_id int=null
 AS
 BEGIN
@@ -11,116 +13,60 @@ BEGIN
 	delete from corteslist
 	insert into corteslist
 	values(@fecha,1)
-
+	--select replace(dbo.colstr('bvq_backoffice.emisorestructuraisspolview'),',',char(13)+char(10)+', e.')
 	exec bvq_backoffice.GenerarCompraVentaFlujo
-	select distinct
-	 Errores=
-	 case when isnull(Patrimonio,0)=0 and tipoEmisor.codigo<>3 then
-			'Sin patrimonio y no es público'
-		 end
-	,ems.EMS_NOMBRE
-	,pju_identificacion
-	,decreto_emisor,clasificacion=1,tipo_identificacion='R',pju_identificacion,pais='EC'
-	,tipo_emisor=tipoEmisor.codigo
-	,patrimonio=coalesce(patrimonio, vba.VBA_PATRIMONIO_TECNICO, 0)
-	,CCA_SUSCRITO=
-		case when CCA_SUSCRITO is not null then CCA_SUSCRITO
-		when tipoEmisor.codigo=4 then vba.VBA_PATRIMONIO_TECNICO
-		else 0 end
-	,ECA_VALOR=isnull(ECA.codigo,30)
-	,eca.fecha_desde
-	,eca.CAL_NOMBRE--*
-	,Calificacion_Codigo=isnull(eca.Calificacion_Codigo,30)
-	,Calificadora_Codigo=isnull(eca.Calificadora_Codigo,0)
-	--,
-	from (
-		select EMS_ID, EMS_NOMBRE
-		,PJU_ID
-	    ,SECTOR_DETALLADO=case when itcsector.itc_codigo='SEC_PRI_FIN' then
-			case when EMS_NOMBRE collate modern_spanish_ci_ai like 'COOPERATIVA DE AHORRO Y CRÉDITO%' THEN 'ECONOMÍA POPULAR Y SOLIDARIA' else 'PRIVADO FINANCIERO' end
-		else
-			case itcsector.itc_codigo WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END
-		END
-		from bvq_administracion.emisor ems
-		join bvq_administracion.item_catalogo itcsector on itcsector.itc_id=ems.ems_sector
-	) ems
-	join (
-		select min(htp_fecha_operacion) EMS_FECHA_PRIMER_USO, tiv_emisor
-		from bvq_backoffice.HISTORICO_TITULOS_PORTAFOLIO htp 
-		join bvq_administracion.titulo_valor tiv on htp.tiv_id=tiv.tiv_id
-		where htp_estado=352
-		group by tiv_emisor
-	) htp on ems.ems_id=htp.tiv_emisor
-	left join bvq_administracion.persona_juridica pju on ems.pju_id=pju.pju_id
-	left join (values
-		('PRIVADO FINANCIERO',1),('PRIVADO NO FINANCIERO',2),('PUBLICO',3),('ECONOMÍA POPULAR Y SOLIDARIA',4)
-	) tipoEmisor(nombre,codigo) on SECTOR_DETALLADO=tipoEmisor.nombre
-	left join (
-		select EMI_ID, CCA_SUSCRITO, fecha_desde=CCA_FECHA_ACTUALIZACION
-		,fecha_hasta=isnull(lead(CCA_FECHA_ACTUALIZACION) over (partition by EMI_ID order by CCA_FECHA_ACTUALIZACION),'99991231')
-		from BVQ_ADMINISTRACION.COMPOSICION_CAPITAL cca --where CCA_ESTADO=21
-	) CCA on CCA.EMI_ID=EMS.EMS_ID and htp.EMS_FECHA_PRIMER_USO>=cca.fecha_desde and htp.EMS_FECHA_PRIMER_USO<cca.fecha_hasta
-	left join (
-		select EMI_ID, ECA_VALOR, eca.CAL_ID
-		, Calificacion_Codigo=sbc.codigo, Calificadora_Codigo=csm.CSM_CODIGO
-		, cal.CAL_NOMBRE
-		,fecha_desde=ECA_FECHA_DESDE
-		,fecha_hasta=isnull(lead(ECA_FECHA_DESDE) over (partition by EMI_ID order by ECA_FECHA_DESDE),'99991231')
-		,codigo
-			from BVQ_ADMINISTRACION.EMISORES_CALIFICACION eca
-		left join BVQ_ADMINISTRACION.CALIFICADORAS CAL ON CAL.CAL_ID=ECA.CAL_ID
-		left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=ECA_VALOR
-		left join bvq_administracion.CALIFICADORA_SB_MAP csm on csm.csm_cal_id=eca.CAL_ID
-		where ECA_ESTADO=21
-	) ECA on ECA.EMI_ID=EMS.EMS_ID and htp.EMS_FECHA_PRIMER_USO>=eca.fecha_desde and htp.EMS_FECHA_PRIMER_USO<eca.fecha_hasta
-	left join bvq_backoffice.isspolRentaFijaViewNew i on @i_todos_los_vigentes=1 and i.id_emisor=ems.ems_id
-	left join bvq_administracion.variables_balance vba on EMS.EMS_ID=vba.ems_id and EMS_FECHA_PRIMER_USO between vba_fecha_desde and dateadd(s,-1,vba_fecha_hasta)
-	
-	--left join (select max(fecha) f, emiid from #x group by emiid) x on x.emiid=ems.ems_id
-	where
-	(
-		EMS_FECHA_PRIMER_USO between @i_fechaIni and @fecha
-		or
-		cca.fecha_desde between @i_fechaIni and @fecha
-		or
-		eca.fecha_desde between @i_fechaIni and @fecha
-		or
-		@i_todos_los_vigentes=1 and i.id_emisor is not null
-	)
-	union all
-	select
-	 Errores=null
-	,EMS_NOMBRE='DECEVALE'
-	,pju_identificacion='0991283765001'
-	,decreto_emisor=null
-	,clasificacion=2
-	,tipo_identificacion='R'
-	,pju_identificacion='0991283765001'
-	,pais='EC'
-	,tipo_emisor=1--3-público--02--tipoEmisor.codigo
-	,patrimonio=3327694.18--coalesce(patrimonio, vba.VBA_PATRIMONIO_TECNICO, 0)
-	,CCA_SUSCRITO=2700000--isnull(CCA_SUSCRITO,0)
-	,ECA_VALOR=null--isnull(ECA.codigo,30)
-	,fecha_desde=null
-	,CAL_NOMBRE=null--*
-	,Calificacion_Codigo=30--isnull(eca.Calificacion_Codigo,30)
-	,Calificadora_Codigo=0--isnull(eca.Calificadora_Codigo,0)
-	union all select
-	 Errores=null
-	,EMS_NOMBRE='DCV-BCE'
-	,pju_identificacion='1760002600001'
-	,decreto_emisor=null
-	,clasificacion=2
-	,tipo_identificacion='R'
-	,pju_identificacion='1760002600001'
-	,pais='EC'
-	,tipo_emisor=3--3-público--02--tipoEmisor.codigo
-	,patrimonio=0--coalesce(patrimonio, vba.VBA_PATRIMONIO_TECNICO, 0)
-	,CCA_SUSCRITO=0--isnull(CCA_SUSCRITO,0)
-	,ECA_VALOR=null--isnull(ECA.codigo,30)
-	,fecha_desde=null
-	,CAL_NOMBRE=null--*
-	,Calificacion_Codigo=30--isnull(eca.Calificacion_Codigo,30)
-	,Calificadora_Codigo=0--isnull(eca.Calificadora_Codigo,0)
+
+	if @i_todos_los_vigentes=0
+		select distinct
+		  e.Errores
+		, e.vigentes
+		, e.fecha_transaccion
+		, e.EMS_NOMBRE
+		, e.pju_identificacion
+		, e.decreto_emisor
+		, e.clasificacion
+		, e.tipo_identificacion
+		, e.pais
+		, e.tipo_emisor
+		, e.patrimonio
+		, e.CCA_SUSCRITO
+		, e.ECA_VALOR
+		, e.fecha_desde
+		, e.CAL_NOMBRE
+		, e.Calificacion_Codigo
+		, e.Calificadora_Codigo
+		from bvq_backoffice.EmisorEstructuraIsspolView e
+		--left join (select max(fecha) f, emiid from #x group by emiid) x on x.emiid=ems.ems_id
+		where
+		e.vigentes=0
+		and (
+			e.fecha_transaccion between @i_fechaIni and @fecha
+			or
+			e.fecha_desde between @i_fechaIni and @fecha
+			or
+			e.fecha_desde between @i_fechaIni and @fecha
+		)
+	else
+		select distinct
+		  e.Errores
+		, e.fecha_transaccion
+		, e.vigentes
+		, e.EMS_NOMBRE
+		, e.pju_identificacion
+		, e.decreto_emisor
+		, e.clasificacion
+		, e.tipo_identificacion
+		, e.pais
+		, e.tipo_emisor
+		, e.patrimonio
+		, e.CCA_SUSCRITO
+		, e.ECA_VALOR
+		, e.fecha_desde
+		, e.CAL_NOMBRE
+		, e.Calificacion_Codigo
+		, e.Calificadora_Codigo
+		from bvq_backoffice.EmisorEstructuraIsspolView e
+		join bvq_backoffice.isspolRentaFijaViewNew i on i.id_emisor=e.ems_id and e.fecha_transaccion=i.tfcorte
+		where e.vigentes=1 and datediff(d,@lastReportDate,e.fecha_transaccion)=0
 
 END
