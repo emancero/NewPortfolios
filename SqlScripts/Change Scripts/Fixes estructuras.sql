@@ -1,4 +1,6 @@
-﻿--select tiv_codigo_titulo_sic='02'+right(inscripcion_cpmv,5)
+﻿update bvq_administracion.titulo_valor set tiv_emisor=913 where tiv_id=1e7+85 and tiv_emisor=85
+
+--select tiv_codigo_titulo_sic='02'+right(inscripcion_cpmv,5)
 --from _temp.TempEstructuraIsspolView t join bvq_administracion.titulo_valor tiv on TIV_NUMERO_RMV=inscripcion_cpmv
 --where errores<>'' and tiv_codigo_titulo_sic='0206258'
 delete from corteslist
@@ -189,7 +191,7 @@ order by tpo.tpo_fecha_ingreso,fon.fon_numeracion
 
 
 
-
+/*
 select tiv_precio,*
 from bvq_backoffice.portafolioCortePrcInt pc
 join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
@@ -204,7 +206,7 @@ select * from bvq_administracion.persona_juridica where pju_id=459
 where aru_opc_fchval='20151224'--val='20220512'
 group by aru_opc_fchval with rollup
 order by opc.aru_opc_fchval
-
+*/
 
 /*
 --update fon set FON_CVA_ID=38
