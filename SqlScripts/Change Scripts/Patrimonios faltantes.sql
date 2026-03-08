@@ -1,13 +1,18 @@
-﻿/*set quoted_identifier off
-with a as(
-	select distinct msg=formatmessage(char(9)+"('%s','%s','%s')",emisor,fecha,pat),lf=char(13)+char(10)
-	from patraw where emisor not in ('0','')
-), b as(
-	select vals=dbo.stringagg(msg,','+lf),lf=max(lf)
-	from a
-) select 'insert into _temp.pat(emisor,fehca,pat)'+lf+'(values '+lf+vals+lf+') v(emisor,fecha,pat)'
-from b*/
---go
+﻿
+set quoted_identifier off
+if 1=0
+begin
+	with a as(
+		select distinct msg=formatmessage(char(9)+"('%s','%s','%s')",emisor,fecha,pat),lf=char(13)+char(10)
+		from patraw where emisor not in ('0','')
+	), b as(
+		select vals=dbo.stringagg(msg,','+lf),lf=max(lf)
+		from a
+	) select 'insert into _temp.pat(emisor,fehca,pat)'+lf+'(values '+lf+vals+lf+') v(emisor,fecha,pat)'
+	from b
+end
+
+
 if object_id('_temp.pat') is null
 	create table _temp.pat(id int,emisor varchar(300),fecha varchar(100),pat varchar(100))
 
@@ -176,8 +181,12 @@ VALUES
 ,('TIENDAS INDUSTRIALES ASOCIADAS TIA S.A.' , 'COMPAÑÍA TIENDAS INDUSTRIALES ASOCIADAS TIA S.A.')
 ,('TITULARIZACIÓN DE CARTERA INMOBILIARIA VOLANN' , 'FIDEICOMISO MERCANTIL DE TITULARIZACIÓN DE CARTERA INMOBILIARIA VOLANN')
 ) s(a,sicav)
-) select v.decreto_emisor,v.id_emisor,a.a,a.sicav,emisor into #map from 
-(select distinct decreto_emisor,ID_EMISOR from bvq_backoffice.isspolrentafijaview v) v
+) select v.decreto_emisor,v.id_emisor,a.a,a.sicav,emisor
+into #map
+from 
+(
+	select distinct decreto_emisor,ID_EMISOR from bvq_backoffice.isspolrentafijaview v
+) v
 join a on decreto_emisor=sicav collate modern_spanish_ci_ai
 left join (select distinct emisor from _temp.pat) p on p.emisor=a.a
 
@@ -186,8 +195,8 @@ left join (select distinct emisor from _temp.pat) p on p.emisor=a.a
 
 
 --select * from #map where emisor is null
-if object_id('tempdb..#miss') is not null
-	drop table #miss
+if object_id('tempdb..#sinPatrimonio') is not null
+	drop table #sinPatrimonio
 select distinct
 i.ems_nombre,
 ems.ems_id,
@@ -198,11 +207,12 @@ VBA_FECHA_DESDE=isnull((
 	and vba_fecha_desde>c
 	order by vba_fecha_desde asc
 ),'99991231')
-into #miss
+into #sinPatrimonio
 from bvq_backoffice.isspolrentafijaviewnew i
 left join bvq_administracion.emisor ems on ems.ems_codigo=i.ems_abr
 cross join corteslist c
-where patrimonio is null --and ems.ems_codigo is null
+where i.patrimonio is null --sin patrimonio
+--and ems.ems_codigo is null
 and ems.ems_id not in (132)
 
 
@@ -213,16 +223,26 @@ set language 'spanish'
 if object_id('tempdb..#src') is not null
 	drop table #src
 ;with p as(
-	select emisor,pat=replace(pat,'$',''),min(fecha2) mnFecha --porque es la fecha más antigua donde aparece esa combinación emisor patrimonio--, max(fecha) mxFecha
-	, row_number() over (partition by emisor order by min(fecha2) desc) r --desc porque es la calificación más reciente del emisor
-	, count(*) over (partition by emisor order by min(fecha2) desc) c
+	--vista EmisorPatrimonio del excel
+	select emisor,pat=replace(pat,'$','')
+
+	--porque es la fecha más antigua donde aparece esa combinación emisor patrimonio
+	, min(fecha2) mnFecha
+
+	--encontrar el patrimonio más reciente del emisor
+	--, notar la partición por emisor y el order by descendiente por min(fecha2)
+	, row_number() over (partition by emisor order by min(fecha2) desc) r
+
+	--, count(*) over (partition by emisor order by min(fecha2) desc) c
 	from (
 		select fecha2=try_cast(replace(replace(fecha,'.',''),'sept','sep') as datetime),* from _temp.pat
 	) pat where emisor not in ('','0')
 	group by emisor,replace(pat,'$','')
+	--vista EmisorPatrimonio
 ) select emisor,pat=replace(replace(pat,'.',''),',','.'),mnfecha
 --c2=count(*) over (partition by emisor)--replace(replace(pat,'$',''),'.',''),
-into #src from p
+into #src
+from p
 where r=1
 
 
@@ -231,7 +251,15 @@ insert into BVQ_ADMINISTRACION.VARIABLES_BALANCE(
 )
 output inserted.ems_id,inserted.VBA_FECHA_DESDE
 into _temp.bakVba20260211
-select id_emisor,mnfecha,hasta=vba_fecha_desde,try_cast(src.pat as float)
-from #src src join #map map on src.emisor=map.emisor
-join #miss miss on miss.EMS_ID=map.id_emisor
+select
+  id_emisor
+, mnfecha
+, hasta=vba_fecha_desde
+, patrimonio=try_cast(src.pat as float)
+from #src src
+join #map map
+	on src.emisor=map.emisor
+join #sinPatrimonio miss
+	on miss.EMS_ID=map.id_emisor
+
 
