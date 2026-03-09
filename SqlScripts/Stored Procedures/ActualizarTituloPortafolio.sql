@@ -105,6 +105,24 @@ BEGIN
 	JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
 	WHERE HTP.HTP_ID = @i_tpo_id;
 
+	declare @v_fon_id int=(
+		SELECT FON.FON_ID
+		FROM BVQ_BACKOFFICE.FONDO FON
+		JOIN BVQ_BACKOFFICE.TITULOS_PORTAFOLIO TPO ON TPO.FON_ID=FON.FON_ID
+		JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
+		WHERE HTP.HTP_ID = @i_tpo_id
+	)
+
+	EXEC	[BVQ_SEGURIDAD].[RegistrarAuditoria]
+		@i_lga_id = @i_lga_id,
+		@i_tabla = N'FONDO',
+		@i_esquema = N'BVQ_BACKOFFICE',
+		@i_operacion = N'U',
+		@i_subTipo = N'A',
+		@i_columIdName = N'FON_ID',
+		@i_idAfectado = @v_fon_id;
+
+
 	UPDATE [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO]
 	SET [USR_ID] = @i_usr_id
 		  ,[TIV_ID] = @i_tiv_id
@@ -153,8 +171,6 @@ BEGIN
 		  -- NUEVO CAMPO LÍNEA 98
 		  --,TPO_FECHA_VEN_CONVENIO = @i_fecha_ven_convenio
 		,tpo_id_anterior= case when @v_tpoId_org is null then tpo_id_anterior else @v_tpoId_org end
-		--,TPO_PROG = case when @i_cxc = 1 then 'normal' else TPO_PROG end
-		--,TPO_PROG = case when @i_cxc = 1 then 'normal' else NULL end
 	 FROM [BVQ_BACKOFFICE].[TITULOS_PORTAFOLIO] TPO
 	 JOIN BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP ON HTP.HTP_TPO_ID=TPO.TPO_ID
 	 WHERE HTP.HTP_ID = @i_tpo_id;
@@ -183,7 +199,6 @@ BEGIN
 		,HTP_TIR = @i_tir
 		,HTP_RENDIMIENTO_RETORNO = @i_rendimiento_retorno
 		,HTP_NUMERACION_2 = @i_numeracion2
-		,HTP_DIVIDENDO =@i_dividendo
 		,TIV_ID=@i_tiv_id
 	FROM BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO HTP
 	--WHERE htp_id in (select htp_id from bvq_backoffice.htptpo where tpo_id=@i_tpo_id)
