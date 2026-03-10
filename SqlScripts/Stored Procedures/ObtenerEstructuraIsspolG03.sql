@@ -8,7 +8,7 @@ BEGIN
 	SET NOCOUNT ON;
 	declare @i_fechaIni DateTime=DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
 
-	if 1=0
+	if 1=1
 	begin
 		exec bvq_backoffice.ObtenerDetallePortafolioConLiquidez 1,@i_fechaIni,@i_fechaCorte,null
 		exec dropifexists '_temp.TempEstructuraIsspolViewG3'
@@ -87,7 +87,7 @@ BEGIN
 	end
 	else
 	begin
-		--porque no se llama a ObtenerDetallePortafolioConLiquidez
+		--se envia null en las dos primeras tablas porque no se llama a ObtenerDetallePortafolioConLiquidez
 		select null
 		select null
 	end

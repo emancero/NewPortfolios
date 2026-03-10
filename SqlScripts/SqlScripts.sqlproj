@@ -60,6 +60,7 @@
     <Folder Include="Change Scripts" />
     <Folder Include="Schemas" />
     <Folder Include="siisspolweb" />
+    <Folder Include="docs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Functions\BVQ_BACKOFFICE.tfEstadoDeCuentaPortafolio.UserDefinedFunction.sql" />
@@ -189,6 +190,8 @@
     <None Include="Stored Procedures\ActualizarCapitalSuscritoEmisor.sql" />
     <None Include="Stored Procedures\InsertarCapitalSuscritoEmisor.sql" />
     <None Include="Views\EmisorEstructuraIsspolView.sql" />
+    <None Include="docs\2025-07-28 Manual_inv_no_priv_entidades_ss 28Julio2025.pdf" />
+    <None Include="docs\Tablas 10 diciembre 2025.pdf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

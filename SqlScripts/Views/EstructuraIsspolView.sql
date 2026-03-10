@@ -2,7 +2,7 @@
 	select
 	tiv.tiv_id,
 	tiv.TIV_CODIGO_TITULO_SIC,evp.htp_fecha_operacion,
-	 Interes_Acumulado=evp.itrans*errVNFactor
+	 Interes_Acumulado=evp.itrans*errVNFactor.errVNFactor --itrans=sum(itrans)
 	,[Vector_Precio]=tiv_codigo_vector
 	,[Fecha_Vencimiento]=tiv.TIV_FECHA_VENCIMIENTO
 	--,[Valor nominal]=valor_nominal
@@ -38,10 +38,10 @@
 		else tiv.tiv_tasa_margen + bvq_administracion.fnObtenerValorTasaPorTituloYFecha(tiv.tiv_id,evp.htp_fecha_operacion)
 		end
 	 end
-	,[Valor_Nominal]=evp.montooper * case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
-		*errVNFactor
+	 ,[Valor_Nominal]=evp.montooper * case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
+		*errVNFactor.errVNFactor
 	,[Precio_Compra]=case when tiv.tiv_tipo_renta=154 then 0 else evp.htp_precio_compra end
-	,[Valor_Efectivo_Libros]=evp.valorEfectivo*errVNFactor
+	,[Valor_Efectivo_Libros]=evp.valorEfectivo*errVNFactor.errVNFactor
 	,[Plazo_Inicial]=convert(int,dbo.fnDias(evp.evp_fecha_compra,tiv.tiv_fecha_vencimiento,355))--tiv.tiv_tipo_base))
 
 	,Calificadora_Riesgo_Emision=csm.CSM_CODIGO
@@ -73,7 +73,7 @@
 			Valor_Mercado
 		else 
 			(select top 1 Valor_Mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tiv_id=tiv.tiv_id and v.htp_fecha_operacion=evp.htp_fecha_operacion)
-		end*errVNFactor
+		end*errVNFactor.errVNFactor
 	,[Fecha_Precio_Mercado]=evp.htp_fecha_operacion--case when tiv.tiv_tipo_renta=153 and datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) and esCxc=0 then
 		--ult_valoracion
 	--end 
@@ -108,10 +108,11 @@
 		then liq_rendimiento end
 	,oper
 	,esCxc
-	,valor_pago_capital=valor_pago_capital*errVNFactor
-	,valor_pago_cupon=valor_pago_cupon*errVNFactor
+	,valor_pago_capital=valor_pago_capital*errVNFactor.errVNFactor
+	,valor_pago_cupon=valor_pago_cupon*errVNFactor.errVNFactor
 	,Fecha_Ultimo_Pago
-	,Saldo_Valor_Nominal=Saldo_Valor_Nominal*errVNFactor
+	,Saldo_Valor_Nominal=Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
+		*case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
 	,tiv.tiv_tipo_renta
 	,[Pago_dividendo_en_acciones]=dividendo_en_efectivo
 	,[Pago_dividendo_efectivo]=dividendo_en_acciones
@@ -164,7 +165,7 @@
 	   ,valor_pago_capital=null
 	   ,valor_pago_cupon=null
 	   ,Fecha_Ultimo_Pago=null
-	   ,Saldo_Valor_Nominal=sum(evp.saldo)
+	   ,Saldo_Valor_Nominal=sum(evp.montooper)  --Activar si es antes -sum(montooper)
 	   ,Precio_de_mercado=null
 	   ,Valor_Mercado=null
 	   ,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,tpo_mantiene_vector_precio))
@@ -194,7 +195,7 @@
 		select
 		 evp.fecha
 		,montooper=sum(evp.montooper)
-		,itrans=sum(itrans)--o sum(TPO_INTERES_TRANSCURRIDO)
+		,itrans=sum(case when evp.es_vencimiento_interes=1 then iamortizacion end)--o sum(itrans)--o sum(TPO_INTERES_TRANSCURRIDO)
 		,evp.tpo_numeracion
 		,oper
 		,htp_precio_compra=min(tpo_precio_ingreso)--evp.htp_precio_compra)--fecha_operacion
@@ -243,7 +244,7 @@
 			evp.valor_pago_cupon
 		)
 	   ,Fecha_Ultimo_Pago=evp.fecha
-	   ,Saldo_Valor_Nominal=sum(evp.saldo)-isnull(sum(case when es_vencimiento_interes=0 then amount end),0)
+	   ,Saldo_Valor_Nominal=sum(evp.saldo)-- --Activar en el caso de que sea antes: -isnull(sum(case when es_vencimiento_interes=0 then amount end),0)
 	   ,Precio_de_mercado=null
 	   ,Valor_Mercado=null
 	   --,evt_fecha
@@ -320,8 +321,7 @@
 	join bvq_administracion.emisor ems on tiv.tiv_emisor=ems.ems_id
 	left join bvq_administracion.PERSONA_JURIDICA pju on pju.pju_id=ems.pju_id
 	join bvq_backoffice.inversion fon on fon.fon_id=evp.fon_id
-	cross apply(values(iif(errValNom is not null,errValNom/montooper, 1))) errVNFactor(errVNFactor)
-
+	cross apply(values(iif(fon.errValNom is not null,fon.errValNom/montooper, 1))) errVNFactor(errVNFactor)
 	--número de resolución isspol
 	--left join
 	--	siisspolweb.siisspolweb.inversion.inversion i

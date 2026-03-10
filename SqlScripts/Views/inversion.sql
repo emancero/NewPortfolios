@@ -4,7 +4,7 @@
 			fixNumeroLiquidacion,
 			fixNumLiqTemp,
 			fixNumeracion,
-			errValnom,
+			errorInvs.errValnom,
 			FON_ID,FON_NUMERACION,FON_TIV_ID,FON_ID_INT_INVERSION,FON_NUMERO_LIQUIDACION,FON_PROCEDENCIA,FON_NUMLIQ_TEMP,FON_ACCIONES_REALIZADAS,FON_NUMERO_RESOLUCION,FON_CVA_ID,FON_ID_INVERSION,FON_VECTOR_REPORTADO,FON_FECHA_RESOLUCION
 		FROM bvq_backoffice.fondo AS f
 		LEFT JOIN bvq_backoffice.erroresInversion AS errorInvs

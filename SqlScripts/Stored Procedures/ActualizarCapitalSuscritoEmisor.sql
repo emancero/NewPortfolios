@@ -1,4 +1,7 @@
-﻿CREATE procedure [BVQ_ADMINISTRACION].[ActualizarCapitalSuscritoEmisor]
+﻿sp_helptext 'bvq_backoffice.actualizartitulosportafolioliquidacion'
+select * from sys.tables where name like 'dividendo%'
+select 1
+CREATE procedure [BVQ_ADMINISTRACION].[ActualizarCapitalSuscritoEmisor]
 	@i_ccaId int,
 	@i_emsId int,
 	@i_tipo varchar(2) = null,
@@ -14,7 +17,7 @@
 	@i_lga_id int=null
 as
 begin
-		
+		select @@servername
 		UPDATE BVQ_ADMINISTRACION.COMPOSICION_CAPITAL
 		SET
 			EMI_ID                     = @i_emsId,

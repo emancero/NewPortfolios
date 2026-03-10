@@ -29,7 +29,7 @@ BEGIN
 	select
 	 htp_fecha_operacion=tfcorte
 	,montooper=sum(case when ingValNom=1 then cx.htp_compra end)
-	,itrans=sum(itrans)
+	,itrans=sum(INTERES_GANADO)
 	,tpo_numeracion=htp_numeracion
 	,oper=-1
 	,htp_precio_compra=max(case when ingValnom=1 then
