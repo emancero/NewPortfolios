@@ -66,7 +66,6 @@ BEGIN
 		, e.Calificacion_Codigo
 		, e.Calificadora_Codigo
 		from bvq_backoffice.EmisorEstructuraIsspolView e
-		join bvq_backoffice.isspolRentaFijaViewNew i on i.id_emisor=e.ems_id and e.fecha_transaccion=i.tfcorte
-		where e.vigentes=1 and datediff(d,@lastReportDate,e.fecha_transaccion)=0
-
+		left join bvq_backoffice.isspolRentaFijaViewNew i on i.id_emisor=e.ems_id and e.fecha_transaccion=i.tfcorte
+		where e.vigentes=1 and datediff(d,@lastReportDate,e.fecha_transaccion)=0 and (i.id_emisor is not null or e.clasificacion=2)
 END

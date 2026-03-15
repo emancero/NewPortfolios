@@ -1,6 +1,7 @@
 ﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
 --declare
 	@i_fechaCorte DateTime='20251130',
+	@i_todos_los_vigentes bit=1,
 	@i_lga_id int
 AS
 BEGIN
@@ -41,7 +42,7 @@ BEGIN
 		,Calificadora_Riesgo_Emision
 		,Calificacion_Riesgo_Emision
 		,Numero_Acciones
-		,Valor_AccionHoy=Valor_Accion
+		,Valor_AccionHoy=case when Tipo_Instrumento in (20,21,22,24) then Precio_Mercado end
 		,Precio_Mercado
 		,Valor_Mercado=isnull(Valor_Mercado,0)
 		,Fecha_Precio_Mercado
@@ -77,12 +78,22 @@ BEGIN
 		,Pago_dividendo_efectivo=isnull(Pago_dividendo_efectivo,0)
 		,tiv_tipo_renta
 		,TVS_DESCRIPCION
+		,INTERES_GANADO_2
+		,tiv_tipo_base
+		,tvl_descripcion
+		,latest_inicio=Fecha_ultimo_pago
+		,INTERES_GANADO
+		,Fecha_Ultimo_Pago_Capital
 		into _temp.TempEstructuraIsspolViewG3
 		from BVQ_BACKOFFICE.EstructuraIsspolView
 		left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
 		--where oper=0
 		where esCxc=0
 		and Fecha_transaccion between @i_fechaIni and @i_fechaCorte
+		and (
+			@i_todos_los_vigentes=1 and datediff(d,Fecha_transaccion,@i_fechaCorte)=0
+			or @i_todos_los_vigentes=0
+		)
 		--order by aru_opc_via,2
 	end
 	else

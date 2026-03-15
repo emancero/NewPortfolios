@@ -18,7 +18,7 @@ BEGIN
 	--	select 1 from changetable(changes bvq_backoffice.HISTORICO_TITULOS_PORTAFOLIO,@sysver) ct
 	--	union all select 1 from changetable(changes bvq_backoffice.TITULOS_PORTAFOLIO,@sysver) ct
 	--)
-	if 1=1
+	if 1=0
 	begin
 
 		begin
@@ -28,7 +28,8 @@ BEGIN
 			exec GenerarCortesListPorRango @i_fechaIni, @fecha
 			exec BVQ_ADMINISTRACION.GenerarVectores
 			exec bvq_administracion.PrepararValoracionLinealCache
-			exec BVQ_BACKOFFICE.GenerarValoracionSB
+			if 1=0
+				exec BVQ_BACKOFFICE.GenerarValoracionSB
 		end
 
 		exec dropifexists '_temp.TempEstructuraIsspolViewG2'

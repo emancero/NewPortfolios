@@ -66,20 +66,20 @@
 		case when oper=-1 then
 			precio_de_mercado
 		else
-			(select top 1 precio_de_mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tiv_id=tiv.tiv_id and v.htp_fecha_operacion=evp.htp_fecha_operacion)
+			(select top 1 precio_de_mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tpo_numeracion=evp.tpo_numeracion and v.htp_fecha_operacion=evp.htp_fecha_operacion)
 		end
 	,[Valor_Mercado]=
 		case when oper=-1 then
 			Valor_Mercado
 		else 
-			(select top 1 Valor_Mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tiv_id=tiv.tiv_id and v.htp_fecha_operacion=evp.htp_fecha_operacion)
+			(select top 1 Valor_Mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tpo_numeracion=evp.tpo_numeracion and v.htp_fecha_operacion=evp.htp_fecha_operacion)
 		end*errVNFactor.errVNFactor
 	,[Fecha_Precio_Mercado]=evp.htp_fecha_operacion--case when tiv.tiv_tipo_renta=153 and datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) and esCxc=0 then
 		--ult_valoracion
 	--end 
 	--sp_helptext 'bvq_administracion.prepararvaloracionlinealcache'
 	,[Fondo_Inversion]=null
-	
+
 	,[Periodo_Amortizacion_codigo]=p.codigo--case when tiv.tiv_id in (7891) or tiv.tiv_id between 7906 and 7912 then null else p.codigo end
 	,[Periodo_Amortizacion]=p.nombre--case when tiv.tiv_id in (7891) or tiv.tiv_id between 7906 and 7912 then 'ND - 2 periodos' else p.nombre end
 	,[Periodicidad_Cupon_codigo]=p.codigo
@@ -98,7 +98,10 @@
 	,[Numero_liquidacion]=fon.FON_NUMERO_LIQUIDACION--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
 	,[Tipo_transaccion]=case oper when 0 then 'L' when 1 then 'P' when -1 then 'V' end
 	,[Fecha_transaccion]=htp_fecha_operacion
-	,[Dias_transcurridos]=dbo.fnDias(tfl.TFL_FECHA_INICIO,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
+	,[Dias_transcurridos]=dbo.fnDias(
+		 tfl.TFL_FECHA_INICIO
+		 --evp.Fecha_Ultimo_Pago
+		,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
 	,[Dias_por_vencer]=dbo.fnDias(evp.htp_fecha_operacion,tfl.TFL_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)
 	,[Fuente_Cotizacion]='Q'
 	,[Yield]=case when tiv.TIV_FECHA_VENCIMIENTO<dateadd(yy,1,evp.htp_fecha_operacion) /*porque se pide que la inversión sea menor a un año*/
@@ -114,8 +117,8 @@
 	,Saldo_Valor_Nominal=Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
 		*case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
 	,tiv.tiv_tipo_renta
-	,[Pago_dividendo_en_acciones]=dividendo_en_efectivo
-	,[Pago_dividendo_efectivo]=dividendo_en_acciones
+	,[Pago_dividendo_en_acciones]=dividendo_en_acciones
+	,[Pago_dividendo_efectivo]=dividendo_en_efectivo
 	,evp.FON_ID
 	,EMS_NOMBRE=iif(ems.EMS_CODIGO='MONTECRISTI','FIDEICOMISO SANTA CRUZ',ems.EMS_NOMBRE)
 	,ems.EMS_CODIGO
@@ -127,6 +130,11 @@
 	,OPC_NUM_OPE
 	,TPO_INTERES_TRANSCURRIDO
 	,TPO_COMISION_BOLSA
+	,INTERES_GANADO_2=INTERES_GANADO_2*errVNFactor.errVNFactor
+	,tiv.tiv_tipo_base
+	,tvl.tvl_descripcion
+	,INTERES_GANADO=itrans*errVNFactor.errVNFactor
+	,Fecha_Ultimo_Pago_Capital=tfl.TFL_FECHA_INICIO
 	from
 	(
 	--drop table _temp.pc
@@ -175,6 +183,7 @@
 	   ,opSec=row_number() over (partition by tpo_numeracion order by htp_fecha_operacion)
 	   ,TPO_INTERES_TRANSCURRIDO=null
 	   ,TPO_COMISION_BOLSA=null
+	   ,INTERES_GANADO_2=null
 	   --,evt_fecha
 	   --select tfl_fecha_inicio,tfl_fecha_inicio_orig,htp_fecha_operacion,tiv_tipo_base--*
 	   --into _temp.pc
@@ -252,11 +261,12 @@
 		--select *
 	   ,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,tpo_mantiene_vector_precio))
 	   ,evp_fecha_compra=min(case when oper=0 then evp.htp_fecha_operacion end)
-	   ,dividendo_en_efectivo=sum(case when tiv_tipo_renta=154 and es_vencimiento_interes=1 then amount end)
+	   ,dividendo_en_efectivo=sum(case when tiv_tipo_renta=154 and es_vencimiento_interes=1 then intAcc end)
 	   ,dividendo_en_acciones=sum(case when tiv_tipo_renta=154 and htp_dividendo=1 then amount end)
 	   ,opSec=1
 	   ,TPO_INTERES_TRANSCURRIDO=null
 	   ,TPO_COMISION_BOLSA=null
+	   ,INTERES_GANADO_2=null
 		from bvq_backoffice.LiqIntProv evp
 		left join BVQ_BACKOFFICE.HISTORICO_TITULOS_PORTAFOLIO htp on evp.oper=0 and evp.htp_id=htp.htp_id and htp_dividendo=1
 			--join (
@@ -303,6 +313,7 @@
 		,opSec=1
 		,TPO_INTERES_TRANSCURRIDO
 		,TPO_COMISION_BOLSA
+		,INTERES_GANADO_2
 		from BVQ_BACKOFFICE.VALORACION_SB v--_temp.valoracionSB
 		--from bvq_backoffice.portafolioCortePrcInt pc
 		--join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
@@ -402,8 +413,11 @@
 		where tca.TCA_ESTADO=21 --AND (TCA.TCA_FECHA_DESDE is null or tca.TCA_FECHA_DESDE<=FECHA_VALOR_DE_COMPRA)
 	) tcacal on tcacal.tiv_id=tiv.tiv_id and evp.htp_fecha_operacion>=tca_fecha_desde and evp.htp_fecha_operacion<tca_fecha_hasta--tcacal.r=1  
 	left join bvq_administracion.CALIFICADORA_SB_MAP csm on csm.csm_cal_id=coalesce(emscal.enc_cal_id,tcacal.tca_cal_id,emical.eca_cal_id)
+
+	--TituloFlujoCapital
 	left join bvq_administracion.TituloFlujoCapital tfl
 	on tiv.tiv_id=tfl.tiv_id and evp.htp_fecha_operacion>=isnull(tfl.tfl_fecha_inicio,0) and evp.htp_fecha_operacion<tfl.tfl_fecha_vencimiento
+	--Fin TituloFlujoCapital
 --
 	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU
 	ON VNU.TIV_ID=tiv.TIV_ID and evp.evp_fecha_compra>=VNU.VNU_FECHA_INICIO and evp.evp_fecha_compra<VNU.VNU_FECHA_FIN
@@ -427,3 +441,5 @@ select * from bvq_backoffice.EstructuraIsspolView e where e.fon_id in (select a.
 */
 --select * from bvq_administracion.emisor where ems_codigo='bcn'
 --select * from INFORMATION_SCHEMA.columns where table_name='estructuraisspolview' and column_name in ('tipo_instrumento','tvl_codigo','tippap')
+
+

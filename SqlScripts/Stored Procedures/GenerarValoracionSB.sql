@@ -25,6 +25,7 @@ BEGIN
 		,evp_fecha_compra
 		,TPO_INTERES_TRANSCURRIDO
 		,TPO_COMISION_BOLSA
+		,INTERES_GANADO_2
 	)
 	select
 	 htp_fecha_operacion=tfcorte
@@ -67,11 +68,12 @@ BEGIN
 	,Fecha_Ultimo_Pago=max(latest_inicio)
 	,Saldo_Valor_Nominal=sum(sal)
 	,Precio_de_mercado=max(PRECIO_DE_HOY)
-	,Valor_Mercado=sum(VALOR_NOMINAL)/sum(VALOR_UNITARIO)*max(PRECIO_DE_HOY)+sum(INTERES_GANADO)
+	,Valor_Mercado=sum(VALOR_NOMINAL)/max(VALOR_UNITARIO)*max(PRECIO_DE_HOY)--+sum(INTERES_GANADO)
 	,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,pc.TPO_MANTIENE_VECTOR_PRECIO))
 	,evp_fecha_compra=min(pc.fecha_compra)
 	,TPO_INTERES_TRANSCURRIDO=sum(case when ingValnom=1 then isnull(pc.TPO_INTERES_TRANSCURRIDO,0) end)
 	,TPO_COMISION_BOLSA=sum(case when ingValnom=1 then isnull(pc.TPO_COMISION_BOLSA,0) end)
+	,INTERES_GANADO_2=sum(INTERES_GANADO_2)
 	from bvq_backoffice.portafolioCortePrcInt pc
 	join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
 	cross apply (values
