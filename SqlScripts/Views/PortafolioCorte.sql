@@ -257,19 +257,25 @@
 	,tiv.TIV_NUMERO_TRAMO_SICAV
 
 	,fecha_ultima_compra=
-	case when isnull(ipr_es_cxc,0)=0 then
-		case when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
-			coalesce(
-				lastValDate
-				,case when 1=1 and htp.c>='20251001' or htp.c>='20250910' and htp.tpo_id in (2301) then [fecha_compra] end
-			)
-		when isnull(rtrim(htp.tiv_codigo_vector),'')='' then [fecha_compra]
-		when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
-			htp.c
-		end
-	else
-		CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN [fecha_compra] end
-	END
+		case when isnull(ipr_es_cxc,0)=0 then
+			--EMN: 17-mar-2026 Antes del 29-feb-2024 no se valoraba con valoración lineal
+			--, si no que quedaba estática la fecha de corte como fecha de inicio de la valoración lineal
+			--efectivamente dejando estático al precio de la última valoración
+			case when htp.c<'20240229' then
+				htp.c
+			--valoración lineal:
+			when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
+				coalesce(
+					lastValDate
+					,case when 1=1 and htp.c>='20251001' or htp.c>='20250910' and htp.tpo_id in (2301) then [fecha_compra] end
+				)
+			when isnull(rtrim(htp.tiv_codigo_vector),'')='' then [fecha_compra]
+			when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
+				htp.c
+			end
+		else
+			CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN [fecha_compra] end
+		END
 	,prEfectivo
 	,htp.TPO_FECHA_VENCIMIENTO_ANTERIOR
 	,htp.fechaInicioOriginal
