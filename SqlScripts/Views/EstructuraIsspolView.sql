@@ -41,7 +41,7 @@
 	 ,[Valor_Nominal]=evp.montooper * case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
 		*errVNFactor.errVNFactor
 	,[Precio_Compra]=case when tiv.tiv_tipo_renta=154 then 0 else evp.htp_precio_compra end
-	,[Valor_Efectivo_Libros]=evp.valorEfectivo*errVNFactor.errVNFactor
+	,[Valor_Efectivo_Libros]=cache.valorEfectivo*errVNFactor.errVNFactor
 	,[Plazo_Inicial]=convert(int,dbo.fnDias(evp.evp_fecha_compra,tiv.tiv_fecha_vencimiento,355))--tiv.tiv_tipo_base))
 
 	,Calificadora_Riesgo_Emision=csm.CSM_CODIGO
@@ -62,18 +62,18 @@
 		)
 	,[Numero_Acciones]=case when tiv.tiv_tipo_renta=154 and TVL_CODIGO not in ('ENC')  then evp.montooper end
 	,[Valor_Accion]=case when tiv.tiv_tipo_renta=154 and TVL_CODIGO not in ('ENC') then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) end
-	,[Precio_Mercado]=
-		case when oper=-1 then
-			precio_de_mercado
-		else
-			(select top 1 precio_de_mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tpo_numeracion=evp.tpo_numeracion and v.htp_fecha_operacion=evp.htp_fecha_operacion)
-		end
-	,[Valor_Mercado]=
-		case when oper=-1 then
-			Valor_Mercado
-		else 
-			(select top 1 Valor_Mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tpo_numeracion=evp.tpo_numeracion and v.htp_fecha_operacion=evp.htp_fecha_operacion)
-		end*errVNFactor.errVNFactor
+	,[Precio_Mercado]=cache.precio_de_mercado
+		--case when oper=-1 then
+		--	precio_de_mercado
+		--else
+		--	(select top 1 precio_de_mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tpo_numeracion=evp.tpo_numeracion and v.htp_fecha_operacion=evp.htp_fecha_operacion)
+		--end
+	,[Valor_Mercado]=cache.Valor_Mercado*errVNFactor.errVNFactor
+		--case when oper=-1 then
+		--	Valor_Mercado
+		--else 
+		--	(select top 1 Valor_Mercado from BVQ_BACKOFFICE.VALORACION_SB v where v.tpo_numeracion=evp.tpo_numeracion and v.htp_fecha_operacion=evp.htp_fecha_operacion)
+		--end*errVNFactor.errVNFactor
 	,[Fecha_Precio_Mercado]=evp.htp_fecha_operacion--case when tiv.tiv_tipo_renta=153 and datediff(d,evp.htp_fecha_operacion,tiv.tiv_fecha_vencimiento)<=365 and tiv.tiv_subtipo not in (3) and esCxc=0 then
 		--ult_valoracion
 	--end 
@@ -107,14 +107,14 @@
 	,[Yield]=case when tiv.TIV_FECHA_VENCIMIENTO<dateadd(yy,1,evp.htp_fecha_operacion) /*porque se pide que la inversión sea menor a un año*/
 		and
 		round(tasa_cupon,2)=0 --por que se pide que sean solo papeles con cupón 0
-		or 1=1
-		then liq_rendimiento end
+		or 1=1 --anular las condiciones anteriores
+		then cache.liq_rendimiento end
 	,oper
 	,esCxc
 	,valor_pago_capital=valor_pago_capital*errVNFactor.errVNFactor
 	,valor_pago_cupon=valor_pago_cupon*errVNFactor.errVNFactor
-	,Fecha_Ultimo_Pago
-	,Saldo_Valor_Nominal=Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
+	,Fecha_Ultimo_Pago=convert(date,cache.Fecha_Ultimo_Pago)--evp.Fecha_Ultimo_Pago
+	,Saldo_Valor_Nominal=cache.Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
 		*case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
 	,tiv.tiv_tipo_renta
 	,[Pago_dividendo_en_acciones]=dividendo_en_acciones
@@ -135,6 +135,7 @@
 	,tvl.tvl_descripcion
 	,INTERES_GANADO=itrans*errVNFactor.errVNFactor
 	,Fecha_Ultimo_Pago_Capital=tfl.TFL_FECHA_INICIO
+    ,Tipo_Renta=tre.itc_descripcion
 	from
 	(
 	--drop table _temp.pc
@@ -326,6 +327,7 @@
 	--from
 	--_temp.pc evp
 	join bvq_administracion.titulo_valor tiv on tiv.tiv_id=evp.tiv_id
+	join bvq_administracion.item_catalogo tre on tre.itc_id=tiv.tiv_tipo_renta
 	left join (select codigo_vector_original=tiv_codigo_vector,tiv_id_original=tiv_id from bvq_administracion.titulo_valor) org on tiv.tiv_split_de=org.tiv_id_original
 	join bvq_administracion.tipo_valor tvl on tvl.tvl_id=tiv.tiv_tipo_valor
 	join bvq_administracion.TituloValorUltVal2 tivVal on tivVal.tiv_id=tiv.tiv_id
@@ -420,7 +422,14 @@
 	--Fin TituloFlujoCapital
 --
 	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU
-	ON VNU.TIV_ID=tiv.TIV_ID and evp.evp_fecha_compra>=VNU.VNU_FECHA_INICIO and evp.evp_fecha_compra<VNU.VNU_FECHA_FIN
+	ON VNU.TIV_ID=tiv.TIV_ID and evp.htp_fecha_operacion>=VNU.VNU_FECHA_INICIO and evp.htp_fecha_operacion<VNU.VNU_FECHA_FIN
+	cross apply (
+		select top 1 Valor_Mercado, precio_de_mercado, valorEfectivo
+		, saldo_valor_nominal, liq_rendimiento, Fecha_Ultimo_Pago
+		from BVQ_BACKOFFICE.VALORACION_SB v
+		where v.tpo_numeracion=evp.tpo_numeracion and v.htp_fecha_operacion=evp.htp_fecha_operacion
+	) cache
+
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
 	--where oper=-1 and datediff(d,htp_fecha_operacion,'20260208')=0
 	/*select precio_de_mercado,* from bvq_backoffice.valoracion_sb where htp_fecha_operacion='20260204'
