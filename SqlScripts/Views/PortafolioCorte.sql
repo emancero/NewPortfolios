@@ -394,7 +394,7 @@
 						when datediff(d,c,e.tiv_fecha_vencimiento)>365 and tiv.tiv_split_de<>0
 						then
 							(
-								select top 1 vpr_precio from
+								select vpr_precio from
 								bvq_administracion.vector_precio vpr 
 								where vpr.tiv_id=tiv.tiv_split_de and datediff(d,vpr_fecha,c)=0
 							)
@@ -585,8 +585,12 @@
 		join corteslist cl on cl.c between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_id<>8829100001533
 		where htp_tiene_valnom=1
 		group by htp_tpo_id,cl.c
-	) ev on htp.c=ncorte and (ev.htp_tpo_id2=htp.tpo_id_anterior and isnull(progs.ipr_es_cxc,0)=0 or htp.tpo_id_anterior=213 and ev.htp_tpo_id2=htp.tpo_id_anterior)
-
+	) ev on htp.c=ncorte and (
+		--Excepción en Procarsa
+		ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0 and htp.tpo_id not in (2487)
+		or
+		ev.htp_tpo_id2=htp.tpo_id_anterior and htp.tpo_id in (2487)
+	)
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
 	--left join bvq_prevencion.personacomitente per on por.ctc_id=per.ctc_id
