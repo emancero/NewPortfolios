@@ -510,9 +510,15 @@
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
 					,tiv_codigo_vector=coalesce(
 						case when
+						c>='20240831' --EMN: 24-mar-2026 Antes del reporte del 20240831 tiv_codigo_vector siempre se obtenía directamente de TITULO_VALOR
+						and(
 							datediff(d,c,e.tiv_fecha_vencimiento)>365
 							or c>='20251001' or c>='20250910' and e.htp_tpo_id in (2301)
-						then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
+						)
+						then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end
+						,
+						tiv_codigo_vector
+					)--tiv.tiv_codigo_vector
 					,TPO.TPO_NOMBRE_BONO_GLOBAL
 					,e.FON_ID
 					,e.fecha_ultimo_pago
