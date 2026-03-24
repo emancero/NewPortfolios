@@ -508,8 +508,10 @@
 					,TPO.TPO_AJUSTE_DIAS_DE_INTERES_GANADO
 					,e.interesCoactivo
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
-					,tiv_codigo_vector=coalesce(case when datediff(d,c,e.tiv_fecha_vencimiento)>365
-						or c>='20251001' or c>='20250910' and e.htp_tpo_id in (2301)
+					,tiv_codigo_vector=coalesce(
+						case when
+							datediff(d,c,e.tiv_fecha_vencimiento)>365
+							or c>='20251001' or c>='20250910' and e.htp_tpo_id in (2301)
 						then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
 					,TPO.TPO_NOMBRE_BONO_GLOBAL
 					,e.FON_ID
