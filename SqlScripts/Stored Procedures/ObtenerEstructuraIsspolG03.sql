@@ -65,6 +65,7 @@ BEGIN
 		,Dias_Transcurridos=isnull(Dias_Transcurridos,0)
 		,Fuente_Cotizacion
 		,Dias_Vencer=isnull(Dias_por_vencer,0)
+		,Valor_Deteriorado=null
 		,No_Acciones=Numero_Acciones
 		,Yield
 		,Valor_Capital=isnull(valor_pago_capital,0)
