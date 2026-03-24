@@ -272,3 +272,6 @@ and a.r=b.r
 join bvq_backoffice.fondo fon on fon.fon_id=a.fon_id
 where fon_numero_liquidacion is null and fon_numliq_temp is null and fon_procedencia='N'
 --order by a.fon_id--3,4,5
+
+--Patrimonio técnico sobrepuesto
+update vba set vba_fecha_hasta='20231108' from bvq_administracion.variables_balance vba where ems_id=59 and vba_fecha_hasta='20231231'
