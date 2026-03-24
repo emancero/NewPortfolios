@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG05]
 --declare
-    @i_fechaCorte DATETIME,
+    @i_fechaCorte DATETIME='2023-12-31T23:59:59',
 	@i_todos_los_vigentes bit = 0,
     @i_lga_id     INT
 AS
@@ -16,7 +16,7 @@ BEGIN
 		SELECT
 			e.EMS_NOMBRE,
 			Tipo_Id=TIPO_ID_EMISOR,
-			ID_EMISOR AS Identificacion,
+			Id_Emisor,-- AS Identificacion,
 			e.Codigo_Instrumento,
 			e.Tipo_Instrumento,
 			Numero_Contrato,
@@ -42,8 +42,8 @@ BEGIN
 			Valores_Restituidos_Efectivo,
 			Valores_Restituidos_Bienes
 		from BVQ_BACKOFFICE.EstructuraIsspolView e
-		left join BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G05 g on g.FON_ID=e.FON_ID
-		left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
+		left join BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G05 g on 1=1--g.FON_ID=e.FON_ID
+		--left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
 		where esCxc=0 and oper=0
 		and Fecha_transaccion between @i_fechaIni and @i_fechaCorte
 		and e.Tipo_Instrumento=23 --23=Encargo fiduciario
@@ -51,7 +51,7 @@ BEGIN
 		SELECT
 			e.EMS_NOMBRE,
 			Tipo_Id=TIPO_ID_EMISOR,
-			ID_EMISOR AS Identificacion,
+			Id_Emisor,-- AS Identificacion,
 			e.Codigo_Instrumento,
 			e.Tipo_Instrumento,
 			Numero_Contrato,
@@ -77,13 +77,17 @@ BEGIN
 			Valores_Restituidos_Efectivo,
 			Valores_Restituidos_Bienes
 		from BVQ_BACKOFFICE.EstructuraIsspolView e
-		left join BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G05 g on g.FON_ID=e.FON_ID
+		left join BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G05 g on 1=1--g.FON_ID=e.FON_ID
 		left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
 		where esCxc=0 and oper=-1
 		and datediff(d,fecha_transaccion,@i_fechaCorte)=0 -- 1 para T-1
 		and e.Tipo_Instrumento=23 --23=Encargo fiduciario
 END
+--La  tabla de donde se migró es la siguiente:
+--select * from _temp.fideicomiso_santa_cruz
 
+--Los FON_ID para las dos estructuraciones de F Santa Cruz son las siguientes:
+--select * from bvq_backoffice.fondo where fon_id in (475,849)
 --exec bvq_backoffice.generarvaloracionsb
 /*
 --pruebas:
