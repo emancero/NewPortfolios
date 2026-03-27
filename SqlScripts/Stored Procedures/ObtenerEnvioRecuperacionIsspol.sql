@@ -86,7 +86,7 @@ BEGIN
 			on cis.tpo_numeracion=ref.tpo_numeracion
 			and convert(varchar,cis.fecha,20)=convert(varchar,ref.fecha,20)--datediff(hh,cis.fecha,ref.fecha)=0
 				and cis.ri in ('DIDENT','DIDENT02')
-				and round(debe,0)=round(ref.valor,0)
+				and round(debe+1e-9,0)=round(ref.valor+1e-9,0)
 
 			WHERE CIS.fecha BETWEEN @i_fechaInicio AND @i_fechaFin and oper=1
 			and EVP_COBRADO=1
