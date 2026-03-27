@@ -39,7 +39,7 @@ DECLARE @LS_FECHA_ACTUAL  DATETIME
 	on icr.tpo_numeracion=ref.tpo_numeracion
 	and datediff(hh,icr.fecha,ref.fecha)=0
 		and icr.ri in ('DIDENT','DIDENT02')
-		and round(debe,0)=round(ref.valor,0)
+		and round(debe+1e-9,0)=round(ref.valor+1e-9,0)
 	where icr.tpo_numeracion=--'MDF-2013-04-25-2'
 		@AS_NOMBRE
 
