@@ -142,7 +142,7 @@ begin
 	,prov2
 	,(iAmortizacion+amount) AS 'total_cuota'
 	,EVP_SALDO
-	,cuota_pagada=iif(EVP_SALDO<=0,1,0)
+	,cuota_pagada=iif(EVP_SALDO<0.01,1,0)
 	from bvq_backoffice.liqintprov
 	where fecha between @i_fechaIni and @i_fechaFin
 	and (abs(round(amount,2))>0.05e or oper=2)
