@@ -194,6 +194,7 @@
     <None Include="docs\Tablas 10 diciembre 2025.pdf" />
     <None Include="Views\GUnions.sql" />
     <None Include="Change Scripts\Menu Estructuras SB.sql" />
+    <None Include="Change Scripts\Menu SC Inversiones.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

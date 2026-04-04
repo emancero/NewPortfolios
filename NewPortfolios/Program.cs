@@ -178,6 +178,8 @@ using (TransactionScope scope = new TransactionScope())
     //4-abr-2026
     comm.CommandText = (new GetObjectCode()).GetCode("Menu Estructuras SB", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("Menu SC Inversiones", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
 
     //1-feb-2026
     /*comm.CommandText = (new GetObjectCode()).GetCode("HISTORICO_TITULOS_PORTAFOLIO", "Change Script", suffix: false);
