@@ -2,7 +2,7 @@
 	select
 	tiv.tiv_id,
 	tiv.TIV_CODIGO_TITULO_SIC,evp.htp_fecha_operacion,
-	 Interes_Acumulado=evp.itrans*errVNFactor.errVNFactor --itrans=sum(itrans)
+	 Interes_Acumulado=iif(oper<>-1 or oper=-1 and tiv.tiv_tipo_renta=153 and tvs.TVS_CODIGO not in (4,5,8,9), 0, evp.itrans*errVNFactor.errVNFactor) --itrans=sum(itrans)
 	,[Vector_Precio]=tiv_codigo_vector
 	,[Fecha_Vencimiento]=tiv.TIV_FECHA_VENCIMIENTO
 	--,[Valor nominal]=valor_nominal
@@ -95,7 +95,7 @@
 	,Id_Custodio=isnull(case opc_Via when 0 then '0991283765001' when 1 then '1760002600001' end
 		, case tiv.tiv_camara when 'Decevale' then '0991283765001' when 'DCV-BCE' then '1760002600001' when 'DCV' then '1760002600001' end)
 
-	,[Numero_liquidacion]=fon.FON_NUMERO_LIQUIDACION--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
+	,[Numero_liquidacion]=iif(oper in (0,1), fon.FON_NUMERO_LIQUIDACION, null)--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
 	,[Tipo_transaccion]=case oper when 0 then 'L' when 1 then 'P' when -1 then 'V' end
 	,[Fecha_transaccion]=htp_fecha_operacion
 	,[Dias_transcurridos]=dbo.fnDias(
@@ -104,16 +104,16 @@
 		,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
 	,[Dias_por_vencer]=dbo.fnDias(evp.htp_fecha_operacion,tfl.TFL_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)
 	,[Fuente_Cotizacion]='Q'
-	,[Yield]=case when tiv.TIV_FECHA_VENCIMIENTO<dateadd(yy,1,evp.htp_fecha_operacion) /*porque se pide que la inversión sea menor a un año*/
+	,[Yield]=case when tiv.tiv_tipo_renta=154 then null when tiv.TIV_FECHA_VENCIMIENTO<dateadd(yy,1,evp.htp_fecha_operacion) /*porque se pide que la inversión sea menor a un año*/
 		and
 		round(tasa_cupon,2)=0 --por que se pide que sean solo papeles con cupón 0
 		or 1=1 --anular las condiciones anteriores
 		then cache.liq_rendimiento end
 	,oper
 	,esCxc
-	,valor_pago_capital=valor_pago_capital*errVNFactor.errVNFactor
+	,valor_pago_capital=iif(oper<>0, 0, valor_pago_capital*errVNFactor.errVNFactor)
 	,valor_pago_cupon=valor_pago_cupon*errVNFactor.errVNFactor
-	,Fecha_Ultimo_Pago=convert(date,cache.Fecha_Ultimo_Pago)--evp.Fecha_Ultimo_Pago
+	,Fecha_Ultimo_Pago=case oper when 1 then cache.Fecha_Ultimo_Pago end--evp.Fecha_Ultimo_Pago
 	,Saldo_Valor_Nominal=cache.Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
 		*case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
 	,tiv.tiv_tipo_renta
@@ -418,16 +418,19 @@
 
 	--TituloFlujoCapital
 	left join bvq_administracion.TituloFlujoCapital tfl
-	on tiv.tiv_id=tfl.tiv_id and evp.htp_fecha_operacion>=isnull(tfl.tfl_fecha_inicio,0) and evp.htp_fecha_operacion<tfl.tfl_fecha_vencimiento
+	on tiv.tiv_id=tfl.tiv_id and evp.htp_fecha_operacion>isnull(tfl.tfl_fecha_inicio,0) and evp.htp_fecha_operacion<=tfl.tfl_fecha_vencimiento
 	--Fin TituloFlujoCapital
 --
 	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU
 	ON VNU.TIV_ID=tiv.TIV_ID and evp.htp_fecha_operacion>=VNU.VNU_FECHA_INICIO and evp.htp_fecha_operacion<VNU.VNU_FECHA_FIN
+
+	--cache
 	cross apply (
 		select top 1 Valor_Mercado, precio_de_mercado, valorEfectivo
 		, saldo_valor_nominal, liq_rendimiento, Fecha_Ultimo_Pago
 		from BVQ_BACKOFFICE.VALORACION_SB v
-		where v.tpo_numeracion=evp.tpo_numeracion and v.htp_fecha_operacion=evp.htp_fecha_operacion
+		where v.tpo_numeracion=evp.tpo_numeracion
+		and v.htp_fecha_operacion=evp.htp_fecha_operacion
 	) cache
 
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)

@@ -18,7 +18,7 @@ BEGIN
 	--	select 1 from changetable(changes bvq_backoffice.HISTORICO_TITULOS_PORTAFOLIO,@sysver) ct
 	--	union all select 1 from changetable(changes bvq_backoffice.TITULOS_PORTAFOLIO,@sysver) ct
 	--)
-	if 1=1
+	if 1=0
 	begin
 
 		begin

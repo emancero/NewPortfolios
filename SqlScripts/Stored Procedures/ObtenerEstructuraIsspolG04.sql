@@ -1,10 +1,17 @@
-﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG04]
+﻿select * from bvq_backoffice.fondo
+--exec [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG04] '2023-12-31T23:59:59',null
+alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG04]
     @i_fechaCorte DATETIME,
     @i_lga_id     INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
+    exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
+          @i_fechaCorte
+        , 0
+        , @i_lga_id
+    /*
     SELECT
         Tipo_Id_Emisor,
         Id_Emisor,
@@ -33,7 +40,7 @@ BEGIN
         Fecha_Ultima_Calificacion,
         Valor_Deteriorado,
         Saldo_Provision
-    FROM BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G04;
+    FROM BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G04;*/
 
     /*--ejemplo
 	SELECT
