@@ -193,6 +193,7 @@
     <None Include="docs\2025-07-28 Manual_inv_no_priv_entidades_ss 28Julio2025.pdf" />
     <None Include="docs\Tablas 10 diciembre 2025.pdf" />
     <None Include="Views\GUnions.sql" />
+    <None Include="Change Scripts\Menu Estructuras SB.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

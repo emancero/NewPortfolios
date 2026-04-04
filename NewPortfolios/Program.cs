@@ -175,6 +175,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("PeriodicidadSB", "View", suffix: false);
     comm.ExecuteNonQuery();
 
+    //4-abr-2026
+    comm.CommandText = (new GetObjectCode()).GetCode("Menu Estructuras SB", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
     //1-feb-2026
     /*comm.CommandText = (new GetObjectCode()).GetCode("HISTORICO_TITULOS_PORTAFOLIO", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
