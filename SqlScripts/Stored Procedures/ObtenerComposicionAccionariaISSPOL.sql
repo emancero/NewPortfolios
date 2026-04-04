@@ -1,0 +1,22 @@
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerComposicionAccionariaISSPOL]
+		@i_fecha_corte date, @i_lga_id INT
+AS
+BEGIN
+	DELETE FROM corteslist
+	INSERT INTO corteslist (c, cortenum)
+		VALUES (@i_fecha_corte, 1)
+	SELECT
+		ROW_NUMBER() OVER (ORDER BY SUM(dv.DIV_ACCIONES_CIRCULANTES) DESC) AS ID
+	   ,TITULO = pc.TVL_DESCRIPCION
+	   ,EMISOR = pc.ems_nombre
+	   ,ACCIONES_CIRCULANTES = SUM(dv.DIV_ACCIONES_CIRCULANTES)
+	   ,COMPOSICION_ACCIONARIA =
+		(SUM(dv.DIV_ACCIONES_CIRCULANTES) * 100.0) /
+		SUM(SUM(dv.DIV_ACCIONES_CIRCULANTES)) OVER ()
+	FROM BVQ_ADMINISTRACION.DIVIDENDOS dv
+	INNER JOIN BVQ_BACKOFFICE.PortafolioCorte pc
+		ON dv.EMI_ID = pc.tiv_emisor
+	WHERE pc.tvl_codigo = 'ACC'
+	GROUP BY pc.ems_nombre
+			,pc.TVL_DESCRIPCION
+END

@@ -144,7 +144,6 @@
     <None Include="Stored Procedures\spResumenAlCorte.sql" />
     <None Include="Stored Procedures\InsertarPrecioEfectivo.sql" />
     <None Include="Stored Procedures\InsertarAvaluoActivosInmobiliarios.sql" />
-    <None Include="Stored Procedures\ObtenerActivosInmobiliariosISSPOL.sql" />
     <None Include="Functions\tfObtenerActivosInmobiliariosISSPOL.sql" />
     <None Include="Views\PortafolioCortePrcInt.sql" />
     <None Include="Views\IsspolConcesionesHistoricas.sql" />
@@ -195,6 +194,12 @@
     <None Include="Views\GUnions.sql" />
     <None Include="Change Scripts\Menu Estructuras SB.sql" />
     <None Include="Change Scripts\Menu SC Inversiones.sql" />
+    <None Include="Change Scripts\Param TEMP_ISSPOL_IVS_SC.sql" />
+    <None Include="Stored Procedures\ObtenerInversionesSC.sql" />
+    <None Include="Change Scripts\ACTIVOS_INMOBILIARIOS.sql" />
+    <None Include="Views\DetalleRecuperacionesIsspolFondos.sql" />
+    <None Include="Views\DetalleRecuperacionesIsspol.sql" />
+    <None Include="Views\tfObtenerActivosInmobiliariosISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
@@ -229,6 +234,9 @@
     <None Include="siisspolweb\IsspolComprobanteRecuperacion.sql" />
     <None Include="siisspolweb\IsspolInsertarComprobanteRecuperacion.sql" />
     <Build Include="Stored Procedures\SpIsspolRentaFija.sql" />
+    <None Include="Stored Procedures\ObtenerComposicionAccionariaISSPOL.sql" />
+    <None Include="Stored Procedures\ObtenerActivosInmobiliariosISSPOL.sql" />
+    <None Include="Stored Procedures\ObtenerIngresosPorInversiones.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

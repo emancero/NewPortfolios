@@ -1,0 +1,46 @@
+﻿CREATE VIEW [BVQ_BACKOFFICE].[DetalleRecuperacionesIsspolFondos]
+AS
+select	
+		evp.tiv_tipo_renta as tipo_renta,
+		MAX(
+			CASE itcsector.itc_valor
+				WHEN 'Público - No Financiero' THEN 'Público'
+				WHEN 'Privado - No Financiero' THEN 'Privado no Financ.'
+				WHEN 'Privado - Financiero'    THEN 'Privado Financiero'
+				ELSE itcsector.itc_valor
+			END
+		) AS sector,
+		tvl_nombre,
+		max(evp.fecha_compra) as fecha_compra,
+		max(evp.tiv_fecha_vencimiento) as fecha_vencimiento,
+		max(ems.EMS_NOMBRE) as nombre,
+		saldo_valor_nominal=sum(evp.saldo),
+		rendimiento=null,
+		plazo_cupon=max(evp.dias_cupon),
+		capital=sum(case when evp.es_vencimiento_interes=0 then amount else 0 end),
+		iamortizacion = sum(evp.iAmortizacion),
+		pago_total=sum(amount)+sum(isnull(evp.iAmortizacion,0)),
+		fecha_pago=fecha,
+		fecha_de_vencimiento_flujo=max(evp.fecha_original),
+		acciones_judiciales=null,
+		max(iif(isnull(ipr_es_cxc,0)=1,'Otras cuentas por cobrar',case when evp.tiv_tipo_renta=153 then 'Inversiones de Renta Fija' else 'Inversiones de Renta Variable' end)) as primer_nivel,
+		max(iif(tvl_codigo in ('OBL','BE','VCC'),'Con cupón de capital e interés','Al vencimiento capital e interés')) as tipo_flujo,
+		evp.tiv_tipo_renta, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id--,htp_fecha_operacion
+
+		from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView evp
+			join (
+				select r=row_number() over (partition by htp_tpo_id order by htp_fecha_operacion, htp_id), tpo_interes_transcurrido,tpo_comision_bolsa,htp_precio_compra,e.htp_tpo_id
+				from bvq_backoffice.eventoportafolio e
+				join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
+				where montooper>0
+			) s on s.htp_tpo_id=evp.htp_tpo_id and r=1
+ 
+		join bvq_backoffice.titulos_portafolio tpo on tpo.tpo_id=evp.htp_tpo_id
+		join bvq_administracion.titulo_valor tiv on tpo.TIV_ID=tiv.TIV_ID
+		join BVQ_ADMINISTRACION.emisor ems on tiv.tiv_emisor=ems.ems_id
+		join bvq_administracion.ITEM_CATALOGO itcsector on ems.EMS_SECTOR=itcsector.ITC_ID
+		left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
+		where oper=1
+		--and fecha between '20251201' and '20251231'
+ 
+		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id--,htp_fecha_operacion

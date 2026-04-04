@@ -1,10 +1,4 @@
-﻿-- =============================================
--- Author:		  Edwin Calderón
--- Create date:   18/09/2023
--- Description:	Habilita la edición de un ingreso
---				
--- =============================================
-CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerActivosInmobiliariosISSPOL]
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerActivosInmobiliariosISSPOL]
 		@i_fecha_corte date, @i_lga_id INT
 AS
 BEGIN

@@ -180,6 +180,34 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("Menu SC Inversiones", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("TEMP_ISSPOL_IVS_SC", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ACTIVOS_INMOBILIARIOS", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'bvq_administracion.DetalleRecuperacionesIsspolFondos'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("DetalleRecuperacionesIsspolFondos", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'bvq_administracion.DetalleRecuperacionesIsspol'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("DetalleRecuperacionesIsspol", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'bvq_administracion.obteneringresosporinversiones'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("obteneringresosporinversiones", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'bvq_administracion.ObtenerActivosInmobiliariosISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerActivosInmobiliariosISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'bvq_administracion.tfObtenerActivosInmobiliariosISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("tfObtenerActivosInmobiliariosISSPOL", "View", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'bvq_administracion.ObtenerComposicionAccionariaISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerComposicionAccionariaISSPOL", "Procedure", suffix: false);
+    comm.ExecuteNonQuery();
 
     //1-feb-2026
     /*comm.CommandText = (new GetObjectCode()).GetCode("HISTORICO_TITULOS_PORTAFOLIO", "Change Script", suffix: false);
