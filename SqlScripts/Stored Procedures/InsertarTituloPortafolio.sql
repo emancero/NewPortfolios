@@ -374,6 +374,14 @@ BEGIN
 	end
 	update htp set htp_tpo_id=tpo_id_c from bvq_backoffice.historico_titulos_portafolio htp where tpo_id_c<>htp_tpo_id or htp_tpo_id is null and tpo_id_c is not null
 
+	--EMN: 4-abr-2026 Fecha de primera compra
+	--declare @v_tpo_id int = (select htp_tpo_id from bvq_backoffice.historico_titulos_portafolio where htp_id=@v_htp_id)
+	update htp set compra_htp_id=primeraCompra.htp_id
+	from bvq_backoffice.historico_titulos_portafolio htp
+	join bvq_backoffice.SecuenciaCompra primeraCompra
+		on primeraCompra.htp_tpo_id=htp.htp_tpo_id and primeraCompra.sec=1
+	where htp.htp_tpo_id=@v_tpo_id
+
 	--
 	--declare @v_tpo_id int = 2241
 	--declare @i_fecha_ingreso datetime ='2025-02-14T00:00:00'

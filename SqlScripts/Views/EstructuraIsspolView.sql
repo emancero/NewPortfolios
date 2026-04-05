@@ -144,7 +144,9 @@
 		,montooper=sum(montooper)
 		,itrans=sum(itrans)--o sum(TPO_INTERES_TRANSCURRIDO)
 		,tpo_numeracion
-		,oper
+		,oper=case tipoTrans when 'PrimeraCompra' then 0
+				when 'ReclasificacionACxc' then 3
+				end
 		,htp_precio_compra=min(evp.htp_precio_compra)--fecha_operacion
 		,tasa_cupon=max(tasa_cupon)
 		,liq_rendimiento=max(liq_rendimiento)
@@ -190,6 +192,16 @@
 	   --into _temp.pc
 		from bvq_backoffice.EventoPortafolio evp
 		join bvq_backoffice.titulos_portafolio tpo on tpo.tpo_id=evp.htp_tpo_id
+			cross apply(
+				select tipoTrans=
+					case when evp.htp_id=evp.compra_htp_id then
+						'Liquidacion'
+					when tpo.tpo_id_anterior is not null then
+						'ReclasificacionACxc'
+					else
+						'Movimiento'
+					end
+			) tipoTrans
 		left join bvq_backoffice.ISSPOL_PROGS ipr on ipr.IPR_NOMBRE_PROG=tpo.tpo_prog
 		left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
 		left join(values
@@ -197,6 +209,7 @@
 		) errTpoFechaIngreso(errTpoId,errTpoFechaIngreso) on tpo.tpo_id=errTpoId
 		where --montooper>0 and
 		oper=0 --and htp_fecha_operacion between '20251101' and '2025-11-30T23:59:59'
+		and tipoTrans not in ('Movimiento')
 		--and datediff(d,htp_fecha_operacion,coalesce(errTpoFechaIngreso,tpo_fecha_ingreso))=0
 		group by tpo_numeracion,oper,htp_fecha_operacion,tpo.tiv_id
 		--having 1=0

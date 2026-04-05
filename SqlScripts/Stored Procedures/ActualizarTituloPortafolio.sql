@@ -235,6 +235,16 @@ BEGIN
 		and case when charindex(' id:',g.htp_numeracion)>0 then substring(g.HTP_NUMERACION,1,charindex(' id:',g.HTP_NUMERACION)-1) else g.htp_numeracion END =@i_numeracion
 		WHERE charindex(' id:',htp.htp_numeracion)=0 and HTP.HTP_ID=@i_tpo_id
 	END
+
+	--EMN: 4-abr-2026 Fecha de primera compra
+	declare @v_htp_id int = @i_tpo_id
+	declare @v_tpo_id int = (select htp_tpo_id from bvq_backoffice.historico_titulos_portafolio where htp_id=@v_htp_id)
+	update htp set compra_htp_id=primeraCompra.htp_id
+	from bvq_backoffice.historico_titulos_portafolio htp
+	join bvq_backoffice.SecuenciaCompra primeraCompra
+		on primeraCompra.htp_tpo_id=htp.htp_tpo_id and primeraCompra.sec=1
+	where htp.htp_tpo_id=@v_tpo_id
+
 	
 	exec _temp.refreshtpo
 

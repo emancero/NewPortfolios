@@ -200,6 +200,7 @@
     <None Include="Views\DetalleRecuperacionesIsspolFondos.sql" />
     <None Include="Views\DetalleRecuperacionesIsspol.sql" />
     <None Include="Views\tfObtenerActivosInmobiliariosISSPOL.sql" />
+    <None Include="Views\SecuenciaCompra.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

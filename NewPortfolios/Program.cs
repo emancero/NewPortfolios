@@ -166,6 +166,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //14-feb-2026
+    comm.CommandText = "dropifexists 'bvq_backoffce.SecuenciaCompra'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("SecuenciaCompra", "View", suffix: false);
+    comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("Fixes estructuras", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("Patrimonios faltantes", "Change Script", suffix: false);

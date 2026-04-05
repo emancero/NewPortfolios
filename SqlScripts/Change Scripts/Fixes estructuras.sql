@@ -275,3 +275,12 @@ where fon_numero_liquidacion is null and fon_numliq_temp is null and fon_procede
 
 --Patrimonio técnico sobrepuesto
 update vba set vba_fecha_hasta='20231108' from bvq_administracion.variables_balance vba where ems_id=59 and vba_fecha_hasta='20231231'
+
+--compra_htp_id
+--EMN: 4-abr-2026 primera compra
+--declare @v_tpo_id int = (select htp_tpo_id from bvq_backoffice.historico_titulos_portafolio where htp_id=@v_htp_id)
+update htp set compra_htp_id=primeraCompra.htp_id
+from bvq_backoffice.historico_titulos_portafolio htp
+join bvq_backoffice.SecuenciaCompra primeraCompra
+	on primeraCompra.htp_tpo_id=htp.htp_tpo_id and primeraCompra.sec_id=1
+--where htp.htp_tpo_id=@v_tpo_id
