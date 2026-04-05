@@ -38,7 +38,7 @@
 				select tfl_amortizacion,retr_fecha_esperada,retr_tpo_id from bvq_backoffice.retraso d
 				join bvq_backoffice.titulos_portafolio tpo on d.retr_tpo_id=tpo.tpo_id
 				join bvq_administracion.titulo_flujo tfl on tpo.tiv_id=tfl.tiv_id and d.retr_fecha_esperada=tfl.tfl_fecha_vencimiento
-				where d.retr_capital=1 and d.retr_tpo_id not in (777)
+				where d.retr_capital=1 and d.retr_tpo_id not in (777,1533,1516)
 			) d
 			where d.retr_tpo_id=op.htp_tpo_id and d.retr_fecha_esperada<op.htp_fecha_operacion
 		)
