@@ -33,7 +33,7 @@ BEGIN
 	(
 		@UltimoId + 1,
 		4,
-		'Inversiones SC',
+		'Reportes de Inversiones',
 		89,
 		'BCK_INVESTMENTS_ISSPOL',
 		82,

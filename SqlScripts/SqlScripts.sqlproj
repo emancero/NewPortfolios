@@ -193,7 +193,7 @@
     <None Include="docs\Tablas 10 diciembre 2025.pdf" />
     <None Include="Views\GUnions.sql" />
     <None Include="Change Scripts\Menu Estructuras SB.sql" />
-    <None Include="Change Scripts\Menu SC Inversiones.sql" />
+    <None Include="Change Scripts\Menu Reportes de Inversiones.sql" />
     <None Include="Change Scripts\Param TEMP_ISSPOL_IVS_SC.sql" />
     <None Include="Stored Procedures\ObtenerInversionesSC.sql" />
     <None Include="Change Scripts\ACTIVOS_INMOBILIARIOS.sql" />
