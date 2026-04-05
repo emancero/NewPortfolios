@@ -144,9 +144,7 @@
 		,montooper=sum(montooper)
 		,itrans=sum(itrans)--o sum(TPO_INTERES_TRANSCURRIDO)
 		,tpo_numeracion
-		,oper=case tipoTrans when 'PrimerIngreso' then 0
-				when 'ReclasificacionACxc' then 3
-				end
+		,oper
 		,htp_precio_compra=min(evp.htp_precio_compra)--fecha_operacion
 		,tasa_cupon=max(tasa_cupon)
 		,liq_rendimiento=max(liq_rendimiento)
@@ -199,9 +197,9 @@
 		) errTpoFechaIngreso(errTpoId,errTpoFechaIngreso) on tpo.tpo_id=errTpoId
 		where --montooper>0 and
 		oper=0 --and htp_fecha_operacion between '20251101' and '2025-11-30T23:59:59'
-		and tipoTrans not in ('Movimiento')
+		--and tipoTrans not in ('Movimiento')
 		--and datediff(d,htp_fecha_operacion,coalesce(errTpoFechaIngreso,tpo_fecha_ingreso))=0
-		group by tpo_numeracion,oper,tipoTrans,htp_fecha_operacion,tpo.tiv_id
+		group by tpo_numeracion,oper,htp_fecha_operacion,tpo.tiv_id
 		--having 1=0
 		union all
 
