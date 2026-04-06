@@ -96,7 +96,7 @@
 		, case tiv.tiv_camara when 'Decevale' then '0991283765001' when 'DCV-BCE' then '1760002600001' when 'DCV' then '1760002600001' end)
 
 	,[Numero_liquidacion]=iif(oper in (0,1), fon.FON_NUMERO_LIQUIDACION, null)--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
-	,[Tipo_transaccion]=case oper when 0 then 'L' when 1 then 'P' when -1 then 'V' end
+	,[Tipo_transaccion]=case oper when 0 then 'L' when 1 then 'P' when 3 then 'R' when -1 then 'V' end
 	,[Fecha_transaccion]=htp_fecha_operacion
 	,[Dias_transcurridos]=dbo.fnDias(
 		 tfl.TFL_FECHA_INICIO
@@ -111,7 +111,7 @@
 		then cache.liq_rendimiento end
 	,oper
 	,esCxc
-	,valor_pago_capital=iif(oper<>0, 0, valor_pago_capital*errVNFactor.errVNFactor)
+	,valor_pago_capital=iif(oper not in (0,3), 0, valor_pago_capital*errVNFactor.errVNFactor)
 	,valor_pago_cupon=valor_pago_cupon*errVNFactor.errVNFactor
 	,Fecha_Ultimo_Pago=case oper when 1 then cache.Fecha_Ultimo_Pago end--evp.Fecha_Ultimo_Pago
 	,Saldo_Valor_Nominal=cache.Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
@@ -141,16 +141,19 @@
 	--drop table _temp.pc
 		select
 		 htp_fecha_operacion
-		,montooper=sum(montooper)
+		,montooper=sum(
+			signo
+			*montooper)
 		,itrans=sum(itrans)--o sum(TPO_INTERES_TRANSCURRIDO)
 		,tpo_numeracion
-		,oper
+		,oper=subTrans
 		,htp_precio_compra=min(evp.htp_precio_compra)--fecha_operacion
 		,tasa_cupon=max(tasa_cupon)
 		,liq_rendimiento=max(liq_rendimiento)
 		,valorEfectivo=
 		sum(
-			(case when htp_tiene_valnom=1 or htp_tiene_valnom=0 and htp_tpo_id<1500 then
+			signo
+			*(case when htp_tiene_valnom=1 or htp_tiene_valnom=0 and htp_tpo_id<1500 then
 
 		  --isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
 		  --+ [htp_compra]*[htp_precio_compra]
@@ -195,11 +198,17 @@
 		left join(values
 			(46,'20140612')
 		) errTpoFechaIngreso(errTpoId,errTpoFechaIngreso) on tpo.tpo_id=errTpoId
+		--determinar subtipo de transacción
+		cross apply(select subTrans=case when compra_htp_id=htp_id then 0 when tpo_id_anterior is not null then 3 end) subTrans
+		cross apply(select signo=iif(subTrans=3 and montooper<0,-1,1)) signo -- cambiar de signo si es reclasificación a CxC
 		where --montooper>0 and
-		oper=0 --and htp_fecha_operacion between '20251101' and '2025-11-30T23:59:59'
-		--and tipoTrans not in ('Movimiento')
+		subTrans is not null --and htp_fecha_operacion between '20251101' and '2025-11-30T23:59:59'
+		--and compra_htp_id=htp_id or tpo_id_anterior is not null)--and tipoTrans not in ('Movimiento')
 		--and datediff(d,htp_fecha_operacion,coalesce(errTpoFechaIngreso,tpo_fecha_ingreso))=0
-		group by tpo_numeracion,oper,htp_fecha_operacion,tpo.tiv_id
+		group by tpo_numeracion
+		,oper
+		,subTrans
+		,htp_fecha_operacion,tpo.tiv_id
 		--having 1=0
 		union all
 
