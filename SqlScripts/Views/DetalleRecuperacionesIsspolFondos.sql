@@ -19,7 +19,7 @@ select
 		plazo_cupon=max(evp.dias_cupon),
 		capital=sum(case when evp.es_vencimiento_interes=0 then amount else 0 end),
 		iamortizacion = sum(evp.iAmortizacion),
-		pago_total=sum(amount)+sum(isnull(evp.iAmortizacion,0)),
+		pago_total=sum(case when evp.es_vencimiento_interes=0 then amount else 0 end)+sum(isnull(evp.iAmortizacion,0)),
 		fecha_pago=fecha,
 		fecha_de_vencimiento_flujo=max(evp.fecha_original),
 		acciones_judiciales=null,
