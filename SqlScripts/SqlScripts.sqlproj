@@ -203,6 +203,7 @@
     <None Include="Views\SecuenciaCompra.sql" />
     <None Include="Stored Procedures\ObtenerRecuperacionesSBS.sql" />
     <None Include="Views\DetallePortafolioBursatil.sql" />
+    <None Include="Change Scripts\SECTOR_ISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
