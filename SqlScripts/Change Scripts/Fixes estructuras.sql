@@ -282,5 +282,5 @@ update vba set vba_fecha_hasta='20231108' from bvq_administracion.variables_bala
 update htp set compra_htp_id=primeraCompra.htp_id
 from bvq_backoffice.historico_titulos_portafolio htp
 join bvq_backoffice.SecuenciaCompra primeraCompra
-	on primeraCompra.htp_tpo_id=htp.htp_tpo_id and primeraCompra.sec_id=1
+	on primeraCompra.htp_tpo_id=htp.htp_tpo_id and primeraCompra.sec=1
 --where htp.htp_tpo_id=@v_tpo_id
