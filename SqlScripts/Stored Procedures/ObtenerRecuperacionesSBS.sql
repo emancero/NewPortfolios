@@ -33,8 +33,8 @@ SELECT
 		rendimiento,
 		plazo_cupon
 		,capital,
-		iamortizacion,
-		pago_total
+		iamortizacion
+		,pago_total=isnull(capital,0)+isnull(iamortizacion,0)
 		,fecha_pago
 		,fecha_de_vencimiento_flujo
 		,acciones_judiciales
