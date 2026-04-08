@@ -16,7 +16,7 @@ BEGIN
                           );
 
     SET @FechaFinMes = EOMONTH(@i_fechaOperacion);
-
+    exec bvq_backoffice.PrepararLiquidezCache null
 
     SELECT
 		sector,
