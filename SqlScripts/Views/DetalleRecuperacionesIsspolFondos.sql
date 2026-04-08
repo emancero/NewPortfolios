@@ -20,6 +20,7 @@ select
 		plazo_cupon=max(evp.dias_cupon),
 		capital=sum(CASE WHEN evp.rubro in ('amount','amountcxc') THEN evp.monto END),
 		iamortizacion = sum(CASE WHEN evp.rubro in ('intacc','prov') THEN evp.monto END),
+		prov = sum(CASE WHEN evp.rubro in ('prov') THEN evp.monto END),
 		--pago_total=sum(case when evp.es_vencimiento_interes=0 then amount else 0 end)+sum(isnull(case when evp.es_vencimiento_interes=1 then evp.iAmortizacion end,0)),
 		fecha_pago=fecha,
 		fecha_de_vencimiento_flujo=max(evp.fecha_original),
@@ -27,7 +28,9 @@ select
 		max(iif(isnull(ipr_es_cxc,0)=1,'Otras cuentas por cobrar',case when evp.tiv_tipo_renta=153 then 'Inversiones de Renta Fija' else 'Inversiones de Renta Variable' end)) as primer_nivel,
 		max(iif(tvl_codigo in ('OBL','BE','VCC'),'Con cupón de capital e interés','Al vencimiento capital e interés')) as tipo_flujo,
 		evp.tiv_tipo_renta, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,--,htp_fecha_operacion
-		deterioro=max(deterioro)
+		deterioro=max(deterioro),
+		tvl_codigo,
+		tpo.por_id
 		from bvq_backoffice.comprobanteisspolrubros evp--LiqIntProv evp--
 		--cross apply(
 		--	select sum(amount) movCapital from bvq_backoffice.evtTemp e
@@ -56,11 +59,13 @@ select
 		and evp.tipo='C'
 		and evp.acreedoraSinAux not like '2%'
 		and monto is not null
-		and deterioro=0
+		--and deterioro=0
 		and (
 			evp.en_espera=1 or evp.fecha<'20240301'
 		)
 		AND evp.rubro IN ('AMOUNT', 'amountcxc','INTAcc', 'PROV','valnom')
 		--and fecha between '20251201' and '20251231'
  
-		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id--,htp_fecha_operacion
+		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,tvl_codigo, tpo.por_id--,htp_fecha_operacion
+	go
+	

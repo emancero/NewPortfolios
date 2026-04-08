@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerRecuperacionesSBS
+﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerRecuperacionesSBS
     @i_fechaOperacion DATE,
 	@i_lga_id int     
 AS
@@ -34,13 +34,14 @@ SELECT
 		plazo_cupon
 		,capital,
 		iamortizacion
+		,prov
 		,pago_total=isnull(capital,0)+isnull(iamortizacion,0)
 		,fecha_pago
 		,fecha_de_vencimiento_flujo
 		,acciones_judiciales
 		,primer_nivel
 		,tipo_flujo
-
+		,deterioro
     FROM bvq_backoffice.DetalleRecuperacionesIsspol
     WHERE fecha_pago BETWEEN @FechaInicioMes AND @FechaFinMes
   --  GROUP BY
