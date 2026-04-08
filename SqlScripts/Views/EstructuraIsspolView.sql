@@ -198,8 +198,13 @@
 		left join(values
 			(46,'20140612')
 		) errTpoFechaIngreso(errTpoId,errTpoFechaIngreso) on tpo.tpo_id=errTpoId
+
+		--unir con tpo reclasificado si existe
+		left join (select tpo_id_nuevo=tpo_id, tpo_id_anterior, tpo_fecha_ingreso from bvq_backoffice.titulos_portafolio) tpoNuevo
+			on tpoNuevo.tpo_id_anterior=evp.htp_tpo_id and evp.htp_fecha_operacion=tpoNuevo.tpo_fecha_ingreso
+
 		--determinar subtipo de transacción
-		cross apply(select subTrans=case when compra_htp_id=htp_id then 0 when tpo_id_anterior is not null then 3 end) subTrans
+		cross apply(select subTrans=case when compra_htp_id=htp_id then 0 when tpo_id_nuevo is not null then 3 end) subTrans
 		cross apply(select signo=iif(subTrans=3 and montooper<0,-1,1)) signo -- cambiar de signo si es reclasificación a CxC
 		where --montooper>0 and
 		subTrans is not null --and htp_fecha_operacion between '20251101' and '2025-11-30T23:59:59'
