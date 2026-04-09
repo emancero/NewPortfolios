@@ -15,7 +15,7 @@ AS
 		--pago_total=nusum(capital),
 		fecha_pago,
 		fecha_de_vencimiento_flujo=max(fecha_de_vencimiento_flujo),
-		acciones_judiciales=null,
+		acciones_judiciales,
 		max(primer_nivel) as primer_nivel,
 		max(tipo_flujo) as tipo_flujo,
 		EMS_NOMBRE, tpo_numeracion,oper,fecha=fecha_pago,tiv_id,--,htp_fecha_operacion

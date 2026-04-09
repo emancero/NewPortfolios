@@ -21,8 +21,7 @@ SELECT
 	condicion = null,
 	interes_a_recibir=(select sum(iamortizacion) from bvq_backoffice.compraventaflujo c where c.htp_id=v.htp_id),
     recursos=v.tpo_recursos,
-	dbo.fnDias(v.fecha_compra, v.tiv_fecha_vencimiento, v.tiv_tipo_base) 
-        AS plazo_dias,
+	dbo.fnDias(v.fecha_compra, v.tiv_fecha_vencimiento, tiv.tiv_tipo_base) as plazo_dias,
     v.tiv_fecha_vencimiento,
     CASE 
         WHEN v.montoOper > 0 THEN 'Compra' 
