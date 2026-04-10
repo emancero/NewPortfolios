@@ -1,13 +1,16 @@
-﻿create view bvq_administracion.periodicidadSB as
-	select frec,codigo,nombre from
+﻿CREATE view [BVQ_ADMINISTRACION].[periodicidadSB] as
+	select frec,codigo,nombre,textoCondicion from
 	(values
-		 (12,'ME','Mensual (30 DIAS)')
-		,(6,'BM','Bimensual (60 DIAS)')
-		,(4,'TR','Trimestral (90 DIAS)')
-		,(3,'CT','Trimestral (120 DIAS)')
-		,(2,'SE','Trimestral (180 DIAS)')
-		,(1,'AN','Anual (360 DIAS)')
-		,(null,'VC','Al vencimiento')
-		,(null,'RV','Renta variable')
-		,(null,'OT','Indefinido')
-	) per(frec,codigo,nombre)
+		 (12,'ME','Mensual (30 DIAS)','mensuales')
+		,(6,'BM','Bimensual (60 DIAS)','bimensuales')
+		,(4,'TR','Trimestral (90 DIAS)','trimestrales')
+		,(3,'CT','Trimestral (120 DIAS)','cuatrimestrales')
+		,(2,'SE','Trimestral (180 DIAS)','semianuales')
+		,(1,'AN','Anual (360 DIAS)','anuales')
+		,(null,'VC','Capital y rendimiento al vencimiento',NULL)
+		,(null,'RV','Renta variable',NULL)
+		,(null,'OT','Indefinido',NULL)
+	) per(frec,codigo,nombre,textoCondicion)
+GO
+
+
