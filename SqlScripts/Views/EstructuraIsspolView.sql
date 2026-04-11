@@ -1,8 +1,9 @@
-﻿alter view BVQ_BACKOFFICE.EstructuraIsspolView as
+﻿--select tvs_codigo,tvs_descripcion from bvq_administracion.tipo_valor_sb order by tvs_codigo
+alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	select
 	tiv.tiv_id,
 	tiv.TIV_CODIGO_TITULO_SIC,evp.htp_fecha_operacion,
-	 Interes_Acumulado=iif(oper<>-1 or oper=-1 and tiv.tiv_tipo_renta=153 and tvs.TVS_CODIGO not in (4,5,8,9), 0, evp.itrans*errVNFactor.errVNFactor) --itrans=sum(itrans)
+	 Interes_Acumulado=iif(oper<>-1 or oper=-1 and tiv.tiv_tipo_renta=153 and tvs.TVS_CODIGO in (4,5,8,9), 0, evp.itrans*errVNFactor.errVNFactor) --itrans=sum(itrans)
 	,[Vector_Precio]=tiv_codigo_vector
 	,[Fecha_Vencimiento]=tiv.TIV_FECHA_VENCIMIENTO
 	--,[Valor nominal]=valor_nominal
@@ -102,7 +103,7 @@
 		 tfl.TFL_FECHA_INICIO
 		 --evp.Fecha_Ultimo_Pago
 		,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
-	,[Dias_por_vencer]=dbo.fnDias(evp.htp_fecha_operacion,tfl.TFL_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)
+	,[Dias_por_vencer]=dbo.fnDias(evp.htp_fecha_operacion,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)
 	,[Fuente_Cotizacion]='Q'
 	,[Yield]=case when tiv.tiv_tipo_renta=154 then null when tiv.TIV_FECHA_VENCIMIENTO<dateadd(yy,1,evp.htp_fecha_operacion) /*porque se pide que la inversión sea menor a un año*/
 		and
