@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerIngresosPorInversiones]
+﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerIngresosPorInversiones]
     @i_fechaOperacion DATE,
 	@i_lga_id int     
 AS
@@ -17,17 +17,37 @@ BEGIN
 
     SET @FechaFinMes = EOMONTH(@i_fechaOperacion);
     SELECT
-		inversion = CONCAT(sector, ' ', tiv_tipo_renta),
+		inversion = SCI_NOMBRE,--CONCAT(sector, ' ', tiv_tipo_renta),
 		sum(capital) as capital,
 		sum(iamortizacion) as iamortizacion,
-		por_codigo,
-		max(fecha) as fecha
-
-    FROM bvq_backoffice.[DetalleRecuperacionesIsspolFondos]
-    WHERE fecha BETWEEN @FechaInicioMes AND @FechaFinMes
+		por.por_codigo,
+		max(fecha) as fecha,
+        SCI.SCI_ORD
+    --select distinct sci_nombre--*
+    FROM
+    BVQ_BACKOFFICE.PORTAFOLIO POR
+    cross join
+    --select * from
+    BVQ_ADMINISTRACION.SECTOR_ISSPOL SCI
+    left join bvq_backoffice.DetalleRecuperacionesIsspolFondos d
+        cross apply (
+            select secIsspol=case
+                when d.tvl_codigo='ACC' then 'ACCIONES'
+                when d.tiv_tipo_renta=154 then 'INVERSIONES DE RENTA VARIABLE EN EL SECTOR PRIVADO'
+                when d.sector='Público' then 'INVERSIONES DE RENTA FIJA EN EL SECTOR PUBLICO'
+                when d.sector='Privado no Financ.' then 'INVERSIONES DE RENTA FIJA EN EL SECTOR PRIVADO'
+                when d.sector='Privado Financiero' then 'TÍTULOS EMITIDOS POR INSTITUCIONES FINANCIERAS'
+                else 'OTRAS'
+            end
+        ) secMap
+    on SCI.SCI_NOMBRE=secMap.secIsspol
+        and por.por_id=d.por_id
+        and fecha BETWEEN @FechaInicioMes AND @FechaFinMes
     GROUP BY
-		CONCAT(sector, ' ', tiv_tipo_renta),
-		por_codigo
+		SCI.SCI_NOMBRE,SCI.SCI_ORD,--CONCAT(sector, ' ', tiv_tipo_renta),
+		por.por_codigo,por.por_ord
     ORDER BY
-        por_codigo;
+        por.por_ord,SCI.SCI_ORD;
 END
+go
+exec [BVQ_BACKOFFICE].[ObtenerIngresosPorInversiones] '2024-08-01T23:59:59',null
