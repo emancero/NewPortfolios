@@ -200,14 +200,25 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("obteneringresosporinversiones", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
-    comm.CommandText = "dropifexists 'bvq_administracion.ObtenerActivosInmobiliariosISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerActivosInmobiliariosISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'bvq_administracion.tfObtenerActivosInmobiliariosISSPOL'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("tfObtenerActivosInmobiliariosISSPOL", "Functions", suffix: false);
     comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'bvq_administracion.ObtenerActivosInmobiliariosISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerActivosInmobiliariosISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'bvq_backoffice.InsertarActivosInmobiliariosISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarActivosInmobiliariosISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'bvq_backoffice.ActualizarActivosInmobiliariosISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ActualizarActivosInmobiliariosISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'bvq_administracion.ObtenerComposicionAccionariaISSPOL'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerComposicionAccionariaISSPOL", "Procedure", suffix: false);
