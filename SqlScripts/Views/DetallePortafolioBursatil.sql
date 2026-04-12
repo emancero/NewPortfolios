@@ -1,6 +1,6 @@
-﻿CREATE VIEW BVQ_BACKOFFICE.DetallePortafolioBursatil
-AS
-SELECT 
+﻿CREATE VIEW [BVQ_BACKOFFICE].[DetallePortafolioBursatil] AS
+SELECT
+    v.htp_id,v.compra_htp_id,
 	sector =
     CASE itcsector.itc_valor
         WHEN 'Público - No Financiero'  THEN 'Público'
@@ -18,10 +18,14 @@ SELECT
     v.valefeoper,
     v.htp_comision_bolsa,
     v.tasa_cupon,
-	condicion = null,
+    condicion = CASE 
+        WHEN p.textoCondicion IS NOT NULL 
+            THEN 'Cupones ' + p.textoCondicion + ' de interés y capital'
+        ELSE p.nombre
+    END,
 	interes_a_recibir=(select sum(iamortizacion) from bvq_backoffice.compraventaflujo c where c.htp_id=v.htp_id),
     recursos=v.tpo_recursos,
-	dbo.fnDias(v.fecha_compra, v.tiv_fecha_vencimiento, v.tiv_tipo_base) 
+	dbo.fnDias(v.fecha_compra, v.tiv_fecha_vencimiento, tiv.tiv_tipo_base) 
         AS plazo_dias,
     v.tiv_fecha_vencimiento,
     CASE 
@@ -35,8 +39,15 @@ FROM bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
 INNER JOIN bvq_backoffice.titulos_portafolio tpo
     ON tpo.tpo_id = v.htp_tpo_id
 join bvq_administracion.titulo_valor tiv on tiv.tiv_id=v.tiv_id
+left join bvq_administracion.periodicidadSB p on (
+	tiv.tiv_tipo_base=354 and p.frec=tiv.tiv_frecuencia
+	or tiv.tiv_tipo_base=355 and p.codigo='VC'
+	or tiv.tiv_tipo_renta=154 and p.codigo='RV'
+)
 join bvq_administracion.emisor ems on tiv.tiv_emisor=ems.ems_id
 join bvq_administracion.item_catalogo itcsector on ems.ems_sector=itcsector.itc_id
 WHERE ISNULL(IPR_ES_CXC,0)=0 
 --and tvl_nombre not like 'bonos del estado'
-and v.oper = 0
+and v.oper = 0 
+and v.compra_htp_id=v.htp_id
+--and datediff(m,htp_fecha_operacion,'20240801')=0

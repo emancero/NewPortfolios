@@ -11,7 +11,7 @@ select
 			END
 		) AS sector,
 		tvl_nombre,
-		max(evp.fecha_compra) as fecha_compra,
+		max(coalesce(tpo.TPO_FECHA_COMPRA_ANTERIOR, evp.fecha_compra)) AS fecha_compra,
 		max(evp.tiv_fecha_vencimiento) as fecha_vencimiento,
 		max(ems.EMS_NOMBRE) as nombre,
 		saldo_valor_nominal=max(evp.saldo),--cap.movCapital),--sum(evp.saldo),
@@ -24,7 +24,7 @@ select
 		--pago_total=sum(case when evp.es_vencimiento_interes=0 then amount else 0 end)+sum(isnull(case when evp.es_vencimiento_interes=1 then evp.iAmortizacion end,0)),
 		fecha_pago=fecha,
 		fecha_de_vencimiento_flujo=max(evp.fecha_original),
-		acciones_judiciales=null,
+		acciones_judiciales=CONCAT('Realizó el pago del flujo No. ', ' ', tfl_periodo),
 		max(iif(isnull(ipr_es_cxc,0)=1,'Otras cuentas por cobrar',case when evp.tiv_tipo_renta=153 then 'Inversiones de Renta Fija' else 'Inversiones de Renta Variable' end)) as primer_nivel,
 		max(iif(tvl_codigo in ('OBL','BE','VCC'),'Con cupón de capital e interés','Al vencimiento capital e interés')) as tipo_flujo,
 		evp.tiv_tipo_renta, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,--,htp_fecha_operacion
@@ -66,6 +66,6 @@ select
 		AND evp.rubro IN ('AMOUNT', 'amountcxc','INTAcc', 'PROV','valnom')
 		--and fecha between '20251201' and '20251231'
  
-		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,tvl_codigo, tpo.por_id--,htp_fecha_operacion
+		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,tvl_codigo, tpo.por_id, tfl_periodo--,htp_fecha_operacion
 	go
 	

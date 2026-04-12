@@ -1,4 +1,4 @@
-﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerRecuperacionesSBS
+﻿ALTER PROCEDURE [BVQ_BACKOFFICE].[ObtenerRecuperacionesSBS]
     @i_fechaOperacion DATE,
 	@i_lga_id int     
 AS
@@ -38,6 +38,7 @@ SELECT
 		,pago_total=isnull(capital,0)+isnull(iamortizacion,0)
 		,fecha_pago
 		,fecha_de_vencimiento_flujo
+		,vencimiento_feriado
 		,acciones_judiciales
 		,primer_nivel
 		,tipo_flujo

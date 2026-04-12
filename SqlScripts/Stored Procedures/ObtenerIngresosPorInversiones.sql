@@ -22,7 +22,8 @@ BEGIN
 		sum(iamortizacion) as iamortizacion,
 		por.por_codigo,
 		max(fecha) as fecha,
-        SCI.SCI_ORD
+        SCI.SCI_ORD,
+        por.por_ord
     --select distinct sci_nombre--*
     FROM
     BVQ_BACKOFFICE.PORTAFOLIO POR
@@ -49,5 +50,5 @@ BEGIN
     ORDER BY
         por.por_ord,SCI.SCI_ORD;
 END
-go
-exec [BVQ_BACKOFFICE].[ObtenerIngresosPorInversiones] '2024-08-01T23:59:59',null
+
+
