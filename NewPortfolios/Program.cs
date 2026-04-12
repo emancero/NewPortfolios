@@ -223,9 +223,14 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerComposicionAccionariaISSPOL", "Procedure", suffix: false);
     comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("Fixes activos inmobiliarios", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.SECTOR_ISSPOL'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("SECTOR_ISSPOL", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
 
 
     //1-feb-2026
