@@ -199,7 +199,6 @@
     <None Include="Change Scripts\ACTIVOS_INMOBILIARIOS.sql" />
     <None Include="Views\DetalleRecuperacionesIsspolFondos.sql" />
     <None Include="Views\DetalleRecuperacionesIsspol.sql" />
-    <None Include="Views\tfObtenerActivosInmobiliariosISSPOL.sql" />
     <None Include="Views\SecuenciaCompra.sql" />
     <None Include="Stored Procedures\ObtenerRecuperacionesSBS.sql" />
     <None Include="Views\DetallePortafolioBursatil.sql" />

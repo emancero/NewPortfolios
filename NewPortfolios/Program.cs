@@ -206,7 +206,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'bvq_administracion.tfObtenerActivosInmobiliariosISSPOL'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("tfObtenerActivosInmobiliariosISSPOL", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).GetCode("tfObtenerActivosInmobiliariosISSPOL", "Functions", suffix: false);
     comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'bvq_administracion.ObtenerComposicionAccionariaISSPOL'";
     comm.ExecuteNonQuery();
