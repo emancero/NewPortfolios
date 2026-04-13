@@ -206,6 +206,7 @@
     <None Include="Stored Procedures\InsertarActivosInmobiliariosISSPOL.sql" />
     <None Include="Stored Procedures\ActualizarActivosInmobiliariosISSPOL.sql" />
     <None Include="Change Scripts\Fixes activos inmobiliarios.sql" />
+    <None Include="Views\ISSPOL_DETALLE_LIMITES.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
