@@ -206,6 +206,8 @@
     <None Include="Stored Procedures\InsertarActivosInmobiliariosISSPOL.sql" />
     <None Include="Stored Procedures\ActualizarActivosInmobiliariosISSPOL.sql" />
     <None Include="Change Scripts\Fixes activos inmobiliarios.sql" />
+    <None Include="Change Scripts\Migrar tabla Dividendos.sql" />
+    <None Include="Functions\fnUltimoDiaLaborable.sql" />
     <None Include="Views\ISSPOL_DETALLE_LIMITES.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +246,7 @@
     <None Include="Stored Procedures\ObtenerComposicionAccionariaISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerActivosInmobiliariosISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerIngresosPorInversiones.sql" />
+    <Build Include="Stored Procedures\spUltimoDiaLaborable.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
