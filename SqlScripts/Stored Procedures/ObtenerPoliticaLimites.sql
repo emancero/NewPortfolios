@@ -1,4 +1,4 @@
-﻿create procedure BVQ_BACKOFFICE.ObtenerPoliticaLimites
+﻿alter procedure BVQ_BACKOFFICE.ObtenerPoliticaLimites
 	 @i_fecha_corte datetime = '2025-06-30T23:59:59'
 	,@i_lga_id int = null
 as
@@ -108,7 +108,7 @@ begin
 		when tvl_codigo in ('FI') or tfcorte>='20251126' and tvl_codigo='CDP' then 'FONDOS DE INVERSIÓN COLECTIVO / COTIZADO'
 		when tvl_codigo in ('CDP','VTP') then 'VALORES DE PARTICIPACIÓN'
 		end--,*
-		--when 
+		--when
 		from bvq_backoffice.portafoliocorte pc
 		left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pc.TIV_ID and pc.tfcorte>=VNU.VNU_FECHA_INICIO and pc.tfcorte<VNU.VNU_FECHA_FIN
 		where isnull(ipr_es_cxc,0)=0 and sal>0
@@ -118,11 +118,13 @@ begin
 		,excedentes=isnull(sum(excedentes),0)
 		,sinClasificar=isnull(sum(sinClasificar),0)
 		,sec.TIPO_RENTA,sec.SECTOR,PCT,alert
-	,r=row_number() over (partition by sec.TIPO_RENTA order by ord desc)
+		,r=row_number() over (partition by sec.TIPO_RENTA order by ord desc)
+		,sec.etiqueta
 	from
 	(values
 		 (1,'19000101','2025-12-08T23:59:59')
-		,(2,'20251209','2999-12-31T23:59:59')
+		,(2,'20251209','2026-04-07T23:59:59')
+		,(3,'20260408','2999-12-31T23:59:59')
 	) lim(LIM_ID, LIM_DESDE, LIM_HASTA)
 	join
 	BVQ_BACKOFFICE.ISSPOL_DETALLE_LIMITES sec
@@ -130,6 +132,6 @@ begin
 	left join a
 	on sec.SECTOR=a.sector
 	where @i_fecha_corte between LIM_DESDE and LIM_HASTA
-	group by sec.sector,sec.tipo_renta,pct,ord,alert order by ord
+	group by sec.sector,sec.tipo_renta,pct,ord,alert, sec.etiqueta order by ord
 
 end
