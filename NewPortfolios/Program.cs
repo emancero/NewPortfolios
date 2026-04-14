@@ -2,15 +2,6 @@
 using Microsoft.Data.SqlClient;
 using System.Transactions;
 
-void Deploy(string name, SqlConnection conn)
-{
-    if (conn == null) return;
-
-    SqlCommand comm = conn.CreateCommand();
-    comm.CommandText = (new GetObjectCode()).GetCode("Menu Reportes de Inversiones", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-    return;
-}
 //return; //prevenir ejecución accidental
 string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
@@ -20,7 +11,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
-    Deploy("Reportes y ProvPivot", conn);
+    new NewPortfolios.Deploy("Reportes y ProvPivot", conn);
 
     conn.Close();
     scope.Complete();
