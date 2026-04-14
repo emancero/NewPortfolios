@@ -27,7 +27,7 @@ BEGIN
         BEGIN
             IF EXISTS (
                 SELECT 1
-                FROM [sicav].[BVQ_BACKOFFICE].[DIA_FERIADO]
+                FROM [BVQ_BACKOFFICE].[DIA_FERIADO]
                 WHERE CAST(DFE_FECHA_INICIO AS DATE) <= CAST(@DiaCandidato AS DATE)
                   AND CAST(DFE_FECHA_FIN AS DATE)   >= CAST(@DiaCandidato AS DATE)
             )
