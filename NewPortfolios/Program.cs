@@ -1,6 +1,16 @@
 ﻿//Ejecuta scripts en el orden correcto
 using Microsoft.Data.SqlClient;
 using System.Transactions;
+
+void Deploy(string name, SqlConnection conn)
+{
+    if (conn == null) return;
+
+    SqlCommand comm = conn.CreateCommand();
+    comm.CommandText = (new GetObjectCode()).GetCode("Menu Reportes de Inversiones", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    return;
+}
 //return; //prevenir ejecución accidental
 string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
@@ -10,10 +20,14 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
-    comm.CommandType = System.Data.CommandType.Text;
-    
-    //commandos
+    Deploy("Reportes y ProvPivot", conn);
 
+    conn.Close();
+    scope.Complete();
+    return;
+
+    //commandos
+    /*
     //26-ene-2026
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioAprox'";
     comm.ExecuteNonQuery();
@@ -231,7 +245,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("SECTOR_ISSPOL", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
-
+    */
 
     //1-feb-2026
     /*comm.CommandText = (new GetObjectCode()).GetCode("HISTORICO_TITULOS_PORTAFOLIO", "Change Script", suffix: false);
