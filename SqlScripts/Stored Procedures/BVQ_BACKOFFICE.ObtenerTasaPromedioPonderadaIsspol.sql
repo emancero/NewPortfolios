@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerTasaPromedioPonderadaIsspol
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerTasaPromedioPonderadaIsspol]
 	@i_fechaCorte DateTime,
 	@i_lga_id int=null
 AS
@@ -47,8 +47,6 @@ BEGIN
     WHERE  Isnull(ipr_es_cxc, 0) = 0
            AND sal > 0
            AND tiv_tipo_renta = 153
-           AND sector_general = 'SEC_PUB_NFIN'
     ORDER  BY 1 
- 
-
 END
+
