@@ -210,6 +210,7 @@
     <None Include="Functions\fnUltimoDiaLaborable.sql" />
     <None Include="Views\ISSPOL_DETALLE_LIMITES.sql" />
     <None Include="Stored Procedures\BVQ_BACKOFFICE.ObtenerTasaPromedioPonderadaIsspol.sql" />
+    <None Include="Change Scripts\TablaFirma.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
