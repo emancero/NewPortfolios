@@ -22,7 +22,7 @@ namespace NewPortfolios
             ExecuteScript(objectName, type, comm);
         }
 
-        internal Deploy(string name, SqlConnection conn)
+        internal void Start(string name, SqlConnection conn)
         {
             if (conn == null) return;
 
@@ -33,12 +33,14 @@ namespace NewPortfolios
 
             CreateObject("BVQ_BACKOFFICE", "spUltimoDiaLaborable", "Stored Procedure", comm);
             CreateObject("dbo", "fnUltimoDiaLaborable", "Function", comm);
-            comm.CommandText = (new GetObjectCode()).GetCode("ACTIVOS_INMOBILIARIOS", "Change Script", suffix: false);
+            ExecuteScript("ACTIVOS_INMOBILIARIOS", "Change Script", comm);
             comm.ExecuteNonQuery();
+
             CreateObject("BVQ_BACKOFFICE", "ObtenerActivosInmobiliariosISSPOL", "Stored Procedure", comm);
             CreateObject("BVQ_BACKOFFICE", "ActualizarActivosInmobiliariosISSPOL", "Stored Procedure", comm);
             CreateObject("BVQ_BACKOFFICE", "InsertarActivosInmobiliariosISSPOL", "Stored Procedure", comm);
             CreateObject("BVQ_BACKOFFICE", "ObtenerComposicionAccionariaISSPOL", "Stored Procedure", comm);
+            ExecuteScript("Fixes activos inmobiliarios", "Change Script", comm);
 
             ExecuteScript("SECTOR_ISSPOL", "Change Script", comm);
             CreateObject("BVQ_BACKOFFICE", "DetalleRecuperacionesIsspolFondos", "View", comm);
@@ -54,6 +56,11 @@ namespace NewPortfolios
             ExecuteScript("Migrar tabla dividendos", "Change Script", comm);
             CreateObject("BVQ_BACKOFFICE", "ObtenerComposicionAccionariaISSPOL", "Stored Procedure", comm);
 
+            CreateObject("BVQ_BACKOFFICE", "ObtenerTasaPromedioPonderadaIsspol", "Stored Procedure", comm);
+
+            ExecuteScript("TablaFirma", "Change Script", comm);
+            CreateObject("BVQ_ADMINISTRACION", "ObtenerFirmasPorFecha", "Stored Procedure", comm);
+            
 
         }
     }

@@ -1,4 +1,4 @@
-﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerIngresosPorInversiones]
+﻿create PROCEDURE [BVQ_BACKOFFICE].[ObtenerIngresosPorInversiones]
     @i_fechaOperacion DATE,
 	@i_lga_id int     
 AS

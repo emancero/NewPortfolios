@@ -1,4 +1,4 @@
-﻿ALTER VIEW BVQ_BACKOFFICE.DetalleRecuperacionesIsspol AS
+﻿CREATE VIEW BVQ_BACKOFFICE.DetalleRecuperacionesIsspol AS
 SELECT
     tipo_renta,
     sector,

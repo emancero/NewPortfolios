@@ -11,6 +11,4 @@
 		,(null,'RV','Renta variable',NULL)
 		,(null,'OT','Indefinido',NULL)
 	) per(frec,codigo,nombre,textoCondicion)
-GO
-
 

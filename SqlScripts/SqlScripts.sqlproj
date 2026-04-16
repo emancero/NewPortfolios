@@ -209,9 +209,9 @@
     <None Include="Change Scripts\Migrar tabla Dividendos.sql" />
     <None Include="Functions\fnUltimoDiaLaborable.sql" />
     <None Include="Views\ISSPOL_DETALLE_LIMITES.sql" />
-    <None Include="Stored Procedures\BVQ_BACKOFFICE.ObtenerTasaPromedioPonderadaIsspol.sql" />
+    <None Include="Stored Procedures\ObtenerTasaPromedioPonderadaIsspol.sql" />
     <None Include="Change Scripts\TablaFirma.sql" />
-    <None Include="Stored Procedures\BVQ_ADMINISTRACION.ObtenerFirmasPorFecha.sql" />
+    <None Include="Stored Procedures\ObtenerFirmasPorFecha.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

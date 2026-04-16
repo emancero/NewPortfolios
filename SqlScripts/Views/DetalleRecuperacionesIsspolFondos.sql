@@ -1,4 +1,4 @@
-﻿alter VIEW BVQ_BACKOFFICE.DetalleRecuperacionesIsspolFondos
+﻿create VIEW BVQ_BACKOFFICE.DetalleRecuperacionesIsspolFondos
 AS
 select	
 		evp.tiv_tipo_renta as tipo_renta,
@@ -67,5 +67,5 @@ select
 		--and fecha between '20251201' and '20251231'
  
 		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,tvl_codigo, tpo.por_id, tfl_periodo--,htp_fecha_operacion
-	go
+
 	

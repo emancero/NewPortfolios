@@ -11,7 +11,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
-    new NewPortfolios.Deploy("Reportes y ProvPivot", conn);
+    (new NewPortfolios.Deploy()).Start("Reportes y ProvPivot", conn);
 
     conn.Close();
     scope.Complete();

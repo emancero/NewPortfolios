@@ -1,4 +1,4 @@
-﻿ALTER PROCEDURE [BVQ_BACKOFFICE].[ObtenerRecuperacionesSBS]
+﻿create PROCEDURE [BVQ_BACKOFFICE].[ObtenerRecuperacionesSBS]
     @i_fechaOperacion DATE,
 	@i_lga_id int     
 AS

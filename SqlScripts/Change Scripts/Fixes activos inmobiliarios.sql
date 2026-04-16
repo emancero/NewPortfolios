@@ -46,7 +46,7 @@ exec [BVQ_BACKOFFICE].[InsertarActivosInmobiliariosISSPOL]
 		@IMB_CUENTA_CONTABLE='150101002',--   VARCHAR(100),
 		@IMB_FORMA_ADQUISICION='Dación en pago',-- VARCHAR(1500),
 		@i_lga_id=null
-go
+
 update imb set imb_tipo='Centro Biblico el Pacto-Programa S.S.',imb_valor_libros=3754175.67,imb_cuenta_contable='7180101001'
 from bvq_backoffice.activos_inmobiliarios imb
 where imb_tipo like 'Centro Biblico%el Pacto-Programa S.S.'
