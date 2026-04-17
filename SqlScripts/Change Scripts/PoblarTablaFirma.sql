@@ -1,4 +1,4 @@
-﻿if exists(select * from bvq_administracion.firma)
+﻿if not exists(select * from bvq_administracion.firma)
 begin
 	SET IDENTITY_INSERT [BVQ_ADMINISTRACION].[FIRMA] ON 
 	INSERT [BVQ_ADMINISTRACION].[FIRMA] ([FIR_ID], [FIR_NOMBRE], [FIR_CARGO], [FIR_FECHA_VINCULACION]) VALUES (1, N'Tnte. Ing. Katherine Toapanta Vilcaguano', N'DIRECTOR ECONÓMICO FINANCIERO', CAST(N'1990-01-01T00:00:00.000' AS DateTime))

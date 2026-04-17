@@ -61,7 +61,9 @@ namespace NewPortfolios
 
             ExecuteScript("TablaFirma", "Change Script", comm);
             CreateObject("BVQ_ADMINISTRACION", "ObtenerFirmasPorFecha", "Stored Procedure", comm);
-            
+
+            ExecuteScript("PoblarTablaFirma", "Change Script", comm);
+
 
         }
     }
