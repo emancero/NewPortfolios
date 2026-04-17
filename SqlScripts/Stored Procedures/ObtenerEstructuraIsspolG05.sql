@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG05]
+--select * from _temp.fideicomiso_santa_cruz
 --declare
     @i_fechaCorte DATETIME='2023-12-31T23:59:59',
-	@i_todos_los_vigentes bit = 0,
+	@i_todos_los_vigentes bit = 1,
     @i_lga_id     INT
 AS
 
@@ -49,6 +50,7 @@ BEGIN
 		and e.Tipo_Instrumento=23 --23=Encargo fiduciario
 	else
 		SELECT
+			e.fon_id,
 			e.EMS_NOMBRE,
 			Tipo_Id=TIPO_ID_EMISOR,
 			Id_Emisor,-- AS Identificacion,
@@ -83,10 +85,6 @@ BEGIN
 		and datediff(d,fecha_transaccion,@i_fechaCorte)=0 -- 1 para T-1
 		and e.Tipo_Instrumento=23 --23=Encargo fiduciario
 END
---La  tabla de donde se migró es la siguiente:
---select * from _temp.fideicomiso_santa_cruz
-
---Los FON_ID para las dos estructuraciones de F Santa Cruz son las siguientes:
 --select * from bvq_backoffice.fondo where fon_id in (475,849)
 --exec bvq_backoffice.generarvaloracionsb
 /*
