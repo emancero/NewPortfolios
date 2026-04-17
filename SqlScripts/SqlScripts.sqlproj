@@ -212,6 +212,7 @@
     <None Include="Stored Procedures\ObtenerTasaPromedioPonderadaIsspol.sql" />
     <None Include="Change Scripts\TablaFirma.sql" />
     <None Include="Stored Procedures\ObtenerFirmasPorFecha.sql" />
+    <None Include="Change Scripts\PoblarTablaFirma.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
