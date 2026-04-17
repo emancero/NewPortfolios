@@ -10,7 +10,7 @@ FROM bvq_seguridad.funcionalidad;
 IF NOT EXISTS (
     SELECT 1 
     FROM bvq_seguridad.funcionalidad 
-    WHERE FUN_NOMBRE = 'Inversiones SC'
+    WHERE FUN_NOMBRE = 'Reportes de Inversiones'
 )
 BEGIN
 
@@ -39,7 +39,7 @@ BEGIN
 		82,
 		'Bvq.Sipla.Isspol.Module.dll',
 		'Bvq.Sipla.Isspol.Module.SCInvestmentsView',
-		21,
+		163,
 		1,
 		106,
 		NULL

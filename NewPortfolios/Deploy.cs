@@ -36,6 +36,7 @@ namespace NewPortfolios
             ExecuteScript("ACTIVOS_INMOBILIARIOS", "Change Script", comm);
             comm.ExecuteNonQuery();
 
+            CreateObject("BVQ_BACKOFFICE", "tfObtenerActivosInmobiliariosISSPOL", "Function", comm);
             CreateObject("BVQ_BACKOFFICE", "ObtenerActivosInmobiliariosISSPOL", "Stored Procedure", comm);
             CreateObject("BVQ_BACKOFFICE", "ActualizarActivosInmobiliariosISSPOL", "Stored Procedure", comm);
             CreateObject("BVQ_BACKOFFICE", "InsertarActivosInmobiliariosISSPOL", "Stored Procedure", comm);
