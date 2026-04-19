@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG05]
+﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG05]
 --select * from _temp.fideicomiso_santa_cruz
 --declare
     @i_fechaCorte DATETIME='2023-12-31T23:59:59',
@@ -18,7 +18,7 @@ BEGIN
 			e.EMS_NOMBRE,
 			Tipo_Id=TIPO_ID_EMISOR,
 			Id_Emisor,-- AS Identificacion,
-			e.Codigo_Instrumento,
+			g.Codigo_Instrumento,
 			e.Tipo_Instrumento,
 			Numero_Contrato,
 			Numero_Inversion,
@@ -54,7 +54,7 @@ BEGIN
 			e.EMS_NOMBRE,
 			Tipo_Id=TIPO_ID_EMISOR,
 			Id_Emisor,-- AS Identificacion,
-			e.Codigo_Instrumento,
+			g.Codigo_Instrumento,
 			e.Tipo_Instrumento,
 			Numero_Contrato,
 			Numero_Inversion,

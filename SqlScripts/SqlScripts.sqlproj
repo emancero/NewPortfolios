@@ -213,6 +213,7 @@
     <None Include="Change Scripts\TablaFirma.sql" />
     <None Include="Stored Procedures\ObtenerFirmasPorFecha.sql" />
     <None Include="Change Scripts\PoblarTablaFirma.sql" />
+    <None Include="Change Scripts\Param TEMP_ISSPOL_IVS_MADE.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

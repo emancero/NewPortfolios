@@ -63,6 +63,8 @@ namespace NewPortfolios
             CreateObject("BVQ_ADMINISTRACION", "ObtenerFirmasPorFecha", "Stored Procedure", comm);
 
             ExecuteScript("PoblarTablaFirma", "Change Script", comm);
+            ExecuteScript("Param TEMP_ISSPOL_IVS_SC", "Change Script", comm);
+            ExecuteScript("Param TEMP_ISSPOL_IVS_MADE", "Change Script", comm);
 
 
         }
