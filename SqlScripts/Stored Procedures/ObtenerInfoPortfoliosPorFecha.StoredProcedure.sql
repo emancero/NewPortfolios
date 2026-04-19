@@ -59,6 +59,7 @@ BEGIN
 												,HTP_RENDIMIENTO float
 												,tpo_fecha_compra_anterior datetime
 												,sector_general varchar(20)
+                                                ,sector_detallado varchar(100)
 												,TPO_NOMBRE_BONO_GLOBAL varchar(100)
                                                 )
 												
@@ -96,6 +97,7 @@ BEGIN
 						,HTP_RENDIMIENTO
 						,tpo_fecha_compra_anterior
 						,sector_general
+                        ,sector_detallado
 						,TPO_NOMBRE_BONO_GLOBAL
 				from bvq_backoffice.portafoliocorte
 
@@ -289,7 +291,7 @@ BEGIN
 											   ,YIELD =
 												CASE
 													WHEN pcorte.[tvl_codigo] IN ('FAC','PCO','OBL','OCA','VCC')
-														 or pcorte.[tvl_codigo] IN ('BE') and (pcorte.fecha_compra>='20251118' or TPO_ACTA like 'BE%')
+														 or pcorte.[tvl_codigo] IN ('BE') and (pcorte.fecha_compra>='20251128' or TPO_ACTA like 'BE%')
 													THEN [HTP_RENDIMIENTO]
 													ELSE [tiv_tasa_interes]
 												END / 100.0
@@ -302,9 +304,6 @@ BEGIN
                                                         else 1 end
                                                     end
                                                 ,SECTOR=CASE [sector_general] collate modern_spanish_ci_ai WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN
-
-
-
 												'PUBLICO' WHEN 'SEC_PUB_NFIN'
 												 THEN 'PUBLICO' END
                               ,INTERES_GANADO_2=
@@ -319,6 +318,12 @@ BEGIN
 												,pcorte.tiv_tipo_base
 												,NOMBRE_BONO=coalesce(nullif(pcorte.TPO_NOMBRE_BONO_GLOBAL,''),pcorte.TPO_ACTA)
 												,TPO_F1
+                                                ,SECTOR2=CASE [sector_general]
+					                                    WHEN 'SEC_PRI_FIN' THEN sector_detallado--'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA'
+					                                    WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO'
+					                                    WHEN 'SEC_PUB_FIN' THEN 'PUBLICO'
+					                                    WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO'
+				                                    END
 												--into #x
                 from @tbPortafolioCorte pcorte 
                                join bvq_administracion.tipo_valor tvl on pcorte.tiv_tipo_valor=tvl.tvl_id
