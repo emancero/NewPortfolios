@@ -66,8 +66,10 @@ namespace NewPortfolios
             ExecuteScript("Param TEMP_ISSPOL_IVS_SC", "Change Script", comm);
             ExecuteScript("Param TEMP_ISSPOL_IVS_MADE", "Change Script", comm);
 
-            CreateObject("BVQ_BACKOFFICE", "ObtenerInfoPortfoliosPorFecha", "Stored Procedure", comm);
+            CreateObject("BVQ_BACKOFFICE", "ObtenerInfoPortfoliosPorFecha.StoredProcedure", "Stored Procedure", comm);
 
+            CreateObject("BVQ_BACKOFFICE", "TotalRecuperacionesView", "View", comm);
+            CreateObject("BVQ_BACKOFFICE", "ObtenerTotalRecuperacionesPivot", "Stored Procedure", comm);
         }
     }
 }
