@@ -291,7 +291,7 @@ BEGIN
 											   ,YIELD =
 												CASE
 													WHEN pcorte.[tvl_codigo] IN ('FAC','PCO','OBL','OCA','VCC')
-														 or pcorte.[tvl_codigo] IN ('BE') and (pcorte.fecha_compra>='20251128' or TPO_ACTA like 'BE%')
+														 or pcorte.[tvl_codigo] IN ('BE') and (pcorte.fecha_compra>='20251118' or TPO_ACTA like 'BE%')
 													THEN [HTP_RENDIMIENTO]
 													ELSE [tiv_tasa_interes]
 												END / 100.0
