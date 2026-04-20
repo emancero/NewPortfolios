@@ -68,6 +68,7 @@ namespace NewPortfolios
 
             CreateObject("BVQ_BACKOFFICE", "ObtenerInfoPortfoliosPorFecha.StoredProcedure", "Stored Procedure", comm);
 
+            CreateObject("BVQ_BACKOFFICE", "ComprobanteIsspolRubros", "View", comm);
             CreateObject("BVQ_BACKOFFICE", "TotalRecuperacionesView", "View", comm);
             CreateObject("BVQ_BACKOFFICE", "ObtenerTotalRecuperacionesPivot", "Stored Procedure", comm);
         }
