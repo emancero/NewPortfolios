@@ -73,6 +73,9 @@ namespace NewPortfolios
             CreateObject("BVQ_BACKOFFICE", "ComprobanteIsspolRubros", "View", comm);
             CreateObject("BVQ_BACKOFFICE", "TotalRecuperacionesView", "View", comm);
             CreateObject("BVQ_BACKOFFICE", "ObtenerTotalRecuperacionesPivot", "Stored Procedure", comm);
+
+            CreateObject("BVQ_BACKOFFICE", "SecuenciaCompra", "View", comm);
+            ExecuteScript("Actualizar compra_htp_id", "Change Script", comm);
         }
     }
 }
