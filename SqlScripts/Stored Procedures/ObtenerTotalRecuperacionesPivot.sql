@@ -1,4 +1,4 @@
-﻿alter procedure BVQ_BACKOFFICE.ObtenerTotalRecuperacionesPivot
+﻿create procedure BVQ_BACKOFFICE.ObtenerTotalRecuperacionesPivot
 	 @i_fecha_ini datetime
 	,@i_fecha_fin datetime
 	,@i_lga_id int
