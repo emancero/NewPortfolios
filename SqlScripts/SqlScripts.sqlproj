@@ -215,6 +215,7 @@
     <None Include="Change Scripts\PoblarTablaFirma.sql" />
     <None Include="Change Scripts\Param TEMP_ISSPOL_IVS_MADE.sql" />
     <None Include="Change Scripts\Actualizar compra_htp_id.sql" />
+    <None Include="Views\PagoSB.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
