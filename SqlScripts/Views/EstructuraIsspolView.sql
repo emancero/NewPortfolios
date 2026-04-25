@@ -1,5 +1,4 @@
-﻿--select tvs_codigo,tvs_descripcion from bvq_administracion.tipo_valor_sb order by tvs_codigo
-alter view BVQ_BACKOFFICE.EstructuraIsspolView as
+﻿CREATE view BVQ_BACKOFFICE.EstructuraIsspolView as
 	select
 	tiv.tiv_id,
 	tiv.TIV_CODIGO_TITULO_SIC,evp.htp_fecha_operacion,
@@ -11,15 +10,21 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 
 	,[TIPO_ID_EMISOR]='R'
 	,[ID_EMISOR]=iif(ems.EMS_CODIGO='MONTECRISTI','0993121401001',pju.pju_identificacion)
-	,[Codigo_Instrumento]=bvq_administracion.GetIdentifierCode(
-		 coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original)
-		,tiv_codigo_isin)
+	,[Codigo_Instrumento]=case when tvl_codigo='ENC' then '11' else
+			bvq_administracion.GetIdentifierCode(
+			 coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original)
+			,tiv_codigo_isin)
+		end
 	,[Tipo_Instrumento]=TVS.TVS_CODIGO
-	,[id_Instrumento]=case bvq_administracion.GetIdentifierCode(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original),TIV_CODIGO_ISIN)
-		when '07' then rtrim(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original))+'-'+coalesce(fixNumeracion,fon.FON_NUMERACION)
-		when '01' then TIV_CODIGO_ISIN+'-'+fon.FON_NUMERACION
-		when '00' then replace(fon.FON_NUMERACION,'MONTECRISTI','SANTACRUZ')
-	 end
+	,[id_Instrumento]=
+	case when tvl_codigo='ENC' then '20181308006O00572'
+	else
+		 case bvq_administracion.GetIdentifierCode(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original),TIV_CODIGO_ISIN)
+			when '07' then rtrim(coalesce(nullif(tiv_codigo_vector,''),codigo_vector_original))+'-'+coalesce(fixNumeracion,fon.FON_NUMERACION)
+			when '01' then TIV_CODIGO_ISIN+'-'+fon.FON_NUMERACION
+			when '00' then fon.FON_NUMERACION--,'MONTECRISTI','SANTACRUZ')
+		 end
+	end
 	,[Bolsa_Valores]=case coalesce(fon_procedencia_null,opc_procedencia) when 'G' then 'Y' else coalesce(fon_procedencia_null,opc_procedencia) end
 	,[Fecha_Emision]=coalesce(tiv.TIV_FECHA_EMISION,iif(tiv.tiv_tipo_renta=154,TIV_FECHA_INSCRIPCION_SIC,null))
 	,[Tipo_Tasa]=case when tiv.tiv_tipo_renta=153 then
@@ -350,7 +355,7 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	join bvq_administracion.emisor ems on tiv.tiv_emisor=ems.ems_id
 	left join bvq_administracion.PERSONA_JURIDICA pju on pju.pju_id=ems.pju_id
 	join bvq_backoffice.inversion fon on fon.fon_id=evp.fon_id
-	cross apply(values(iif(fon.errValNom is not null,fon.errValNom/montooper, 1))) errVNFactor(errVNFactor)
+	cross apply(values(iif(fon.errValNom is not null,fon.errValNom/1e7, 1))) errVNFactor(errVNFactor)
 	--número de resolución isspol
 	--left join
 	--	siisspolweb.siisspolweb.inversion.inversion i
@@ -441,14 +446,14 @@ alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	ON VNU.TIV_ID=tiv.TIV_ID and evp.htp_fecha_operacion>=VNU.VNU_FECHA_INICIO and evp.htp_fecha_operacion<VNU.VNU_FECHA_FIN
 
 	--cache
-	cross apply (
+	outer apply (
 		select top 1 Valor_Mercado, precio_de_mercado, valorEfectivo
 		, saldo_valor_nominal, liq_rendimiento, Fecha_Ultimo_Pago
 		from BVQ_BACKOFFICE.VALORACION_SB v
 		where v.tpo_numeracion=evp.tpo_numeracion
-		and v.htp_fecha_operacion=evp.htp_fecha_operacion
+		and v.htp_fecha_operacion=case when evp.oper=1 then dateadd(d,-1,evp.htp_fecha_operacion) else evp.htp_fecha_operacion end
 	) cache
-
+	--where cache.valor_mercado is null
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
 	--where oper=-1 and datediff(d,htp_fecha_operacion,'20260208')=0
 	/*select precio_de_mercado,* from bvq_backoffice.valoracion_sb where htp_fecha_operacion='20260204'
@@ -469,5 +474,3 @@ select * from bvq_backoffice.EstructuraIsspolView e where e.fon_id in (select a.
 */
 --select * from bvq_administracion.emisor where ems_codigo='bcn'
 --select * from INFORMATION_SCHEMA.columns where table_name='estructuraisspolview' and column_name in ('tipo_instrumento','tvl_codigo','tippap')
-
-
