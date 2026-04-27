@@ -47,10 +47,10 @@
 		)
 	)
 		
-	,valor_pago_cupon=sum(
-		evp.valor_pago_cupon
-	)+
-	sum(
+	,valor_pago_cupon=isnull(sum(
+		evp.valor_pago_cupon+isnull(evp.ufo_uso_fondos,0)
+	),0)+
+	isnull(sum(
 		coalesce(
 				case when htp_dividendo=1 or es_vencimiento_interes=1 then 0 end
 			,
@@ -63,7 +63,7 @@
 			,capMonto
 			,-evp.montooper
 		)
-	)
+	),0)
 	,Fecha_Ultimo_Pago=evp.fecha
 	,Saldo_Valor_Nominal=sum(evp.saldo)-- --Activar en el caso de que sea antes: -isnull(sum(case when es_vencimiento_interes=0 then amount end),0)
 	,Precio_de_mercado=null
