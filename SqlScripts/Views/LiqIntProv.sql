@@ -122,11 +122,16 @@
 	,prov2=orgIAmortizacion-pr
 	,valor_pago_cupon=
 		case when tiv_tipo_renta<>154 and es_vencimiento_interes=1 then
-			case when evp_abono=1 then isnull(prEfectivo*capMonto,0)+vep_valor_efectivo-isnull(capMonto,0)--in=ve+ie-vn
+			case when evp_abono=1 then isnull(prEfectivo*capMonto,0)+vep_valor_efectivo-isnull(capMonto,0)--vep_valor_efectivo=(ie+pr);in=ve+(ie+pr+uf)-vn
 			else
 				coalesce(nullif(e.vep_valor_efectivo,0),amount)
 			end
 		end
+		--in=ve+ie+pr+uf-vn; in-pr-uf=ie-(vn-ve);
+		--ie=in+(vn-ve)-pr-uf
+		--la ganancia (no de interés) de la recuperación es la diferencia entre el vn y el ve del capital (vn-ve)
+		--entonces esta ganacia se suma al interés nominal para se refleje en el interés efectivo
+		--se resta la provisión y uso de fondos para que solo quede el interés efectivo del mes
 	from
 	(
 		select
