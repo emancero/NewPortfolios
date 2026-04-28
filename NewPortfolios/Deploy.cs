@@ -60,6 +60,7 @@ namespace NewPortfolios
             CreateObject("BVQ_BACKOFFICE", "ObtenerTasaPromedioPonderadaIsspol", "Stored Procedure", comm);
 
             ExecuteScript("TablaFirma", "Change Script", comm);
+            ExecuteScript("PoblarTablaFirma", "Change Script", comm);
             CreateObject("BVQ_ADMINISTRACION", "ObtenerFirmasPorFecha", "Stored Procedure", comm);
 
             ExecuteScript("PoblarTablaFirma", "Change Script", comm);
@@ -76,6 +77,9 @@ namespace NewPortfolios
 
             CreateObject("BVQ_BACKOFFICE", "SecuenciaCompra", "View", comm);
             ExecuteScript("Actualizar compra_htp_id", "Change Script", comm);
+
+            CreateObject("BVQ_ADMINISTRACION", "ObtenerTitulosYTiposValoresPorEmisorYPortafolio", "Stored Procedure", comm);
+
         }
     }
 }
