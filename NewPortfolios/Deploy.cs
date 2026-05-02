@@ -28,7 +28,7 @@ namespace NewPortfolios
 
             SqlCommand comm = conn.CreateCommand();
 
-            ExecuteScript("Menu Reportes de Inversiones", "Change Script", comm);
+            /*ExecuteScript("Menu Reportes de Inversiones", "Change Script", comm);
             comm.ExecuteNonQuery();
 
             CreateObject("BVQ_BACKOFFICE", "spUltimoDiaLaborable", "Stored Procedure", comm);
@@ -76,8 +76,10 @@ namespace NewPortfolios
             CreateObject("BVQ_BACKOFFICE", "ObtenerTotalRecuperacionesPivot", "Stored Procedure", comm);
 
             CreateObject("BVQ_BACKOFFICE", "SecuenciaCompra", "View", comm);
-            ExecuteScript("Actualizar compra_htp_id", "Change Script", comm);
+            ExecuteScript("Actualizar compra_htp_id", "Change Script", comm);*/
 
+            ExecuteScript("TablaFirma", "Change Script", comm);
+            ExecuteScript("PoblarTablaFirma", "Change Script", comm);
             CreateObject("BVQ_ADMINISTRACION", "ObtenerTitulosYTiposValoresPorEmisorYPortafolio", "Stored Procedure", comm);
 
         }
