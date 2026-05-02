@@ -78,9 +78,11 @@ namespace NewPortfolios
             CreateObject("BVQ_BACKOFFICE", "SecuenciaCompra", "View", comm);
             ExecuteScript("Actualizar compra_htp_id", "Change Script", comm);*/
 
-            ExecuteScript("TablaFirma", "Change Script", comm);
-            ExecuteScript("PoblarTablaFirma", "Change Script", comm);
-            CreateObject("BVQ_ADMINISTRACION", "ObtenerTitulosYTiposValoresPorEmisorYPortafolio", "Stored Procedure", comm);
+            //ExecuteScript("TablaFirma", "Change Script", comm);
+            //ExecuteScript("PoblarTablaFirma", "Change Script", comm);
+            //CreateObject("BVQ_ADMINISTRACION", "ObtenerTitulosYTiposValoresPorEmisorYPortafolio", "Stored Procedure", comm);
+
+            CreateObject("BVQ_BACKOFFICE", "PagoSB", "View", comm);
 
         }
     }
