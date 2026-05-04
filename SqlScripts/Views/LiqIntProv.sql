@@ -125,7 +125,17 @@
 	,prov2=orgIAmortizacion-pr
 	,valor_pago_cupon=
 		case when tiv_tipo_renta<>154 and es_vencimiento_interes=1 then
-			case when evp_abono=1 then isnull(prEfectivo*capMonto,0)+vep_valor_efectivo-isnull(capMonto,0)--vep_valor_efectivo=(ie+pr);in=ve+(ie+pr+uf)-vn
+			case when evp_abono=1 then --isnull(prEfectivo*capMonto,0)+vep_valor_efectivo-isnull(capMonto,0)--vep_valor_efectivo=(ie+pr);in=ve+(ie+pr+uf)-vn
+				--ve
+				round(
+					coalesce(
+						 e.ajusteVe
+						,prEfectivo*isnull(e.vn,0)
+					)
+				,2)
+				+pr--prv
+				+round(iif(e.fecha>='20250730', isnull(ufo_uso_fondos,0), 0)+coalesce(nullif(e.vep_valor_efectivo,0), amount)+isnull(ufo_rendimiento-pr,0),2)--ia
+				-round(isnull(e.vn,0),2)--vn
 			else
 				coalesce(nullif(e.vep_valor_efectivo,0),amount)
 			end
@@ -159,6 +169,9 @@
 			,l.plazo
 			,capMonto
 			,l.plazo_anterior
+			--campos de evtCap
+			,vn
+			,ajusteVe
 			from costo l
 			join
 			bvq_backoffice.evttemp e
@@ -169,6 +182,14 @@
 				from bvq_backoffice.evento_portafolio
 				where es_vencimiento_interes=0 and isnull(evp_abono,0)=0
 			) eCap on isnull(e.evp_abono,0)=0 and ecap.capHtpId=e.htp_id
+			--evtCap
+			left join (
+				select vn=nullif(vep_valor_efectivo,0)
+				,ajusteVe=EVP_AJUSTE_VALOR_EFECTIVO
+				,etempHtpId=htp_id
+				,etempFecha=fecha from bvq_backoffice.evtTemp where es_vencimiento_interes=0 and htp_tiene_valnom=1
+			) evtCap
+			on evtCap.etempHtpId=e.htp_id and evtCap.etempFecha=e.fecha and e.tipo_renta=153
 		) s
 	) e
 	--where tpo_numeracion='MDF-2013-12-19' and fecha='20231219'
