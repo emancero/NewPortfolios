@@ -219,6 +219,7 @@
     <None Include="Views\LiquidacionAReportar.sql" />
     <None Include="Stored Procedures\ObtenerTitulosYTiposValoresPorEmisorYPortafolio.sql" />
     <None Include="siisspolweb\FixCompareWithProjected.sql" />
+    <None Include="Change Scripts\SIN_INT_TRANS.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
