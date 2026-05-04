@@ -48,7 +48,7 @@
 	)
 		
 	,valor_pago_cupon=isnull(sum(
-		evp.valor_pago_cupon+isnull(evp.ufo_uso_fondos,0)
+		evp.valor_pago_cupon--+isnull(evp.ufo_uso_fondos,0)
 	),0)+
 	isnull(sum(
 		coalesce(
