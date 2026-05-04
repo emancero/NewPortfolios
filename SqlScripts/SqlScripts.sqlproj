@@ -218,6 +218,7 @@
     <None Include="Views\PagoSB.sql" />
     <None Include="Views\LiquidacionAReportar.sql" />
     <None Include="Stored Procedures\ObtenerTitulosYTiposValoresPorEmisorYPortafolio.sql" />
+    <None Include="siisspolweb\FixCompareWithProjected.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
