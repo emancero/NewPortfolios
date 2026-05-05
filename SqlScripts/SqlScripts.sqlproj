@@ -220,6 +220,7 @@
     <None Include="Stored Procedures\ObtenerTitulosYTiposValoresPorEmisorYPortafolio.sql" />
     <None Include="siisspolweb\FixCompareWithProjected.sql" />
     <None Include="Change Scripts\SIN_INT_TRANS.sql" />
+    <None Include="Change Scripts\Agregar_funcionalidad_reportes_credito_ISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
