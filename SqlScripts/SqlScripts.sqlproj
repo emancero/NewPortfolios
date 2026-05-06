@@ -259,6 +259,10 @@
     <None Include="Stored Procedures\ObtenerActivosInmobiliariosISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerIngresosPorInversiones.sql" />
     <Build Include="Stored Procedures\spUltimoDiaLaborable.sql" />
+    <Build Include="Stored Procedures\ReporteCreditosConcedidos.sql" />
+    <Build Include="Views\ReporteRendimientoPrivativasMora.sql" />
+    <Build Include="Views\RendimientoPrivativasMora.sql" />
+    <Build Include="Views\RendimientoPorPlazoPrivativasMora.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
