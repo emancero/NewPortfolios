@@ -58,7 +58,7 @@ BEGIN
          FUN_NOMBRE_DLL, FUN_NOMBRE_CLASE, FUN_PADRE, FUN_AUDITAR, FUN_ORDEN, FUN_ES_VERSION2)
     VALUES
         (@IdCartera, 6, N'Cartera de créditos', 89, 'CRED_CARTERA', 82,
-         NULL, NULL, @IdCreditos, 1, 1, NULL);
+         'Bvq.Sipla.Portfolio.Module.dll', 'Bvq.Sipla.Portfolio.Module.CarteraCreditosView', @IdCreditos, 1, 1, NULL);
 
     SET @NextId = @NextId + 1;
 END

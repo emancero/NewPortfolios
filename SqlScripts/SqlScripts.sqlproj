@@ -263,6 +263,7 @@
     <Build Include="Views\ReporteRendimientoPrivativasMora.sql" />
     <Build Include="Views\RendimientoPrivativasMora.sql" />
     <Build Include="Views\RendimientoPorPlazoPrivativasMora.sql" />
+    <Build Include="Stored Procedures\ObtenerCreditosCarteraISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
