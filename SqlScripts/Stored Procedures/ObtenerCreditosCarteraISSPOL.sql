@@ -4,6 +4,5 @@
 AS
 	BEGIN
 		select * from BVQ_BACKOFFICE.CREDITOS_CARTERA 
-		where CRC_FECHA_OTORGAMIENTO <= @i_fechaCorte
-		order by CRC_FECHA_OTORGAMIENTO desc
+		where CRC_FECHA_CIERRE = @i_fechaCorte
 	END
