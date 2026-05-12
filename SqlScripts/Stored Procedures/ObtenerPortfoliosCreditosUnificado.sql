@@ -1,0 +1,272 @@
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerPortfoliosCreditosUnificado]
+    @i_fechaCorte       datetime,
+    @i_lga_id           int,
+    @i_incluirNoPriv    bit      = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- =========================================================
+    -- Tabla temporal para resultados del primer SP (Portfolios)
+    -- =========================================================
+    IF OBJECT_ID('tempdb..#portfolios') IS NOT NULL DROP TABLE #portfolios;
+    CREATE TABLE #portfolios (
+        comitente               varchar(max),
+        ems_nombre              varchar(200),
+        tvl_descripcion         varchar(100),
+        renta                   varchar(100),
+        tta_nombre              varchar(100),
+        por_tipo_nombre         varchar(100),
+        por_codigo              varchar(100),
+        tiv_precio              float,
+        por_id                  int,
+        tiv_id                  int,
+        tiv_tasa_interes        float,
+        tiv_fecha_emision       datetime,
+        tiv_fecha_vencimiento   datetime,
+        htp_numeracion          varchar(250),
+        tfcorte                 datetime,
+        fecha_compra            datetime,
+        htp_precio_compra       float,
+        valefeoper              float,
+        htp_compra              float,
+        liq_rendimiento         float,
+        accrual                 float,
+        latest_inicio           datetime,
+        tpo_tipo_valoracion     bit,
+        sal                     float,
+        dias_al_corte           int,
+        prox_capital            datetime,
+        prox_interes            datetime,
+        POR_DESCRIPCION         varchar(max),
+        SBP_DESCRIPCION         varchar(100),
+        VALOR_UNITARIO          float,
+        VALOR_NOMINAL           float,
+        IPR_ES_CXC              bit,
+        TPO_ACTA                varchar(20),
+        VALOR_EFECTIVO          float,
+        TIPO_RENTA              varchar(20),
+        ESTADO                  varchar(30),
+        Por_ord                 int,
+        httpo_id                int,
+        tpo_recursos            varchar(30),
+        TPO_PRECIO_REGISTRO_VALOR_EFECTIVO float,
+        TPO_TABLA_AMORTIZACION  varchar(40),
+        CALIFICACION_DE_RIESGO  nvarchar(20),
+        PRECIO_DE_HOY           float,
+        INTERES_GANADO          float,
+        prEfectivo              float,
+        YIELD                   float,
+        NUEVO_VALOR_NOMINAL     float,
+        SECTOR                  varchar(100),
+        INTERES_GANADO_2        float,
+        tiv_tipo_base           int,
+        NOMBRE_BONO             varchar(100),
+        TPO_F1                  int,
+        SECTOR2                 varchar(100)
+    );
+
+    -- Solo ejecutamos el primer SP si se piden ambos resultados
+    IF @i_incluirNoPriv = 1
+    BEGIN
+        INSERT INTO #portfolios
+        EXEC [BVQ_BACKOFFICE].[ObtenerInfoPortfoliosPorFecha]
+            @i_fechaCorte = @i_fechaCorte,
+            @i_lga_id     = @i_lga_id;
+    END
+
+    -- =========================================================
+    -- Tabla temporal para resultados del segundo SP (Créditos)
+    -- =========================================================
+    IF OBJECT_ID('tempdb..#creditos') IS NOT NULL DROP TABLE #creditos;
+    CREATE TABLE #creditos (
+        por_ord                         int,
+        CRC_ID_CUENTA                   int,
+        ICB_CUENTA_CONTABLE_NOMBRE      varchar(200),
+        POR_CODIGO                      varchar(100),
+        ID                              int,
+        CRC_FECHA_CIERRE                datetime,
+        CRC_IDENTIFICACION              varchar(250),
+        CRC_NUMERO_OPERACION            varchar(250),
+        CRC_SALDO_PRESTAMO              float,
+        CRC_ID_PRODUCTO                 varchar(250),
+        CRC_SEGMENTO                    varchar(250),
+        CRC_FECHA_OTORGAMIENTO          datetime,
+        CRC_MONTO                       float,
+        CRC_FECHA_VENCIMIENTO           datetime,
+        CRC_TASA                        float,
+        CRC_ESTADO                      varchar(250),
+        CRC_PLAZO                       int,
+        CRC_ID_CUENTA_2                 int,
+        CRC_DESCRIPCION                 varchar(250),
+        CRC_ID                          int
+    );
+
+    INSERT INTO #creditos
+    EXEC [BVQ_BACKOFFICE].[ObtenerCreditosCarteraISSPOL]
+        @i_fechaCorte = @i_fechaCorte,
+        @i_lga_id     = @i_lga_id;
+
+    -- =========================================================
+    -- UNION ALL con todas las columnas en MAYÚSCULAS
+    -- CRC_MONTO se mapea a VALOR_NOMINAL, VALOR_EFECTIVO y NUEVO_VALOR_NOMINAL
+    -- =========================================================
+    SELECT
+        -- Columnas comunes unificadas
+        por_codigo                              AS POR_CODIGO,
+        Por_ord                                 AS POR_ORD,
+        CAST(1 AS bit)                          AS ES_PRIVATIVA,
+        -- Columnas del primer SP (con valores reales)
+        comitente                               AS COMITENTE,
+        ems_nombre                              AS EMS_NOMBRE,
+        tvl_descripcion                         AS TVL_DESCRIPCION,
+        renta                                   AS RENTA,
+        tta_nombre                              AS TTA_NOMBRE,
+        por_tipo_nombre                         AS POR_TIPO_NOMBRE,
+        tiv_precio                              AS TIV_PRECIO,
+        por_id                                  AS POR_ID,
+        tiv_id                                  AS TIV_ID,
+        tiv_tasa_interes                        AS TIV_TASA_INTERES,
+        tiv_fecha_emision                       AS TIV_FECHA_EMISION,
+        tiv_fecha_vencimiento                   AS TIV_FECHA_VENCIMIENTO,
+        htp_numeracion                          AS HTP_NUMERACION,
+        tfcorte                                 AS TFCORTE,
+        fecha_compra                            AS FECHA_COMPRA,
+        htp_precio_compra                       AS HTP_PRECIO_COMPRA,
+        valefeoper                              AS VALEFEOPER,
+        htp_compra                              AS HTP_COMPRA,
+        liq_rendimiento                         AS LIQ_RENDIMIENTO,
+        accrual                                 AS ACCRUAL,
+        latest_inicio                           AS LATEST_INICIO,
+        tpo_tipo_valoracion                     AS TPO_TIPO_VALORACION,
+        sal                                     AS SAL,
+        dias_al_corte                           AS DIAS_AL_CORTE,
+        prox_capital                            AS PROX_CAPITAL,
+        prox_interes                            AS PROX_INTERES,
+        POR_DESCRIPCION                         AS POR_DESCRIPCION,
+        SBP_DESCRIPCION                         AS SBP_DESCRIPCION,
+        VALOR_UNITARIO                          AS VALOR_UNITARIO,
+        VALOR_NOMINAL                           AS VALOR_NOMINAL,
+        IPR_ES_CXC                              AS IPR_ES_CXC,
+        TPO_ACTA                                AS TPO_ACTA,
+        VALOR_EFECTIVO                          AS VALOR_EFECTIVO,
+        TIPO_RENTA                              AS TIPO_RENTA,
+        ESTADO                                  AS ESTADO,
+        httpo_id                                AS HTTPO_ID,
+        tpo_recursos                            AS TPO_RECURSOS,
+        TPO_PRECIO_REGISTRO_VALOR_EFECTIVO      AS TPO_PRECIO_REGISTRO_VALOR_EFECTIVO,
+        TPO_TABLA_AMORTIZACION                  AS TPO_TABLA_AMORTIZACION,
+        CALIFICACION_DE_RIESGO                  AS CALIFICACION_DE_RIESGO,
+        PRECIO_DE_HOY                           AS PRECIO_DE_HOY,
+        INTERES_GANADO                          AS INTERES_GANADO,
+        prEfectivo                              AS PREFECTIVO,
+        YIELD                                   AS YIELD,
+        NUEVO_VALOR_NOMINAL                     AS NUEVO_VALOR_NOMINAL,
+        SECTOR                                  AS SECTOR,
+        INTERES_GANADO_2                        AS INTERES_GANADO_2,
+        tiv_tipo_base                           AS TIV_TIPO_BASE,
+        NOMBRE_BONO                             AS NOMBRE_BONO,
+        TPO_F1                                  AS TPO_F1,
+        SECTOR2                                 AS SECTOR2,
+        -- Columnas del segundo SP (todas NULL)
+        CAST(NULL AS int)                       AS CRC_ID_CUENTA,
+        CAST(NULL AS varchar(200))              AS ICB_CUENTA_CONTABLE_NOMBRE,
+        CAST(NULL AS int)                       AS ID,
+        CAST(NULL AS datetime)                  AS CRC_FECHA_CIERRE,
+        CAST(NULL AS varchar(250))              AS CRC_IDENTIFICACION,
+        CAST(NULL AS varchar(250))              AS CRC_NUMERO_OPERACION,
+        CAST(NULL AS float)                     AS CRC_SALDO_PRESTAMO,
+        CAST(NULL AS varchar(250))              AS CRC_ID_PRODUCTO,
+        CAST(NULL AS varchar(250))              AS CRC_SEGMENTO,
+        CAST(NULL AS datetime)                  AS CRC_FECHA_OTORGAMIENTO,
+        CAST(NULL AS float)                     AS CRC_MONTO,
+        CAST(NULL AS datetime)                  AS CRC_FECHA_VENCIMIENTO,
+        CAST(NULL AS float)                     AS CRC_TASA,
+        CAST(NULL AS varchar(250))              AS CRC_ESTADO,
+        CAST(NULL AS int)                       AS CRC_PLAZO,
+        CAST(NULL AS int)                       AS CRC_ID_CUENTA_2,
+        CAST(NULL AS varchar(250))              AS CRC_DESCRIPCION,
+        CAST(NULL AS int)                       AS CRC_ID
+    FROM #portfolios
+
+    UNION ALL
+
+    SELECT
+        -- Columnas comunes unificadas
+        POR_CODIGO                              AS POR_CODIGO,
+        por_ord                                 AS POR_ORD,
+        CAST(0 AS bit)                          AS ES_PRIVATIVA,
+        -- Columnas del primer SP (NULL salvo las mapeadas desde CRC_MONTO)
+        CAST(NULL AS varchar(max))              AS COMITENTE,
+        CAST(NULL AS varchar(200))              AS EMS_NOMBRE,
+        CAST(NULL AS varchar(100))              AS TVL_DESCRIPCION,
+        CAST(NULL AS varchar(100))              AS RENTA,
+        CAST(NULL AS varchar(100))              AS TTA_NOMBRE,
+        CAST(NULL AS varchar(100))              AS POR_TIPO_NOMBRE,
+        CAST(NULL AS float)                     AS TIV_PRECIO,
+        CAST(NULL AS int)                       AS POR_ID,
+        CAST(NULL AS int)                       AS TIV_ID,
+        CAST(NULL AS float)                     AS TIV_TASA_INTERES,
+        CAST(NULL AS datetime)                  AS TIV_FECHA_EMISION,
+        CAST(NULL AS datetime)                  AS TIV_FECHA_VENCIMIENTO,
+        CAST(NULL AS varchar(250))              AS HTP_NUMERACION,
+        CAST(NULL AS datetime)                  AS TFCORTE,
+        CAST(NULL AS datetime)                  AS FECHA_COMPRA,
+        CAST(NULL AS float)                     AS HTP_PRECIO_COMPRA,
+        CAST(NULL AS float)                     AS VALEFEOPER,
+        CAST(NULL AS float)                     AS HTP_COMPRA,
+        CAST(NULL AS float)                     AS LIQ_RENDIMIENTO,
+        CAST(NULL AS float)                     AS ACCRUAL,
+        CAST(NULL AS datetime)                  AS LATEST_INICIO,
+        CAST(NULL AS bit)                       AS TPO_TIPO_VALORACION,
+        CAST(NULL AS float)                     AS SAL,
+        CAST(NULL AS int)                       AS DIAS_AL_CORTE,
+        CAST(NULL AS datetime)                  AS PROX_CAPITAL,
+        CAST(NULL AS datetime)                  AS PROX_INTERES,
+        CAST(NULL AS varchar(max))              AS POR_DESCRIPCION,
+        CAST(NULL AS varchar(100))              AS SBP_DESCRIPCION,
+        CAST(NULL AS float)                     AS VALOR_UNITARIO,
+        CRC_MONTO                               AS VALOR_NOMINAL,
+        CAST(NULL AS bit)                       AS IPR_ES_CXC,
+        CAST(NULL AS varchar(20))               AS TPO_ACTA,
+        CRC_MONTO                               AS VALOR_EFECTIVO,
+        CAST(NULL AS varchar(20))               AS TIPO_RENTA,
+        CAST(NULL AS varchar(30))               AS ESTADO,
+        CAST(NULL AS int)                       AS HTTPO_ID,
+        CAST(NULL AS varchar(30))               AS TPO_RECURSOS,
+        CAST(NULL AS float)                     AS TPO_PRECIO_REGISTRO_VALOR_EFECTIVO,
+        CAST(NULL AS varchar(40))               AS TPO_TABLA_AMORTIZACION,
+        CAST(NULL AS nvarchar(20))              AS CALIFICACION_DE_RIESGO,
+        CAST(NULL AS float)                     AS PRECIO_DE_HOY,
+        CAST(NULL AS float)                     AS INTERES_GANADO,
+        CAST(NULL AS float)                     AS PREFECTIVO,
+        CAST(NULL AS float)                     AS YIELD,
+        CRC_MONTO                               AS NUEVO_VALOR_NOMINAL,
+        CAST(NULL AS varchar(100))              AS SECTOR,
+        CAST(NULL AS float)                     AS INTERES_GANADO_2,
+        CAST(NULL AS int)                       AS TIV_TIPO_BASE,
+        CAST(NULL AS varchar(100))              AS NOMBRE_BONO,
+        CAST(NULL AS int)                       AS TPO_F1,
+        CAST(NULL AS varchar(100))              AS SECTOR2,
+        -- Columnas del segundo SP (con valores reales)
+        CRC_ID_CUENTA                           AS CRC_ID_CUENTA,
+        ICB_CUENTA_CONTABLE_NOMBRE              AS ICB_CUENTA_CONTABLE_NOMBRE,
+        ID                                      AS ID,
+        CRC_FECHA_CIERRE                        AS CRC_FECHA_CIERRE,
+        CRC_IDENTIFICACION                      AS CRC_IDENTIFICACION,
+        CRC_NUMERO_OPERACION                    AS CRC_NUMERO_OPERACION,
+        CRC_SALDO_PRESTAMO                      AS CRC_SALDO_PRESTAMO,
+        CRC_ID_PRODUCTO                         AS CRC_ID_PRODUCTO,
+        CRC_SEGMENTO                            AS CRC_SEGMENTO,
+        CRC_FECHA_OTORGAMIENTO                  AS CRC_FECHA_OTORGAMIENTO,
+        CRC_MONTO                               AS CRC_MONTO,
+        CRC_FECHA_VENCIMIENTO                   AS CRC_FECHA_VENCIMIENTO,
+        CRC_TASA                                AS CRC_TASA,
+        CRC_ESTADO                              AS CRC_ESTADO,
+        CRC_PLAZO                               AS CRC_PLAZO,
+        CRC_ID_CUENTA_2                         AS CRC_ID_CUENTA_2,
+        CRC_DESCRIPCION                         AS CRC_DESCRIPCION,
+        CRC_ID                                  AS CRC_ID
+    FROM #creditos;
+
+END
