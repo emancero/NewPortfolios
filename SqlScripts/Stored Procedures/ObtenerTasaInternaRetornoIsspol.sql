@@ -10,7 +10,7 @@ BEGIN
         SELECT
             '' AS POR_CODIGO,
             DATEDIFF(M, @i_fecha_corte, fecha_vencimiento) AS mes,
-            -(DATEDIFF(M, @i_fecha_corte, fecha_vencimiento) / 12.0) AS exponente,
+            DATEDIFF(M, @i_fecha_corte, fecha_vencimiento) / 12.0 AS exponente,
             ISNULL(SUM(saldo), 0) AS recuperacion_capital,
             ISNULL(SUM(valor_pactado), 0) AS recuperacion_interes,
             SUM(ISNULL(saldo, 0) + ISNULL(valor_pactado, 0)) AS recuperacion_total, -- COEFICIENTE
