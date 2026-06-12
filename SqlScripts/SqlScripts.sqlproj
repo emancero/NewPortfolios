@@ -227,6 +227,8 @@
     <None Include="Stored Procedures\ObtenerTasaInternaRetornoIsspol.sql" />
     <None Include="Change Scripts\Agregar funcionalidad TIR.sql" />
     <None Include="Views\CreditoCuota.sql" />
+    <None Include="Change Scripts\Tabla CREDITO_CARTERA_CUOTA.sql" />
+    <None Include="Change Scripts\Job_ObtenerFlujoCajaISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

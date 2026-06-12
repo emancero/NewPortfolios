@@ -3,11 +3,11 @@
 -- Author:		Patricio Villacis G.
 -- Create date: 24/07/2023
 -- Description:	Obtiene información de flujo de caja ISSPOL
--- =============================================									
+-- =============================================
 --exec [BVQ_BACKOFFICE].[ObtenerFlujoCajaISSPOL] '2024-05-31T23:59:59',null
 CREATE procedure [BVQ_BACKOFFICE].[ObtenerFlujoCajaISSPOL]
 	@i_fechaFin datetime = '2024-05-31T23:59:59',--null,
-		@i_lga_id int
+	@i_lga_id int
 AS
 
 BEGIN
@@ -18,7 +18,6 @@ BEGIN
 		@fecha_inicio date
 	set @v_fechaIni = dateadd(s, -3, DATEADD(dd, 1, DATEDIFF(dd, 0, @i_fechaFin)))
 	set @v_oper=1
-
 
 	set @fechaCorte = dateadd(s, -3, DATEADD(dd, 1, DATEDIFF(dd, 0, @i_fechaFin)))
 	set @fecha_inicio = DATEADD(yy, DATEDIFF(yy, 0, @i_fechaFin), 0)
@@ -31,45 +30,23 @@ BEGIN
 		exec bvq_administracion.PrepararValoracionLinealCache
 
 	--[+]	Carga vencimientos de cartera ISSPOL
-		if (OBJECT_ID('[BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]') is NULL)
-		begin
-			select 
-					b.descripcion as por_codigo
-					,sum(valor) as total
-					,convert(date,cut.fecha_vencimiento) as fecha_vencimiento
-					,cr.id_cuenta
-					,max(convert(int,cut.pagada)) as pagada
-					,max(cut.id_rubro) as id_rubro
-					,sum(cut.saldo) as saldo
-					,max(cr.id_estado) as id_estado
-					,sum(case when cut.id_rubro='I' then cut.valor_pactado end) as valor_pactado
-			into [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-			from	siisspolweb.siisspolweb.credito.cuota cut
-					join siisspolweb.siisspolweb.credito.credito cr on cr.id_credito=cut.id_credito
-					join siisspolweb.siisspolweb.banco.cuenta b on b.id_cuenta=cr.id_cuenta
-			where cut.fecha_vencimiento>@v_fechaIni
-			group by b.descripcion,cut.fecha_vencimiento, cr.id_cuenta
-		End
-		else 
-		begin
-			truncate table [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-			insert into [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-			select 
-					b.descripcion as por_codigo
-					,sum(valor) as total
-					,convert(date,cut.fecha_vencimiento) as fecha_vencimiento
-					,cr.id_cuenta
-					,max(convert(int,cut.pagada)) as pagada
-					,max(cut.id_rubro) as id_rubro
-					,sum(cut.saldo) as saldo
-					,max(cr.id_estado) as id_estado
-					,sum(case when cut.id_rubro='I' then cut.valor_pactado end) as valor_pactado
-			from	siisspolweb.siisspolweb.credito.cuota cut
-					join siisspolweb.siisspolweb.credito.credito cr on cr.id_credito=cut.id_credito
-					join siisspolweb.siisspolweb.banco.cuenta b on b.id_cuenta=cr.id_cuenta
-			where cut.fecha_vencimiento>@v_fechaIni
-			group by b.descripcion,cut.fecha_vencimiento, cr.id_cuenta
-		end
+		truncate table [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
+		insert into [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
+		select 
+				b.descripcion as por_codigo
+				,sum(valor) as total
+				,convert(date,cut.fecha_vencimiento) as fecha_vencimiento
+				,cr.id_cuenta
+				,max(convert(int,cut.pagada)) as pagada
+				,max(cut.id_rubro) as id_rubro
+				,sum(cut.saldo) as saldo
+				,max(cr.id_estado) as id_estado
+				,sum(case when cut.id_rubro='I' then cut.valor_pactado end) as valor_pactado
+		from	siisspolweb.siisspolweb.credito.cuota cut
+				join siisspolweb.siisspolweb.credito.credito cr on cr.id_credito=cut.id_credito
+				join siisspolweb.siisspolweb.banco.cuenta b on b.id_cuenta=cr.id_cuenta
+		where cut.fecha_vencimiento>'20260430'
+		group by b.descripcion,cut.fecha_vencimiento, cr.id_cuenta
 	--[+]	Fin de carga vencimientos de cartera ISSPOL
 	
 	--[+]	Carga de homologacion de fondos y portafolios
@@ -162,12 +139,10 @@ BEGIN
 					,[I/E]=null
 			from bvq_backoffice.DetallePortafolio dpf
 					left join [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd on fnd.POR_ID=dpf.por_id
-			
 			where 
 				(idiff>0.05e or total>0.05e)
 				AND datediff(d,@i_fechaFin,dpf.htp_fecha_operacion)>=1-->=@i_fechaFin-->='20230101' and datediff(d,dpf.htp_fecha_operacion,@i_fechaFin)<0
 				and (@v_oper is null or oper=@v_oper)
-
 			group by fnd.descripcion,convert(date,HTP_FECHA_OPERACION),fnd.id_cuenta 
 
 			union
@@ -208,4 +183,4 @@ BEGIN
 
 
 		) as T1
-END		
+END
