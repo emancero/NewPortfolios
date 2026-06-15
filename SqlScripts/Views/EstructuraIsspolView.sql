@@ -102,7 +102,9 @@
 		, case tiv.tiv_camara when 'Decevale' then '0991283765001' when 'DCV-BCE' then '1760002600001' when 'DCV' then '1760002600001' end)
 
 	,[Numero_liquidacion]=iif(oper in (0,1), fon.FON_NUMERO_LIQUIDACION, null)--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
-	,[Tipo_transaccion]=case oper when 0 then 'L' when 1 then 'P' when 3 then 'R' when -1 then 'V' end
+	,[Tipo_transaccion]=case oper when 0 then 'Compra' when 1 then
+		case when cacheNext.saldo_valor_nominal<0.005 then 'L' else 'P' end
+	when 3 then 'R' when -1 then 'V' end
 	,[Fecha_transaccion]=htp_fecha_operacion
 	,[Dias_transcurridos]=dbo.fnDias(
 		 tfl.TFL_FECHA_INICIO
@@ -120,7 +122,7 @@
 	,valor_pago_capital=iif(oper not in (0,3), 0, valor_pago_capital*errVNFactor.errVNFactor)
 	,valor_pago_cupon=valor_pago_cupon*errVNFactor.errVNFactor
 	,Fecha_Ultimo_Pago=case oper when 1 then cache.Fecha_Ultimo_Pago end--evp.Fecha_Ultimo_Pago
-	,Saldo_Valor_Nominal=cache.Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
+	,Saldo_Valor_Nominal=cacheNext.Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
 		*case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
 	,tiv.tiv_tipo_renta
 	,[Pago_dividendo_en_acciones]=dividendo_en_acciones
@@ -355,6 +357,13 @@
 		where v.tpo_numeracion=evp.tpo_numeracion
 		and v.htp_fecha_operacion=case when evp.oper=1 then dateadd(d,-1,evp.htp_fecha_operacion) else evp.htp_fecha_operacion end
 	) cache
+	outer apply (
+		select top 1 saldo_valor_nominal
+		from BVQ_BACKOFFICE.VALORACION_SB v
+		where v.tpo_numeracion=evp.tpo_numeracion
+		and evp.oper=1 and v.htp_fecha_operacion=evp.htp_fecha_operacion
+	) cacheNext
+
 	--where cache.valor_mercado is null
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
 	--where oper=-1 and datediff(d,htp_fecha_operacion,'20260208')=0
