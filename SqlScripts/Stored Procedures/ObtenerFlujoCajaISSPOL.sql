@@ -29,25 +29,6 @@ BEGIN
 		exec bvq_administracion.generarvectores
 		exec bvq_administracion.PrepararValoracionLinealCache
 
-	--[+]	Carga vencimientos de cartera ISSPOL
-		truncate table [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-		insert into [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-		select 
-				b.descripcion as por_codigo
-				,sum(valor) as total
-				,convert(date,cut.fecha_vencimiento) as fecha_vencimiento
-				,cr.id_cuenta
-				,max(convert(int,cut.pagada)) as pagada
-				,max(cut.id_rubro) as id_rubro
-				,sum(cut.saldo) as saldo
-				,max(cr.id_estado) as id_estado
-				,sum(case when cut.id_rubro='I' then cut.valor_pactado end) as valor_pactado
-		from	siisspolweb.siisspolweb.credito.cuota cut
-				join siisspolweb.siisspolweb.credito.credito cr on cr.id_credito=cut.id_credito
-				join siisspolweb.siisspolweb.banco.cuenta b on b.id_cuenta=cr.id_cuenta
-		where cut.fecha_vencimiento>'20260430'
-		group by b.descripcion,cut.fecha_vencimiento, cr.id_cuenta
-	--[+]	Fin de carga vencimientos de cartera ISSPOL
 	
 	--[+]	Carga de homologacion de fondos y portafolios
 		if (OBJECT_ID('[BVQ_BACKOFFICE].[FONDO_HOMOLOGACION]') is NULL)
@@ -179,7 +160,7 @@ BEGIN
 			where
 				(ccc.total>0.05e)
 				AND datediff(d,@i_fechaFin,ccc.fecha_vencimiento)>=1--ccm.fecha_vencimiento>=@i_fechaFin--'20230101' and datediff(d,ccm.fecha_vencimiento,@i_fechaFin)>=0
-			group by ccc.por_codigo,/*fon.fon_homologado,*/convert(date,ccc.fecha_vencimiento),ccc.id_cuenta
+			group by ccc.por_codigo,convert(date,ccc.fecha_vencimiento),ccc.id_cuenta
 
 
 		) as T1

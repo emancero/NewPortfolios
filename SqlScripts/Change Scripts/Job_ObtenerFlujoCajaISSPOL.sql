@@ -13,6 +13,10 @@ EXEC msdb.dbo.sp_add_job
 
 -- 2. Agregar el paso que ejecuta el comando
 DECLARE @cmd NVARCHAR(MAX) = N'
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+TRUNCATE TABLE [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA];
+
 INSERT INTO [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
     (por_codigo, total, fecha_vencimiento, id_cuenta, pagada, id_rubro, tasa, abono, estado, valor_pactado)
 SELECT
@@ -26,9 +30,9 @@ SELECT
     ,abono
     ,estado
     ,valor_pactado
-FROM  siisspolweb.siisspolweb.credito.cuota cut
-JOIN  siisspolweb.siisspolweb.credito.credito cr ON cr.id_credito = cut.id_credito
-JOIN  siisspolweb.siisspolweb.banco.cuenta    b  ON b.id_cuenta   = cr.id_cuenta
+FROM siisspolweb.siisspolweb.credito.cuota cut
+JOIN siisspolweb.siisspolweb.credito.credito cr ON cr.id_credito = cut.id_credito
+JOIN siisspolweb.siisspolweb.banco.cuenta b ON b.id_cuenta = cr.id_cuenta
 WHERE cut.fecha_vencimiento > ''20260430'';
 ';
 
