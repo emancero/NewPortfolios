@@ -13,18 +13,18 @@ EXEC msdb.dbo.sp_add_job
 
 -- 2. Agregar el paso que ejecuta el comando
 DECLARE @cmd NVARCHAR(MAX) = N'
-TRUNCATE TABLE [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA];
-
 INSERT INTO [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
+    (por_codigo, total, fecha_vencimiento, id_cuenta, pagada, id_rubro, tasa, abono, estado, valor_pactado)
 SELECT
      b.descripcion AS por_codigo
     ,valor
+    ,cut.fecha_vencimiento
     ,cr.id_cuenta
-    ,CONVERT(INT, cut.pagada)      AS pagada
-    ,cut.id_rubro                  AS id_rubro
+    ,CONVERT(INT, cut.pagada) AS pagada
+    ,cut.id_rubro AS id_rubro
     ,cr.tasa
-    ,id_rubro
     ,abono
+    ,estado
     ,valor_pactado
 FROM  siisspolweb.siisspolweb.credito.cuota cut
 JOIN  siisspolweb.siisspolweb.credito.credito cr ON cr.id_credito = cut.id_credito
