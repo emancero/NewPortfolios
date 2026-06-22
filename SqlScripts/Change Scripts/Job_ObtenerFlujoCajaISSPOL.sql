@@ -38,6 +38,16 @@ WHERE cut.fecha_vencimiento > ''20260430'';
 
 EXEC msdb.dbo.sp_add_jobstep
     @job_name          = N'Job_RecargarCarteraCuotaISSPOL',
+    @step_name         = N'Ejecutar RecargarCreditosCarteraISSPOL',
+    @subsystem         = N'TSQL',
+    @command           = N'exec bvq_backoffice.CargaCreditosCarteraISSPOL2 null',
+    @database_name     = @dbName,
+    @on_success_action = 1,
+    @on_fail_action    = 2;
+
+
+EXEC msdb.dbo.sp_add_jobstep
+    @job_name          = N'Job_RecargarCarteraCuotaISSPOL',
     @step_name         = N'Ejecutar RecargarCarteraCuotaISSPOL',
     @subsystem         = N'TSQL',
     @command           = @cmd,

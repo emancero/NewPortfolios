@@ -11,6 +11,6 @@ AS
 		FROM   BVQ_BACKOFFICE.CREDITOS_CARTERA cr
 			   JOIN bvq_backoffice.isspol_cuentas_contables_de_bancos icb ON cr.crc_id_cuenta = icb.icb_por_id
 			   JOIN bvq_backoffice.portafolio por ON icb.icb_por_id = por.por_id
-		where	CRC_FECHA_CIERRE = @i_fechaCorte
+		where	datediff(mm, CRC_FECHA_CIERRE, @i_fechaCorte) = 0
 		ORDER BY por_ord
 	END
