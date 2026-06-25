@@ -115,7 +115,7 @@ BEGIN
         -- Columnas comunes unificadas
         por_codigo                              AS POR_CODIGO,
         Por_ord                                 AS POR_ORD,
-        CAST(1 AS bit)                          AS ES_PRIVATIVA,
+        CAST(0 AS bit)                          AS ES_PRIVATIVA,
         -- Columnas del primer SP (con valores reales)
         comitente                               AS COMITENTE,
         ems_nombre                              AS EMS_NOMBRE,
@@ -186,7 +186,15 @@ BEGIN
         CAST(NULL AS int)                       AS CRC_PLAZO,
         CAST(NULL AS int)                       AS CRC_ID_CUENTA_2,
         CAST(NULL AS varchar(250))              AS CRC_DESCRIPCION,
-        CAST(NULL AS int)                       AS CRC_ID
+        CAST(NULL AS int)                       AS CRC_ID,
+		CAST(NULL AS varchar(250))              AS ANIO_OTORGAMIENTO,
+		CAST(NULL AS varchar(250))              AS ANIO_MES_OTORGAMIENTO,
+		CAST(NULL AS varchar(250))              AS ANIO_MES_DIA_OTORGAMIENTO,
+    	CAST(NULL AS varchar(250))              AS ANIO_VENCIMIENTO,
+		CAST(NULL AS varchar(250))              AS ANIO_MES_VENCIMIENTO,
+		CAST(NULL AS varchar(250))              AS ANIO_MES_DIA_VENCIMIENTO,
+        CAST(NULL AS int)                       AS PLAZO_ANIOS,
+        CAST(NULL AS int)                       AS PLAZO_MESES
     FROM #portfolios
 
     UNION ALL
@@ -195,7 +203,7 @@ BEGIN
         -- Columnas comunes unificadas
         POR_CODIGO                              AS POR_CODIGO,
         por_ord                                 AS POR_ORD,
-        CAST(0 AS bit)                          AS ES_PRIVATIVA,
+        CAST(1 AS bit)                          AS ES_PRIVATIVA,
         -- Columnas del primer SP (NULL salvo las mapeadas desde CRC_MONTO)
         CAST(NULL AS varchar(max))              AS COMITENTE,
         CAST(NULL AS varchar(200))              AS EMS_NOMBRE,
@@ -266,7 +274,15 @@ BEGIN
         CRC_PLAZO                               AS CRC_PLAZO,
         CRC_ID_CUENTA_2                         AS CRC_ID_CUENTA_2,
         CRC_DESCRIPCION                         AS CRC_DESCRIPCION,
-        CRC_ID                                  AS CRC_ID
+        CRC_ID                                  AS CRC_ID,
+		ANIO_OTORGAMIENTO = '[' + RTRIM(DATEPART(yyyy, CRC_FECHA_OTORGAMIENTO)) + ']',
+		ANIO_MES_OTORGAMIENTO = '[' + FORMAT(CRC_FECHA_OTORGAMIENTO, 'yyyy-MM') + ']',
+		ANIO_MES_DIA_OTORGAMIENTO = '[' + FORMAT(CRC_FECHA_OTORGAMIENTO, 'yyy-MM-dd') + ']',
+		ANIO_VENCIMIENTO = '[' + RTRIM(DATEPART(yyyy, CRC_FECHA_VENCIMIENTO)) + ']',
+		ANIO_MES_VENCIMIENTO = '[' + FORMAT(CRC_FECHA_VENCIMIENTO, 'yyyy-MM') + ']',
+		ANIO_MES_DIA_VENCIMIENTO = '[' + FORMAT(CRC_FECHA_VENCIMIENTO, 'yyy-MM-dd') + ']',
+        PLAZO_ANIOS = DATEDIFF(YEAR, CRC_FECHA_OTORGAMIENTO, CRC_FECHA_VENCIMIENTO),
+        PLAZO_MESES = DATEDIFF(M, CRC_FECHA_OTORGAMIENTO, CRC_FECHA_VENCIMIENTO)
     FROM #creditos;
 
 END
