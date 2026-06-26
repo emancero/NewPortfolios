@@ -1,14 +1,4 @@
-﻿USE [sicavStage]
-GO
-
-/****** Object:  StoredProcedure [BVQ_BACKOFFICE].[ReporteCreditosConcedidos]    Script Date: 6/5/2026 9:55:40 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
---select fecha,valor=sum(valor),tipo,codigo from bvq_backoffice.IsspolAsientoCredito where tipo='D' group by codigo,fecha
+﻿--select fecha,valor=sum(valor),tipo,codigo from bvq_backoffice.IsspolAsientoCredito where tipo='D' group by codigo,fecha
 
 --sp_helptext 'BVQ_BACKOFFICE.RendimientoPorPlazoPrivativas'
 --sp_helptext 'BVQ_BACKOFFICE.RendimientoPorPlazoPrivativas'
