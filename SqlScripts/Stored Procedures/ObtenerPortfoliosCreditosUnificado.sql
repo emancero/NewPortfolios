@@ -99,7 +99,8 @@ BEGIN
         CRC_PLAZO                       int,
         CRC_ID_CUENTA_2                 int,
         CRC_DESCRIPCION                 varchar(250),
-        CRC_ID                          int
+        CRC_ID                          int,
+        PLAZO                           varchar(50)
     );
 
     INSERT INTO #creditos
@@ -193,7 +194,7 @@ BEGIN
     	CAST(NULL AS varchar(250))              AS ANIO_VENCIMIENTO,
 		CAST(NULL AS varchar(250))              AS ANIO_MES_VENCIMIENTO,
 		CAST(NULL AS varchar(250))              AS ANIO_MES_DIA_VENCIMIENTO,
-        CAST(NULL AS int)                       AS PLAZO_ANIOS,
+        CAST(NULL AS varchar(50))               AS PLAZO,
         CAST(NULL AS int)                       AS PLAZO_MESES
     FROM #portfolios
 
@@ -281,7 +282,7 @@ BEGIN
 		ANIO_VENCIMIENTO = '[' + RTRIM(DATEPART(yyyy, CRC_FECHA_VENCIMIENTO)) + ']',
 		ANIO_MES_VENCIMIENTO = '[' + FORMAT(CRC_FECHA_VENCIMIENTO, 'yyyy-MM') + ']',
 		ANIO_MES_DIA_VENCIMIENTO = '[' + FORMAT(CRC_FECHA_VENCIMIENTO, 'yyy-MM-dd') + ']',
-        PLAZO_ANIOS = DATEDIFF(YEAR, CRC_FECHA_OTORGAMIENTO, CRC_FECHA_VENCIMIENTO),
+        plazo AS PLAZO,
         PLAZO_MESES = DATEDIFF(M, CRC_FECHA_OTORGAMIENTO, CRC_FECHA_VENCIMIENTO)
     FROM #creditos;
 
