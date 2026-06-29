@@ -6,7 +6,17 @@ begin
     TRUNCATE TABLE [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA];
 
     INSERT INTO [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-        (por_codigo, total, fecha_vencimiento, id_cuenta, pagada, id_rubro, tasa, abono, estado, valor_pactado)
+        (por_codigo
+		, total
+		, fecha_vencimiento
+		, id_cuenta
+		, pagada
+		, id_rubro
+		, tasa
+		, abono
+		, estado
+		, valor_pactado
+		)
     SELECT
          b.descripcion AS por_codigo
         ,valor
