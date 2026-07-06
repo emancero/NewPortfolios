@@ -18,7 +18,9 @@ BEGIN
         ccc.id_credito,
         ccc.por_codigo,
         ccc.fecha_vencimiento,
-        cupon=sum(round(ccc.total,2)-round(ccc.abono,2))+sum(case when datediff(d,@i_fechaFin,ccc.fecha_pago)>=1 then ccc.abono else 0 end)
+        ccc.producto,
+        ccc.segmento,
+        cupon=sum(round(ccc.total,2)-round(ccc.abono,2))+sum(case when datediff(d,@i_fechaCorte,ccc.fecha_pago)>=1 then ccc.abono else 0 end)
     FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA] ccc
     WHERE
         ccc.total > 0.05
@@ -35,5 +37,7 @@ BEGIN
     GROUP BY
         ccc.id_credito,
         ccc.por_codigo,
-        CONVERT(DATE, ccc.fecha_vencimiento)
+        CONVERT(DATE, ccc.fecha_vencimiento),
+        ccc.producto,
+        ccc.segmento
 END
