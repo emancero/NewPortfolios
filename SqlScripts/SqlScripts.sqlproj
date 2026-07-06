@@ -232,6 +232,8 @@
     <None Include="Change Scripts\Campos tasa y abono en tabla CREDITO_CARTERA_CUOTA.sql" />
     <None Include="Stored Procedures\ObtenerCreditosCarteraCuotaISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerReporteRendimientoPrivativas.sql" />
+    <None Include="Change Scripts\Campos producto y segmento en CREDITO_CARTERA_CUOTA.sql" />
+    <None Include="Stored Procedures\RecargarCarteraCuotaISSPOL_1.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
