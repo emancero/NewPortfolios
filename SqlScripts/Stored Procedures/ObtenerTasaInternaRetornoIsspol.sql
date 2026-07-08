@@ -13,8 +13,10 @@ BEGIN
     ,valor_presente=sum(valor_presente)
     ,tasa
     ,plazo
+    ,producto
+    ,fondo
     from bvq_backoffice.CreditoCuota
-    GROUP BY mes,exponente,tasa,plazo
+    GROUP BY mes,exponente,tasa,plazo,producto,fondo
     ORDER BY tasa,plazo,
     mes
 END
