@@ -29,6 +29,7 @@ CREATE procedure [BVQ_BACKOFFICE].[InsertarLiquidezPortafolio]
 	@i_evp_costas_judiciales float = null,
 	@i_evp_costas_judiciales_referencia varchar(100) = null,
 	@i_fecha_identificadora datetime = null,
+	@i_evp_fecha_liq_interes date = null,
 	@i_lga_id int
 AS
 begin
@@ -180,6 +181,7 @@ begin
 			,evp_rendimiento
 			,EVP_COSTAS_JUDICIALES
 			,EVP_COSTAS_JUDICIALES_REFERENCIA
+			,evp_fecha_liq_interes
 		)
 		values(@i_evt_id,@i_por_id,@i_oper_id,@i_es_vencimiento_interes,@i_cobrado,@i_fecha,@o_cta_id,@i_retencion,@i_cuenta,@i_renovacion
 			--evp_change_7
@@ -193,6 +195,7 @@ begin
 			,@i_evp_rendimiento
 			,@i_evp_costas_judiciales
 			,@i_evp_costas_judiciales_referencia
+			,@i_evp_fecha_liq_interes
 		)
 
 		set @v_evp_id=scope_identity()

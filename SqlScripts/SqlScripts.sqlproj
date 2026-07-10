@@ -236,6 +236,7 @@
     <None Include="Stored Procedures\RecargarCarteraCuotaISSPOL_1.sql" />
     <None Include="Change Scripts\Tabla CREDITO_CARTERA_CUOTA_2.sql" />
     <None Include="Change Scripts\Agregar campos a CREDITO_CARTERA_CUOTA_2.sql" />
+    <None Include="Change Scripts\Campo evp_fecha_liq_interes en EVENTO_PORTAFOLIO.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
