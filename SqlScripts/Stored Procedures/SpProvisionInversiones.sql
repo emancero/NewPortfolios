@@ -54,18 +54,22 @@ begin tran
 		   ,MAX(latest_inicio) latest_inicio
 		   ,tvl_codigo
 		   ,tiv_subtipo
+		   ,POR_CODIGO
+		   ,POR_ORD
 	 into ##tablaInversionesIsspol 
 	 from BVQ_BACKOFFICE.portafoliocorte i
 	 --join (select tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id from bvq_backoffice.EventoPortafolio) e on @i_fechaCorte between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_tpo_id=i.httpo_id
 	 where isnull(ipr_es_cxc,0)=0 and tiv_tipo_renta=153
-	 group by htp_numeracion,tvl_codigo,tiv_tasa_interes,dias_al_corte,fecha_compra,ult_fecha_interes,tiv_fecha_vencimiento,ems_nombre,TVL_DESCRIPCION, tiv_tipo_base,tfl_fecha_inicio_orig2,tiv_subtipo
+	 group by htp_numeracion,tvl_codigo,tiv_tasa_interes,dias_al_corte,fecha_compra,ult_fecha_interes,tiv_fecha_vencimiento,ems_nombre,TVL_DESCRIPCION, tiv_tipo_base,tfl_fecha_inicio_orig2,tiv_subtipo,i.POR_CODIGO,i.POR_ORD
 	 HAVING sum(salNewValNom)>0
 	 order by tvl_codigo
 /*	 select * from ##tablaInversionesIsspol	 	 
 end*/
 
 	select
-		   --htp_numeracion,
+		   POR_CODIGO,
+		   POR_ORD,
+		   htp_numeracion,
 		   --FECHA_INTERES,
 		   EMISOR,		  
 	       CODIGO,
