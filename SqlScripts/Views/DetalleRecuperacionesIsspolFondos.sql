@@ -30,7 +30,8 @@ select
 		evp.tiv_tipo_renta, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,--,htp_fecha_operacion
 		deterioro=max(deterioro),
 		tvl_codigo,
-		tpo.por_id
+		tpo.por_id,
+		evp.htp_tpo_id
 		from bvq_backoffice.comprobanteisspolrubros evp--LiqIntProv evp--
 		--cross apply(
 		--	select sum(amount) movCapital from bvq_backoffice.evtTemp e
@@ -66,6 +67,4 @@ select
 		AND evp.rubro IN ('AMOUNT', 'amountcxc','INTAcc', 'PROV','valnom')
 		--and fecha between '20251201' and '20251231'
  
-		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,tvl_codigo, tpo.por_id, tfl_periodo--,htp_fecha_operacion
-
-	
+		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,tvl_codigo, tpo.por_id, tfl_periodo, evp.htp_tpo_id--,htp_fecha_operacion

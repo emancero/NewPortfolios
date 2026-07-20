@@ -237,6 +237,8 @@
     <None Include="Change Scripts\Tabla CREDITO_CARTERA_CUOTA_2.sql" />
     <None Include="Change Scripts\Agregar campos a CREDITO_CARTERA_CUOTA_2.sql" />
     <None Include="Change Scripts\Campo evp_fecha_liq_interes en EVENTO_PORTAFOLIO.sql" />
+    <None Include="Stored Procedures\ObtenerReporteCesionDerechosFiduciarios.sql" />
+    <None Include="Change Scripts\Agregar notas para reporte de Cesion Derechos.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
