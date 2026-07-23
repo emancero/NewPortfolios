@@ -110,7 +110,7 @@ BEGIN
     (SELECT
         map.nombre_sistema AS nombre_fideicomiso,
         cdf.CDF_DESEMBOLSO_RECURSOS_ISSPOL AS desembolso_recursos,
-        cdf.CDF_RENDIMIENTO_INTERES AS rendimiento,
+        cdf.CDF_RENDIMIENTO_INTERES * 100 AS rendimiento,
         cdf.CDF_FECHA_CESION AS fecha_cesion,
         cdf.CDF_PLAZO_RECOMPRA_DIAS AS plazo_recompra,
         cdf.CDF_FECHA_VENCIMIENTO_RECOMPRA AS fecha_vencimiento,
