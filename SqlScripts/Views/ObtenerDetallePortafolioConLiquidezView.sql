@@ -161,13 +161,16 @@
 	--EMN:2-mar-2026 intereses de abono
 	,movsCuponInt.movs_evp_interes_efectivo
 	,movsCuponInt.movs_evp_interes_nominal--movs_evp_interes_efectivo+valEfeAbono-capMonto
+	,movs_evp_interes_nominal_formula=
+		  case when isnull(movsCupon.movs_evp_valor_efectivo_formula,'')<>'' then ' Capital:'+isnull(movsCupon.movs_evp_valor_efectivo_formula,'') else '' end
+		+ case when isnull(movsCuponInt.movs_evp_interes_nominal_formula,'')<>'' then ' Interés:'+isnull(movsCuponInt.movs_evp_interes_nominal_formula,'') else '' end
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
 	on
 		(
 			evp.evt_id=evt.htp_id  --evt.htp_id cache key!
-			or evp.evp_tpo_id=evt.htp_tpo_id
+			or 1=1 and evp.evp_tpo_id=evt.htp_tpo_id
 			and evp.evp_fecha_original=evt.htp_fecha_operacion
 		)
 		and
@@ -196,70 +199,16 @@
 
 	--movimientos de cupón
 	left join (
-			select movs_evp_valor_efectivo=sum(evp_valor_efectivo), evp_tpo_id, evp_fecha_original
+			select movs_evp_valor_efectivo=sum(evp_valor_efectivo)
+			, movs_evp_valor_efectivo_formula=dbo.stringagg(isnull('ve:'+rtrim(evp_valor_efectivo)+' f:'+convert(varchar(8), evt_fecha, 112),''),' ; ')
+			, evp_tpo_id, evp_fecha_original
 			from bvq_backoffice.evento_portafolio e
 			where evt_fecha<'29991231' and es_vencimiento_interes=0 and EVP_ABONO=1
 			group by evp_tpo_id,evp_fecha_original
 			--having evp_tpo_id=2193
 		) movsCupon
-		--on evt_fecha='29991231'
-		--EMN: 10-jun-2026 Aplicar esta funcionalidad de 20260703 en adelante pero exceptuando 29991230
-		on (evt_fecha='29991231' or 1=1 and evt_fecha>='20260703' and  evt_fecha<'29991230')
-		and movsCupon.evp_tpo_id=evp.evp_tpo_id and movsCupon.evp_fecha_original=evp.evp_fecha_original
+		on evt_fecha='29991231' and movsCupon.evp_tpo_id=evp.evp_tpo_id and movsCupon.evp_fecha_original=evp.evp_fecha_original
 
-	--subconsulta movsCuponInt
-	left join (
-			select
-			 movs_evp_interes_efectivo=sum(
-				isnull(evp_valor_efectivo,0)
-			)
-			,movs_evp_interes_nominal=sum(
-				isnull(evp_valor_efectivo,0)+valEfeAbono-isnull(capMonto,0)
-				+evp_ajuste_provision
-			)
-			, evp_tpo_id, evp_fecha_original
-			--, valEfeAbono
-			--, capMonto
-			--select e.evt_fecha,isnull(evp_valor_efectivo,0),+valEfeAbono,-isnull(capMonto,0)
-			from (
-				--bloque testeable en línea
-				select evp_tpo_id, evp_valor_efectivo, evp_fecha_original, evt_fecha, es_vencimiento_interes, evp_abono, capMonto, evp_observaciones
-				,prEfectivo, valEfeAbono=isnull(capMonto,0)*isnull(eCap.prEfectivo,0)
-				--EMN: 14-jun-2026 sumar provisión para calcular saldos
-				,evp_ajuste_provision=isnull(case when 1=1 and e.evp_tpo_id not in (215,222,2488) then e.evp_ajuste_provision end,0)
-				from bvq_backoffice.evento_portafolio e
-				left join (
-					select --capMonto=1000
-					 capMonto=nullif(evp_valor_efectivo,0)
-					,capHtpId=evt_id--9043840001801,--htp_id,
-					,capFecha=evt_fecha--convert(datetime,'2026-03-02T14:23:27')--fecha
-					,prEfectivo--=0.9--472.614223333333/500.0
-					from bvq_backoffice.liquidez_cache evt
-					join bvq_backoffice.evento_portafolio evp on evp.evt_id=evt.htp_id
-					and
-					(
-						evp.oper_id=evt.oper and
-						(
-							evp.es_vencimiento_interes=evt.es_vencimiento_interes
-							or evp.evp_abono=1 and iamortizacion=0 and evp.es_vencimiento_interes=1
-						)
-					)
-					--from bvq_backoffice.evtTemp
-					where evp.es_vencimiento_interes=0 and htp_tiene_valnom=1
-				) eCap
-				on ecap.capHtpId=e.evt_id and capFecha=e.evt_fecha
-				where evt_fecha<'29991231' and es_vencimiento_interes=1 and EVP_ABONO=1
-				--fin bloque testeable en línea
-			) e
-			group by evp_tpo_id,evp_fecha_original
-			--having evp_tpo_id=2193
-		) movsCuponInt
-		on (
-			evt_fecha='29991231'
-			or 1=1 and evt_fecha>='20260703' and evt_fecha<'29991230'
-		)		
-		and movsCuponInt.evp_tpo_id=evp.evp_tpo_id and movsCuponInt.evp_fecha_original=evp.evp_fecha_original
-		--fin subconsulta movsCuponInt
 	/*	vep.evt_id=evt.htp_id and --evt.htp_id cache key!
 		vep.oper_id=evt.oper and
 		vep.es_vencimiento_interes=isnull(evt.es_vencimiento_interes,0)*/
@@ -382,8 +331,6 @@
 	,EVP_COSTAS_JUDICIALES_REFERENCIA=null
 	,movs_evp_valor_efectivo=null
 	,liq_rendimiento=null
-	,movs_evp_interes_efectivo=null
-	,movs_evp_interes_nominal=null--movs_evp_interes_efectivo+valEfeAbono-capMonto
 	from
 	bvq_backoffice.evento_portafolio evp
 

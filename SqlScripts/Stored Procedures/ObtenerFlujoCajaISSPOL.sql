@@ -70,6 +70,14 @@ BEGIN
 			,[tipo]=isnull(tipAct.ITC_VALOR,'Sin clasificación')
 			,id_cuenta=null
 			,[I/E]=tipMov.ITC_VALOR
+			,CRC_NUMERO_OPERACION=null
+			,id_rubro=null
+			,tasa=null
+			,producto=null
+			,segmento=null
+			,estado=null
+			,valor=null
+			,abono=null
 			from
 			_temp.isspol_movimiento_contable_fuente fte
 			--siisspolweb.siisspolweb.contabilidad.vis_movimiento_contable_2023 m
@@ -98,6 +106,14 @@ BEGIN
 			,[tipo]='0 Saldo Inicial'
 			,id_cuenta=null
 			,[I/E]='0 Saldo Inicial'
+			,CRC_NUMERO_OPERACION=null
+			,id_rubro=null
+			,tasa=null
+			,producto=null
+			,segmento=null
+			,estado=null
+			,valor=null
+			,abono=null
 			from
 			BVQ_BACKOFFICE.isspol_saldo_inicial fte
 			join bvq_backoffice.isspol_cuentas_contables_de_bancos icb on icb_cuenta=mov_cuenta_contable--[cuenta ctble]
@@ -118,6 +134,14 @@ BEGIN
 					,[tipo]=null
 					,fnd.id_cuenta
 					,[I/E]=null
+					,CRC_NUMERO_OPERACION=null
+					,id_rubro=null
+					,tasa=null
+					,producto=null
+					,segmento=null
+					,estado=null
+					,valor=null
+					,abono=null
 			from bvq_backoffice.DetallePortafolio dpf
 					left join [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd on fnd.POR_ID=dpf.por_id
 			where 
@@ -148,19 +172,27 @@ BEGIN
 			select distinct
 					ccc.por_codigo--fon.fon_homologado
 					,ccc.fecha_vencimiento
-					,cupon=sum(ccc.total)
+					,cupon=sum(round(ccc.total,2)-round(ccc.abono,2))+sum(case when datediff(d,@i_fechaFin,ccc.fecha_pago)>=1 then ccc.abono else 0 end)
 					,origen='Privativas'
 					,[real]=0
 					,[itc_valor]=''
 					,[tipo]=null
 					,id_cuenta = ccc.id_cuenta
 					,[I/E]=null
+					,CRC_NUMERO_OPERACION=count(*)
+					,ccc.id_rubro
+					,ccc.tasa
+					,ccc.producto
+					,ccc.segmento
+					,ccc.estado
+					,sum(ccc.total)
+					,sum(case when datediff(d,@i_fechaFin,ccc.fecha_vencimiento)>=1 then ccc.abono else 0 end)
 			from [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA] ccc
 				--left join [credito].[FONDO_HOMOLOGACION] fon on ltrim(rtrim(ccc.por_codigo))=ltrim(rtrim(fon.fon_descripcion_credito))
 			where
 				(ccc.total>0.05e)
 				AND datediff(d,@i_fechaFin,ccc.fecha_vencimiento)>=1--ccm.fecha_vencimiento>=@i_fechaFin--'20230101' and datediff(d,ccm.fecha_vencimiento,@i_fechaFin)>=0
-			group by ccc.por_codigo,convert(date,ccc.fecha_vencimiento),ccc.id_cuenta
+			group by ccc.por_codigo,convert(date,ccc.fecha_vencimiento),ccc.id_cuenta,id_rubro,tasa,producto,segmento,estado
 
 
 		) as T1

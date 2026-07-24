@@ -8,7 +8,9 @@
         ISNULL(saldo, 0) + ISNULL(valor_pactado, 0) AS recuperacion_total,
         0.0 AS valor_presente,
         tasa,
-        plazo=datediff(yy,fecha_corte,fecha_vencimiento_credito)
+        plazo= right('    '+rtrim(datediff(d,fecha_corte,fecha_vencimiento_credito)/360*360),5) +' a '+right('    '+rtrim((datediff(d,fecha_corte,fecha_vencimiento_credito) / 360 + 1)*360),5),
+        producto,
+        fondo
     --into #x
     --select count(*)
     FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_2] cut

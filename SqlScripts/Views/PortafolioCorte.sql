@@ -11,8 +11,8 @@
 	--tfl_fecha_inicio,
 	--tfl_fecha_vencimiento,
 	latest_inicio
-	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213) then
-		case when fecha_ultimo_pago>tfl_fecha_inicio_orig2 or htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else tfl_fecha_inicio_orig2 end
+	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
+		case when fecha_ultimo_pago>tfl_fecha_inicio_orig2 or htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(fechaUltimoPagoEnEvp,tfl_fecha_inicio_orig2) end
 	else latest_inicio end
 	,
 	--latest_vencimiento,
@@ -21,8 +21,8 @@
 			--latest_inicio
 			case when tpo_fecha_susc_convenio is not null then
 				fechaInicioOriginal
-			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213) then
-				case when htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else tfl_fecha_inicio_orig2 end
+			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
+				case when htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(case when htp.tpo_id_anterior not in (213) then fechaUltimoPagoEnEvp end,tfl_fecha_inicio_orig2) end
 			else latest_inicio end
 			,c,case when tiv_accrual_365=1 then 355 when tiv_tipo_valor in (5,6,11) then 354 else tiv.tiv_tipo_base end)
 		+case when tiv_accrual_365=1 then 1 else 0 end
@@ -257,25 +257,19 @@
 	,tiv.TIV_NUMERO_TRAMO_SICAV
 
 	,fecha_ultima_compra=
-		case when isnull(ipr_es_cxc,0)=0 then
-			--EMN: 17-mar-2026 Antes del 29-feb-2024 no se valoraba con valoración lineal
-			--, si no que quedaba estática la fecha de corte como fecha de inicio de la valoración lineal
-			--efectivamente dejando estático al precio de la última valoración
-			case when htp.c<'20240229' then
-				htp.c
-			--valoración lineal:
-			when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
-				coalesce(
-					lastValDate
-					,case when 1=1 and htp.c>='20251001' or htp.c>='20250910' and htp.tpo_id in (2301) then [fecha_compra] end
-				)
-			when isnull(rtrim(htp.tiv_codigo_vector),'')='' then [fecha_compra]
-			when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
-				htp.c
-			end
-		else
-			CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN [fecha_compra] end
-		END
+	case when isnull(ipr_es_cxc,0)=0 then
+		case when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)<=365 then
+			coalesce(
+				lastValDate
+				,case when 1=1 and htp.c>='20251001' or htp.c>='20250910' and htp.tpo_id in (2301) then [fecha_compra] end
+			)
+		when isnull(rtrim(htp.tiv_codigo_vector),'')='' then [fecha_compra]
+		when isnull(rtrim(htp.tiv_codigo_vector),'')<>'' and datediff(d,htp.c,tiv_fecha_vencimiento)>365 then
+			htp.c
+		end
+	else
+		CASE WHEN tvl_codigo NOT IN ('DER', 'OBL', 'PAG') or TPO_MANTIENE_VECTOR_PRECIO = 1 THEN [fecha_compra] end
+	END
 	,prEfectivo
 	,htp.TPO_FECHA_VENCIMIENTO_ANTERIOR
 	,htp.fechaInicioOriginal
@@ -299,6 +293,7 @@
 		case itcsector.itc_codigo WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END
 	END
 	,FON_ID
+	,POR.POR_ORD
 	from
 	(
 					------------- VALORACIONES ---------------
@@ -400,7 +395,7 @@
 						when datediff(d,c,e.tiv_fecha_vencimiento)>365 and tiv.tiv_split_de<>0
 						then
 							(
-								select top 1 vpr_precio from
+								select vpr_precio from
 								bvq_administracion.vector_precio vpr 
 								where vpr.tiv_id=tiv.tiv_split_de and datediff(d,vpr_fecha,c)=0
 							)
@@ -508,20 +503,13 @@
 					,TPO.TPO_AJUSTE_DIAS_DE_INTERES_GANADO
 					,e.interesCoactivo
 					,TPO.TPO_FECHA_LIQUIDACION_OBLIGACION
-					,tiv_codigo_vector=coalesce(
-						case when
-						c>='20240831' --EMN: 24-mar-2026 Antes del reporte del 20240831 tiv_codigo_vector siempre se obtenía directamente de TITULO_VALOR
-						and(
-							datediff(d,c,e.tiv_fecha_vencimiento)>365
-							or c>='20251001' or c>='20250910' and e.htp_tpo_id in (2301)
-						)
-						then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end
-						,
-						tiv_codigo_vector
-					)--tiv.tiv_codigo_vector
+					,tiv_codigo_vector=coalesce(case when datediff(d,c,e.tiv_fecha_vencimiento)>365
+						or c>='20251001' or c>='20250910' and e.htp_tpo_id in (2301)
+						then (select tiv_codigo_vector from bvq_administracion.titulo_valor where tiv_id=tiv.tiv_split_de) end,tiv_codigo_vector)--tiv.tiv_codigo_vector
 					,TPO.TPO_NOMBRE_BONO_GLOBAL
 					,e.FON_ID
 					,e.fecha_ultimo_pago
+					,e.fechaUltimoPagoEnEvp
 					from bvq_backoffice.EventoPortafolioCorte e
 					join bvq_backoffice.titulos_portafolio tpo on e.htp_tpo_id=tpo.tpo_id
 					join bvq_administracion.titulo_valor tiv on tiv.tiv_id=tpo.tiv_id
@@ -556,7 +544,7 @@
 	left join bvq_administracion.titulo_flujo_comun tfl
 		left join (
 			select distinct retr_fecha_cobro, retr_fecha_esperada, tpo.tiv_id from bvq_backoffice.retraso retr join bvq_backoffice.titulos_portafolio tpo on retr_tpo_id=tpo.tpo_id
-			where tiv_id in (1596,6864)
+			where tiv_id in (1596,6864,10019)
 		) retr on retr_fecha_esperada=tfl_fecha_inicio and tfl.tiv_id=retr.tiv_id
 	on
 	tfl.tiv_id=tiv.tiv_id and
@@ -599,10 +587,13 @@
 		join corteslist cl on cl.c between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_id<>8829100001533
 		where htp_tiene_valnom=1
 		group by htp_tpo_id,cl.c
-	) ev on htp.c=ncorte and (ev.htp_tpo_id2=htp.tpo_id_anterior and isnull(progs.ipr_es_cxc,0)=0 or htp.tpo_id_anterior=213 and ev.htp_tpo_id2=htp.tpo_id_anterior)
-
+	) ev on htp.c=ncorte and (
+		ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0 and htp.tpo_id not in (2487,2537,2538)
+		or ev.htp_tpo_id2=htp.tpo_id_anterior and htp.tpo_id in (2487,2537,2538)
+	)
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
 	--left join bvq_prevencion.personacomitente per on por.ctc_id=per.ctc_id
 	/*left join BVQ_BACKOFFICE.AJUSTES_DE_ACCRUAL AJU
 	on HTP.TPO_ID=AJU.AJU_TPO_ID AND c>=AJU_DATE*/
+
