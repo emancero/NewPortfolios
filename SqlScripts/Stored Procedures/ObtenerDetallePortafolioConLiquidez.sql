@@ -230,12 +230,27 @@ begin
 		case
 		when en_espera=1 then
 			0e0
-		when fecha='29991231' then
-			max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
-			+case when fecha_original>='20260216' then
-				max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=1 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)
-				-- -isnull(movs_evp_valor_efectivo,0)
-			else 0
+		--Obtener el valor del cupón original y restarle el valor de los movimientos
+		--EMN: 10-jun-2026 Aplicar esta funcionalidad de 20260703 en adelante pero exceptuando 29991230
+		when (fecha='29991231' or fecha>='20260703' and  fecha<'29991230')  then
+			case when fecha_original>='20260216' then
+				case when es_vencimiento_interes=0 then
+					max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
+				when es_vencimiento_interes=1 then
+					case when fecha_original>='20260216' then
+						max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=1 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)
+						-isnull(movs_evp_interes_nominal,0)
+					else 0 end
+				else
+					0
+				end
+			else
+				max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
+				+case when fecha_original>='20260216' then
+					max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=1 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)
+					-- -isnull(movs_evp_valor_efectivo,0)
+				else 0
+				end
 			end
 		else
 			sum(amount) over (partition by htp_tpo_id, fecha_original)
