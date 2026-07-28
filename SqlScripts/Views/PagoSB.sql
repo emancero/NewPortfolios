@@ -72,7 +72,7 @@
 	--select tfl_fecha_inicio,tfl_fecha_inicio_orig,htp_fecha_operacion,tiv_tipo_base--*
 	--select *
 	,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,tpo_mantiene_vector_precio))
-	,evp_fecha_compra=min(case when oper=0 then evp.htp_fecha_operacion end)
+	,evp_fecha_compra=min(case when fecha>='20240201' then fecha_compra when oper=0 then evp.htp_fecha_operacion end)
 	,dividendo_en_efectivo=sum(case when tiv_tipo_renta=154 and es_vencimiento_interes=1 then intAcc end)
 	,dividendo_en_acciones=sum(case when tiv_tipo_renta=154 and htp_dividendo=1 then amount end)
 	,opSec=1

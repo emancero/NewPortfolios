@@ -19,6 +19,8 @@ begin
 		, id_credito
 		, id_numero_cuota
 		, fecha_pago
+        , producto
+        , segmento
 		)
     SELECT
          b.descripcion AS por_codigo
@@ -34,6 +36,8 @@ begin
 		,cut.id_credito
 		,cut.id_numero_cuota
 		,cut.fecha_pago
+        ,cr.id_producto
+        ,cr.id_segmento
     FROM siisspolweb.siisspolweb.credito.cuota cut
     JOIN siisspolweb.siisspolweb.credito.credito cr ON cr.id_credito = cut.id_credito
     JOIN siisspolweb.siisspolweb.banco.cuenta b ON b.id_cuenta = cr.id_cuenta
