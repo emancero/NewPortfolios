@@ -7,6 +7,7 @@ delete from corteslist
 insert into corteslist values ('20231231',1)
 exec bvq_backoffice.generarcompraventaflujo
 
+--corrige tiv_codigo_titulo_sic según tiv_numero_rmv que está correcto
 update tiv set tiv_codigo_titulo_sic='02'+right(tiv_numero_rmv,5)
 --select tiv_codigo_titulo_sic,'02'+right(tiv_numero_rmv,5)
 from
@@ -34,10 +35,10 @@ v(inscripcion_cpmv,ems_nombre,fecha_vencimiento)
 on tiv.tiv_numero_rmv=v.inscripcion_cpmv
 where tiv_codigo_titulo_sic='0206258'
 
---web de la bvq, emisiones, fecha de aprobación, calificación y calificadora inicial
+--web de la bvq, emisiones, fecha de aprobación, calificación y calificadora inicial. Pharmabrand
 if not exists(select * from bvq_administracion.EMISION_CALIFICACION where enc_numero_emision='2023.Q.02.003866' and enc_fecha_desde='20231031')
 	insert into bvq_administracion.emision_calificacion(enc_id,enc_numero_emision,cal_id,enc_fecha_desde,enc_valor,enc_estado,enc_numero_corto_emision)
-	values((select max(enc_id) from bvq_administracion.emision_calificacion)+1,'2023.Q.02.003866',10,'20231031','AAA',21,'0203866')
+	values((select case when max(enc_id)<1e7 then max(enc_id) else 1e7 end from bvq_administracion.emision_calificacion)+1,'2023.Q.02.003866',10,'20231031','AAA',21,'0203866')
 
 --18/feb/2026
 --Más valores es CAVAMASA
@@ -53,6 +54,7 @@ where tvl_codigo='enc'
 --select * from _temp.g3sh where idemi='0993121401001'
 --SCVS.INMV.DNNF.2019.1811
 
+--tiv_numero_supercias en encargo fiducuciario
 --select distinct tiv.tiv_id,tiv_numero_supercias
 update tiv set tiv_numero_supercias=replace('SCVS.INMV.DNNF.2019.1811','.','-')
 from bvq_backoffice.portafoliocorte pc
@@ -182,12 +184,12 @@ join bvq_administracion.casa_valores cva on cva_siglas=asi_csv_abrcasval collate
 where fon_procedencia='G'
 
 
-
+/*
 select fon_numero_liquidacion,fon_numliq_temp,fon_procedencia,tpo_fecha_ingreso,* from bvq_backoffice.fondo fon join bvq_backoffice.titulos_portafolio tpo on fon.fon_id=tpo.fon_id
 left join bvq_backoffice.isspol_progs ipr on ipr_nombre_prog=tpo_prog
 where isnull(ipr_es_cxc,0)=0 and tpo_fecha_ingreso<'20231231' and fon_procedencia='G'-- is null--='' and fon_numeracion not like 'mdf%'
 order by tpo.tpo_fecha_ingreso,fon.fon_numeracion
-
+*/
 
 
 
@@ -226,6 +228,7 @@ join [192.168.2.114].sicavtestbatch.bvq_administracion.casa_valores b on a.cva_i
 */
 
 --procedencia de bonos antiguos
+--también números de liquidación
 ;with a as(
 	--group by aru_opc_fchval,aru_opc_numope --with rollup--,aru_opc_numope --with rollup
 	--order by opc.aru_opc_fchval--,aru_opc_numope
@@ -273,7 +276,7 @@ join bvq_backoffice.fondo fon on fon.fon_id=a.fon_id
 where fon_numero_liquidacion is null and fon_numliq_temp is null and fon_procedencia='N'
 --order by a.fon_id--3,4,5
 
---Patrimonio técnico sobrepuesto
+--Patrimonio técnico sobrepuesto, Banco del pacífico
 update vba set vba_fecha_hasta='20231108' from bvq_administracion.variables_balance vba where ems_id=59 and vba_fecha_hasta='20231231'
 
 --compra_htp_id
