@@ -71,6 +71,7 @@
 	,prEfectivo=
 	case when htp_numeracion like 'cfr-%'
 		or htp_numeracion like 'RZK-2024-08-05%'
+		or htp_numeracion in ('PCT-2026-01-20','SPP-2026-01-20','PCT-2026-04-29','PCT-2026-04-29-2','ATX-2026-06-08','ATX-2026-06-08-2')
 	then
 		tpo_precio_efectivo/100.0
 	when htpcupon.tiv_tipo_renta=154 then
@@ -91,6 +92,7 @@
 	,totalUfoUsoFondos--=null
 	,totalUfoRendimiento--=null
 	,fecha_vencimiento_original=null
+	,retr_no_ingresado_este_mes=0
 	from bvq_backoffice.htpcupon
 	left join bvq_backoffice.defaults def on htpcupon.por_id=def.por_id and htpcupon.tiv_id=def.tiv_id
 	and datediff(m,def.fecha,htpcupon.cupoper_tfl_fecha_inicio)>=0
@@ -134,7 +136,7 @@
 	dias_cupon,
 	tfl_id,
 	htp_reportado=null,
-	liq_rendimiento=max(liq_rendimiento),
+	liq_rendimiento=null,
 	liq_retencion=null,
 	liq_retencion_casa=null,
 	htp_precio_compra=null
@@ -175,6 +177,11 @@
 	,totalUfoUsoFondos=max(totalUfoUsoFondos)
 	,totalUfoRendimiento=max(totalUfoRendimiento)
 	,fecha_vencimiento_original=tfl_fecha_vencimiento2
+	,retr_no_ingresado_este_mes=case when tfl_fecha_vencimiento2>='20260228' and datediff(m,tfl_fecha_vencimiento2,tfl_fecha_vencimiento)>0 and (
+		datepart(weekday,tfl_fecha_vencimiento2) in (1,7)
+		or exists (select 1 from bvq_backoffice.dia_feriado where tfl_fecha_vencimiento2 between dfe_fecha_inicio and dfe_fecha_fin)
+	)
+	then 1 else 0 end
 	from bvq_backoffice.compraventaflujo
 	--where htp_tiene_valnom=1
 	--left join bvq_backoffice.retraso retr on htp_tpo_id=retr_tpo_id and retr_fecha_cobro=tfl_fecha_vencimiento
