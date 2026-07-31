@@ -19,6 +19,9 @@ BEGIN
 			ref.referencia
 		,CASE WHEN ci.rubro='COSTAS' THEN ci.EVP_COSTAS_JUDICIALES_REFERENCIA END
 		,'')--isnull(ref.referencia,'')
+	,debeTemp
+	,ref.valord
+	,es_rubro_deposito
 	FROM(
 		SELECT  
 		 tpo_numeracion  
@@ -27,7 +30,7 @@ BEGIN
 		,fecha  
 		--,htp_id  
 		,tipPap  
-		,cuenta=coalesce(EDPI_CUENTA,cuenta) 
+		,cuenta=coalesce(EDPI_CUENTA,ci.cuenta) 
 		,nombre=coalesce(EDPI_NOM_CUENTA,nombre)  
 		,debeTemp=sum(debe)
 		,haber=sum(haber)
@@ -71,9 +74,14 @@ BEGIN
 		,comisiones=sum(comisiones)
 		,EVP_COSTAS_JUDICIALES_REFERENCIA=max(EVP_COSTAS_JUDICIALES_REFERENCIA)
 		,EVP_COBRADO=max(EVP_COBRADO)
+		,ci_htp_fecha_operacion=max(ci.htp_fecha_operacion)
+		,es_rubro_deposito=max(case when ci.cuenta='2.1.90.03' then 1 else 0 end)
 		FROM BVQ_BACKOFFICE.ComprobanteIsspol ci
+
+		--Excepciones Depósito Por Identificar EDPI
 		left join BVQ_BACKOFFICE.EXCEPCIONES_DEP_POR_IDENTIFICAR edpi
 		on edpi.edpi_numeracion=ci.tpo_numeracion and ci.cuenta='2.1.90.03'
+		
 		WHERE tpo_numeracion=@i_tpo_numeracion and tiv_id=@i_tiv_id
 		--and datediff(hh,fecha,@i_fecha)=0
 		and convert(varchar,@i_fecha,20)=convert(varchar,fecha,20)
@@ -143,6 +151,6 @@ BEGIN
 		and round(debeTemp,0)=round(ref.valor,0)
 	--and oper=1  
 	-- unión con referencias -------------------------------------------
-
+	
 	order by deterioro,rubroOrd,tipo desc,por_ord  
 END
