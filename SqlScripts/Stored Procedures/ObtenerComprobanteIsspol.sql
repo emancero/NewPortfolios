@@ -20,8 +20,8 @@ BEGIN
 		,CASE WHEN ci.rubro='COSTAS' THEN ci.EVP_COSTAS_JUDICIALES_REFERENCIA END
 		,'')--isnull(ref.referencia,'')
 	,debeTemp
-	,ref.valord
 	,es_rubro_deposito
+	,ci_htp_fecha_operacion
 	FROM(
 		SELECT  
 		 tpo_numeracion  
