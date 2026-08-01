@@ -158,12 +158,12 @@
 
 
 			                  
-			,descAm=-((1-l.hist_precio_compra/100.0)-case when /*e.es_vencimiento_interes*/0=0 then comisiones/(htp_compra+iif(htp_tpo_id=2427,1e-6, 0)) else 0 end)*montooper
+			,descAm=-((1-l.hist_precio_compra/100.0)-case when /*e.es_vencimiento_interes*/0=0 then comisiones/(htp_compra+iif(htp_tpo_id in (2427,2547),1e-6, 0)) else 0 end)*montooper
 			,l.htp_compra,l.hist_fecha_compra,l.hist_precio_compra
 			,l.comisiones,l.por_ord
 			,precio_efectivo=coalesce(
 				l.TPO_PRECIO_EFECTIVO
-				,case when l.hist_fecha_compra>='20220601' then (l.val_efe_compra+l.comisiones)/(l.htp_compra+iif(htp_tpo_id=2427,1e-6,0))*100.0 else l.hist_precio_compra end
+				,case when l.hist_fecha_compra>='20220601' then (l.val_efe_compra+l.comisiones)/(l.htp_compra+iif(htp_tpo_id in (2427,2547),1e-6,0))*100.0 else l.hist_precio_compra end
 			)
 			,tiv.tiv_tipo_renta
 			,l.plazo
