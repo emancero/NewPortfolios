@@ -111,10 +111,19 @@
 				-
 				case when isnull(evp_abono,0)=0 then case when isnull(ipr_es_cxc,0)=0 then -1 else 1 end * isnull(UFO_USO_FONDOS,0) else 0 end
 				-case when isnull(evp_abono,0)=0 then pr else 0 end
-				-case when tpo_fecha_ingreso>TFL_FECHA_INICIO and htp_tpo_id not in (2268,2269)
-				and not exists(select * from BVQ_BACKOFFICE.SIN_INT_TRANS where TPO_NUMERACION=SIT_NUMERACION and convert(varchar,fecha,20)=SIT_FECHA)
+
+				--itrans con exclusiones especiales
+				-case when tpo_fecha_ingreso>TFL_FECHA_INICIO
+				and htp_tpo_id not in (2268,2269)
+				and not exists(
+					select * from BVQ_BACKOFFICE.SIN_INT_TRANS
+					where TPO_NUMERACION=SIT_NUMERACION
+					and convert(varchar,fecha,20)=SIT_FECHA
+				)
 					--and htp_tpo_id not in (2408,2409 ,2410,2411,2412 ,2413,2414,2415 ,2417,2418,2419)--not (isnull(evp_abono,0)=1 and htp_tpo_id in (2409,2410,2411,2412) and pr=0)
 				then ISNULL(itrans,0) else 0 end
+				--Fin itrans con exclusiones especiales
+
 			else
 				orgIAmortizacion-pr
 			end
