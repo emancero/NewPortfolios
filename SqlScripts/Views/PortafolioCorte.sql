@@ -22,7 +22,7 @@
 			case when tpo_fecha_susc_convenio is not null then
 				fechaInicioOriginal
 			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
-				case when htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(case when htp.tpo_id_anterior not in (213) then fechaUltimoPagoEnEvp end,tfl_fecha_inicio_orig2) end
+				case when htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(fechaUltimoPagoEnEvp,tfl_fecha_inicio_orig2) end
 			else latest_inicio end
 			,c,case when tiv_accrual_365=1 then 355 when tiv_tipo_valor in (5,6,11) then 354 else tiv.tiv_tipo_base end)
 		+case when tiv_accrual_365=1 then 1 else 0 end
@@ -293,7 +293,6 @@
 		case itcsector.itc_codigo WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END
 	END
 	,FON_ID
-	,POR.POR_ORD
 	from
 	(
 					------------- VALORACIONES ---------------
@@ -583,13 +582,16 @@
 	left join BVQ_BACKOFFICE.ISSPOL_PROGS progs	on HTP.TPO_PROG=progs.IPR_NOMBRE_PROG
 	--left join (select tfl_fecha_inicio_orig2=tfl_fecha_inicio_orig,tfl_fecha_vencimiento2,htp_tpo_id2=htp_tpo_id from bvq_backoffice.EventoPortafolio where htp_tiene_valnom=1) ev on htp.c between ev.tfl_fecha_inicio_orig2 and ev.tfl_fecha_vencimiento2 and ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0
 	left join (
-		select ncorte=cl.c,tfl_fecha_inicio_orig2=min(tfl_fecha_inicio_orig),tfl_fecha_vencimiento2=max(tfl_fecha_vencimiento2),htp_tpo_id2=htp_tpo_id from bvq_backoffice.EventoPortafolioAprox e
-		join corteslist cl on cl.c between tfl_fecha_inicio_orig and tfl_fecha_vencimiento2 and e.htp_id<>8829100001533
+		select ncorte=cl.c,tfl_fecha_inicio_orig2=min(tfl_fecha_inicio_orig),tfl_fecha_vencimiento2=max(tfl_fecha_vencimiento2),htp_tpo_id2=htp_tpo_id
+		from bvq_backoffice.EventoPortafolioAprox e
+		cross join bvq_backoffice.IGNORAR_RETR_NO_INGRESADO_ESTE_MES irn
+		join corteslist cl on cl.c >= tfl_fecha_inicio_orig and cl.c<=case when irn_ignorar=1 and retr_no_ingresado_este_mes=1 then fecha_vencimiento_original else tfl_fecha_vencimiento2 end
+		and e.htp_id<>8829100001533
 		where htp_tiene_valnom=1
 		group by htp_tpo_id,cl.c
 	) ev on htp.c=ncorte and (
-		ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0 and htp.tpo_id not in (2487,2537,2538)
-		or ev.htp_tpo_id2=htp.tpo_id_anterior and htp.tpo_id in (2487,2537,2538)
+		ev.htp_tpo_id2=htp.tpo_id and isnull(progs.ipr_es_cxc,0)=0 and htp.tpo_id not in (2487,2545,2546)
+		or ev.htp_tpo_id2=htp.tpo_id_anterior and htp.tpo_id in (2487,2545,2546)
 	)
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
