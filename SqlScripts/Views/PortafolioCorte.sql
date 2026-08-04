@@ -11,7 +11,7 @@
 	--tfl_fecha_inicio,
 	--tfl_fecha_vencimiento,
 	latest_inicio
-	=case when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
+	=case when 1=1 and ultimoPagoInteres.fcup_fecha_original is not null then ultimoPagoInteres.fcup_fecha_original when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
 		case when fecha_ultimo_pago>tfl_fecha_inicio_orig2 or htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(fechaUltimoPagoEnEvp,tfl_fecha_inicio_orig2) end
 	else latest_inicio end
 	,
@@ -596,6 +596,12 @@
 	)
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
+	outer apply (
+		select top 1 FCUP_FECHA_ORIGINAL from bvq_backoffice.fecha_ultimo_cupon
+		where fcup_tpo_id=tpo_id and fcup_desde<=htp.c
+		order by fcup_desde desc
+	) ultimoPagoInteres
+
 	--left join bvq_prevencion.personacomitente per on por.ctc_id=per.ctc_id
 	/*left join BVQ_BACKOFFICE.AJUSTES_DE_ACCRUAL AJU
 	on HTP.TPO_ID=AJU.AJU_TPO_ID AND c>=AJU_DATE*/
