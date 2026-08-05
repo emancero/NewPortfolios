@@ -21,6 +21,7 @@
 			--latest_inicio
 			case when tpo_fecha_susc_convenio is not null then
 				fechaInicioOriginal
+			when ultimoPagoInteres.fcup_fecha_original is not null then ultimoPagoInteres.fcup_fecha_original
 			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
 				case when htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(fechaUltimoPagoEnEvp,tfl_fecha_inicio_orig2) end
 			else latest_inicio end
