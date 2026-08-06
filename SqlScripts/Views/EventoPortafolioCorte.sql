@@ -150,16 +150,51 @@
 		and es_vencimiento_interes=1
 		join (select xtpo_id=1516) x on x.xtpo_id in (max(tpo.tpo_id_anterior),htp_tpo_id)
 		where evp_tpo_id in (max(tpo.tpo_id_anterior),htp_tpo_id)
+		and isnull(e.evp_observaciones,'')<>'Reclasificación'
 		and c>='20251031'
 	)
+	,fechaUltimoPagoEnEvp=
+	case when htp_tpo_id in (2545,2546) then
+	(
+	--select count(*),sum(checksum(*)%10000) from bvq_backoffice.eventoportafoliocorte-- where htp_tpo_id=2546
+	--1508	-201823
+
+		select top 1
+		--evt_fecha
+		evp_fecha_valor_interes
+		from
+		--bvq_backoffice.evento_portafolio evp
+		(
+			select
+			evp_fecha_valor_interes=coalesce(evp_fecha_valor_interes,evt_fecha),
+			evp.* from bvq_backoffice.evento_portafolio evp
+			left join (
+				values
+				 (7932,'20260329')
+				,(7931,'20260323')
+			) v(evp_id,evp_fecha_valor_interes)
+			on v.evp_id=evp.evp_id
+			where isnull(evp.evp_observaciones,'')<>'Reclasificación'
+		) evp
+		where evp_tpo_id=max(tpo_id_anterior) and evt_fecha<=c order by evt_fecha desc
+	)
+	else
+		max(case when oper=1 and htp_tpo_id in (2487) then coalesce(convert(date,evt_fecha),htp_fecha_operacion) end)
+	end
 	from bvq_backoffice.EventoPortafolio e
 	join (select tpo_id_anterior, tpo_id from bvq_backoffice.titulos_portafolio) tpo on e.htp_tpo_id=tpo.tpo_id
+	cross join	BVQ_BACKOFFICE.IGNORAR_RETR_NO_INGRESADO_ESTE_MES irn
 	join corteslist c on
 	coalesce(
-	evt_fecha,
-	htp_fecha_operacion
+		evt_fecha,
+		htp_fecha_operacion
 	)
 	<=c
+	or
+	IRN_IGNORAR=1
+	and retr_no_ingresado_este_mes=1
+	and fecha_vencimiento_original<=c
+	and datediff(m,fecha_vencimiento_original,c)=0
 	--where  isnull(htp_reportado,0)=0-- or c>='2016-09-30T23:57:59'
 	--where HTP_TIENE_VALNOM=1
 	group by htp_tpo_id,c,cortenum
