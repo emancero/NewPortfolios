@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerPortfoliosCreditosUnificado]
-    @i_fechaCorte       datetime,
-    @i_lga_id           int,
+--declare
+    @i_fechaCorte       datetime='20260630',
+    @i_lga_id           int=null,
     @i_incluirNoPriv    bit      = 1
 AS
 BEGIN
@@ -100,7 +101,9 @@ BEGIN
         CRC_ID_CUENTA_2                 int,
         CRC_DESCRIPCION                 varchar(250),
         CRC_ID                          int,
-        PLAZO                           varchar(50)
+        [Tipo Afiliación]               varchar(30),
+        dias_morosidad                  int,
+        PLAZO                           varchar(250)
     );
 
     INSERT INTO #creditos
@@ -160,7 +163,7 @@ BEGIN
         CALIFICACION_DE_RIESGO                  AS CALIFICACION_DE_RIESGO,
         PRECIO_DE_HOY                           AS PRECIO_DE_HOY,
         INTERES_GANADO                          AS INTERES_GANADO,
-        prEfectivo                              AS PREFECTIVO,
+   prEfectivo                              AS PREFECTIVO,
         YIELD                                   AS YIELD,
         NUEVO_VALOR_NOMINAL                     AS NUEVO_VALOR_NOMINAL,
         SECTOR                                  AS SECTOR,
@@ -194,8 +197,11 @@ BEGIN
     	CAST(NULL AS varchar(250))              AS ANIO_VENCIMIENTO,
 		CAST(NULL AS varchar(250))              AS ANIO_MES_VENCIMIENTO,
 		CAST(NULL AS varchar(250))              AS ANIO_MES_DIA_VENCIMIENTO,
-        CAST(NULL AS varchar(50))               AS PLAZO,
-        CAST(NULL AS int)                       AS PLAZO_MESES
+        CAST(NULL AS varchar(250))              AS PLAZO,
+        CAST(NULL AS int)                       AS PLAZO_MESES,
+        CAST(NULL AS varchar(30))               AS [Tipo Afiliación],
+        CAST(NULL AS int)                       AS [Tipo Afiliación],
+        CAST(NULL AS float)                     AS SALDO_EN_MORA
     FROM #portfolios
 
     UNION ALL
@@ -220,12 +226,12 @@ BEGIN
         CAST(NULL AS datetime)                  AS TIV_FECHA_VENCIMIENTO,
         CAST(NULL AS varchar(250))              AS HTP_NUMERACION,
         CAST(NULL AS datetime)                  AS TFCORTE,
-        CAST(NULL AS datetime)                  AS FECHA_COMPRA,
+    CAST(NULL AS datetime)                  AS FECHA_COMPRA,
         CAST(NULL AS float)                     AS HTP_PRECIO_COMPRA,
         CAST(NULL AS float)                     AS VALEFEOPER,
         CAST(NULL AS float)                     AS HTP_COMPRA,
         CAST(NULL AS float)                     AS LIQ_RENDIMIENTO,
-        CAST(NULL AS float)                     AS ACCRUAL,
+       CAST(NULL AS float)                     AS ACCRUAL,
         CAST(NULL AS datetime)                  AS LATEST_INICIO,
         CAST(NULL AS bit)                       AS TPO_TIPO_VALORACION,
         CAST(NULL AS float)                     AS SAL,
@@ -283,7 +289,9 @@ BEGIN
 		ANIO_MES_VENCIMIENTO = '[' + FORMAT(CRC_FECHA_VENCIMIENTO, 'yyyy-MM') + ']',
 		ANIO_MES_DIA_VENCIMIENTO = '[' + FORMAT(CRC_FECHA_VENCIMIENTO, 'yyy-MM-dd') + ']',
         plazo AS PLAZO,
-        PLAZO_MESES = DATEDIFF(M, CRC_FECHA_OTORGAMIENTO, CRC_FECHA_VENCIMIENTO)
-    FROM #creditos;
-
+        PLAZO_MESES = DATEDIFF(M, CRC_FECHA_OTORGAMIENTO, CRC_FECHA_VENCIMIENTO),
+        [Tipo Afiliación],
+        dias_morosidad,
+        SALDO_EN_MORA = CASE WHEN dias_morosidad>=31 THEN CRC_SALDO_PRESTAMO END 
+    FROM #creditos--;
 END
