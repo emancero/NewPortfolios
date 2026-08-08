@@ -241,6 +241,7 @@
     <None Include="Change Scripts\Agregar notas para reporte de Cesion Derechos.sql" />
     <None Include="Change Scripts\Dump de excel de Cesion Derechos Fiduciarios Isspol.sql" />
     <None Include="Stored Procedures\PrepararCuotasParaTir.sql" />
+    <None Include="Views\ReporteRendimientoPrivativas.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
