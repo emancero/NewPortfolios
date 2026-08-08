@@ -228,7 +228,7 @@
     <None Include="Change Scripts\Agregar funcionalidad TIR.sql" />
     <None Include="Views\CreditoCuota.sql" />
     <None Include="Change Scripts\Tabla CREDITO_CARTERA_CUOTA.sql" />
-    <None Include="Change Scripts\Job_ObtenerFlujoCajaISSPOL.sql" />
+    <None Include="Change Scripts\Job_Creditos.sql" />
     <None Include="Change Scripts\Campos tasa y abono en tabla CREDITO_CARTERA_CUOTA.sql" />
     <None Include="Stored Procedures\ObtenerCreditosCarteraCuotaISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerReporteRendimientoPrivativas.sql" />
@@ -240,6 +240,7 @@
     <None Include="Stored Procedures\ObtenerReporteCesionDerechosFiduciarios.sql" />
     <None Include="Change Scripts\Agregar notas para reporte de Cesion Derechos.sql" />
     <None Include="Change Scripts\Dump de excel de Cesion Derechos Fiduciarios Isspol.sql" />
+    <None Include="Stored Procedures\PrepararCuotasParaTir.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
