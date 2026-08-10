@@ -16,16 +16,19 @@ BEGIN
 
     SELECT DISTINCT
         ccc.id_credito,
-        ccc.por_codigo,
+        por_codigo=fon.por_codigo,--descripcion,
         ccc.fecha_vencimiento,
         ccc.producto,
         ccc.segmento,
         cupon=sum(round(ccc.total,2)-round(ccc.abono,2))+sum(case when datediff(d,@i_fechaCorte,ccc.fecha_pago)>=1 then ccc.abono else 0 end)
-    FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA] ccc
+    FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_FULL] ccc
+	join bvq_backoffice.creditos_cartera cr on ccc.id_credito=cr.crc_numero_operacion and crc_fecha_cierre=@i_fechaCorte-- and DATEDIFF(M, @i_fecha_corte, CRC_FECHA_CIERRE) = 0
+		join 
+		bvq_backoffice.[FONDO_HOMOLOGACION] fon on fon.id_cuenta=cr.crc_id_cuenta-- on ltrim(rtrim(ccc.por_codigo))=ltrim(rtrim(fon.fon_descripcion_credito))
     WHERE
         ccc.total > 0.05
         AND DATEDIFF(d, @i_fechaCorte, ccc.fecha_vencimiento) >= 1
-        AND (@i_portafolio IS NULL OR ccc.por_codigo = @i_portafolio)
+        AND (@i_portafolio IS NULL OR fon.por_codigo = @i_portafolio)
         AND (@i_anio IS NULL OR YEAR(ccc.fecha_vencimiento) = @i_anio)
         AND (@i_mes IS NULL OR MONTH(ccc.fecha_vencimiento) = @i_mes)
         AND (@i_dia IS NULL OR DAY(ccc.fecha_vencimiento) = @i_dia)
@@ -36,7 +39,7 @@ BEGIN
         AND (@i_estado IS NULL OR ccc.estado = @i_estado)
     GROUP BY
         ccc.id_credito,
-        ccc.por_codigo,
+        fon.por_codigo,--descripcion,
         CONVERT(DATE, ccc.fecha_vencimiento),
         ccc.producto,
         ccc.segmento

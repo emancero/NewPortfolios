@@ -1,4 +1,4 @@
-﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
+﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
 --declare
 	@i_fechaCorte DateTime='20251130',
 	@i_todos_los_vigentes bit=1,
@@ -71,9 +71,9 @@ BEGIN
 		,Valor_Deteriorado=null
 		,No_Acciones=Numero_Acciones
 		,Yield
-		,Valor_Capital=isnull(valor_pago_capital,0)
-		,Valor_Pago_Cupon=isnull(valor_pago_cupon,0)
-		,Fecha_Ultimo_Pago=iif(Fecha_Ultimo_Pago is not null, convert(date,@i_fechaCorte), null)
+		,Valor_Capital=case when tipo_transaccion='P' then 0 else isnull(valor_pago_cupon,0) end
+		,Valor_Pago_Cupon=case when tipo_transaccion='P' then isnull(valor_pago_cupon,0) else 0 end
+		,Fecha_Ultimo_Pago=iif(Fecha_Ultimo_Pago is not null and tipo_transaccion<>'L', convert(date,@i_fechaCorte), null)
 		,Saldo_Valor_Nominal=isnull(Saldo_Valor_Nominal,0)
 		,Calificadora_Riesgo=Calificadora_Riesgo_Emision
 		,Calificacion_Riesgo=sbc.codigo
@@ -149,12 +149,3 @@ BEGIN
 	left join @msgs m on e.fon_id=m.fon_id and e.Tipo_Transaccion=m.tipo_transaccion
 	order by FON_ID
 END
-go
-
-/*
-select * from BVQ_BACKOFFICE.EstructuraIsspolView where fecha_transaccion between '20231201' and '20231231' and tipo_transaccion<>'V'
-and escxc=0
-
---select * from _temp.TempEstructuraIsspolViewG3 where tipo_transaccion<>'V'
-sp_helptext 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03'
-*/

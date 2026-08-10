@@ -18,7 +18,57 @@ using (TransactionScope scope = new TransactionScope())
     //return;
 
     //commandos
-    
+
+    //7-ago-2026
+    /*comm.CommandText = (new GetObjectCode()).GetCode("Agregar_Funcionalidad_reportes_credito_ISSPOL", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("Agregar Funcionalidad TIR", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();*/
+    /*
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerCreditosCarteraISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCreditosCarteraISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerCreditosCarteraCuotaISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCreditosCarteraCuotaISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerPortfoliosCreditosUnificado'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerPortfoliosCreditosUnificado", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.RendimientoPorPlazoPrivativasMora'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("RendimientoPorPlazoPrivativasMora", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.RendimientoPrivativasMora'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("RendimientoPrivativasMora", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ReporteRendimientoPrivativasMora'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ReporteRendimientoPrivativasMora", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerReporteRendimientoPrivativas'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerReporteRendimientoPrivativas", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    */
+    comm.CommandText = (new GetObjectCode()).GetCode("Job_Creditos", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+
+    conn.Close();
+    scope.Complete();
+    return;
+
     //26-ene-2026
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioAprox'";
     comm.ExecuteNonQuery();

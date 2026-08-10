@@ -233,7 +233,7 @@
     <None Include="Stored Procedures\ObtenerCreditosCarteraCuotaISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerReporteRendimientoPrivativas.sql" />
     <None Include="Change Scripts\Campos producto y segmento en CREDITO_CARTERA_CUOTA.sql" />
-    <None Include="Stored Procedures\RecargarCarteraCuotaISSPOL_1.sql" />
+    <None Include="Stored Procedures\RecargarCarteraCuotaISSPOL.sql" />
     <None Include="Change Scripts\Tabla CREDITO_CARTERA_CUOTA_2.sql" />
     <None Include="Change Scripts\Agregar campos a CREDITO_CARTERA_CUOTA_2.sql" />
     <None Include="Change Scripts\Campo evp_fecha_liq_interes en EVENTO_PORTAFOLIO.sql" />
@@ -242,6 +242,7 @@
     <None Include="Change Scripts\Dump de excel de Cesion Derechos Fiduciarios Isspol.sql" />
     <None Include="Stored Procedures\PrepararCuotasParaTir.sql" />
     <None Include="Views\ReporteRendimientoPrivativas.sql" />
+    <None Include="Stored Procedures\ObtenerFlujoCajaISSPOLFull.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

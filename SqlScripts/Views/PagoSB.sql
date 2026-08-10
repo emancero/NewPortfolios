@@ -1,4 +1,4 @@
-﻿create view BVQ_BACKOFFICE.PagoSB as
+﻿alter view BVQ_BACKOFFICE.PagoSB as
 	select
 		evp.fecha
 	,montooper=sum(evp.montooper)
@@ -92,5 +92,6 @@
 	left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
 	where (oper=1 or htp_dividendo=1)
 	--and fecha between '20240101' and '20240131'
-
+	
 	group by evp.tpo_numeracion,oper,fecha,tpo.tiv_id--,htp_fecha_operacion
+	
