@@ -1,4 +1,4 @@
-﻿alter view BVQ_BACKOFFICE.PagoSB as
+﻿CREATE view BVQ_BACKOFFICE.PagoSB as
 	select
 		evp.fecha
 	,montooper=sum(evp.montooper)
