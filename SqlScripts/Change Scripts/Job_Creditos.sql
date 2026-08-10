@@ -5,7 +5,7 @@ GO
 -- =============================================
 -- CONFIGURACIÓN
 -- =============================================
-DECLARE @dbName NVARCHAR(128) = N'Sicav'; -- << cambiar aqui el nombre de la DB
+DECLARE @dbName NVARCHAR(128) = N'SicavStage'; -- << cambiar aqui el nombre de la DB
 -- =============================================
 
 -- 1. Crear el Job
