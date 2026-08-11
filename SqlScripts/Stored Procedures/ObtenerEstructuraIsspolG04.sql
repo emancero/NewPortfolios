@@ -1,6 +1,4 @@
-﻿select * from bvq_backoffice.fondo
---exec [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG04] '2023-12-31T23:59:59',null
-alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG04]
+﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG04]
     @i_fechaCorte DATETIME,
     @i_lga_id     INT
 AS
