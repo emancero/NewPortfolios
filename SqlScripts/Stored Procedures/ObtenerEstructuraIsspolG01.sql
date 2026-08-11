@@ -1,5 +1,4 @@
-﻿--exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01 '2023-12-31T23:59:59',1
-alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
+﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01
 	--declare
 	@lastReportDate datetime='20231231',
 	@i_todos_los_vigentes bit=1,
