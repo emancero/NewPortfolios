@@ -6,6 +6,12 @@
 			when 'prov' then prov
 				+case when hist_fecha_compra>tfl_fecha_inicio_orig
 				and htp_tpo_id not in (2268,2269) --Excepción para fondos de inversión
+				and not exists(
+					select * from BVQ_BACKOFFICE.SIN_INT_TRANS
+					where TPO_NUMERACION=SIT_NUMERACION and convert(varchar,fecha,20)=SIT_FECHA
+				)
+				--and htp_tpo_id not in (2408,2409 ,2410,2411,2412 ,2413,2414,2415 ,2417,2418,2419)
+				--and not (isnull(evp_abono,0)=1 and htp_tpo_id in (2409,2410,2411,2412) and pr=0)
 				then isnull(itrans,0) else 0 end
 				+case when oper=0 then itrans else 0 end
 			when 'intAcc' then intAcc
@@ -92,5 +98,6 @@
 	and not (rubro='montooper' and montooper<>0 and isnull(evp_abono,0)=0)
 	and (
 		not (rubro='prov' and e.tiv_subtipo=3 and isnull(ipr_es_cxc,0)=1)
+		or fecha>='20260529' /*featureflag*/
 	)
 	--and not (isnull(evp_abono,0)=1 and rubro='prov')
