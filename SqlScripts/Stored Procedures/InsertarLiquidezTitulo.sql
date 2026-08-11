@@ -10,7 +10,7 @@
 		@i_evp_costas_judiciales float = NULL,
 		@i_evp_costas_judiciales_referencia varchar(100) = NULL,
 		@i_fecha_default_a_restaurar datetime=NULL,
-		@i_evp_fecha_liq_interes date = NULL,
+		--@i_evp_fecha_liq_interes date = NULL,
 		@i_lga_id	   INT = NULL
 AS
 	BEGIN
@@ -40,13 +40,20 @@ AS
 			@o_vep_id = @o_vep_id OUT,
 			@o_cta_id = @o_cta_id OUT,
 			@o_com_id = @o_com_id OUT,
+			--Asignar Interés al vencimiento/provisión en Ajuste provisión------------------------
+			--EMN: 30-jul-2026 Se incluye la siguiente línea, pues los rubros de interes efectivo y provisión requieren que
+			--también se escriba lo ingresado en el texto de rendimiento/provisión dentro del campo evp_ajuste_provision.
+			--Era un issue que había estado por mucho tiempo.
+			@i_ajuste_provision = @i_evp_rendimiento,
+			--Fin "Asignar Interés al vencimiento/provisión" en Ajuste provisión------------------
+
 			@i_duplica = @i_dpl_abono,
 			@i_evp_uso_fondos = @i_evp_uso_fondos,
 			@i_evp_rendimiento = @i_evp_rendimiento,
 			@i_lga_id = @i_lga_id,
 			@i_evp_costas_judiciales = @i_evp_costas_judiciales,
-			@i_evp_costas_judiciales_referencia = @i_evp_costas_judiciales_referencia,
-			@i_evp_fecha_liq_interes = @i_evp_fecha_liq_interes
+			@i_evp_costas_judiciales_referencia = @i_evp_costas_judiciales_referencia--,
+			--@i_evp_fecha_liq_interes = @i_evp_fecha_liq_interes
 		--recuperar default borrado temporalmente si existe (es decir si es cxc)
 		update d set fecha=convert(date,@i_fecha_default_a_restaurar)
 		--,tiv_id=-abs(tiv_id) --desactivar
