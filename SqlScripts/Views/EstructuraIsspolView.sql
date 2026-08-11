@@ -103,7 +103,7 @@
 
 	,[Numero_liquidacion]=iif(oper in (0,1), fon.FON_NUMERO_LIQUIDACION, null)--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
 	,[Tipo_transaccion]=case oper when 0 then 'Compra' when 1 then
-		case when cacheNext.saldo_valor_nominal<0.005 then 'L' else 'P' end
+		case when isnull(cacheNext.saldo_valor_nominal,0)<0.005 then 'L' else 'P' end
 	when 3 then 'R' when -1 then 'V' end
 	,[Fecha_transaccion]=htp_fecha_operacion
 	,[Dias_transcurridos]=dbo.fnDias(
@@ -122,7 +122,7 @@
 	,valor_pago_capital=iif(oper not in (0,3), 0, valor_pago_capital*errVNFactor.errVNFactor)
 	,valor_pago_cupon=valor_pago_cupon*errVNFactor.errVNFactor
 	,Fecha_Ultimo_Pago=case oper when 1 then cache.Fecha_Ultimo_Pago end--evp.Fecha_Ultimo_Pago
-	,Saldo_Valor_Nominal=cacheNext.Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
+	,Saldo_Valor_Nominal=cache.Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
 		*case when tiv.tiv_tipo_renta=154 then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) else 1 end
 	,tiv.tiv_tipo_renta
 	,[Pago_dividendo_en_acciones]=dividendo_en_acciones
