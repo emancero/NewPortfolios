@@ -13,11 +13,10 @@ begin
 end
 
 
+-- _temp.pat tabla de patrimonios técnicos a migrar
 if object_id('_temp.pat') is null
 	create table _temp.pat(id int,emisor varchar(300),fecha varchar(100),pat varchar(100))
 
-if object_id('_temp.bakVba20260211') is null
-	create table _temp.bakVba20260211(ems_id int, VBA_FECHA_DESDE datetime)
 
 
 insert into _temp.pat(emisor,fecha,pat)
@@ -118,6 +117,8 @@ delete from corteslist
 insert into corteslist(c,cortenum)
 values('20231231',1)
 
+
+--#map homologación de nombres de emisores
 if object_id('tempdb..#map') is not null
 	drop table #map
 ;with a as(
@@ -235,7 +236,8 @@ if object_id('tempdb..#src') is not null
 
 	--, count(*) over (partition by emisor order by min(fecha2) desc) c
 	from (
-		select fecha2=try_cast(replace(replace(fecha,'.',''),'sept','sep') as datetime),* from _temp.pat
+		select fecha2=try_cast(replace(replace(fecha,'.',''),'sept','sep') as datetime) --fecha2 fecha de migración en datetime
+		,* from _temp.pat
 	) pat where emisor not in ('','0')
 	group by emisor,replace(pat,'$','')
 	--vista EmisorPatrimonio
@@ -246,10 +248,14 @@ from p
 where r=1
 
 
-insert into BVQ_ADMINISTRACION.VARIABLES_BALANCE(
+if object_id('_temp.bakVba20260211') is null
+	create table _temp.bakVba20260211(ems_id int, VBA_FECHA_DESDE datetime,VBA_FECHA_HASTA datetime,VBA_PATRIMONIO_TECNICO float)
+
+insert into BVQ_ADMINISTRACION.VARIABLES_BALANCE
+(
 	ems_id,VBA_FECHA_DESDE,VBA_FECHA_HASTA,VBA_PATRIMONIO_TECNICO
 )
-output inserted.ems_id,inserted.VBA_FECHA_DESDE
+output inserted.ems_id,inserted.VBA_FECHA_DESDE,inserted.VBA_FECHA_HASTA,inserted.VBA_PATRIMONIO_TECNICO
 into _temp.bakVba20260211
 select
   id_emisor
@@ -262,4 +268,9 @@ join #map map
 join #sinPatrimonio miss
 	on miss.EMS_ID=map.id_emisor
 
-
+--Reporte de Patrimonios insertados
+select
+	[Emisor]=ems_nombre,[Fecha desde]=p.vba_fecha_desde,[Fecha hasta]=p.vba_fecha_hasta
+	,[Patrimonio técnico]=VBA_PATRIMONIO_TECNICO
+from _temp.bakVba20260211 p
+join bvq_administracion.emisor ems on p.ems_id=ems.ems_id
