@@ -18,8 +18,8 @@ BEGIN
         ccc.id_credito,
         por_codigo=fon.por_codigo,--descripcion,
         ccc.fecha_vencimiento,
-        ccc.producto,
-        ccc.segmento,
+        producto=cr.crc_id_producto,
+        segmento=cr.crc_segmento,
         cupon=sum(round(ccc.total,2)-round(ccc.abono,2))+sum(case when datediff(d,@i_fechaCorte,ccc.fecha_pago)>=1 then ccc.abono else 0 end)
     FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_FULL] ccc
 	join bvq_backoffice.creditos_cartera cr on ccc.id_credito=cr.crc_numero_operacion and crc_fecha_cierre=@i_fechaCorte-- and DATEDIFF(M, @i_fecha_corte, CRC_FECHA_CIERRE) = 0
@@ -41,6 +41,6 @@ BEGIN
         ccc.id_credito,
         fon.por_codigo,--descripcion,
         CONVERT(DATE, ccc.fecha_vencimiento),
-        ccc.producto,
-        ccc.segmento
+        cr.crc_id_producto,
+        cr.crc_segmento
 END
