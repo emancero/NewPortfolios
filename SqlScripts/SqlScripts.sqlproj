@@ -243,6 +243,8 @@
     <None Include="Stored Procedures\PrepararCuotasParaTir.sql" />
     <None Include="Views\ReporteRendimientoPrivativas.sql" />
     <None Include="Stored Procedures\ObtenerFlujoCajaISSPOLFull.sql" />
+    <None Include="Views\TivCodigoTituloSicErr.sql" />
+    <None Include="Views\EstructuraIsspolErrors.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
