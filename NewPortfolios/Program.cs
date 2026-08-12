@@ -61,14 +61,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerReporteRendimientoPrivativas", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
     */
-    comm.CommandText = (new GetObjectCode()).GetCode("Job_Creditos", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
+    //comm.CommandText = (new GetObjectCode()).GetCode("Job_Creditos", "Change Script", suffix: false);
+    //comm.ExecuteNonQuery();
 
-
-    conn.Close();
-    scope.Complete();
-    return;
-
+    /*********************************************************************************
     //26-ene-2026
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioAprox'";
     comm.ExecuteNonQuery();
@@ -97,6 +93,14 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "StoredProcedure", suffix: false);
     comm.ExecuteNonQuery();
+
+    conn.Close();
+    scope.Complete();
+    return;//paso a producción ok
+    ************************************************************/
+
+
+    /***********************************************************
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G04'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ESTRUCTURA_ISSPOL_G04", "Change Script", suffix: false);
@@ -130,12 +134,12 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("CALIFICADORA_SB_MAP", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
-    /*
-    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TituloFlujoCapital'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("TituloFlujoCapital", "View", suffix: false);
-    comm.ExecuteNonQuery();
-    */
+    
+    //comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TituloFlujoCapital'";
+    //comm.ExecuteNonQuery();
+    //comm.CommandText = (new GetObjectCode()).GetCode("TituloFlujoCapital", "View", suffix: false);
+    //comm.ExecuteNonQuery();
+    
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.GetIdentifierCode'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("GetIdentifierCode", "Function", suffix: false);
@@ -144,12 +148,12 @@ using (TransactionScope scope = new TransactionScope())
     //tiv_codigo_isin y tiv_fecha_inscripcion_sic
     comm.CommandText = (new GetObjectCode()).GetCode("TITULO_VALOR", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
-    /*
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiqIntProv'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
-    comm.ExecuteNonQuery();
-    */
+    
+    //comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiqIntProv'";
+    //comm.ExecuteNonQuery();
+    //comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
+    //comm.ExecuteNonQuery();
+    
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.VALORACION_SB'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("VALORACION_SB", "Change Script", suffix: false);
@@ -164,6 +168,27 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("inversion", "View", suffix: false);
     comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiquidacionAReportar'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("LiquidacionAReportar", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("HISTORICO_TITULOS_PORTAFOLIO", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TituloFlujoCapital'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("TituloFlujoCapital", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PagoSB'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("PagoSB", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EstructuraIsspolView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EstructuraIsspolView", "View", suffix: false);
@@ -186,10 +211,12 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG04'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG04", "Stored Procedure", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG05'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG05", "Stored Procedure", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("LIQUIDEZ_CACHE", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
@@ -198,17 +225,16 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ComprobanteIsspolRubros", "View", suffix: false);
     comm.ExecuteNonQuery();
     //30-dic-2025
-    /*
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.TotalRecuperacionesView'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("TotalRecuperacionesView", "View", suffix: false);
-    comm.ExecuteNonQuery();
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerTotalRecuperacionesPivot'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerTotalRecuperacionesPivot", "Stored Procedure", suffix: false);
-    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
-    comm.ExecuteNonQuery();
-    */
+    
+    //comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.TotalRecuperacionesView'";
+    //comm.ExecuteNonQuery();
+    //comm.CommandText = (new GetObjectCode()).GetCode("TotalRecuperacionesView", "View", suffix: false);
+    //comm.ExecuteNonQuery();
+    //comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerTotalRecuperacionesPivot'";
+    //comm.ExecuteNonQuery();
+    //comm.CommandText = (new GetObjectCode()).GetCode("ObtenerTotalRecuperacionesPivot", "Stored Procedure", suffix: false);
+    //comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    //comm.ExecuteNonQuery();
     //fin 30-dic-2025
 
     //G03
@@ -223,11 +249,22 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
 
+    conn.Close();
+    scope.Complete();
+    return;//paso a producción ok
+    **********************************************************/
+
     //14-feb-2026
-    comm.CommandText = "dropifexists 'bvq_backoffce.SecuenciaCompra'";
+    //comm.CommandText = "dropifexists 'bvq_backoffce.SecuenciaCompra'";
+    //comm.ExecuteNonQuery();
+    //comm.CommandText = (new GetObjectCode()).GetCode("SecuenciaCompra", "View", suffix: false);
+    //comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists '_temp.TivCodigoTituloSicErr'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("SecuenciaCompra", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).GetCode("TivCodigoTituloSicErr", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
+
     comm.CommandText = (new GetObjectCode()).GetCode("Fixes estructuras", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("Patrimonios faltantes", "Change Script", suffix: false);
@@ -240,6 +277,30 @@ using (TransactionScope scope = new TransactionScope())
     //4-abr-2026
     comm.CommandText = (new GetObjectCode()).GetCode("Menu Estructuras SB", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
+
+    //29-jul-2026
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EmisorEstructuraIsspolView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("EmisorEstructuraIsspolView", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EstructuraIsspolErrors'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("EstructuraIsspolErrors", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezTitulo'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarLiquidezTitulo", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+
+    conn.Close();
+    scope.Complete();
+    return;
+
     /*
     //se utilizan en los reportes de inversiones
     comm.CommandText = (new GetObjectCode()).GetCode("Menu Reporte de Inversiones", "Change Script", suffix: false);
