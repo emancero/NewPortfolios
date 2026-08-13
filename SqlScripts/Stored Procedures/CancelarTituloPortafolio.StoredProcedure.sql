@@ -85,7 +85,7 @@ BEGIN
 		@i_idAfectado = @i_tpo_id;
 
 	declare @i_fecha_c datetime
-	set @i_fecha_c=bvq_administracion.ObtenerFechaSistema()
+	set @i_fecha_c=@i_fecha--bvq_administracion.ObtenerFechaSistema()
 	truncate table corteslist
 	
 	insert into corteslist(c,cortenum) select @i_fecha_c, null-- from _temp.corteslist
@@ -156,6 +156,11 @@ BEGIN
 		-- NIF
 		 --AND HTP_CATEGORIA = @v_categoria
 		-- FIN NIF
+	update htp set compra_htp_id=primeraCompra.htp_id
+	from bvq_backoffice.historico_titulos_portafolio htp
+	join bvq_backoffice.SecuenciaCompra primeraCompra
+		on primeraCompra.htp_tpo_id=htp.htp_tpo_id and primeraCompra.sec=1
+	where htp.htp_id=scope_identity()
 
 	if exists(select * from BVQ_ADMINISTRACION.PARAMETRO WHERE PAR_CODIGO='SEPARAR_EN_COMPRAS' AND PAR_VALOR='SI')
 	BEGIN
