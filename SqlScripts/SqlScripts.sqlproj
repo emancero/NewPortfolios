@@ -245,6 +245,7 @@
     <None Include="Stored Procedures\ObtenerFlujoCajaISSPOLFull.sql" />
     <None Include="Views\TivCodigoTituloSicErr.sql" />
     <None Include="Views\EstructuraIsspolErrors.sql" />
+    <None Include="Change Scripts\Agregar campo FON_CONDICIONES a tabla FONDO.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

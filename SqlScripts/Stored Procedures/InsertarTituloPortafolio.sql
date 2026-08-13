@@ -75,6 +75,7 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarTituloPortafolio]
 	,@i_cxc bit
 	,@i_top_cva_id int
 	,@i_fon_numero_resolucion varchar(100) = null
+	,@i_fon_condiciones varchar(max) = null
 	,@i_lga_id int
 AS
 BEGIN
@@ -136,6 +137,7 @@ BEGIN
 					, FON_PROCEDENCIA
 					, FON_CVA_ID
 					, FON_NUMERO_RESOLUCION
+					, FON_CONDICIONES
 					)
 				values (
 					  @i_tiv_id
@@ -144,6 +146,7 @@ BEGIN
 					, @i_fon_procedencia
 					, @i_top_cva_id
 					, @i_fon_numero_resolucion
+					, @i_fon_condiciones
 				)
 				set @v_fon_id=scope_identity()
 			end
