@@ -157,7 +157,7 @@
 	,evp.EVP_COSTAS_JUDICIALES
 	,evp.EVP_COSTAS_JUDICIALES_REFERENCIA
 	,movsCupon.movs_evp_valor_efectivo
-	--,evt.liq_rendimiento
+	,evt.liq_rendimiento
 	--EMN:2-mar-2026 intereses de abono
 	,movsCuponInt.movs_evp_interes_efectivo
 	,movsCuponInt.movs_evp_interes_nominal--movs_evp_interes_efectivo+valEfeAbono-capMonto
@@ -387,7 +387,7 @@
 	,EVP_COSTAS_JUDICIALES=null
 	,EVP_COSTAS_JUDICIALES_REFERENCIA=null
 	,movs_evp_valor_efectivo=null
-	--,liq_rendimiento=null
+	,liq_rendimiento=null
 	,movs_evp_interes_efectivo=null
 	,movs_evp_interes_nominal=null--movs_evp_interes_efectivo+valEfeAbono-capMonto
 	from
