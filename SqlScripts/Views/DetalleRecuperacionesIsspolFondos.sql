@@ -27,7 +27,7 @@ select
 		fecha_de_vencimiento_flujo=max(evp.fecha_original),
 		acciones_judiciales=CONCAT('Realizó el pago del flujo No. ', ' ', tfl_periodo),
 		max(iif(isnull(ipr_es_cxc,0)=1,'Otras cuentas por cobrar',case when evp.tiv_tipo_renta=153 then 'Inversiones de Renta Fija' else 'Inversiones de Renta Variable' end)) as primer_nivel,
-		max(iif(tvl_codigo in ('OBL','BE','VCC'),'Con cupón de capital e interés','Al vencimiento capital e interés')) as tipo_flujo,
+		max(iif(tvl_codigo in ('OBL','BE','VCC','OCA'),'Con cupón de capital e interés','Al vencimiento capital e interés')) as tipo_flujo,
 		evp.tiv_tipo_renta, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,--,htp_fecha_operacion
 		deterioro=max(deterioro),
 		tvl_codigo,

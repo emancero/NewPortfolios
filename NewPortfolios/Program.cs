@@ -11,6 +11,46 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
+    
+    comm.CommandText = (new GetObjectCode()).GetCode("Agregar campo FON_CONDICIONES a tabla FONDO", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarTituloPortafolio", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarTituloPortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ActualizarTituloPortafolio", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerTodosSaldoYDetallePortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerTodosSaldoYDetallePortafolio", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerSaldoYDetallePortafolio'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSaldoYDetallePortafolio", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EventoPortafolioAprox'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("EventoPortafolioAprox", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("LIQUIDEZ_CACHE", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PrepararLiquidezCache'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("PrepararLiquidezCache", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+
+    conn.Close();
+    scope.Complete();
+    return;
+
     //(new NewPortfolios.Deploy()).Start("Reportes y ProvPivot", conn);
 
     //conn.Close();
@@ -63,6 +103,7 @@ using (TransactionScope scope = new TransactionScope())
     */
     //comm.CommandText = (new GetObjectCode()).GetCode("Job_Creditos", "Change Script", suffix: false);
     //comm.ExecuteNonQuery();
+
 
     /*********************************************************************************
     //26-ene-2026
