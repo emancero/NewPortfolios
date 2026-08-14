@@ -86,7 +86,7 @@
 		,HTP_TIENE_VALNOM
 		,specialValnom
 		,TIV_TIPO_RENTA
-		--,liq_rendimiento
+		,liq_rendimiento
 		--,
 		--vep.vep_fecha,
 

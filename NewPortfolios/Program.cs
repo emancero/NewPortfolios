@@ -11,6 +11,11 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
+    
+    comm.CommandText = (new GetObjectCode()).GetCode("Agregar campo FON_CONDICIONES a tabla FONDO", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarTituloPortafolio'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("InsertarTituloPortafolio", "Stored Procedure", suffix: false);
