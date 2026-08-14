@@ -1,6 +1,6 @@
-﻿create VIEW BVQ_BACKOFFICE.DetalleRecuperacionesIsspolFondos
+﻿CREATE VIEW BVQ_BACKOFFICE.DetalleRecuperacionesIsspolFondos
 AS
-select	
+select
 		evp.tiv_tipo_renta as tipo_renta,
 		MAX(
 			CASE itcsector.itc_valor
@@ -22,6 +22,7 @@ select
 		iamortizacion = sum(CASE WHEN evp.rubro in ('intacc','prov') and deterioro=0 THEN evp.monto END),
 		prov = sum(CASE WHEN evp.rubro in ('prov') and deterioro=0 THEN evp.monto END),
 		--pago_total=sum(case when evp.es_vencimiento_interes=0 then amount else 0 end)+sum(isnull(case when evp.es_vencimiento_interes=1 then evp.iAmortizacion end,0)),
+		observaciones = MAX(evpo.evp_observaciones),
 		fecha_pago=fecha,
 		fecha_de_vencimiento_flujo=max(evp.fecha_original),
 		acciones_judiciales=CONCAT('Realizó el pago del flujo No. ', ' ', tfl_periodo),
@@ -56,6 +57,7 @@ select
 		join BVQ_ADMINISTRACION.emisor ems on tiv.tiv_emisor=ems.ems_id
 		join bvq_administracion.ITEM_CATALOGO itcsector on ems.EMS_SECTOR=itcsector.ITC_ID
 		left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
+		left join bvq_backoffice.evento_portafolio evpo on evpo.evp_id = evp.evp_id
 		where oper=1
 		and evp.tipo='C'
 		and evp.acreedoraSinAux not like '2%'

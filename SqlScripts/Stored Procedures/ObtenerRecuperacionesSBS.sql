@@ -1,11 +1,11 @@
 ﻿create PROCEDURE [BVQ_BACKOFFICE].[ObtenerRecuperacionesSBS]
     @i_fechaOperacion DATE,
-	@i_lga_id int     
+	@i_lga_id int
 AS
 BEGIN
     SET NOCOUNT ON;
 
-	DECLARE 
+	DECLARE
         @FechaInicioMes DATE,
         @FechaFinMes    DATE;
 
@@ -36,6 +36,7 @@ SELECT
 		iamortizacion
 		,prov
 		,pago_total=isnull(capital,0)+isnull(iamortizacion,0)
+		,observaciones
 		,fecha_pago
 		,fecha_de_vencimiento_flujo
 		,vencimiento_feriado

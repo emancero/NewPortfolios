@@ -12,6 +12,7 @@ SELECT
     capital,
     iamortizacion,
     prov,
+    observaciones,
     fecha_pago,
     fecha_de_vencimiento_flujo,
     vencimiento_feriado = CASE
@@ -45,6 +46,7 @@ FROM (
         SUM(capital) AS capital,
         SUM(iamortizacion) AS iamortizacion,
         SUM(prov) AS prov,
+        MAX(observaciones) AS observaciones,
         fecha_pago,
         MAX(fecha_de_vencimiento_flujo) AS fecha_de_vencimiento_flujo,
         acciones_judiciales,
