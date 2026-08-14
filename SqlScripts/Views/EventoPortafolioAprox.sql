@@ -136,7 +136,8 @@
 	dias_cupon,
 	tfl_id,
 	htp_reportado=null,
-	liq_rendimiento=null,
+	--EMN; 2026-jul-29
+	liq_rendimiento=max(liq_rendimiento),
 	liq_retencion=null,
 	liq_retencion_casa=null,
 	htp_precio_compra=null
