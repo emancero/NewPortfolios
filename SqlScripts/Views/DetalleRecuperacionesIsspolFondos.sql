@@ -16,7 +16,7 @@ select
 		max(ems.EMS_NOMBRE) as nombre,
 		saldo_valor_nominal=max(evp.saldo),--cap.movCapital),--sum(evp.saldo),
 		--saldo_valor_nominal=(select sal from _temp.portafoliocorte pc where pc.httpo_id=max(evp.htp_tpo_id)),
-		rendimiento=null,
+		rendimiento=max(evp.liq_rendimiento),
 		plazo_cupon=max(evp.dias_cupon),
 		capital=sum(CASE WHEN evp.rubro in ('amount','amountcxc') and deterioro=0 THEN evp.monto END),
 		iamortizacion = sum(CASE WHEN evp.rubro in ('intacc','prov') and deterioro=0 THEN evp.monto END),
