@@ -6,12 +6,13 @@ using System.Transactions;
 string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
 {
+
     SqlConnection conn = new SqlConnection(connStr);
     SqlCommand comm = conn.CreateCommand();
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
-    
+    /*
     comm.CommandText = (new GetObjectCode()).GetCode("Agregar campo FON_CONDICIONES a tabla FONDO", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
@@ -46,11 +47,16 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("PrepararLiquidezCache", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "StoredProcedure", suffix: false);
+    comm.ExecuteNonQuery();
+
 
     conn.Close();
     scope.Complete();
     return;
-
+    */
     //(new NewPortfolios.Deploy()).Start("Reportes y ProvPivot", conn);
 
     //conn.Close();
