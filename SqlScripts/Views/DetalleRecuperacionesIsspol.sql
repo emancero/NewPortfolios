@@ -41,7 +41,7 @@ FROM (
         MAX(fecha_vencimiento) AS fecha_vencimiento,
         MAX(nombre) AS nombre,
         SUM(saldo_valor_nominal) AS saldo_valor_nominal,
-        NULL AS rendimiento,
+        max(rendimiento) AS rendimiento,
         MAX(plazo_cupon) AS plazo_cupon,
         SUM(capital) AS capital,
         SUM(iamortizacion) AS iamortizacion,
