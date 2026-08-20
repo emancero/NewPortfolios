@@ -14,7 +14,24 @@ select
 		max(coalesce(tpo.TPO_FECHA_COMPRA_ANTERIOR, evp.fecha_compra)) AS fecha_compra,
 		max(evp.tiv_fecha_vencimiento) as fecha_vencimiento,
 		max(ems.EMS_NOMBRE) as nombre,
-		saldo_valor_nominal=max(evp.saldo),--cap.movCapital),--sum(evp.saldo),
+		saldo_valor_nominal=--max(evp.saldo),--cap.movCapital),--sum(evp.saldo),
+		(
+			select
+				sum(
+					--montooper
+					coalesce(
+						-evp_valor_efectivo,
+						--case when HTP_TIENE_VALNOM=1 then montooper end
+						montooperOld
+					)
+					--+isnull(-evp_valor_efectivo,0)
+					-isnull(remaining,0)
+				)
+			from bvq_backoffice.eventoportafolio saldoTpo
+			where coalesce(evt_fecha, htp_fecha_operacion)<e.evt_Fecha and saldoTpo.htp_tpo_id=evp.htp_tpo_id
+			group by saldoTpo.htp_tpo_id
+		),
+
 		--saldo_valor_nominal=(select sal from _temp.portafoliocorte pc where pc.httpo_id=max(evp.htp_tpo_id)),
 		rendimiento=max(evp.liq_rendimiento),
 		plazo_cupon=max(evp.dias_cupon),
