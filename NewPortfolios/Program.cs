@@ -3,7 +3,8 @@ using Microsoft.Data.SqlClient;
 using System.Transactions;
 
 //return; //prevenir ejecución accidental
-string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
+string connStr = "Data Source=192.168.2.114;Initial Catalog=sicavbak2;Persist Security Info=True;User ID=usrsicav;Password=$icav2012*;TrustServerCertificate=True";
+//string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
 {
 
@@ -11,6 +12,28 @@ using (TransactionScope scope = new TransactionScope())
     SqlCommand comm = conn.CreateCommand();
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
+
+    /**************************************************************/
+    // Agregar SPs y vista faltantes
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.personaproveedor'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("personaproveedor", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_PREVENCION.ObtenerPNyPJAutoCompleteByDate'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerPNyPJAutoCompleteByDate", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_PREVENCION.ObtenerProveedorAutoCompleteActualizados'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerProveedorAutoCompleteActualizados", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    conn.Close();
+    scope.Complete();
+    return;
+    /**************************************************************/
 
     /*
     comm.CommandText = (new GetObjectCode()).GetCode("Agregar campo FON_CONDICIONES a tabla FONDO", "Change Script", suffix: false);
@@ -181,12 +204,12 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("CALIFICADORA_SB_MAP", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
-    
+
     //comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.TituloFlujoCapital'";
     //comm.ExecuteNonQuery();
     //comm.CommandText = (new GetObjectCode()).GetCode("TituloFlujoCapital", "View", suffix: false);
     //comm.ExecuteNonQuery();
-    
+
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.GetIdentifierCode'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("GetIdentifierCode", "Function", suffix: false);
@@ -195,12 +218,12 @@ using (TransactionScope scope = new TransactionScope())
     //tiv_codigo_isin y tiv_fecha_inscripcion_sic
     comm.CommandText = (new GetObjectCode()).GetCode("TITULO_VALOR", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
-    
+
     //comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LiqIntProv'";
     //comm.ExecuteNonQuery();
     //comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
     //comm.ExecuteNonQuery();
-    
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.VALORACION_SB'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("VALORACION_SB", "Change Script", suffix: false);
@@ -272,7 +295,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ComprobanteIsspolRubros", "View", suffix: false);
     comm.ExecuteNonQuery();
     //30-dic-2025
-    
+
     //comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.TotalRecuperacionesView'";
     //comm.ExecuteNonQuery();
     //comm.CommandText = (new GetObjectCode()).GetCode("TotalRecuperacionesView", "View", suffix: false);

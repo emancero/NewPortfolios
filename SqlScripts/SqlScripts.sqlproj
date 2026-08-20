@@ -247,6 +247,10 @@
     <None Include="Views\EstructuraIsspolErrors.sql" />
     <None Include="Change Scripts\Agregar campo FON_CONDICIONES a tabla FONDO.sql" />
     <None Include="Stored Procedures\ObtenerPerdidaEsperadaTIR.sql" />
+    <None Include="Stored Procedures\ObtenerPNyPJAutoCompleteByDate.sql" />
+    <None Include="Stored Procedures\ObtenerProveedorAutoCompleteActualizados.sql" />
+    <None Include="Change Scripts\01 Campo PRO_FECHA_ACTUALIZACION.sql" />
+    <None Include="Views\personaproveedor.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

@@ -1,0 +1,41 @@
+﻿CREATE PROCEDURE [BVQ_PREVENCION].[ObtenerProveedorAutoCompleteActualizados]
+(
+	@i_estados VARCHAR(80),
+	@i_date DATETIME,
+	@i_lga_id INT
+)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF OBJECT_ID(N'tempdb..#ESTADO_PROVEEDOR', N'U') IS NOT NULL
+		DROP TABLE #ESTADO_PROVEEDOR;
+
+	CREATE TABLE #ESTADO_PROVEEDOR (ITC_ID INT);
+
+	DECLARE @v_sql NVARCHAR(1000);
+	SET @v_sql = 'INSERT INTO #ESTADO_PROVEEDOR (ITC_ID) SELECT ITC.ITC_ID FROM BVQ_ADMINISTRACION.CATALOGO CAT INNER JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO ITC ON CAT.CAT_ID = ITC.CAT_ID WHERE CAT.CAT_CODIGO = ''GENSTATUS''';
+
+	IF (@i_estados IS NOT NULL)
+		SET @v_sql = @v_sql + ' AND ITC.ITC_CODIGO IN (''' + @i_estados + ''')';
+
+	print @v_sql;
+	EXEC sp_executesql @v_sql;
+
+	SELECT *
+	FROM (
+		SELECT
+			1 AS ORDERT
+			,PRO_ID
+			,identificacion AS PNA_IDENTIFICACION
+			,replace(nombre,',','') + ' - ' + identificacion AS NOMBRE
+			,identificacion + ': ' + replace(nombre,',','') AS NOMBRE_COMP
+			,pro.estado as PRO_ESTADO
+			,pro.PRO_FECHA_ACTUALIZACION
+		FROM BVQ_BACKOFFICE.personaproveedor pro
+		WHERE
+			PRO.PRO_ESTADO IN (SELECT ITC_ID FROM #ESTADO_PROVEEDOR)
+			AND pro.PRO_FECHA_ACTUALIZACION >= DATEADD(SECOND, -30, @i_date) 
+	) A
+	ORDER BY A.ORDERT, A.NOMBRE ASC;
+END
