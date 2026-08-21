@@ -251,6 +251,8 @@
     <None Include="Stored Procedures\ObtenerProveedorAutoCompleteActualizados.sql" />
     <None Include="Change Scripts\01 Campo PRO_FECHA_ACTUALIZACION.sql" />
     <None Include="Views\personaproveedor.sql" />
+    <None Include="Stored Procedures\ObtenerReporteDisponibilidadISSPOL.sql" />
+    <None Include="Change Scripts\Agregar funcionalidad Reporte de Disponibilidad.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
