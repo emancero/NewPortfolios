@@ -251,6 +251,7 @@
     <None Include="Stored Procedures\ObtenerProveedorAutoCompleteActualizados.sql" />
     <None Include="Change Scripts\01 Campo PRO_FECHA_ACTUALIZACION.sql" />
     <None Include="Views\personaproveedor.sql" />
+    <None Include="docs\FECHA_PAGO_ULTIMO_CUPON doc.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
