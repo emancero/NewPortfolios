@@ -105,7 +105,7 @@
 	,[Tipo_transaccion]=case oper when 0 then 'Compra' when 1 then
 		case when isnull(cacheNext.saldo_valor_nominal,0)<0.005 then 'L' else 'P' end
 	--EMN: El 17-ago-2026 Isspol solicitó que si los días por vencer son menores a 0, o si los dias trnscurridos son 0
-	--se reporte V en el tipo de transacción
+	--se reporte L en el tipo de transacción
 	when 3 then 'R' when -1 then
 		case when dbo.fnDias(evp.htp_fecha_operacion,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)<0
 			or dbo.fnDias(
