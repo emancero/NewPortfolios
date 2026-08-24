@@ -161,9 +161,9 @@
 	--EMN:2-mar-2026 intereses de abono
 	,movsCuponInt.movs_evp_interes_efectivo
 	,movsCuponInt.movs_evp_interes_nominal--movs_evp_interes_efectivo+valEfeAbono-capMonto
-	--,movs_evp_interes_nominal_formula=
-	--	  case when isnull(movsCupon.movs_evp_valor_efectivo_formula,'')<>'' then ' Capital:'+isnull(movsCupon.movs_evp_valor_efectivo_formula,'') else '' end
-	--	+ case when isnull(movsCuponInt.movs_evp_interes_nominal_formula,'')<>'' then ' Interés:'+isnull(movsCuponInt.movs_evp_interes_nominal_formula,'') else '' end
+	,movs_evp_interes_nominal_formula=
+		  case when isnull(movsCupon.movs_evp_valor_efectivo_formula,'')<>'' then ' Capital:'+isnull(movsCupon.movs_evp_valor_efectivo_formula,'') else '' end
+		+ case when isnull(movsCuponInt.movs_evp_interes_nominal_formula,'')<>'' then ' Interés:'+isnull(movsCuponInt.movs_evp_interes_nominal_formula,'') else '' end
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -200,7 +200,7 @@
 	--movimientos de cupón
 	left join (
 			select movs_evp_valor_efectivo=sum(evp_valor_efectivo)
-			--, movs_evp_valor_efectivo_formula=dbo.stringagg(isnull('ve:'+rtrim(evp_valor_efectivo)+' f:'+convert(varchar(8), evt_fecha, 112),''),' ; ')
+			, movs_evp_valor_efectivo_formula=dbo.stringagg(isnull('ve:'+rtrim(evp_valor_efectivo)+' f:'+convert(varchar(8), evt_fecha, 112),''),' ; ')
 			, evp_tpo_id, evp_fecha_original
 			from bvq_backoffice.evento_portafolio e
 			where evt_fecha<'29991231' and es_vencimiento_interes=0 and EVP_ABONO=1
@@ -222,6 +222,14 @@
 			,movs_evp_interes_nominal=sum(
 				isnull(evp_valor_efectivo,0)+valEfeAbono-isnull(capMonto,0)
 				+evp_ajuste_provision
+			)
+			, movs_evp_interes_nominal_formula = dbo.StringAgg(
+					'ie:'+rtrim(isnull(round(evp_valor_efectivo,4),0))
+					+ isnull(' + ive:'+ rtrim(valEfeAbono),'')
+					+ isnull(' - vn:'+ rtrim(capMonto),'')
+					+ ' + prov:' + rtrim(isnull(evp_ajuste_provision,0))
+					+ ' f:' + convert(varchar(8), evt_fecha, 112)
+				, ' ; '
 			)
 			, evp_tpo_id, evp_fecha_original
 			--, valEfeAbono
@@ -390,6 +398,7 @@
 	,liq_rendimiento=null
 	,movs_evp_interes_efectivo=null
 	,movs_evp_interes_nominal=null--movs_evp_interes_efectivo+valEfeAbono-capMonto
+	,movs_evp_interes_nominal_formula=null
 	from
 	bvq_backoffice.evento_portafolio evp
 

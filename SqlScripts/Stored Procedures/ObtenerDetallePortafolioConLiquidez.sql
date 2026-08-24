@@ -130,6 +130,7 @@ begin
 	,EVP_COSTAS_JUDICIALES_REFERENCIA
 	,EVP_SALDO
 	,liq_rendimiento
+	,movs_evp_interes_nominal_formula
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -246,7 +247,7 @@ begin
 					0
 				end
 			else
-			max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
+				max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=0 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)-isnull(movs_evp_valor_efectivo,0)
 				+case when fecha_original>='20260216' then
 					max(case when isnull(evp_abono,0)=0 and es_vencimiento_interes=1 then amount else 0 end) over (partition by htp_tpo_id, fecha_original)
 					-- -isnull(movs_evp_valor_efectivo,0)
@@ -257,6 +258,7 @@ begin
 			sum(amount) over (partition by htp_tpo_id, fecha_original)
 		end
 	,liq_rendimiento
+	,movs_evp_interes_nominal_formula
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--join bvq_administracion.parametro parIsspol on parIsspol.par_codigo='PAR_ISSPOL'
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0

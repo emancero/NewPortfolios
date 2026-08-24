@@ -135,3 +135,11 @@ IF not EXISTS(SELECT 1 FROM sys.columns
 BEGIN
     alter table BVQ_BACKOFFICE.evtTemp ADD liq_rendimiento float
 END 
+
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'movs_evp_interes_nominal_formula'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.evtTemp')
+)
+BEGIN
+	alter table BVQ_BACKOFFICE.evtTemp add movs_evp_interes_nominal_formula nvarchar(max)
+END

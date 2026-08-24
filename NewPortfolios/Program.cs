@@ -14,7 +14,34 @@ using (TransactionScope scope = new TransactionScope())
     conn.Open();
 
     /**************************************************************/
-    // Agregar SPs y vista faltantes
+    // Campo movs_evp_interes_nominal_formula
+    comm.CommandText = (new GetObjectCode()).GetCode("EvtTemp", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidezView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidezView", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_PREVENCION.ObtenerDetallePortafolioConLiquidez'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_PREVENCION.ObtenerDetallePortafolioConValoresIniciales'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConValoresIniciales", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    conn.Close();
+    scope.Complete();
+    return;
+    // Fin Campo movs_evp_interes_nominal_formula
+    /**************************************************************/
+
+
+    /**************************************************************/
+    // Agregar SPs y vista faltantes de caché de clientes
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.personaproveedor'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("personaproveedor", "View", suffix: false);
