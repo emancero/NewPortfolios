@@ -26,9 +26,9 @@ BEGIN
     ------------------------------------------------------------------
     EXEC bvq_backoffice.ObtenerDetallePortafolioConLiquidez
         @i_idPortfolio = @idPortfolio,
-        @i_fechaIni    = @FechaIni,
-        @i_fechaFin    = @FechaFin,
-        @i_mostrar     = 0;
+        @i_fechaIni = @FechaIni,
+        @i_fechaFin = @FechaFin,
+        @i_mostrar = 0;
 
     ------------------------------------------------------------------
     -- 2. Leer evtTemp con el mismo filtro del SELECT final del SP fuente,
@@ -37,22 +37,20 @@ BEGIN
     --    de evtTemp.
     ------------------------------------------------------------------
     DECLARE @Detalle TABLE (
-        tpo_numeracion        VARCHAR(250),
-        ems_nombre            VARCHAR(200),
+        tpo_numeracion VARCHAR(250),
+        ems_nombre VARCHAR(200),
         tiv_fecha_vencimiento DATETIME,
-        monto                 FLOAT
+        capital FLOAT,
+        interes FLOAT
     );
 
-    INSERT INTO @Detalle (tpo_numeracion, ems_nombre, tiv_fecha_vencimiento, monto)
+    INSERT INTO @Detalle (tpo_numeracion, ems_nombre, tiv_fecha_vencimiento, capital, interes)
     SELECT
         e.tpo_numeracion,
-        MAX(e.ems_nombre)            AS ems_nombre,
+        MAX(e.ems_nombre) AS ems_nombre,
         MAX(e.tiv_fecha_vencimiento) AS tiv_fecha_vencimiento,
-        SUM(CASE
-                WHEN e.es_vencimiento_interes = 0 THEN eCap.capMonto
-                WHEN e.es_vencimiento_interes = 1 THEN e.iAmortizacion
-                ELSE 0
-            END) AS monto
+        SUM(e.amount),
+        SUM(e.iAmortizacion)
     FROM bvq_backoffice.evtTemp e
     LEFT JOIN (
         SELECT NULLIF(vep_valor_efectivo, 0) AS capMonto, htp_id AS capHtpId, fecha AS capFecha
@@ -84,7 +82,8 @@ BEGIN
             N'<tr><td>' + ISNULL(ems_nombre, N'') + N'</td>'
                         + N'<td>' + ISNULL(tpo_numeracion, N'') + N'</td>'
                         + N'<td>' + ISNULL(CONVERT(VARCHAR(10), tiv_fecha_vencimiento, 103), N'') + N'</td>'
-                        + N'<td>' + ISNULL(CONVERT(VARCHAR(30), CAST(monto AS DECIMAL(18,2))), N'') + N'</td></tr>',
+                        + N'<td>' + ISNULL(CONVERT(VARCHAR(30), CAST(capital AS DECIMAL(18,2))), N'') + N'</td>'
+                        + N'<td>' + ISNULL(CONVERT(VARCHAR(30), CAST(interes AS DECIMAL(18,2))), N'') + N'</td></tr>',
             N''
         )
         FROM @Detalle;
@@ -94,7 +93,7 @@ BEGIN
         <html><body>
         <p>Detalle de vencimientos de t&iacute;tulos para ' + @RangoTexto + N':</p>
         <table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;">
-        <tr style="background-color:#f0f0f0;"><th>Emisor</th><th>Numeraci&oacute;n</th><th>Fecha de vencimiento</th><th>Monto</th></tr>'
+        <tr style="background-color:#f0f0f0;"><th>Emisor</th><th>C&oacute;digo</th><th>Fecha de vencimiento final</th><th>Capital</th><th>Inter&eacute;s</th></tr>'
         + @Filas + N'
         </table>
         </body></html>';

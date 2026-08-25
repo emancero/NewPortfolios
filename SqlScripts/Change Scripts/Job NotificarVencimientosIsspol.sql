@@ -20,7 +20,7 @@ EXEC msdb.dbo.sp_add_jobstep
     @step_name = N'Ejecutar NotificarVencimientosIsspol',
     @subsystem = N'TSQL',
     @database_name = @dbName,
-    @command = N'EXEC bvq_backoffice.NotificarVencimientosIsspol @FechaIni = GETDATE(), @FechaFin = GETDATE();',
+    @command = N'DECLARE @Hoy DATETIME = GETDATE(); EXEC bvq_backoffice.NotificarVencimientosIsspol @FechaIni = @Hoy, @FechaFin = @Hoy;',
     @on_success_action = 1,  -- Quit the job reporting success
     @on_fail_action = 2,  -- Quit the job reporting failure
     @retry_attempts = 0;
