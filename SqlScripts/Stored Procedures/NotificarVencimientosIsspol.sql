@@ -111,7 +111,7 @@ BEGIN
     -- 4. Destinatarios (MAIL_VEN_ISSPOL / MVI_TO) y envío
     ------------------------------------------------------------------
     DECLARE @Correos VARCHAR(MAX);
-    SELECT @Correos = it.ITC_VALOR
+    SELECT @Correos = dbo.stringagg(it.ITC_VALOR, ';')
     FROM BVQ_ADMINISTRACION.ITEM_CATALOGO it
     INNER JOIN BVQ_ADMINISTRACION.CATALOGO cat ON cat.CAT_ID = it.CAT_ID
     WHERE cat.CAT_CODIGO = 'MAIL_VEN_ISSPOL'

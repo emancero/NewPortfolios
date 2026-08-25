@@ -1,7 +1,7 @@
 ﻿DECLARE @CatIdMail INT;
 DECLARE @EstadoActivo INT;
---DECLARE @Correos VARCHAR(MAX) = 'ddavebet@gmail.com; emancero@bolsadequito.com';
-DECLARE @Correos VARCHAR(MAX) = 'jsilva@isspol.org.ec; rjaneta@isspol.org.ec; jvelez@isspol.org.ec; palcivar@isspol.org.ec; mtorresa@isspol.org.ec; ecorrea@isspol.org.ec; maherrera@isspol.org.ec; lcondolo@isspol.org.ec'; 
+--DECLARE @Correos VARCHAR(MAX) = 'emancero@bolsadequito.com; ddavebet@gmail.com;';
+DECLARE @Correos VARCHAR(MAX) = 'emancero@bolsadequito.com; jsilva@isspol.org.ec; rjaneta@isspol.org.ec; jvelez@isspol.org.ec; palcivar@isspol.org.ec; mtorresa@isspol.org.ec; ecorrea@isspol.org.ec; maherrera@isspol.org.ec; lcondolo@isspol.org.ec';
 
 -- 1. Obtener el valor numérico del estado 'ACTIVO' (código 'A') desde el catálogo 'GENSTATUS'
 SELECT @EstadoActivo = it.ITC_ID
@@ -36,12 +36,12 @@ BEGIN
     RETURN;
 END
 
--- 4. Eliminar el ítem MLVI_TO si ya existía, para volver a insertarlo limpio
+-- 4. Eliminar todos los MVI_TO existentes, para volver a insertarlos limpios
 DELETE FROM BVQ_ADMINISTRACION.ITEM_CATALOGO
 WHERE CAT_ID = @CatIdMail
   AND ITC_CODIGO = 'MVI_TO';
 
--- 5. Insertar el ítem con los correos de destino
+-- 5. Insertar un registro POR CADA correo (separados por ';' en @Correos)
 INSERT INTO BVQ_ADMINISTRACION.ITEM_CATALOGO (
     CAT_ID,
     ITC_PADRE_ID,
@@ -60,15 +60,23 @@ INSERT INTO BVQ_ADMINISTRACION.ITEM_CATALOGO (
     ITC_SWIFT,
     ITC_CODIGO_ABA
 )
-VALUES (
+SELECT
     @CatIdMail,
     NULL,
-    'Correo(s) de destino (TO) para notificación de vencimientos de títulos (separar múltiples direcciones con ;)',
+    'Correo de destino (TO) para notificación de vencimientos de títulos',
     'Correo destino',
     'MVI_TO',
-    @Correos,
+    LTRIM(RTRIM(s.val)),
     @EstadoActivo,
     GETDATE(),
     1,
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL
-);
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL   -- ITC_ORDEN, ITC_CODIGO_SIC, ITC_CODIGO_SUBCUENTA, ITC_CODIGO_SPI, ITC_VALOR_DECEVALE, ITC_SWIFT, ITC_CODIGO_ABA (7 columnas, no 6)
+FROM dbo.fnSplitString(@Correos, ';') s
+WHERE LTRIM(RTRIM(s.val)) <> '';
+
+-- Verificación
+SELECT ITC_ID, ITC_CODIGO, ITC_VALOR
+FROM BVQ_ADMINISTRACION.ITEM_CATALOGO
+WHERE CAT_ID = @CatIdMail AND ITC_CODIGO = 'MVI_TO'
+ORDER BY ITC_ID;
+
