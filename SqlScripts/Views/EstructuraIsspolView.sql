@@ -121,7 +121,7 @@
 		 tfl.TFL_FECHA_INICIO
 		 --evp.Fecha_Ultimo_Pago
 		,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
-	,[Dias_por_vencer]=case when dbo.fnDias(evp.htp_fecha_operacion,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)<0 then 0 else dbo.fnDias(evp.htp_fecha_operacion,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE) end
+	,[Dias_por_vencer]=dbo.fnDias(evp.htp_fecha_operacion,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)
 	,[Fuente_Cotizacion]='Q'
 	,[Yield]=case when tiv.tiv_tipo_renta=154 then null when tiv.TIV_FECHA_VENCIMIENTO<dateadd(yy,1,evp.htp_fecha_operacion) /*porque se pide que la inversión sea menor a un año*/
 		and
