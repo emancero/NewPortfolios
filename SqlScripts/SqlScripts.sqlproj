@@ -257,6 +257,7 @@
     <None Include="Change Scripts\Agregar correos ISSPOL para notificacion vencimientos.sql" />
     <None Include="Stored Procedures\NotificarVencimientosIsspol.sql" />
     <None Include="Change Scripts\Job NotificarVencimientosIsspol.sql" />
+    <None Include="Stored Procedures\ObtenerMovimientosDrilldown.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
