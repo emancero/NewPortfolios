@@ -1,7 +1,7 @@
 ﻿DECLARE @CatIdMail INT;
 DECLARE @EstadoActivo INT;
 --DECLARE @Correos VARCHAR(MAX) = 'emancero@bolsadequito.com; ddavebet@gmail.com;';
-DECLARE @Correos VARCHAR(MAX) = 'emancero@bolsadequito.com; jsilva@isspol.org.ec; rjaneta@isspol.org.ec; jvelez@isspol.org.ec; palcivar@isspol.org.ec; mtorresa@isspol.org.ec; ecorrea@isspol.org.ec; maherrera@isspol.org.ec; lcondolo@isspol.org.ec';
+DECLARE @Correos VARCHAR(MAX) = 'emancero@bolsadequito.com; mchuquicondor@isspol.org.ec; atapia@isspol.org.ec; rjaneta@isspol.org.ec; jvelez@isspol.org.ec; palcivar@isspol.org.ec; mtorresa@isspol.org.ec; ecorrea@isspol.org.ec; maherrera@isspol.org.ec; lcondolo@isspol.org.ec';
 
 -- 1. Obtener el valor numérico del estado 'ACTIVO' (código 'A') desde el catálogo 'GENSTATUS'
 SELECT @EstadoActivo = it.ITC_ID
