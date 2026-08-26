@@ -3,8 +3,8 @@ using Microsoft.Data.SqlClient;
 using System.Transactions;
 
 //return; //prevenir ejecución accidental
-string connStr = "Data Source=192.168.2.114;Initial Catalog=sicavbak2;Persist Security Info=True;User ID=usrsicav;Password=$icav2012*;TrustServerCertificate=True";
-//string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
+//string connStr = "Data Source=192.168.2.114;Initial Catalog=sicavbak2;Persist Security Info=True;User ID=usrsicav;Password=$icav2012*;TrustServerCertificate=True";
+string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
 {
 
@@ -12,6 +12,22 @@ using (TransactionScope scope = new TransactionScope())
     SqlCommand comm = conn.CreateCommand();
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
+
+    //DetalleRecuperacionesIsspolFondos
+    comm.CommandText = "dropifexists 'bvq_backoffice.DetalleRecuperacionesIsspolFondos'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("DetalleRecuperacionesIsspolFondos", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'bvq_backoffice.DetalleRecuperacionesIsspol'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("DetalleRecuperacionesIsspol", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    conn.Close();
+    scope.Complete();
+    return;
+
 
     /**************************************************************/
     // Campo movs_evp_interes_nominal_formula

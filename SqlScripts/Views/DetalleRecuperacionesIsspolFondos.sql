@@ -28,7 +28,7 @@ select
 					-isnull(remaining,0)
 				)
 			from bvq_backoffice.eventoportafolio saldoTpo
-			where coalesce(evt_fecha, htp_fecha_operacion)<e.evt_Fecha and saldoTpo.htp_tpo_id=evp.htp_tpo_id
+			where coalesce(evt_fecha, htp_fecha_operacion)<evp.Fecha and saldoTpo.htp_tpo_id=evp.htp_tpo_id
 			group by saldoTpo.htp_tpo_id
 		),
 
