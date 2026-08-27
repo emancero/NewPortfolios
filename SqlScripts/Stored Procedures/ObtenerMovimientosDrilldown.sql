@@ -5,7 +5,8 @@
 --                - @Año + @Mes           -> mes completo
 --                - @Año + @Mes + @Dia    -> dia especifico
 -- =============================================
-CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerMovimientosDrilldown
+CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerMovimientosDrilldown]
+    @portafolio VARCHAR(255) = '',
     @subtipo VARCHAR(255) = '',
     @anio INT = NULL,
     @mes INT = NULL,
@@ -49,15 +50,18 @@ BEGIN
     END
 
     SELECT 
-        MOV_FECHA, MOV_CONCEPTO, MOV_BENEFICIARIO, MOV_REFERENCIA_ASIENTO, MOV_COMPROBANTE, 
-        ITC_NOMBRE
+        MOV_FECHA, MOV_CONCEPTO, MOV_BENEFICIARIO, MOV_REFERENCIA_ASIENTO, 
+        MOV_COMPROBANTE, ISNULL(MOV_DEBE, 0) - ISNULL(MOV_HABER, 0) AS MOV_MONTO, 
+        MOV_CUENTA_CONTABLE_NOMBRE,
+        ITC_VALOR
     FROM [_temp].[isspol_movimiento_contable_fuente] m
         LEFT JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO itc ON m.mov_subtipo = itc.ITC_ID
+        LEFT JOIN BVQ_BACKOFFICE.isspol_cuentas_contables_de_bancos ccb ON m.MOV_CUENTA_CONTABLE = ccb.ICB_CUENTA
     WHERE MOV_FECHA >= @FechaInicio AND MOV_FECHA < @FechaFin
-        AND itc.ITC_NOMBRE = @subtipo
+        AND itc.ITC_VALOR = @subtipo
+        AND ICB_DESCRIPCION = @portafolio
     ORDER BY MOV_FECHA;
 END
-GO
 
 -- =============================================
 -- Ejemplos de uso
