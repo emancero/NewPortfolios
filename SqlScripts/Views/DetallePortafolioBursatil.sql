@@ -19,14 +19,14 @@ SELECT
     v.htp_comision_bolsa,
     v.tasa_cupon,
     condicion = COALESCE(
+        NULLIF(LTRIM(RTRIM(fnd.FON_CONDICIONES)), ''),
         NULLIF(LTRIM(RTRIM(
             CASE 
                 WHEN p.textoCondicion IS NOT NULL 
                     THEN 'Cupones ' + p.textoCondicion + ' de interés y capital'
                 ELSE p.nombre
             END
-        )), ''),
-        fnd.FON_CONDICIONES
+        )), '')
     ),
 	interes_a_recibir=(select sum(iamortizacion) from bvq_backoffice.compraventaflujo c where c.htp_id=v.htp_id),
     recursos=v.tpo_recursos,
@@ -49,7 +49,7 @@ left join bvq_administracion.periodicidadSB p on (
 	or tiv.tiv_tipo_base=355 and p.codigo='VC'
 	or tiv.tiv_tipo_renta=154 and p.codigo='RV'
 )
-left join bvq_backoffice.FONDO fnd on fnd.FON_ID = v.FON_ID
+left join bvq_backoffice.FONDO fnd on fnd.FON_ID = tpo.FON_ID
 join bvq_administracion.emisor ems on tiv.tiv_emisor=ems.ems_id
 join bvq_administracion.item_catalogo itcsector on ems.ems_sector=itcsector.itc_id
 WHERE ISNULL(IPR_ES_CXC,0)=0 
