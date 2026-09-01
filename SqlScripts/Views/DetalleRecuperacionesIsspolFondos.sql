@@ -42,7 +42,14 @@ select
 		observaciones = MAX(evpo.evp_observaciones),
 		fecha_pago=fecha,
 		fecha_de_vencimiento_flujo=max(evp.fecha_original),
-		acciones_judiciales=CONCAT('Realizó el pago del flujo No. ', ' ', tfl_periodo),
+		acciones_judiciales =
+			COALESCE(
+				NULLIF(LTRIM(RTRIM(fon.fon_acciones_realizadas)),''),
+				CASE 
+					WHEN tfl_periodo IS NOT NULL
+						THEN CONCAT('Realizó el pago del flujo No. ', ' ', tfl_periodo)
+						ELSE '---'
+				END),
 		max(iif(isnull(ipr_es_cxc,0)=1,'Otras cuentas por cobrar',case when evp.tiv_tipo_renta=153 then 'Inversiones de Renta Fija' else 'Inversiones de Renta Variable' end)) as primer_nivel,
 		max(iif(tvl_codigo in ('OBL','BE','VCC','OCA'),'Con cupón de capital e interés','Al vencimiento capital e interés')) as tipo_flujo,
 		evp.tiv_tipo_renta, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,--,htp_fecha_operacion
@@ -75,6 +82,7 @@ select
 		join bvq_administracion.ITEM_CATALOGO itcsector on ems.EMS_SECTOR=itcsector.ITC_ID
 		left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
 		left join bvq_backoffice.evento_portafolio evpo on evpo.evp_id = evp.evp_id
+		left join bvq_backoffice.fondo fon on fon.fon_id = tpo.fon_id
 		where oper=1
 		and evp.tipo='C'
 		and evp.acreedoraSinAux not like '2%'
@@ -86,4 +94,6 @@ select
 		AND evp.rubro IN ('AMOUNT', 'amountcxc','INTAcc', 'PROV','valnom')
 		--and fecha between '20251201' and '20251231'
  
-		group by evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,tvl_codigo, tpo.por_id, tfl_periodo, evp.htp_tpo_id--,htp_fecha_operacion
+		group by 
+			evp.tiv_tipo_renta, tvl_nombre, ems.EMS_NOMBRE, por_codigo, evp.tpo_numeracion,oper,fecha,tpo.tiv_id,tvl_codigo, 
+			tpo.por_id, tfl_periodo, evp.htp_tpo_id,fon.fon_acciones_realizadas--,htp_fecha_operacion
