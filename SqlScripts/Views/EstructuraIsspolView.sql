@@ -105,7 +105,6 @@
 	,[Tipo_transaccion]=case oper when 0 then 'Compra' when 1 then
 		case when isnull(cacheNext.saldo_valor_nominal,0)<0.005 then 'L' else 'P' end
 	when 3 then 'R' when -1 then 'V' end
-	end
 	,[Fecha_transaccion]=htp_fecha_operacion
 	,[Dias_transcurridos]=dbo.fnDias(
 		 tfl.TFL_FECHA_INICIO
