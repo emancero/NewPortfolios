@@ -43,7 +43,9 @@ BEGIN
 			or
 			e.fecha_desde between @i_fechaIni and @fecha
 			or
-			e.fecha_desde between @i_fechaIni and @fecha
+			e.cca_fecha_desde between @i_fechaIni and @fecha
+			or
+			e.vba_fecha_desde between @i_fechaIni and @fecha
 		)
 	else
 		select distinct
