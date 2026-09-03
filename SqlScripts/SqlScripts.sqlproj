@@ -258,6 +258,7 @@
     <None Include="Stored Procedures\NotificarVencimientosIsspol.sql" />
     <None Include="Change Scripts\Job NotificarVencimientosIsspol.sql" />
     <None Include="Stored Procedures\ObtenerMovimientosDrilldown.sql" />
+    <None Include="Views\PensionesProyectadas.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
