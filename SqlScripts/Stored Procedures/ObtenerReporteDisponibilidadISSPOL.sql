@@ -1,6 +1,6 @@
 ﻿CREATE procedure [BVQ_BACKOFFICE].[ObtenerReporteDisponibilidadISSPOL]
 	@i_fechaFin datetime = '2024-05-31T23:59:59',--null,
-		@i_lga_id int
+	@i_lga_id int
 AS
 
 BEGIN
@@ -12,7 +12,6 @@ BEGIN
 	set @v_fechaIni = dateadd(s, -3, DATEADD(dd, 1, DATEDIFF(dd, 0, @i_fechaFin)))
 	set @v_oper=1
 
-
 	set @fechaCorte = dateadd(s, -3, DATEADD(dd, 1, DATEDIFF(dd, 0, @i_fechaFin)))
 	set @fecha_inicio = DATEADD(yy, DATEDIFF(yy, 0, @i_fechaFin), 0)
 
@@ -23,38 +22,6 @@ BEGIN
 		exec bvq_administracion.generarvectores
 		exec bvq_administracion.PrepararValoracionLinealCache
 
-		set transaction isolation level read uncommitted
-	--[+]	Carga vencimientos de cartera ISSPOL
-		if (OBJECT_ID('[BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]') is NULL)
-		begin
-			select 
-					b.descripcion as por_codigo
-					,sum(valor) as total
-					,convert(date,cut.fecha_vencimiento) as fecha_vencimiento
-					,cr.id_cuenta
-			into [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-			from	siisspolweb.siisspolweb.credito.cuota cut
-					join siisspolweb.siisspolweb.credito.credito cr on cr.id_credito=cut.id_credito
-					join siisspolweb.siisspolweb.banco.cuenta b on b.id_cuenta=cr.id_cuenta
-			where cut.fecha_vencimiento>@v_fechaIni
-			group by b.descripcion,cut.fecha_vencimiento, cr.id_cuenta
-		End
-		else 
-		begin
-			truncate table [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-			insert into [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA]
-			select 
-					b.descripcion as por_codigo
-					,sum(valor) as total
-					,convert(date,cut.fecha_vencimiento) as fecha_vencimiento
-					,cr.id_cuenta
-			from	siisspolweb.siisspolweb.credito.cuota cut
-					join siisspolweb.siisspolweb.credito.credito cr on cr.id_credito=cut.id_credito
-					join siisspolweb.siisspolweb.banco.cuenta b on b.id_cuenta=cr.id_cuenta
-			where cut.fecha_vencimiento>@v_fechaIni
-			group by b.descripcion,cut.fecha_vencimiento, cr.id_cuenta
-		end
-	--[+]	Fin de carga vencimientos de cartera ISSPOL
 	
 	--[+]	Carga de homologacion de fondos y portafolios
 		if (OBJECT_ID('[BVQ_BACKOFFICE].[FONDO_HOMOLOGACION]') is NULL)
@@ -78,16 +45,9 @@ BEGIN
 		end
 	--[+]	Fin de carga de homologacion de fondos y portafolios
 
-		select 
-				T1.*
-				,anio_vcto='['+rtrim(datepart(yyyy,fecha_vencimiento))+']'
-				,anio_mes_vcto='['+format(fecha_vencimiento,'yyyy-MM')+']'--rtrim(datepart(yyyy,fecha_vencimiento))+'-'+rtrim(datepart(MM,fecha_vencimiento))+']'
-				,anio_mes_dia_vcto='['+format(fecha_vencimiento,'yyy-MM-dd')+']'--rtrim(datepart(yyyy,fecha_vencimiento))+'-'+rtrim(datepart(MM,fecha_vencimiento))+'-'+rtrim(datepart(dd,fecha_vencimiento))+']'
-		from 
-		(
-
-			select	-- [mov_cuenta_contable]
-			 portafolio=ICB_DESCRIPCION--[mov_cuenta_contable_nombre]
+			select
+			 portafolio=ICB_DESCRIPCION
+			,mov_cuenta_contable
 			,fecha_vencimiento=mov_fecha
 			,cupon=sum(isnull(fte.MOV_DEBE,0)-isnull(fte.MOV_HABER,0))
 			,origen='Real'
@@ -96,26 +56,28 @@ BEGIN
 			,[tipo]=isnull(tipAct.ITC_VALOR,'Sin clasificación')
 			,id_cuenta=null
 			,[I/E]=tipMov.ITC_VALOR
+			,CRC_NUMERO_OPERACION=null
+			,id_rubro=null
+			,tasa=null
+			,producto=null
+			,segmento=null
+			,estado=null
+			,valor=null
+			,abono=null
+			,tipo_papel=null
 			from
 			_temp.isspol_movimiento_contable_fuente fte
-			--siisspolweb.siisspolweb.contabilidad.vis_movimiento_contable_2023 m
-			join bvq_backoffice.isspol_cuentas_contables_de_bancos icb on icb_cuenta=mov_cuenta_contable--[cuenta ctble]
+			join bvq_backoffice.isspol_cuentas_contables_de_bancos icb on icb_cuenta=mov_cuenta_contable
 			left join [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipMov on fte.mov_tipo_movimiento=tipMov.ITC_ID
 			left join [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct on fte.mov_tipo_actividad=tipAct.ITC_ID
 			left join [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt on fte.mov_subtipo=sbt.ITC_ID and sbt.CAT_ID = 328
-
 			where datediff(m,'20230101',mov_fecha)>=0
-			/*and (
-				[mov_cuenta_contable_nombre] like 'ISSPOL%'
-				or
-				[mov_cuenta_contable]='110201001'
-			)*/
-			group by [ICB_DESCRIPCION],mov_fecha,sbt.itc_valor,tipAct.ITC_VALOR,tipMov.ITC_VALOR
+			group by [ICB_DESCRIPCION],mov_cuenta_contable,mov_fecha,sbt.itc_valor,tipAct.ITC_VALOR,tipMov.ITC_VALOR
 
 			union 
-			
-			select	-- [mov_cuenta_contable]
-			 portafolio=ICB_DESCRIPCION--[mov_cuenta_contable_nombre]
+			select
+			 portafolio=ICB_DESCRIPCION
+			 ,null
 			,fecha_vencimiento=mov_fecha
 			,cupon=sum(fte.MOV_SALDO)
 			,origen='0 Saldo Inicial'
@@ -124,9 +86,18 @@ BEGIN
 			,[tipo]='0 Saldo Inicial'
 			,id_cuenta=null
 			,[I/E]='0 Saldo Inicial'
+			,CRC_NUMERO_OPERACION=null
+			,id_rubro=null
+			,tasa=null
+			,producto=null
+			,segmento=null
+			,estado=null
+			,valor=null
+			,abono=null
+			,tipo_papel=null
 			from
 			BVQ_BACKOFFICE.isspol_saldo_inicial fte
-			join bvq_backoffice.isspol_cuentas_contables_de_bancos icb on icb_cuenta=mov_cuenta_contable--[cuenta ctble]
+			join bvq_backoffice.isspol_cuentas_contables_de_bancos icb on icb_cuenta=mov_cuenta_contable
 			left join [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipMov on fte.mov_tipo_movimiento=tipMov.ITC_ID
 			left join [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct on fte.mov_tipo_actividad=tipAct.ITC_ID
 			left join [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt on fte.mov_subtipo=sbt.ITC_ID and sbt.CAT_ID = 328
@@ -136,26 +107,37 @@ BEGIN
 			union all
 			select distinct 
 					portafolio=isnull(fnd.descripcion,'N/A')
+					,NULL
 					,fecha_vencimiento=convert(date,HTP_FECHA_OPERACION)
 					,cupon=sum(TOTAL)
-					,origen='No Privativas'
+					,origen='Proyectado'
 					,[real]=0
-					,[itc_valor]=''
-					,[tipo]=null
+					,[itc_valor]='REDENCIÓN NO PRIVATIVAS'
+					,[tipo]='Proyectado'
 					,fnd.id_cuenta
-					,[I/E]=null
+					,[I/E]='1 Ingreso'
+					,CRC_NUMERO_OPERACION=null
+					,id_rubro=null
+					,tasa=null
+					,producto=null
+					,segmento=null
+					,estado=null
+					,valor=null
+					,abono=null
+					,tipo_papel=TVL_NOMBRE
 			from bvq_backoffice.DetallePortafolio dpf
-					left join [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd on fnd.POR_ID=dpf.por_id
-			
+				left join [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd on fnd.POR_ID=dpf.por_id
+				left join BVQ_ADMINISTRACION.TITULO_VALOR tiv on tiv.TIV_ID = dpf.tiv_id
+				left join BVQ_ADMINISTRACION.TIPO_VALOR tvl on tvl.TVL_ID = tiv.TIV_TIPO_VALOR
 			where 
 				(idiff>0.05e or total>0.05e)
 				AND datediff(d,@i_fechaFin,dpf.htp_fecha_operacion)>=1-->=@i_fechaFin-->='20230101' and datediff(d,dpf.htp_fecha_operacion,@i_fechaFin)<0
 				and (@v_oper is null or oper=@v_oper)
+			group by fnd.descripcion,convert(date,HTP_FECHA_OPERACION),fnd.id_cuenta,tvl.TVL_NOMBRE
 
-			group by fnd.descripcion,convert(date,HTP_FECHA_OPERACION),fnd.id_cuenta 
-
-			union
 			/*
+			union
+			
 			select distinct
 					fon.fon_homologado
 					,ccm.fecha_vencimiento
@@ -170,30 +152,56 @@ BEGIN
 				(ccm.total>0.05e)
 				AND datediff(d,@i_fechaFin,ccm.fecha_vencimiento)>=1--ccm.fecha_vencimiento>=@i_fechaFin--'20230101' and datediff(d,ccm.fecha_vencimiento,@i_fechaFin)>=0
 			group by fon.fon_homologado,convert(date,ccm.fecha_vencimiento)
-
-			union*/
-
-			select distinct
-					ccc.por_codigo--fon.fon_homologado
-					,ccc.fecha_vencimiento
-					,cupon=sum(ccc.total)
-					,[origen]='Privativas'
-					,[real]=0
-					,[itc_valor]='REDENCIÓN PRIVATIVAS'
-					,[tipo]=null
-					,id_cuenta = ccc.id_cuenta
-					,[I/E]=null
-			from [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA] ccc
-				--left join [credito].[FONDO_HOMOLOGACION] fon on ltrim(rtrim(ccc.por_codigo))=ltrim(rtrim(fon.fon_descripcion_credito))
+			*/
+			union
+			select
+				ccc.por_codigo
+				,NULL
+				,ccc.fecha_vencimiento
+				,cupon=sum(round(ccc.total,2)-round(ccc.abono,2))+sum(case when ccc.fecha_pago >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) then ccc.abono else 0 end)
+				,origen='Proyectado'
+				,[real]=0
+				,[itc_valor]='REDENCIÓN PRIVATIVAS'
+				,[tipo]='Proyectado'
+				,id_cuenta = ccc.id_cuenta
+				,[I/E]='1 Ingreso'
+				,CRC_NUMERO_OPERACION=count(*)
+				,ccc.id_rubro
+				,ccc.tasa
+				,ccc.producto
+				,ccc.segmento
+				,ccc.estado
+				,sum(ccc.total)
+				,sum(case when ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) then ccc.abono else 0 end)
+				,tipo_papel=null
+			from [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_FULL] ccc
 			where
-				(ccc.total>0.05e)
-				AND datediff(d,@i_fechaFin,ccc.fecha_vencimiento)>=1--ccm.fecha_vencimiento>=@i_fechaFin--'20230101' and datediff(d,ccm.fecha_vencimiento,@i_fechaFin)>=0
-			group by ccc.por_codigo,/*fon.fon_homologado,*/convert(date,ccc.fecha_vencimiento),ccc.id_cuenta
+				ccc.total > 0.05
+				AND ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date))
+			group by ccc.por_codigo,ccc.fecha_vencimiento,ccc.id_cuenta,id_rubro,tasa,producto,segmento,estado
 
 
-		) as T1
-END		
+			UNION
+			SELECT
+				portafolio
+				,cuenta_contable
+				,fecha_vencimiento
+				,cupon
+				,origen
+				,[real]
+				,[itc_valor]
+				,[tipo]
+				,id_cuenta
+				,[I/E]
+				,CRC_NUMERO_OPERACION
+				,id_rubro
+				,tasa
+				,producto
+				,segmento
+				,estado
+				,valor
+				,abono
+				,tipo_papel
+			FROM BVQ_BACKOFFICE.PrivativasProyectadas
 
-GO
-
-
+END
