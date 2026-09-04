@@ -4,10 +4,18 @@
 --                - Solo @Año            -> todo el año
 --                - @Año + @Mes           -> mes completo
 --                - @Año + @Mes + @Dia    -> dia especifico
+--              @subtipo y @portafolio son filtros OPCIONALES:
+--                - NULL  -> no se filtra por ese campo
+--                - ''    -> filtra por el campo IS NULL (ITC_VALOR / ICB_DESCRIPCION)
+--                - valor -> filtro exacto de igualdad
+-- MODIFICACION: <tu nombre> <fecha> - @subtipo/@portafolio pasan a ser
+--               filtros opcionales con distinción NULL vs '' (antes exigían
+--               igualdad exacta y el popup quedaba sin resultados si el
+--               campo no estaba en el área de columnas/filas del pivot).
 -- =============================================
 CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerMovimientosDrilldown]
-    @portafolio VARCHAR(255) = '',
-    @subtipo VARCHAR(255) = '',
+    @portafolio VARCHAR(255) = NULL,
+    @subtipo VARCHAR(255) = NULL,
     @anio INT = NULL,
     @mes INT = NULL,
     @dia INT = NULL,
@@ -58,8 +66,16 @@ BEGIN
         LEFT JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO itc ON m.mov_subtipo = itc.ITC_ID
         LEFT JOIN BVQ_BACKOFFICE.isspol_cuentas_contables_de_bancos ccb ON m.MOV_CUENTA_CONTABLE = ccb.ICB_CUENTA
     WHERE MOV_FECHA >= @FechaInicio AND MOV_FECHA < @FechaFin
-        AND itc.ITC_VALOR = @subtipo
-        AND ICB_DESCRIPCION = @portafolio
+        AND (
+            @subtipo IS NULL
+            OR (@subtipo = '' AND itc.ITC_VALOR IS NULL)
+            OR (@subtipo <> '' AND itc.ITC_VALOR = @subtipo)
+        )
+        AND (
+            @portafolio IS NULL
+            OR (@portafolio = '' AND ICB_DESCRIPCION IS NULL)
+            OR (@portafolio <> '' AND ICB_DESCRIPCION = @portafolio)
+        )
     ORDER BY MOV_FECHA;
 END
 

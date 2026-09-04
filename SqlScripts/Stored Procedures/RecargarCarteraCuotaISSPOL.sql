@@ -71,6 +71,8 @@ begin
 		,tasa
 		,plazo
 		,producto
+		,segmento
+		,por_codigo
 	)
 	select 
 		 total=sum(total)
@@ -85,11 +87,14 @@ begin
 		,tasa=max(cr.crc_tasa)--null
 		,plazo=datediff(d,crc_fecha_cierre,crc_fecha_vencimiento)/360
 		,producto=max(crc_id_producto)
+		,segmento=max(cr.CRC_SEGMENTO)
+		,por_codigo=max(fh.por_codigo)
 	from	bvq_backoffice.credito_cartera_cuota_full cut
 	join bvq_backoffice.fechas_cierre_creditos_cartera fcrc on fcrc_fecha>='20260131'
-			join bvq_backoffice.creditos_cartera cr on cut.id_credito=cr.crc_numero_operacion and crc_fecha_cierre=fcrc_fecha-- and DATEDIFF(M, @i_fecha_corte, CRC_FECHA_CIERRE) = 0
-	and cut.fecha_vencimiento>fcrc_fecha
-	and cr.crc_fecha_otorgamiento<=fcrc_fecha
+	join bvq_backoffice.creditos_cartera cr on cut.id_credito=cr.crc_numero_operacion and crc_fecha_cierre=fcrc_fecha-- and DATEDIFF(M, @i_fecha_corte, CRC_FECHA_CIERRE) = 0
+		and cut.fecha_vencimiento>fcrc_fecha
+		and cr.crc_fecha_otorgamiento<=fcrc_fecha
+	join bvq_backoffice.fondo_homologacion fh on fh.id_cuenta=cut.id_cuenta
 	group by crc_fecha_cierre
 	, cut.fecha_vencimiento
 	, cr.crc_tasa

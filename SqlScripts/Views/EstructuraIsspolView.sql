@@ -104,7 +104,18 @@
 	,[Numero_liquidacion]=iif(oper in (0,1), fon.FON_NUMERO_LIQUIDACION, null)--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
 	,[Tipo_transaccion]=case oper when 0 then 'Compra' when 1 then
 		case when isnull(cacheNext.saldo_valor_nominal,0)<0.005 then 'L' else 'P' end
-	when 3 then 'R' when -1 then 'V' end
+	--EMN: El 17-ago-2026 Isspol solicitó que si los días por vencer son menores a 0, o si los dias trnscurridos son 0
+	--se reporte L en el tipo de transacción
+	when 3 then 'R' when -1 then
+		case when dbo.fnDias(evp.htp_fecha_operacion,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)<0
+			or dbo.fnDias(
+			 tfl.TFL_FECHA_INICIO
+			 --evp.Fecha_Ultimo_Pago
+			,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)=0
+		then 'L' else
+			'V'
+		end
+	end
 	,[Fecha_transaccion]=htp_fecha_operacion
 	,[Dias_transcurridos]=dbo.fnDias(
 		 tfl.TFL_FECHA_INICIO
