@@ -49,14 +49,14 @@ BEGIN
         e.tpo_numeracion,
         MAX(e.ems_nombre) AS ems_nombre,
         MAX(e.tiv_fecha_vencimiento) AS tiv_fecha_vencimiento,
-        SUM(e.amount),
-        SUM(e.iAmortizacion)
+        SUM(case when e.es_vencimiento_interes=0 then e.amount else 0 end),
+        SUM(case when e.es_vencimiento_interes=1 then e.iAmortizacion else 0 end)
     FROM bvq_backoffice.evtTemp e
-    LEFT JOIN (
+    /*LEFT JOIN (
         SELECT NULLIF(vep_valor_efectivo, 0) AS capMonto, htp_id AS capHtpId, fecha AS capFecha
         FROM bvq_backoffice.evtTemp
         WHERE es_vencimiento_interes = 0 AND htp_tiene_valnom = 1
-    ) eCap ON eCap.capHtpId = e.htp_id AND eCap.capFecha = e.fecha
+    ) eCap ON eCap.capHtpId = e.htp_id AND eCap.capFecha = e.fecha*/
     WHERE e.fecha BETWEEN @FechaIni AND @FechaFin
       AND (@idPortfolio = e.por_id OR @idPortfolio = -1)
       AND (ABS(ROUND(e.amount, 2)) > 0.05 OR e.oper = 2 OR e.evp_abono = 1)
