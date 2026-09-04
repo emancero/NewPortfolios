@@ -158,7 +158,7 @@ BEGIN
 				ccc.por_codigo
 				,NULL
 				,ccc.fecha_vencimiento
-				,cupon=sum(round(ccc.total,2)-round(ccc.abono,2))+sum(case when ccc.fecha_pago >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) then ccc.abono else 0 end)
+				,cupon=sum(round(ccc.total,2)-round(ccc.total,2))+sum(case when ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) then ccc.total else 0 end)
 				,origen='Proyectado'
 				,[real]=0
 				,[itc_valor]='REDENCIÓN PRIVATIVAS'
@@ -170,15 +170,15 @@ BEGIN
 				,ccc.tasa
 				,ccc.producto
 				,ccc.segmento
-				,ccc.estado
+				,NULL --estado
 				,sum(ccc.total)
-				,sum(case when ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) then ccc.abono else 0 end)
+				,sum(case when ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) then ccc.total else 0 end)
 				,tipo_papel=null
-			from [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_FULL] ccc
+			from [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_2] ccc
 			where
 				ccc.total > 0.05
 				AND ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date))
-			group by ccc.por_codigo,ccc.fecha_vencimiento,ccc.id_cuenta,id_rubro,tasa,producto,segmento,estado
+			group by ccc.por_codigo,ccc.fecha_vencimiento,ccc.id_cuenta,id_rubro,tasa,producto,segmento
 
 
 			UNION
