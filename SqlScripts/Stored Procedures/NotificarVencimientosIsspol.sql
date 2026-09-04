@@ -39,17 +39,22 @@ BEGIN
     DECLARE @Detalle TABLE (
         tpo_numeracion VARCHAR(250),
         ems_nombre VARCHAR(200),
+        tvl_nombre varchar(200),
         tiv_fecha_vencimiento DATETIME,
         capital FLOAT,
-        interes FLOAT
+        interes FLOAT,
+        total FLOAT
     );
 
-    INSERT INTO @Detalle (tpo_numeracion, ems_nombre, tiv_fecha_vencimiento, capital, interes)
+    INSERT INTO @Detalle (tpo_numeracion, ems_nombre, tvl_nombre, tiv_fecha_vencimiento, capital, interes, total)
     SELECT
         e.tpo_numeracion,
         MAX(e.ems_nombre) AS ems_nombre,
+        MAX(e.tvl_nombre) AS tvl_nombre,
         MAX(e.tiv_fecha_vencimiento) AS tiv_fecha_vencimiento,
         SUM(case when e.es_vencimiento_interes=0 then e.amount else 0 end),
+        SUM(case when e.es_vencimiento_interes=1 then e.iAmortizacion else 0 end),
+        SUM(case when e.es_vencimiento_interes=0 then e.amount else 0 end)+
         SUM(case when e.es_vencimiento_interes=1 then e.iAmortizacion else 0 end)
     FROM bvq_backoffice.evtTemp e
     /*LEFT JOIN (
@@ -61,6 +66,7 @@ BEGIN
       AND (@idPortfolio = e.por_id OR @idPortfolio = -1)
       AND (ABS(ROUND(e.amount, 2)) > 0.05 OR e.oper = 2 OR e.evp_abono = 1)
       AND e.htp_id IS NOT NULL
+      AND oper=1
     GROUP BY e.tpo_numeracion;
 
     ------------------------------------------------------------------
@@ -81,9 +87,11 @@ BEGIN
         SELECT @Filas = dbo.stringagg(
             N'<tr><td>' + ISNULL(ems_nombre, N'') + N'</td>'
                         + N'<td>' + ISNULL(tpo_numeracion, N'') + N'</td>'
-                        + N'<td>' + ISNULL(CONVERT(VARCHAR(10), tiv_fecha_vencimiento, 103), N'') + N'</td>'
-                        + N'<td>' + ISNULL(CONVERT(VARCHAR(30), CAST(capital AS DECIMAL(18,2))), N'') + N'</td>'
-                        + N'<td>' + ISNULL(CONVERT(VARCHAR(30), CAST(interes AS DECIMAL(18,2))), N'') + N'</td></tr>',
+                        + N'<td>' + ISNULL(tvl_nombre, N'') + N'</td>'
+                        + N'<td style="text-align:right">' + ISNULL(CONVERT(VARCHAR(10), tiv_fecha_vencimiento, 103), N'') + N'</td>'
+                        + N'<td style="text-align:right">' + ISNULL(CONVERT(VARCHAR(30), CAST(capital AS DECIMAL(18,2))), N'') + N'</td>'
+                        + N'<td style="text-align:right">' + ISNULL(CONVERT(VARCHAR(30), CAST(interes AS DECIMAL(18,2))), N'') + N'</td>'
+                        + N'<td style="text-align:right;font-weight:bold">' + ISNULL(CONVERT(VARCHAR(30), CAST(total AS DECIMAL(18,2))), N'') + N'</td></tr>',
             N''
         )
         FROM @Detalle;
@@ -93,7 +101,7 @@ BEGIN
         <html><body>
         <p>Detalle de vencimientos de t&iacute;tulos para ' + @RangoTexto + N':</p>
         <table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;">
-        <tr style="background-color:#f0f0f0;"><th>Emisor</th><th>C&oacute;digo</th><th>Fecha de vencimiento final</th><th>Capital</th><th>Inter&eacute;s</th></tr>'
+        <tr style="background-color:#f0f0f0;"><th>Emisor</th><th>C&oacute;digo</th><th>Título</th><th>Fecha de vencimiento final</th><th>Capital</th><th>Inter&eacute;s</th><th>Total de la cuota</th></tr>'
         + @Filas + N'
         </table>
         </body></html>';
@@ -124,7 +132,7 @@ BEGIN
     END
 
     DECLARE @Profile SYSNAME = N'NotificacionesBvq';
-
+    
     EXEC msdb.dbo.sp_send_dbmail
         @profile_name = @Profile,
         @recipients   = @Correos,
