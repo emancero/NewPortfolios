@@ -374,9 +374,9 @@
 	where
 	--EMN: 2026-sep-01 Según la SBS los días por vencer en V no pueden menores iguales a 0
 	--por eso se excluye los oper que son -1 y la fecha de valoración es mayor igual a la
-	--fecha de vencimiento final
+	--fecha de vencimiento final (si la fecha de vencimiento es null se toma como 99991231 para que no se excluya)
 	not (
-		evp.oper=-1 and evp.htp_fecha_operacion>=tiv.tiv_fecha_vencimiento
+		evp.oper=-1 and evp.htp_fecha_operacion>=isnull(tiv.tiv_fecha_vencimiento,'99991231')
 	)
 	--where cache.valor_mercado is null
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
