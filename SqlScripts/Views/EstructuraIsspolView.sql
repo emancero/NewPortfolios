@@ -104,23 +104,20 @@
 	,[Numero_liquidacion]=iif(oper in (0,1), fon.FON_NUMERO_LIQUIDACION, null)--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
 	,[Tipo_transaccion]=case oper when 0 then 'Compra' when 1 then
 		case when isnull(cacheNext.saldo_valor_nominal,0)<0.005 then 'L' else 'P' end
-	--EMN: El 17-ago-2026 Isspol solicitó que si los días por vencer son menores a 0, o si los dias trnscurridos son 0
-	--se reporte L en el tipo de transacción
-	when 3 then 'R' when -1 then
-		case when dbo.fnDias(evp.htp_fecha_operacion,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)<0
-			or dbo.fnDias(
+	when 3 then 'R' when -1 then 'V' end
+	,[Fecha_transaccion]=htp_fecha_operacion
+	,[Dias_transcurridos]=
+		--EMN: 2026-sep-01 Si la fecha es igual a la fecha de compra se reporta 0
+		case when datediff(d,evp.evp_fecha_compra,evp.htp_fecha_operacion)=0
+		then 0
+		--caso contrario se reporta un día más de los días transcurridos, para que pase la validación de la SBS
+		else
+			dbo.fnDias(
 			 tfl.TFL_FECHA_INICIO
 			 --evp.Fecha_Ultimo_Pago
-			,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)=0
-		then 'L' else
-			'V'
+			,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
+			+ 1 --se aumenta un día porque la SBS no acepta 0 en días transcurridos
 		end
-	end
-	,[Fecha_transaccion]=htp_fecha_operacion
-	,[Dias_transcurridos]=dbo.fnDias(
-		 tfl.TFL_FECHA_INICIO
-		 --evp.Fecha_Ultimo_Pago
-		,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
 	,[Dias_por_vencer]=dbo.fnDias(evp.htp_fecha_operacion,tiv.TIV_FECHA_VENCIMIENTO,tiv.TIV_TIPO_BASE)
 	,[Fuente_Cotizacion]='Q'
 	,[Yield]=case when tiv.tiv_tipo_renta=154 then null when tiv.TIV_FECHA_VENCIMIENTO<dateadd(yy,1,evp.htp_fecha_operacion) /*porque se pide que la inversión sea menor a un año*/
@@ -374,7 +371,13 @@
 		where v.tpo_numeracion=evp.tpo_numeracion
 		and evp.oper=1 and v.htp_fecha_operacion=evp.htp_fecha_operacion
 	) cacheNext
-
+	where
+	--EMN: 2026-sep-01 Según la SBS los días por vencer en V no pueden menores iguales a 0
+	--por eso se excluye los oper que son -1 y la fecha de valoración es mayor igual a la
+	--fecha de vencimiento final
+	not (
+		evp.oper=-1 and evp.htp_fecha_operacion>=tiv.tiv_fecha_vencimiento
+	)
 	--where cache.valor_mercado is null
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
 	--where oper=-1 and datediff(d,htp_fecha_operacion,'20260208')=0
