@@ -152,6 +152,7 @@
 	,INTERES_GANADO=itrans*errVNFactor.errVNFactor
 	,Fecha_Ultimo_Pago_Capital=tfl.TFL_FECHA_INICIO
     ,Tipo_Renta=tre.itc_descripcion
+	,evp_fecha_ultimo_pago=evp.fecha_ultimo_pago
 	from
 	(
 	--drop table _temp.pc
