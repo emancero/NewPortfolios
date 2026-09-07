@@ -24,6 +24,9 @@
 	,eca.CAL_NOMBRE--*
 	,Calificacion_Codigo=isnull(eca.Calificacion_Codigo,30)
 	,Calificadora_Codigo=isnull(eca.Calificadora_Codigo,0)
+	,cca_fecha_desde=cca.fecha_desde
+	,VBA_FECHA_DESDE
+	,ems.EMS_ES_TIT
 	--,
 	from (
 		select EMS_ID, EMS_NOMBRE
@@ -99,6 +102,9 @@
 	,CAL_NOMBRE=null--*
 	,Calificacion_Codigo=30--isnull(eca.Calificacion_Codigo,30)
 	,Calificadora_Codigo=0--isnull(eca.Calificadora_Codigo,0)
+	,cca_fecha_desde=null
+	,vba_fecha_desde=null
+	,ems_es_tit=0
 	from corteslist
 	union all select
 	 Errores=null
@@ -119,4 +125,7 @@
 	,CAL_NOMBRE=null--*
 	,Calificacion_Codigo=30--isnull(eca.Calificacion_Codigo,30)
 	,Calificadora_Codigo=0--isnull(eca.Calificadora_Codigo,0)
+	,cca_fecha_desde=null
+	,vba_fecha_desde=null
+	,ems_es_tit=0
 	from corteslist
