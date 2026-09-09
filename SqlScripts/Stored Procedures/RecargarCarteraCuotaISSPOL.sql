@@ -94,7 +94,7 @@ begin
 	join bvq_backoffice.creditos_cartera cr on cut.id_credito=cr.crc_numero_operacion and crc_fecha_cierre=fcrc_fecha-- and DATEDIFF(M, @i_fecha_corte, CRC_FECHA_CIERRE) = 0
 		and cut.fecha_vencimiento>fcrc_fecha
 		and cr.crc_fecha_otorgamiento<=fcrc_fecha
-	join bvq_backoffice.fondo_homologacion fh on fh.id_cuenta=cut.id_cuenta
+	join bvq_backoffice.fondo_homologacion fh on fh.id_cuenta=cr.crc_id_cuenta
 	group by crc_fecha_cierre
 	, cut.fecha_vencimiento
 	, cr.crc_tasa
