@@ -8,13 +8,13 @@ WITH Meses AS (
     WHERE NumMes < 23
 )
 SELECT 
-    portafolio = CAST(NULL AS varchar)
+    portafolio = 'ISSPOL - RIM CTA. N. 01331644'
     ,cuenta_contable = CAST(NULL AS varchar)
     ,fecha_vencimiento = EOMONTH(GETDATE(), NumMes)
     ,cupon = CASE MONTH(EOMONTH(GETDATE(), NumMes))
-                WHEN 8  THEN 25000000 * 1.5   -- Agosto
-                WHEN 12 THEN 25000000 * 2     -- Diciembre
-                ELSE 25000000
+                WHEN 8  THEN -25000000 * 1.5   -- Agosto
+                WHEN 12 THEN -25000000 * 2     -- Diciembre
+                ELSE -25000000
              END
     ,origen = 'Proyectado'
     ,[real] = 0

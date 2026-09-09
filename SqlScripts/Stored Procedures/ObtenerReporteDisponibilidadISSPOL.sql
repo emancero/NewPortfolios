@@ -72,7 +72,7 @@ BEGIN
 			left join [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct on fte.mov_tipo_actividad=tipAct.ITC_ID
 			left join [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt on fte.mov_subtipo=sbt.ITC_ID and sbt.CAT_ID = 328
 			where datediff(m,'20230101',mov_fecha)>=0
-			group by [ICB_DESCRIPCION],mov_cuenta_contable,mov_fecha,sbt.itc_valor,tipAct.ITC_VALOR,tipMov.ITC_VALOR
+			group by id_asiento, MOV_SEC, [ICB_DESCRIPCION],mov_cuenta_contable,mov_fecha,sbt.itc_valor,tipAct.ITC_VALOR,tipMov.ITC_VALOR
 
 			union 
 			select
@@ -202,6 +202,6 @@ BEGIN
 				,valor
 				,abono
 				,tipo_papel
-			FROM BVQ_BACKOFFICE.PrivativasProyectadas
+			FROM BVQ_BACKOFFICE.PensionesProyectadas
 
 END
