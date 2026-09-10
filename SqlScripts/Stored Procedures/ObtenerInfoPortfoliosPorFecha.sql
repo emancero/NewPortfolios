@@ -202,7 +202,7 @@ BEGIN
                                                     )
                                                     / case when tiv_tipo_renta=154 then 1 else 100 end
                                                     */
-                                                    iif(isnull(ipr_es_cxc,0)=0 or pcorte.tpo_fecha_compra_anterior>='20220601'
+                                       iif(isnull(ipr_es_cxc,0)=0 or pcorte.tpo_fecha_compra_anterior>='20220601'
                                                     ,coalesce(
 														--case when htp_numeracion like 'MONTECRISTI-2015-12-29-2' then tiv_precio/100.0 end * pcorte.salnewvalnom
 														--,
@@ -322,7 +322,7 @@ BEGIN
 					                                    WHEN 'SEC_PRI_FIN' THEN sector_detallado--'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA'
 					                                    WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO'
 					                                    WHEN 'SEC_PUB_FIN' THEN 'PUBLICO'
-					                                    WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO'
+					                      WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO'
 				                                    END
 												--into #x
                 from @tbPortafolioCorte pcorte 
@@ -340,7 +340,13 @@ BEGIN
     left join BVQ_ADMINISTRACION.TIPO_VALOR_HOMOLOGADO H    
     ON pcorte.tvl_codigo = H.[TVLH_CODIGO]    
     left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pcorte.TIV_ID and pcorte.tfcorte>=VNU.VNU_FECHA_INICIO and pcorte.tfcorte<VNU.VNU_FECHA_FIN
-    left join BVQ_BACKOFFICE.PRECIO_EFECTIVO PRE ON PRE.TIV_ID=pcorte.TIV_ID and PRE.POR_ID=pcorte.POR_ID and pcorte.tfcorte>=PRE.PRE_FECHA_INICIO and pcorte.tfcorte<PRE.PRE_FECHA_FIN
+    left join BVQ_BACKOFFICE.PRECIO_EFECTIVO PRE ON
+    (
+        PRE.PRE_TPO_ID is null and PRE.TIV_ID=pcorte.TIV_ID and PRE.POR_ID=pcorte.POR_ID
+        or
+        PRE.PRE_TPO_ID=pcorte.httpo_id
+    )
+    and pcorte.tfcorte>=PRE.PRE_FECHA_INICIO and pcorte.tfcorte<PRE.PRE_FECHA_FIN
 
                 where (sal>0 or round(salNewValNom,2)>0) --and prop.por_id is null -- para que no incluya portafolio propio
 				--and ems_nombre like '%cr%'
