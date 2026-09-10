@@ -176,7 +176,7 @@
 		   ,VALOR_EFECTIVO =
             iif(isnull(ipr_es_cxc,0)=0 or pc.tpo_fecha_compra_anterior>='20220601'
             ,coalesce(
-				pc.prEfectivo*pc.salNewValNom,pc.htp_precio_compra/100.0*pc.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
+				isnull(pre.pre_valor,pc.prEfectivo)*pc.salNewValNom,pc.htp_precio_compra/100.0*pc.salNewValNom+isnull([TPO_INTERES_TRANSCURRIDO],0) + isnull([TPO_COMISION_BOLSA],0)
 			   )
 			,
 			CASE
@@ -514,6 +514,14 @@
 		FROM BVQ_BACKOFFICE.PortafolioCorte pc
 		JOIN BVQ_BACKOFFICE.PORTAFOLIO port
 			ON pc.por_id = port.POR_ID
+		left join BVQ_BACKOFFICE.PRECIO_EFECTIVO PRE ON
+		(
+			PRE.PRE_TPO_ID is null and PRE.TIV_ID=pc.TIV_ID and PRE.POR_ID=pc.POR_ID
+			or
+			PRE.PRE_TPO_ID=pc.httpo_id
+		)
+		and pc.tfcorte>=PRE.PRE_FECHA_INICIO and pc.tfcorte<PRE.PRE_FECHA_FIN
+		and pc.httpo_id not in (876,907)
 		left join    
 		(    
     
