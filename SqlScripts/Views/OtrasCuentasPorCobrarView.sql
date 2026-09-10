@@ -268,13 +268,13 @@
 		   ,PATRIMONIO = [VBA_PATRIMONIO_TECNICO]
 		   --,CALIFICADORA_DE_RIESGO = [CAL_NOMBRE]
 		   --,CALIFICACION_DE_RIESGO = COALESCE(pc.[ENC_VALOR], [TCA_VALOR])
-		   ,CALIFICADORA_DE_RIESGO=case when pc.httpo_id in (2487,2488) then
+		   ,CALIFICADORA_DE_RIESGO=case when pc.httpo_id in (2487,2488,2545,2546) then
 				coalesce(
 				 rtrim(emscal.enc_nombre)+' - '+convert(varchar,emscal.ENC_FECHA_DESDE,103),[CAL_NOMBRE]
 				,rtrim(emical.eca_nombre)+' - '+convert(varchar,emical.eca_fecha_resolucion,103)
 				,'NO DISPONIBLE')
 				else rtrim(CAL_NOMBRE) end
-		   ,CALIFICACION_DE_RIESGO=case when pc.httpo_id in (2487,2488) then
+		   ,CALIFICACION_DE_RIESGO=case when pc.httpo_id in (2487,2488,2545,2546) then
 				coalesce(emscal.[ENC_VALOR],eca_valor,[TCA_VALOR],'NO DISPONIBLE')
 			else COALESCE(pc.[ENC_VALOR], [TCA_VALOR]) end
 		   ,VALOR_PROVISIONADO = sal * [tiv_precio] / 100.0
