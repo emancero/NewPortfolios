@@ -25,6 +25,8 @@ GO
 INSERT INTO BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO (PCP_TIPO, PCP_NOMBRE, PCP_CODIGO)
 SELECT v.PCP_TIPO, v.PCP_NOMBRE, v.PCP_CODIGO
 FROM (VALUES
+    ('TIPO_INVERSION', N'Préstamos Hipotecarios', 'PHIP'),
+    ('TIPO_INVERSION', N'Préstamos Quirografarios', 'PQUI'),
     ('TIPO_INVERSION', N'Bonos del Estado', 'BON'),
     ('TIPO_INVERSION', N'Cert. Tesorería', 'CET'),
     ('TIPO_INVERSION', N'Cert. Inversión/Cert. Depósito/Póliza Acumulación', 'IFI'),
@@ -109,6 +111,8 @@ FROM (VALUES
     (N'Reporto Bursátil', 30),
     (N'Titularizaciones VTC', 20),
     (N'Facturas Comerciales', 27),
+    (N'Fondos de Inversión Colectivo/Cotizados', 17),
+    (N'Fondos de Inversión Administrados', 10000006),
     (N'Acciones', 1),
     (N'Cesión Derechos Fiduciarios', 10000002),
     (N'Valores Titularización Participación VTP', 33)
