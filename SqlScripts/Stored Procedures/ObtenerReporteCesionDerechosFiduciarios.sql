@@ -149,7 +149,7 @@ BEGIN
     --('WLN-2019-08-08-2', 0)
     ;
 
-    IF OBJECT_ID('tempdb..#resultado_1') IS NOT NULL DROP TABLE resultado_1;
+    IF OBJECT_ID('tempdb..#resultado_1') IS NOT NULL DROP TABLE #resultado_1;
     SELECT
         sis.numeracion AS numeracion,
         cdf.CDF_ID,
