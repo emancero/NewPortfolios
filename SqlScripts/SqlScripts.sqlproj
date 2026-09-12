@@ -260,6 +260,11 @@
     <None Include="Stored Procedures\ObtenerMovimientosDrilldown.sql" />
     <None Include="Stored Procedures\ObtenerCapitalSuscritoEmisor.sql" />
     <None Include="Views\PensionesProyectadas.sql" />
+    <None Include="Change Scripts\Crear tablas de PAI - ISSPOL.sql" />
+    <None Include="Change Scripts\Agregar modulo y funcionalidad PAI.sql" />
+    <None Include="Stored Procedures\GuardarPAIMonto.sql" />
+    <None Include="Stored Procedures\ObtenerCodigosPrestablecidosPAI.sql" />
+    <None Include="Stored Procedures\GuardarCodigoPrestablecidoPAI.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
