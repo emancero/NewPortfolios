@@ -131,6 +131,7 @@ begin
 	,EVP_SALDO
 	,liq_rendimiento
 	,movs_evp_interes_nominal_formula
+	,EVP_FECHA_LIQ_INTERES
 	)
 	select --* into bvq_backoffice.evtTemp
 	 oper
@@ -259,6 +260,7 @@ begin
 		end
 	,liq_rendimiento
 	,movs_evp_interes_nominal_formula
+	,EVP_FECHA_LIQ_INTERES
 	from bvq_backoffice.ObtenerDetallePortafolioConLiquidezView
 	--join bvq_administracion.parametro parIsspol on parIsspol.par_codigo='PAR_ISSPOL'
 	--where @i_idPortfolio=-1 or es_vencimiento_interes=0

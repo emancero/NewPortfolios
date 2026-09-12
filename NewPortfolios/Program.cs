@@ -13,6 +13,31 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
+    /**************************************************************/
+    // Campo EVP_FECHA_LIQ_INTERES
+    comm.CommandText = (new GetObjectCode()).GetCode("Campo evp_fecha_liq_interes en EVENTO_PORTAFOLIO", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+
+    comm.CommandText = (new GetObjectCode()).GetCode("EvtTemp", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidezView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidezView", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    conn.Close();
+    scope.Complete();
+    return;
+    // Fin Campo EVP_FECHA_LIQ_INTERES
+    /**************************************************************/
+
     //DetalleRecuperacionesIsspolFondos
     comm.CommandText = "dropifexists 'bvq_backoffice.DetalleRecuperacionesIsspolFondos'";
     comm.ExecuteNonQuery();
@@ -39,7 +64,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidezView", "View", suffix: false);
     comm.ExecuteNonQuery();
 
-    comm.CommandText = "dropifexists 'BVQ_PREVENCION.ObtenerDetallePortafolioConLiquidez'";
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerDetallePortafolioConLiquidez'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerDetallePortafolioConLiquidez", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();

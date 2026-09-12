@@ -164,6 +164,7 @@
 	,movs_evp_interes_nominal_formula=
 		  case when isnull(movsCupon.movs_evp_valor_efectivo_formula,'')<>'' then ' Capital:'+isnull(movsCupon.movs_evp_valor_efectivo_formula,'') else '' end
 		+ case when isnull(movsCuponInt.movs_evp_interes_nominal_formula,'')<>'' then ' Interés:'+isnull(movsCuponInt.movs_evp_interes_nominal_formula,'') else '' end
+	,evp.EVP_FECHA_LIQ_INTERES
 	--into _temp.test0
 	from bvq_backoffice.liquidez_cache evt
 	left join bvq_backoffice.evento_portafolio evp
@@ -399,6 +400,7 @@
 	,movs_evp_interes_efectivo=null
 	,movs_evp_interes_nominal=null--movs_evp_interes_efectivo+valEfeAbono-capMonto
 	,movs_evp_interes_nominal_formula=null
+	,EVP_FECHA_LIQ_INTERES=null
 	from
 	bvq_backoffice.evento_portafolio evp
 

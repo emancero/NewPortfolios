@@ -143,3 +143,11 @@ IF not EXISTS(SELECT 1 FROM sys.columns
 BEGIN
 	alter table BVQ_BACKOFFICE.evtTemp add movs_evp_interes_nominal_formula nvarchar(max)
 END
+
+IF not EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'EVP_FECHA_LIQ_INTERES'
+          AND Object_ID = Object_ID(N'BVQ_BACKOFFICE.evtTemp')
+)
+BEGIN
+	alter table BVQ_BACKOFFICE.evtTemp add EVP_FECHA_LIQ_INTERES datetime
+END
