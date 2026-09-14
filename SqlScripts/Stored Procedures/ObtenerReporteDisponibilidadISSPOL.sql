@@ -112,7 +112,7 @@ BEGIN
     UNION ALL
 
     SELECT DISTINCT
-        portafolio = ISNULL(fnd.descripcion, 'N/A'),
+        portafolio = ISNULL(icb.ICB_DESCRIPCION, 'N/A'),
         NULL,
         fecha_vencimiento = CONVERT(date, HTP_FECHA_OPERACION),
         cupon = SUM(TOTAL),
@@ -120,7 +120,7 @@ BEGIN
         [real] = 0,
         [itc_valor] = 'REDENCIÓN NO PRIVATIVAS',
         [tipo] = 'Proyectado',
-        fnd.id_cuenta,
+        id_cuenta = cta.id_cuenta,
         [I/E] = '1 Ingreso',
         CRC_NUMERO_OPERACION = NULL,
         id_rubro = NULL,
@@ -133,12 +133,14 @@ BEGIN
         tipo_papel = TVL_NOMBRE
     FROM bvq_backoffice.DetallePortafolio dpf
         LEFT JOIN [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd ON fnd.POR_ID = dpf.por_id
+        left join BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb on fnd.por_id = icb.ICB_POR_ID
+        LEFT JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta ON cta.cuenta = icb.icb_cuenta
         LEFT JOIN BVQ_ADMINISTRACION.TITULO_VALOR tiv ON tiv.TIV_ID = dpf.tiv_id
         LEFT JOIN BVQ_ADMINISTRACION.TIPO_VALOR tvl ON tvl.TVL_ID = tiv.TIV_TIPO_VALOR
     WHERE (idiff > 0.05e OR total > 0.05e)
         AND DATEDIFF(d, @i_fechaFin, dpf.htp_fecha_operacion) >= 1 --  >=@i_fechaFin / >='20230101' and datediff(d,dpf.htp_fecha_operacion,@i_fechaFin)<0
         AND (@v_oper IS NULL OR oper = @v_oper)
-    GROUP BY fnd.descripcion, CONVERT(date, HTP_FECHA_OPERACION), fnd.id_cuenta, tvl.TVL_NOMBRE
+    GROUP BY fnd.descripcion, CONVERT(date, HTP_FECHA_OPERACION), fnd.id_cuenta, tvl.TVL_NOMBRE, cta.id_cuenta, icb.ICB_DESCRIPCION
 
     /*
     UNION
@@ -161,7 +163,7 @@ BEGIN
     UNION
 
     SELECT
-        ccc.por_codigo,
+        icb.ICB_DESCRIPCION,
         NULL,
         ccc.fecha_vencimiento,
         cupon = SUM(ROUND(ccc.total, 2) - ROUND(ccc.total, 2))
@@ -170,7 +172,7 @@ BEGIN
         [real] = 0,
         [itc_valor] = 'REDENCIÓN PRIVATIVAS',
         [tipo] = 'Proyectado',
-        id_cuenta = ccc.id_cuenta,
+        id_cuenta = cta.id_cuenta,
         [I/E] = '1 Ingreso',
         CRC_NUMERO_OPERACION = COUNT(*),
         ccc.id_rubro,
@@ -182,9 +184,12 @@ BEGIN
         SUM(CASE WHEN ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) THEN ccc.total ELSE 0 END),
         tipo_papel = NULL
     FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_2] ccc
+        LEFT JOIN [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd ON fnd.id_cuenta = ccc.id_cuenta
+        left join BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb on icb.ICB_POR_ID = fnd.por_id
+        LEFT JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta ON cta.cuenta = icb.icb_cuenta
     WHERE ccc.total > 0.05
         AND ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date))
-    GROUP BY ccc.por_codigo, ccc.fecha_vencimiento, ccc.id_cuenta, id_rubro, tasa, producto, segmento
+    GROUP BY ccc.por_codigo, ccc.fecha_vencimiento, ccc.id_cuenta, id_rubro, tasa, producto, segmento, cta.id_cuenta, icb.ICB_DESCRIPCION
 
     UNION
 
@@ -214,6 +219,8 @@ BEGIN
     SELECT
         b.saldo,
         b.match_tipo,
+        b.fecha_hasta,
+        b.descripcion,
         av.*
     FROM #avail av
     OUTER APPLY (
@@ -222,7 +229,7 @@ BEGIN
             ,CASE WHEN av.fecha_vencimiento BETWEEN s.fecha_desde AND s.fecha_hasta
                   THEN 'EXACTO' ELSE 'ULTIMO_PERIODO' END AS match_tipo
         FROM (
-            SELECT sal.*, per.fecha_desde, per.fecha_hasta, sal.id_cuenta AS id_cta
+            SELECT sal.*, per.fecha_desde, per.fecha_hasta, sal.id_cuenta AS id_cta, cta.descripcion
             FROM siisspolweb.siisspolweb.contabilidad.saldo sal
             INNER JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta ON sal.id_cuenta = cta.id_cuenta
             INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per ON sal.id_periodo = per.id_periodo
