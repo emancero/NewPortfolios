@@ -265,6 +265,8 @@
     <None Include="Stored Procedures\GuardarPAIMonto.sql" />
     <None Include="Stored Procedures\ObtenerCodigosPrestablecidosPAI.sql" />
     <None Include="Stored Procedures\GuardarCodigoPrestablecidoPAI.sql" />
+    <None Include="Stored Procedures\ObtenerSaldosPAI.sql" />
+    <None Include="Stored Procedures\ObtenerPAIPorAnio.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
