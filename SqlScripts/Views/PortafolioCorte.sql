@@ -598,7 +598,7 @@
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
 	outer apply (
-		select top 1 FCUP_FECHA_ORIGINAL from bvq_backoffice.fecha_ultimo_cupon
+		select top 1 FCUP_FECHA_ORIGINAL, FCUP_APLICA_EN_DIAS_AL_CORTE from bvq_backoffice.fecha_ultimo_cupon
 		where fcup_tpo_id=tpo_id and fcup_desde<=htp.c
 		order by fcup_desde desc
 	) ultimoPagoInteres
