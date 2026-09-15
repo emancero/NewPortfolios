@@ -11,7 +11,7 @@
 	--tfl_fecha_inicio,
 	--tfl_fecha_vencimiento,
 	latest_inicio
-	=case when 1=1 and ultimoPagoInteres.fcup_fecha_original is not null then ultimoPagoInteres.fcup_fecha_original when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
+	=case when ultimoPagoInteres.fcup_aplica_en_dias_alcorte=1 and ultimoPagoInteres.fcup_fecha_original is not null then ultimoPagoInteres.fcup_fecha_original when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
 		case when fecha_ultimo_pago>tfl_fecha_inicio_orig2 or htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(fechaUltimoPagoEnEvp,tfl_fecha_inicio_orig2) end
 	else latest_inicio end
 	,

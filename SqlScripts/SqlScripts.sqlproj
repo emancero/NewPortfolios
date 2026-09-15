@@ -308,6 +308,7 @@
     <Build Include="Views\RendimientoPrivativasMora.sql" />
     <Build Include="Views\RendimientoPorPlazoPrivativasMora.sql" />
     <Build Include="Stored Procedures\ObtenerCreditosCarteraISSPOL.sql" />
+    <Build Include="Change Scripts\Tabla FECHA_ULTIMO_CUPON.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
