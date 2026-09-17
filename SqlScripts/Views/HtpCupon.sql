@@ -42,6 +42,7 @@
 			) d
 			where d.retr_tpo_id=op.htp_tpo_id and d.retr_fecha_esperada<op.htp_fecha_operacion
 		)
+		+isnull(adj,0)
 	
 		cupoper_tfl_capital,
 		liq.liq_numero_bolsa,
@@ -95,5 +96,6 @@
 	and datediff(dd,cupOper.tfl_fecha_vencimiento,htp_fecha_operacion)<0 and datediff(dd,cupOper.tfl_fecha_inicio,htp_fecha_operacion)>=0
 	left join BVQ_BACKOFFICE.RETRASO RETR ON OP.HTP_TPO_ID=RETR.RETR_TPO_ID AND RETR.RETR_FECHA_ESPERADA=cupOper.TFL_FECHA_INICIO
 	join bvq_administracion.parametro retencionpct on retencionpct.par_codigo='PAR_RET_LIQ_CV'
+	left join (values(5229,-0.24),(5230,-0.17)) adj(adj_htp_id,adj) on adj_htp_id=op.htp_id
 	where htp_estado=352
 	and isnull(htp_reportado,0)=0
