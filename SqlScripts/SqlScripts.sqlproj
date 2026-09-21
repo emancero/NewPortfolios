@@ -267,6 +267,7 @@
     <None Include="Stored Procedures\GuardarCodigoPrestablecidoPAI.sql" />
     <None Include="Stored Procedures\ObtenerSaldosPAI.sql" />
     <None Include="Stored Procedures\ObtenerPAIPorAnio.sql" />
+    <None Include="Change Scripts\Cambiar nota 3 para Reporte de Cesion Derechos Fiduciarios.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

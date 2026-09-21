@@ -1,0 +1,21 @@
+﻿BEGIN TRANSACTION;
+
+-- 1) Eliminar la nota 3 actual (fecha fija 30 de agosto del 2024)
+DELETE FROM [BVQ_BACKOFFICE].[ISSPOL_NOTAS_CXC]
+WHERE [INC_ARCHIVO] = 'DER'
+  AND [INC_ORDEN]   = 3;
+
+-- 2) Crear la nota 3 con marcador {FECHA_CORTE} en lugar de la fecha fija
+INSERT INTO [BVQ_BACKOFFICE].[ISSPOL_NOTAS_CXC]
+    ([INC_DESCRIPCION], [INC_ORDEN], [INC_FECHA_DESDE], [INC_FECHA_HASTA], [INC_ARCHIVO])
+VALUES
+    (N'NOTA3: Los saldos constan registrados con corte al {FECHA_CORTE}',
+     3, '1900-01-01', '9997-12-31', 'DER');
+
+-- Verificar antes de confirmar
+SELECT [INC_ORDEN], [INC_DESCRIPCION], [INC_FECHA_DESDE], [INC_FECHA_HASTA]
+FROM [BVQ_BACKOFFICE].[ISSPOL_NOTAS_CXC]
+WHERE [INC_ARCHIVO] = 'DER'
+ORDER BY [INC_ORDEN];
+
+COMMIT TRANSACTION;
