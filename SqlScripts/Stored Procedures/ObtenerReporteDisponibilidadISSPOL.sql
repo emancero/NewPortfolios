@@ -45,8 +45,9 @@ BEGIN
     END
     --[+] Fin de carga de homologacion de fondos y portafolios
 
-    SELECT * 
-    INTO #avail
+    exec dropifexists '_temp.avail'
+    SELECT *
+    INTO _temp.avail
     FROM
     (
     SELECT
@@ -76,7 +77,7 @@ BEGIN
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct ON fte.mov_tipo_actividad = tipAct.ITC_ID
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt ON fte.mov_subtipo = sbt.ITC_ID AND sbt.CAT_ID = 328
     WHERE DATEDIFF(m, '20230101', mov_fecha) >= 0
-    GROUP BY id_asiento, MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, tipMov.ITC_VALOR
+    GROUP BY MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, tipMov.ITC_VALOR
 
     UNION
 
@@ -217,12 +218,14 @@ BEGIN
     ) AS A
 
     SELECT
-        b.saldo,
-        b.match_tipo,
-        b.fecha_hasta,
-        b.descripcion,
+        saldo_ini = b.saldo_ini,
+        total = NULL,
+        saldo = NULL,
+        match_tipo = NULL,
+        fecha_hasta = NULL,
+        descripcion = NULL,
         av.*
-    FROM #avail av
+    FROM _temp.avail av
     OUTER APPLY (
         SELECT TOP 1
              s.*
@@ -238,5 +241,5 @@ BEGIN
         ORDER BY
             CASE WHEN av.fecha_vencimiento BETWEEN s.fecha_desde AND s.fecha_hasta THEN 0 ELSE 1 END,
             s.fecha_hasta DESC
-    ) b;
+    ) b
 END
