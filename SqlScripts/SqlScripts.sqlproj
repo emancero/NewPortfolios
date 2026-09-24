@@ -269,6 +269,9 @@
     <None Include="Stored Procedures\ObtenerPAIPorAnio.sql" />
     <None Include="Change Scripts\Cambiar nota 3 para Reporte de Cesion Derechos Fiduciarios.sql" />
     <None Include="Stored Procedures\ObtenerCtaContBancosISSPOL.sql" />
+    <None Include="Change Scripts\Tablas Proyecciones Disponibilidad ISSPOL.sql" />
+    <None Include="Stored Procedures\InsertarProyeccionDispCabISSPOL.sql" />
+    <None Include="Stored Procedures\InsertarProyeccionDispDetISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
