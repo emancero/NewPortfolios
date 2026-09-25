@@ -1,12 +1,12 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[InsertarProyeccionDispDetISSPOL]
-    @i_pdc_id             INT,
-    @i_fecha_vencimiento  DATE,
-    @i_portafolio         VARCHAR(200) = NULL,
-    @i_subtipo            VARCHAR(200) = NULL,
-    @i_tipo_papel         VARCHAR(200) = NULL,
-    @i_ie                 VARCHAR(20)  = NULL,
-    @i_monto              MONEY,
-    @i_lga_id int
+    @i_pdc_id INT,
+    @i_fecha_vencimiento DATE,
+    @i_portafolio VARCHAR(200) = NULL,
+    @i_subtipo VARCHAR(200) = NULL,
+    @i_tipo_papel VARCHAR(200) = NULL,
+    @i_ie VARCHAR(20)  = NULL,
+    @i_monto MONEY,
+    @i_lga_id INT
 AS
 BEGIN
     SET NOCOUNT ON

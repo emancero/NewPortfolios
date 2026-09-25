@@ -272,6 +272,7 @@
     <None Include="Change Scripts\Tablas Proyecciones Disponibilidad ISSPOL.sql" />
     <None Include="Stored Procedures\InsertarProyeccionDispCabISSPOL.sql" />
     <None Include="Stored Procedures\InsertarProyeccionDispDetISSPOL.sql" />
+    <None Include="Stored Procedures\InsertarProyeccionDispSalISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
