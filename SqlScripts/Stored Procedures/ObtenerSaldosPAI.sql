@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerSaldosPAI]
     @i_fecha DATETIME,
+	@i_pdc_id INT,
     @i_lga_id  INT
 AS
 BEGIN
@@ -31,4 +32,20 @@ BEGIN
 			on pcp.PCP_ID = pcpo.PCP_ID
 	WHERE per.fecha_hasta = @fecha
 	GROUP BY por.POR_ID, por.POR_CODIGO, pcp.PCP_NOMBRE
+
+	UNION
+
+	select s.PDS_SALDO_FINAL, pcp.PCP_NOMBRE as fondo, c.PDC_NOMBRE
+	from BVQ_BACKOFFICE.ISSPOL_PROYECCION_DISP_SAL s
+		LEFT JOIN BVQ_BACKOFFICE.ISSPOL_PROYECCION_DISP_CAB c
+			ON c.PDC_ID = s.PDS_PDC_ID
+		inner JOIN bvq_backoffice.isspol_cuentas_contables_de_bancos icb
+			on icb.ICB_DESCRIPCION = s.PDS_PORTAFOLIO
+		left JOIN bvq_backoffice.portafolio por
+			on por.por_id = icb.ICB_POR_ID
+		left join BVQ_BACKOFFICE.PAI_CODIGO_PORTAFOLIO pcpo
+			on pcpo.POR_ID = por.por_id
+		left join BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
+			on pcp.PCP_ID = pcpo.PCP_ID
+	WHERE c.PDC_ID = @i_pdc_id
 END
