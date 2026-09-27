@@ -1,5 +1,5 @@
-﻿CREATE procedure [BVQ_BACKOFFICE].[ObtenerReporteDisponibilidadISSPOL]
-	@i_fechaFin datetime = '2024-05-31T23:59:59',--null,
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerReporteDisponibilidadISSPOL]
+    @i_fechaFin datetime = '2024-05-31T23:59:59',--null,
     @i_lga_id int
 AS
 BEGIN
@@ -96,7 +96,7 @@ BEGIN
         tasa = NULL,
         producto = NULL,
         segmento = NULL,
-        estado = NULL,
+		estado = NULL,
         valor = NULL,
         abono = NULL,
         tipo_papel = NULL
@@ -238,5 +238,5 @@ BEGIN
         ORDER BY
             CASE WHEN av.fecha_vencimiento BETWEEN s.fecha_desde AND s.fecha_hasta THEN 0 ELSE 1 END,
             s.fecha_hasta DESC
-    ) b;
+    ) b
 END
