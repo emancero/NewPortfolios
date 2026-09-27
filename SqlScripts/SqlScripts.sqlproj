@@ -274,6 +274,7 @@
     <None Include="Stored Procedures\InsertarProyeccionDispDetISSPOL.sql" />
     <None Include="Stored Procedures\InsertarProyeccionDispSalISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerProyeccionDispCabISSPOL.sql" />
+    <None Include="Stored Procedures\GenerarTasaValorCompact.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
