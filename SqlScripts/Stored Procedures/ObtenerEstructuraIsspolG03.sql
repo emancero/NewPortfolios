@@ -91,6 +91,7 @@ BEGIN
 		,INTERES_GANADO
 		,Fecha_Ultimo_Pago_Capital
 		,Saldo_Provision=null
+		,oper
 		into _temp.TempEstructuraIsspolViewG3
 
 		--declare @i_fechaCorte datetime='2023-12-31T23:59:59'
@@ -138,7 +139,7 @@ BEGIN
 		union all select iif(tipo_transaccion in ('V','A','U','P') and (Valor_Capital<>0 or Valor_Capital is null),'G04_TX_VAUP_VALOR_CAPITAL_CERO',null)
 		union all select iif(tipo_transaccion in ('V','L','E','R','U','A') and Fecha_Ultimo_Pago is not null,'G04_TX_VLERUA_FECHA_ULT_CUPON_NULA',null)
 		union all select iif(tipo_transaccion in ('L','P','R','U','A','E') and (Interes_Acumulado<>0 or Interes_Acumulado is null),'G04_TX_LPRUAE_INTERES_ACUM_CERO',null)
-		union all select iif(tipo_transaccion in ('V') and tiv_tipo_renta=153 and not tipo_instrumento in (4,5,8,9)
+		union all select iif(tipo_transaccion in ('V') and tiv_tipo_renta=153 and tipo_instrumento in (4,5,8,9)
 			and (Interes_Acumulado<>0 or Interes_Acumulado is null),'G04_TX_V_RF_EXC_4_5_8_9_INTERES_CERO',null)
 		union all select iif(Tipo_Instrumento not in (4,5,9,13,20,21,22,23,24,26) and isnull(fecha_ultima_calificacion,0)=0,'G04_RF_PRIVADA_SIN_CALIFICACION',null)
 		union all select iif(Tipo_Transaccion in ('P') and Tipo_Instrumento not in (20,21,22,23,24,26) and fecha_ultimo_pago is null,'G04_RF_SIN_FECHA_ULTIMO_PAGO',null)
