@@ -8,10 +8,8 @@ BEGIN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	SET NOCOUNT ON;
 	declare @i_fechaIni DateTime=DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
-	if not exists (select * from bvq_administracion.parametro where par_codigo='CALC_STRUCT')
-		raiserror('Error: No existe parámetro CALC_STRUCT que define si traer estructura del caché',16,1)
-
-	if exists(select * from bvq_administracion.parametro where par_codigo='CALC_STRUCT' and par_valor='SI')
+	
+	if 1=1
 	begin
 		exec bvq_backoffice.ObtenerDetallePortafolioConLiquidez 1,@i_fechaIni,@i_fechaCorte,null
 		exec dropifexists '_temp.TempEstructuraIsspolViewG3'
@@ -87,7 +85,7 @@ BEGIN
 		,INTERES_GANADO_2
 		,tiv_tipo_base
 		,tvl_descripcion
-		,latest_inicio=case when tipo_transaccion='V' then evp_fecha_ultimo_pago else Fecha_ultimo_pago end
+		,latest_inicio=Fecha_ultimo_pago
 		,INTERES_GANADO
 		,Fecha_Ultimo_Pago_Capital
 		,Saldo_Provision=null
