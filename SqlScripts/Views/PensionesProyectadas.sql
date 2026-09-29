@@ -1,4 +1,4 @@
-﻿ALTER VIEW BVQ_BACKOFFICE.PensionesProyectadas
+﻿create VIEW BVQ_BACKOFFICE.PensionesProyectadas
 AS
 WITH Meses AS (
     SELECT 0 AS NumMes
