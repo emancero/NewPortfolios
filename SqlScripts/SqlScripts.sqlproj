@@ -276,6 +276,10 @@
     <None Include="Stored Procedures\ObtenerProyeccionDispCabISSPOL.sql" />
     <None Include="Stored Procedures\GenerarTasaValorCompact.sql" />
     <None Include="Stored Procedures\ObtenerProyeccionDispDetISSPOL.sql" />
+    <None Include="Stored Procedures\ObtenerFondosProyeccionDispISSPOL.sql" />
+    <None Include="Stored Procedures\ObtenerSubtiposProyeccionDispISSPOL.sql" />
+    <None Include="Stored Procedures\ObtenerTiposPapelProyeccionDispISSPOL.sql" />
+    <None Include="Stored Procedures\ActualizarProyeccionDispCabISSPOL.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
