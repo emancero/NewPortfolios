@@ -11,7 +11,7 @@
 	--tfl_fecha_inicio,
 	--tfl_fecha_vencimiento,
 	latest_inicio
-	=case when ultimoPagoInteres.fcup_aplica_en_dias_al_corte=1 and ultimoPagoInteres.fcup_fecha_original is not null then ultimoPagoInteres.fcup_fecha_original when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
+	=case when /*ultimoPagoInteres.fcup_aplica_en_dias_al_corte=1 and */ultimoPagoInteres.fcup_fecha_original is not null then ultimoPagoInteres.fcup_fecha_original when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
 		case when fecha_ultimo_pago>tfl_fecha_inicio_orig2 or htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(fechaUltimoPagoEnEvp,tfl_fecha_inicio_orig2) end
 	else latest_inicio end
 	,
@@ -21,7 +21,9 @@
 			--latest_inicio
 			case when tpo_fecha_susc_convenio is not null then
 				fechaInicioOriginal
+				
 			when ultimoPagoInteres.fcup_fecha_original is not null then ultimoPagoInteres.fcup_fecha_original
+
 			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
 				case when htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(fechaUltimoPagoEnEvp,tfl_fecha_inicio_orig2) end
 			else latest_inicio end
@@ -294,7 +296,6 @@
 		case itcsector.itc_codigo WHEN 'SEC_PRI_FIN' then 'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA' WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO' WHEN 'SEC_PUB_FIN' THEN 'PUBLICO' WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO' END
 	END
 	,FON_ID
-	,POR.POR_ORD
 	from
 	(
 					------------- VALORACIONES ---------------
@@ -598,8 +599,9 @@
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
 	outer apply (
-		select top 1 FCUP_FECHA_ORIGINAL, FCUP_APLICA_EN_DIAS_AL_CORTE from bvq_backoffice.fecha_ultimo_cupon
+		select top 1 FCUP_FECHA_ORIGINAL/*, FCUP_APLICA_EN_DIAS_AL_CORTE*/ from bvq_backoffice.fecha_ultimo_cupon
 		where fcup_tpo_id=tpo_id and fcup_desde<=htp.c
+		and fcup_desde>='20260901'
 		order by fcup_desde desc
 	) ultimoPagoInteres
 
