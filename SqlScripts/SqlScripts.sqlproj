@@ -280,6 +280,7 @@
     <None Include="Stored Procedures\ObtenerSubtiposProyeccionDispISSPOL.sql" />
     <None Include="Stored Procedures\ObtenerTiposPapelProyeccionDispISSPOL.sql" />
     <None Include="Stored Procedures\ActualizarProyeccionDispCabISSPOL.sql" />
+    <None Include="Change Scripts\cambio_de_patrimonio_retrasado.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
