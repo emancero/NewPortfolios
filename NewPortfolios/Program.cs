@@ -18,9 +18,9 @@ using (TransactionScope scope = new TransactionScope())
     /**************************************************************/
 
     // Menús / funcionalidades
-    comm.CommandText = (new GetObjectCode()).GetCode("Agregar funcionalidad Reporte de Disponibilidad", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("Agregar modulo y funcionalidad PAI", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("Agregar funcionalidad Reporte de Disponibilidad", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
     // Tablas
