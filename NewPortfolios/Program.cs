@@ -15,6 +15,7 @@ using (TransactionScope scope = new TransactionScope())
 
     /**************************************************************/
     // Campo EVP_FECHA_LIQ_INTERES
+    /*
     comm.CommandText = (new GetObjectCode()).GetCode("Campo evp_fecha_liq_interes en EVENTO_PORTAFOLIO", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
@@ -35,10 +36,12 @@ using (TransactionScope scope = new TransactionScope())
     conn.Close();
     scope.Complete();
     return;
+    */
     // Fin Campo EVP_FECHA_LIQ_INTERES
     /**************************************************************/
 
     //DetalleRecuperacionesIsspolFondos
+    /*
     comm.CommandText = "dropifexists 'bvq_backoffice.DetalleRecuperacionesIsspolFondos'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("DetalleRecuperacionesIsspolFondos", "View", suffix: false);
@@ -52,10 +55,12 @@ using (TransactionScope scope = new TransactionScope())
     conn.Close();
     scope.Complete();
     return;
+    */
 
 
     /**************************************************************/
     // Campo movs_evp_interes_nominal_formula
+    /*
     comm.CommandText = (new GetObjectCode()).GetCode("EvtTemp", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
@@ -77,12 +82,14 @@ using (TransactionScope scope = new TransactionScope())
     conn.Close();
     scope.Complete();
     return;
+    */
     // Fin Campo movs_evp_interes_nominal_formula
     /**************************************************************/
 
 
     /**************************************************************/
     // Agregar SPs y vista faltantes de caché de clientes
+    /*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.personaproveedor'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("personaproveedor", "View", suffix: false);
@@ -101,6 +108,7 @@ using (TransactionScope scope = new TransactionScope())
     conn.Close();
     scope.Complete();
     return;
+    */
     /**************************************************************/
 
     /*
@@ -238,7 +246,8 @@ using (TransactionScope scope = new TransactionScope())
     ************************************************************/
 
 
-    /***********************************************************
+    /************************************************************/
+    //Paso a producción de estructuras
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ESTRUCTURA_ISSPOL_G04'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ESTRUCTURA_ISSPOL_G04", "Change Script", suffix: false);
@@ -336,6 +345,13 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("GenerarCortesListPorRango", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EmisorEstructuraIsspolView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("EmisorEstructuraIsspolView", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG01", "Stored Procedure", suffix: false);
@@ -361,7 +377,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ComprobanteIsspolRubros'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ComprobanteIsspolRubros", "View", suffix: false);
-    comm.ExecuteNonQuery();
+    //comm.ExecuteNonQuery();
     //30-dic-2025
 
     //comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.TotalRecuperacionesView'";
@@ -386,12 +402,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG03", "Stored Procedure", suffix: false);
     comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("cambio_de_patrimonio_retrasado", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
 
-    conn.Close();
-    scope.Complete();
-    return;//paso a producción ok
-    **********************************************************/
-
+    
     //14-feb-2026
     //comm.CommandText = "dropifexists 'bvq_backoffce.SecuenciaCompra'";
     //comm.ExecuteNonQuery();
@@ -403,10 +417,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
 
-    comm.CommandText = (new GetObjectCode()).GetCode("Fixes estructuras", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("Patrimonios faltantes", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
+//    comm.CommandText = (new GetObjectCode()).GetCode("Fixes estructuras", "Change Script", suffix: false);
+//    comm.ExecuteNonQuery();
+//    comm.CommandText = (new GetObjectCode()).GetCode("Patrimonios faltantes", "Change Script", suffix: false);
+//    comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'bvq_administracion.periodicidadSB'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("PeriodicidadSB", "View", suffix: false);
@@ -429,15 +443,18 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
 
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezTitulo'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("InsertarLiquidezTitulo", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
+    //comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezTitulo'";
+    //comm.ExecuteNonQuery();
+    //comm.CommandText = (new GetObjectCode()).GetCode("InsertarLiquidezTitulo", "Stored Procedure", suffix: false);
+    //comm.ExecuteNonQuery();
 
 
     conn.Close();
     scope.Complete();
     return;
+
+    //Fin paso a producción estructuras
+    /**********************************************************/
 
     /*
     //se utilizan en los reportes de inversiones
