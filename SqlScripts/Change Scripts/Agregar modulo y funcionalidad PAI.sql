@@ -43,7 +43,9 @@ BEGIN
 END
 
 -- Plan anual de inversión
-IF NOT EXISTS (SELECT 1 FROM BVQ_SEGURIDAD.FUNCIONALIDAD WHERE FUN_CODIGO = 'PAI_PLAN')
+IF NOT EXISTS (
+	SELECT 1 FROM BVQ_SEGURIDAD.FUNCIONALIDAD WHERE FUN_CODIGO = 'PAI_PLAN'
+)
 BEGIN
     SET @IdPlan = @NextId;
 
@@ -51,7 +53,7 @@ BEGIN
         (FUN_ID, MOD_ID, FUN_NOMBRE, FUN_TIPO, FUN_CODIGO, FUN_ESTADO,
          FUN_NOMBRE_DLL, FUN_NOMBRE_CLASE, FUN_PADRE, FUN_AUDITAR, FUN_ORDEN, FUN_ES_VERSION2)
     VALUES
-        (@IdPlan, 7, N'Plan anual de inversión', 89, 'PAI_PLAN', 82,
+        (@IdPlan, 7, N'Plan anual de inversiones', 89, 'PAI_PLAN', 82,
          'Bvq.Sipla.Isspol.Module.dll', 'Bvq.Sipla.Isspol.Module.AnnualInvestmentPlanView', @IdPAI, 1, 1, NULL);
 
     SET @NextId = @NextId + 1;
@@ -73,7 +75,7 @@ BEGIN
     VALUES (41, @IdPAI);
 END
 
--- Perfil 41 / Plan anual de inversión
+-- Perfil 41 / Plan anual de inversiones
 IF NOT EXISTS (SELECT 1 FROM BVQ_SEGURIDAD.PERFIL_FUNCIONALIDAD WHERE PRF_ID = 41 AND FUN_ID = @IdPlan)
 BEGIN
     INSERT INTO BVQ_SEGURIDAD.PERFIL_FUNCIONALIDAD (PRF_ID, FUN_ID)
