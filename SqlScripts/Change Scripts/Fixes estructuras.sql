@@ -1,16 +1,13 @@
-﻿--Cambiar tiv_emisor a 913.
---Cacpeco: EMS_ID=85 tiene EMS_ESTADO=22, EMS_ID=913 tiene EMS_ESTADO=21
---El nombre es idéntico, solo que el nuevo tiene un espacio más
---Decisión:Publicar
-update bvq_administracion.titulo_valor set tiv_emisor=913 where tiv_id=1e7+85 and tiv_emisor=85
-
+﻿--use sicav
+--sp_helptext 'bvq_administracion.obtenercapitalsuscritoemisor'
+--select * from sicav.sys.objects where name like 'obtenercapitals%'
 
 -----------------------------------------------------------------------------
---Sin calificación por código SIC errado
+--Sin calificación por código SIC (rmv corto) errado
 --Vista de errores, no recuerdo cómo se obtuvo, tal vez la calificación estaba vacía
 --exec dropifexists '_temp.tivCodigoTituloSicErr'
 --go
---Comprobar que son títulos vencidos hace mucho tiempo (vencen máximo a sept. de 2024)
+--Comprobar que son títulos vencidos hace mucho tiempo (vencen máximo a SEP-2024)
 --son papeles comerciales que no tienen calificación del emisor
 select distinct tiv_fecha_vencimiento,tiv_tipo_valor,eca.eca_id,ems.ems_id,ems_codigo,tiv.tiv_id,ems.ems_nombre--,enc.*
 from
@@ -34,21 +31,15 @@ where ems_codigo in ('car','cea','lfb','spd','nvc','srg','sma','dth','cpb','crs'
 --where errores<>'' and tiv_codigo_titulo_sic='0206258'
 
 
-
-
-
-
-
-
 --Corrige tiv_codigo_titulo_sic según tiv_numero_rmv que está correcto
---No es tan grave que cambie en históricos porque antes no tenían calificaciones
+--El que cambie en los reportes históricos no es tan grave pues antes no se tenía calificaciones
 update tiv set tiv_codigo_titulo_sic='02'+right(tiv_numero_rmv,5)
 --select tiv_codigo_titulo_sic,'02'+right(tiv_numero_rmv,5)
 --select tiv_numero_rmv,*
 from
 bvq_administracion.titulo_valor tiv
 join bvq_administracion.emisor emi on tiv.tiv_emisor=emi.ems_id
-left join
+join
 _temp.tivCodigoTituloSicErr v
 on tiv.tiv_numero_rmv=v.inscripcion_cpmv
 and tiv.tiv_fecha_vencimiento=convert(date,v.fecha_vencimiento,105)
@@ -69,8 +60,31 @@ if not exists(
 		,'2023.Q.02.003866',10,'20231031','AAA',21,'0203866'
 	)
 
+--Patrimonio técnico sobrepuesto, Banco del pacífico
+update vba set vba_fecha_hasta='20231108'
+--select *
+from bvq_administracion.variables_balance vba where ems_id=59 and vba_fecha_hasta='20231231'
+
+
+
+
+
+--Lo siguientes, no se debe discutir con inversiones, pues no les afecta, en estos se coloca No prob.
+------------------------------------------------------------------------------------------------------
+
+--Cambiar tiv_emisor a 913.
+--Cacpeco: EMS_ID=85 tiene EMS_ESTADO=22, EMS_ID=913 tiene EMS_ESTADO=21
+--El nombre es idéntico, solo que el nuevo tiene un espacio más
+--Decisión:Publicar
+--No prob, porque el nombre es idéntico, no debe haber cambios
+update tiv set tiv_emisor=913
+--select *
+from bvq_administracion.titulo_valor tiv where tiv_id=1e7+85 and tiv_emisor=85
+
+
 --18/feb/2026
 --"Más Valores" es CAVAMASA
+--No prob. pues cva_codigo_sb solo aplica en estructuras
 update cva set cva_codigo_sb='CV08' from bvq_administracion.casa_valores cva where cva_siglas='msv'
 
 
@@ -80,22 +94,31 @@ insert into corteslist values ('20231231',1)
 exec bvq_backoffice.generarcompraventaflujo
 
 --resolución en encargo fiduciario Santa cruz
-update fon set FON_NUMERO_RESOLUCION='SN',FON_PROCEDENCIA='N'
+--No prob. porque el número de resolución solo se utiliza en estructuras
+update fon set FON_NUMERO_RESOLUCION='SN'--,FON_PROCEDENCIA='N'
+--select fon_numero_resolucion,fon_procedencia,*
 from bvq_backoffice.portafoliocorte pc
 join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
 join bvq_backoffice.fondo fon on fon.fon_id=tpo.fon_id
-where tvl_codigo='enc'
+where tvl_codigo='enc' and fon_numero_resolucion is null
 --select * from _temp.g3sh where idemi='0993121401001'
 --SCVS.INMV.DNNF.2019.1811
 
 --tiv_numero_supercias en encargo fiducuciario
---select distinct tiv.tiv_id,tiv_numero_supercias
+--No prob. porque el número de resolución solo se utiliza en estructuras
 update tiv set tiv_numero_supercias='SCVS-INMV-DNNF-2019-1811'
+--select distinct tiv.tiv_id,tiv_numero_supercias
 from bvq_backoffice.portafoliocorte pc
 join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
 join bvq_backoffice.fondo fon on fon.fon_id=tpo.fon_id
 join bvq_administracion.titulo_valor tiv on tpo.tiv_id=tiv.tiv_id
-where tvl_codigo='enc'
+where tvl_codigo='enc' and tiv_numero_supercias is null
+
+
+
+--------------------------------------------------------------------------------------------
+--Todos los comentarios posteriores a este punto no aplican pues ya están en producción
+--------------------------------------------------------------------------------------------
 
 --Bolsa de valores (procedencia) --------------------------------------------------
 --Se probó con el query en el siguiente comentario:
@@ -112,7 +135,7 @@ where asi_emi_abremi='MDF' and asi_tit_abrtit='BON' and aru_opc_anoope between '
 group by aru_opc_fchval with rollup
 order by opc.aru_opc_fchval
 */
---EMN: 11-ago-2026 ya no aplica pues ya fue arreglado en producción, se comenta
+--EMN: 11-ago-2026 ya no aplica ya fue arreglado en producción, se comenta
 --select bolsa_valores,* from _temp.TempEstructuraIsspolViewG2 e where fecha_transaccion='20231231' and bolsa_valores is null
 --select fon_procedencia,numero_liquidacion,e.fecha_compra,*
 /*
@@ -348,10 +371,6 @@ where fon_numero_liquidacion is null and fon_numliq_temp is null and fon_procede
 --Fin procedencia y números de liquidación de bonos antiguos---------------------------------------------
 
 
---Patrimonio técnico sobrepuesto, Banco del pacífico
-update vba set vba_fecha_hasta='20231108'
---select *
-from bvq_administracion.variables_balance vba where ems_id=59 and vba_fecha_hasta='20231231'
 
 --compra_htp_id
 --EMN: 4-abr-2026 primera compra

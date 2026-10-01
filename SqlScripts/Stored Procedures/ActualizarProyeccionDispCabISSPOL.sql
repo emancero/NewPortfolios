@@ -1,0 +1,27 @@
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ActualizarProyeccionDispCabISSPOL]
+	@i_pdc_id INT,
+	@i_nombre VARCHAR(200),
+	@i_fecha_corte DATE,
+	@i_fecha_inicio DATE,
+	@i_fecha_fin DATE,
+	@i_lga_id INT = NULL
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	IF NOT EXISTS (SELECT 1 FROM [BVQ_BACKOFFICE].[ISSPOL_PROYECCION_DISP_CAB] WHERE PDC_ID = @i_pdc_id)
+	BEGIN
+		RAISERROR('La proyeccion a actualizar no existe.', 16, 1)
+		RETURN
+	END
+
+	UPDATE [BVQ_BACKOFFICE].[ISSPOL_PROYECCION_DISP_CAB]
+	SET PDC_NOMBRE = @i_nombre,
+		PDC_FECHA_CORTE = @i_fecha_corte,
+		PDC_FECHA_INICIO = @i_fecha_inicio,
+		PDC_FECHA_FIN = @i_fecha_fin
+	WHERE PDC_ID = @i_pdc_id
+
+	DELETE FROM [BVQ_BACKOFFICE].[ISSPOL_PROYECCION_DISP_DET] WHERE PDD_PDC_ID = @i_pdc_id
+	DELETE FROM [BVQ_BACKOFFICE].[ISSPOL_PROYECCION_DISP_SAL] WHERE PDS_PDC_ID = @i_pdc_id
+END
