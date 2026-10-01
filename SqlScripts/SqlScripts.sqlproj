@@ -313,6 +313,7 @@
     <Build Include="Views\RendimientoPorPlazoPrivativasMora.sql" />
     <Build Include="Stored Procedures\ObtenerCreditosCarteraISSPOL.sql" />
     <Build Include="Change Scripts\Tabla FECHA_ULTIMO_CUPON.sql" />
+    <None Include="Change Scripts\Menu Pivot Provisiones.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
