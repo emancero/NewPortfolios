@@ -568,6 +568,10 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
 
+    //3-oct-2026
+    comm.CommandText = (new GetObjectCode()).GetCode("Parámetro CALC_STRUCT", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
     //comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarLiquidezTitulo'";
     //comm.ExecuteNonQuery();
     //comm.CommandText = (new GetObjectCode()).GetCode("InsertarLiquidezTitulo", "Stored Procedure", suffix: false);
