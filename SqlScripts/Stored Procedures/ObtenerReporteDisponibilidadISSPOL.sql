@@ -124,7 +124,7 @@ BEGIN
         portafolio = ISNULL(icb.ICB_DESCRIPCION, 'N/A'),
         NULL,
         fecha_vencimiento = CONVERT(date, HTP_FECHA_OPERACION),
-        cupon = SUM(TOTAL),
+        cupon = SUM(case when dpf.es_vencimiento_interes=0 then htp_venta when dpf.es_vencimiento_interes=1 then idiff else 0 end),
         origen = 'Proyectado',
         [real] = 0,
         [itc_valor] = 'REDENCIÓN NO PRIVATIVAS',
