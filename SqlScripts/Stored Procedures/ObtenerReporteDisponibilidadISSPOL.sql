@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerReporteDisponibilidadISSPOL]
-    @i_fechaFin datetime = '2024-05-31T23:59:59',--null,
-    @i_lga_id int
+    @i_fechaFin datetime = '2024-05-31T23:59:59',
+    @i_lga_id int = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -77,7 +77,8 @@ BEGIN
         estado = NULL,
         valor = NULL,
         abono = NULL,
-        tipo_papel = NULL
+        tipo_papel = NULL,
+        id_asiento
     FROM _temp.isspol_movimiento_contable_fuente fte
         JOIN bvq_backoffice.isspol_cuentas_contables_de_bancos icb ON icb.icb_cuenta = fte.mov_cuenta_contable
         LEFT JOIN #cuenta cta ON icb.icb_cuenta = cta.cuenta
@@ -85,7 +86,9 @@ BEGIN
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct ON fte.mov_tipo_actividad = tipAct.ITC_ID
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt ON fte.mov_subtipo = sbt.ITC_ID AND sbt.CAT_ID = 328
     WHERE fte.mov_fecha >= '20230101'
-    GROUP BY MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, tipMov.ITC_VALOR
+    GROUP BY 
+        MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor, 
+        tipAct.ITC_VALOR, tipMov.ITC_VALOR, id_asiento
 
     UNION
 
@@ -108,7 +111,8 @@ BEGIN
         estado = NULL,
         valor = NULL,
         abono = NULL,
-        tipo_papel = NULL
+        tipo_papel = NULL,
+        id_asiento
     FROM BVQ_BACKOFFICE.isspol_saldo_inicial fte
         JOIN bvq_backoffice.isspol_cuentas_contables_de_bancos icb ON icb_cuenta = mov_cuenta_contable
         LEFT JOIN #cuenta cta ON icb.icb_cuenta = cta.cuenta
@@ -116,7 +120,7 @@ BEGIN
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct ON fte.mov_tipo_actividad = tipAct.ITC_ID
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt ON fte.mov_subtipo = sbt.ITC_ID AND sbt.CAT_ID = 328
     WHERE fte.mov_fecha >= '20230101'
-    GROUP BY [ICB_DESCRIPCION], mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, cta.id_cuenta
+    GROUP BY [ICB_DESCRIPCION], mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, cta.id_cuenta, id_asiento
 
     UNION ALL
 
@@ -139,7 +143,8 @@ BEGIN
         estado = NULL,
         valor = NULL,
         abono = NULL,
-        tipo_papel = TVL_NOMBRE
+        tipo_papel = TVL_NOMBRE,
+        id_asiento = NULL
     FROM bvq_backoffice.DetallePortafolio dpf
         LEFT JOIN [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd ON fnd.POR_ID = dpf.por_id
         LEFT JOIN BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb ON fnd.por_id = icb.ICB_POR_ID
@@ -173,7 +178,8 @@ BEGIN
         NULL, --estado
         SUM(ccc.total),
         SUM(CASE WHEN ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) THEN ccc.total ELSE 0 END),
-        tipo_papel = NULL
+        tipo_papel = NULL,
+        id_asiento = NULL
     FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_2] ccc
         LEFT JOIN [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd ON fnd.id_cuenta = ccc.id_cuenta
         LEFT JOIN BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb ON icb.ICB_POR_ID = fnd.por_id
@@ -203,7 +209,8 @@ BEGIN
         estado,
         valor,
         abono,
-        tipo_papel
+        tipo_papel,
+        id_asiento = NULL
     FROM BVQ_BACKOFFICE.PensionesProyectadas
     ) AS A
 
