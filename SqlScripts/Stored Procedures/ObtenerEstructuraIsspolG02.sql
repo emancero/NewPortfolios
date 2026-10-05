@@ -132,7 +132,7 @@ BEGIN
 			,Tasa_Nominal
 	
 			,Valor_Nominal
-			,Precio_Compra
+			,Precio_Compra=Precio_Compra/iif(tiv_tipo_renta=153,100.0,1.0)
 			,Valor_Efectivo_Libros
 			,Plazo_Inicial=isnull(Plazo_Inicial,0)
 			,Calificadora_Riesgo_Emision=iif(isnull(sbc.codigo,30)=30,0,isnull(Calificadora_Riesgo_Emision,0))
