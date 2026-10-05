@@ -175,6 +175,7 @@ BEGIN
         SUM(CASE WHEN ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) THEN ccc.total ELSE 0 END),
         tipo_papel = NULL
     FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_2] ccc
+		join (select top 1 fcrc_fecha from bvq_backoffice.fechas_cierre_creditos_cartera where fcrc_fecha<@i_fechaFin order by fcrc_fecha desc) fcc on ccc.fecha_corte = fcc.fcrc_fecha
         LEFT JOIN [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd ON fnd.id_cuenta = ccc.id_cuenta
         LEFT JOIN BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb ON icb.ICB_POR_ID = fnd.por_id
         LEFT JOIN #cuenta cta ON cta.cuenta = icb.icb_cuenta
