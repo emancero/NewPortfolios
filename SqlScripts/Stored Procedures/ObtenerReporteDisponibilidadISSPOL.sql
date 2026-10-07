@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerReporteDisponibilidadISSPOL]
-    @i_fechaFin datetime = '2024-05-31T23:59:59',--null,
+    @i_fechaFin datetime = '2024-05-31T23:59:59',
     @i_lga_id int
 AS
 BEGIN
@@ -85,7 +85,8 @@ BEGIN
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct ON fte.mov_tipo_actividad = tipAct.ITC_ID
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt ON fte.mov_subtipo = sbt.ITC_ID AND sbt.CAT_ID = 328
     WHERE fte.mov_fecha >= '20230101'
-    GROUP BY MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, tipMov.ITC_VALOR
+    GROUP BY MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor,
+	tipAct.ITC_VALOR, tipMov.ITC_VALOR
 
     UNION
 
