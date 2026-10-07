@@ -60,22 +60,18 @@ BEGIN
     SELECT 
         MOV_FECHA, MOV_CONCEPTO, MOV_BENEFICIARIO, MOV_REFERENCIA_ASIENTO, 
         MOV_COMPROBANTE, ISNULL(MOV_DEBE, 0) - ISNULL(MOV_HABER, 0) AS MOV_MONTO, 
-        MOV_CUENTA_CONTABLE_NOMBRE,
+        MOV_CUENTA_CONTABLE_NOMBRE, id_asiento,
         ITC_VALOR
     FROM [_temp].[isspol_movimiento_contable_fuente] m
         LEFT JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO itc ON m.mov_subtipo = itc.ITC_ID
         LEFT JOIN BVQ_BACKOFFICE.isspol_cuentas_contables_de_bancos ccb ON m.MOV_CUENTA_CONTABLE = ccb.ICB_CUENTA
     WHERE MOV_FECHA >= @FechaInicio AND MOV_FECHA < @FechaFin
-        AND (
-            @subtipo IS NULL
+        AND (@subtipo IS NULL
             OR (@subtipo = '' AND itc.ITC_VALOR IS NULL)
-            OR (@subtipo <> '' AND itc.ITC_VALOR = @subtipo)
-        )
-        AND (
-            @portafolio IS NULL
+            OR (@subtipo <> '' AND itc.ITC_VALOR = @subtipo))
+        AND (@portafolio IS NULL
             OR (@portafolio = '' AND ICB_DESCRIPCION IS NULL)
-            OR (@portafolio <> '' AND ICB_DESCRIPCION = @portafolio)
-        )
+            OR (@portafolio <> '' AND ICB_DESCRIPCION = @portafolio))
     ORDER BY MOV_FECHA;
 END
 
