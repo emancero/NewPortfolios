@@ -24,9 +24,17 @@ begin tran
       DROP TABLE ##tablaInversionesIsspol
 
 	  --   tvl_codigo as 'CODIGO',
+	--ignorar retraso de fin de mes
+	update BVQ_BACKOFFICE.IGNORAR_RETR_NO_INGRESADO_ESTE_MES set IRN_IGNORAR=1
+
 	select
 		   htp_numeracion,
-		   rtrim(ltrim(ems_nombre)) as 'EMISOR',
+		   case when tvl_codigo='BE' then
+				tvl_codigo  + ' ' + isnull(max(tpo_acta),'')
+			else
+				rtrim(ltrim(ems_nombre))
+			end
+			as 'EMISOR',
 		   --TVL_DESCRIPCION as 'CODIGO',	    
 		   CASE  WHEN TVL_DESCRIPCION = 'PAPEL COMERCIAL' AND tiv_tasa_interes = 0 THEN 'PAPEL COMERCIAL CERO CUPON'
 				 WHEN TVL_DESCRIPCION = 'PAPEL COMERCIAL' AND tiv_tasa_interes > 0 THEN 'PAPEL COMERCIAL CON INTERES'
@@ -63,6 +71,10 @@ begin tran
 	 group by htp_numeracion,tvl_codigo,tiv_tasa_interes,dias_al_corte,fecha_compra,ult_fecha_interes,tiv_fecha_vencimiento,ems_nombre,TVL_DESCRIPCION, tiv_tipo_base,tfl_fecha_inicio_orig2,tiv_subtipo,i.POR_CODIGO,i.POR_ORD
 	 HAVING sum(salNewValNom)>0
 	 order by tvl_codigo
+	--ignorar retraso de fin de mes
+	update BVQ_BACKOFFICE.IGNORAR_RETR_NO_INGRESADO_ESTE_MES set IRN_IGNORAR=0
+
+
 /*	 select * from ##tablaInversionesIsspol	 	 
 end*/
 
