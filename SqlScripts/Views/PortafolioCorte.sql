@@ -22,7 +22,7 @@
 			case when tpo_fecha_susc_convenio is not null then
 				fechaInicioOriginal
 				
-			when ultimoPagoInteres.fcup_fecha_original is not null then ultimoPagoInteres.fcup_fecha_original
+			when ultimoPagoInteres.fcup_fecha_original is not null and fcup_desde>='20260901' then ultimoPagoInteres.fcup_fecha_original
 
 			when isnull(ipr_es_cxc,0)=0 and ev.tfl_fecha_inicio_orig2 is not null or htp.tpo_id_anterior in (1516,213,215,222) then
 				case when htp.tpo_id_anterior in (1516) then fecha_ultimo_pago else coalesce(fechaUltimoPagoEnEvp,tfl_fecha_inicio_orig2) end
@@ -599,9 +599,10 @@
 	left join BVQ_ADMINISTRACION.GRUPOS_CXC GCXC
 		on tvl_codigo=gcxc.GCXC_CODIGO
 	outer apply (
-		select top 1 FCUP_FECHA_ORIGINAL/*, FCUP_APLICA_EN_DIAS_AL_CORTE*/ from bvq_backoffice.fecha_ultimo_cupon
+		select top 1 FCUP_FECHA_ORIGINAL
+		,fcup_desde/*, FCUP_APLICA_EN_DIAS_AL_CORTE*/ from bvq_backoffice.fecha_ultimo_cupon
 		where fcup_tpo_id=tpo_id and fcup_desde<=htp.c
-		and fcup_desde>='20260901'
+		--and fcup_desde>='20260901'
 		order by fcup_desde desc
 	) ultimoPagoInteres
 
