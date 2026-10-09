@@ -90,8 +90,8 @@ BEGIN
         MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor, 
         tipAct.ITC_VALOR, tipMov.ITC_VALOR, id_asiento
 
-    UNION
-
+    /*UNION
+	
     SELECT
         portafolio = ICB_DESCRIPCION,
         NULL,
@@ -121,9 +121,9 @@ BEGIN
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt ON fte.mov_subtipo = sbt.ITC_ID AND sbt.CAT_ID = 328
     WHERE fte.mov_fecha >= '20230101'
     GROUP BY [ICB_DESCRIPCION], mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, cta.id_cuenta, id_asiento
-
+	*/
     UNION ALL
-
+	
     SELECT DISTINCT
         portafolio = ISNULL(icb.ICB_DESCRIPCION, 'N/A'),
         NULL,
