@@ -91,7 +91,7 @@ BEGIN
         tipAct.ITC_VALOR, tipMov.ITC_VALOR, id_asiento
 
     /*UNION
-	
+	//EMN: 9-oct-2025 se comenta tabla de saldo inicial porque ya se calcula en el C#
     SELECT
         portafolio = ICB_DESCRIPCION,
         NULL,
