@@ -152,7 +152,7 @@ BEGIN
         LEFT JOIN BVQ_ADMINISTRACION.TITULO_VALOR tiv ON tiv.TIV_ID = dpf.tiv_id
         LEFT JOIN BVQ_ADMINISTRACION.TIPO_VALOR tvl ON tvl.TVL_ID = tiv.TIV_TIPO_VALOR
     WHERE (idiff > 0.05e OR total > 0.05e)
-        AND DATEDIFF(d, @i_fechaFin, dpf.htp_fecha_operacion) >= 0 //EMN: 10-oct-2026 debe incluir el primer día
+        AND DATEDIFF(d, @i_fechaFin, dpf.htp_fecha_operacion) >= 0 --EMN: 10-oct-2026 debe incluir el primer día
         AND (@v_oper IS NULL OR oper = @v_oper)
     GROUP BY fnd.descripcion, CONVERT(date, HTP_FECHA_OPERACION), fnd.id_cuenta, tvl.TVL_NOMBRE, cta.id_cuenta, icb.ICB_DESCRIPCION
 
