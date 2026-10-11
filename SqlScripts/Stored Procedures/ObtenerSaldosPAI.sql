@@ -65,7 +65,10 @@ BEGIN
 	UNION
 
 	SELECT
-		SUM(v.montoOper) AS saldo,
+		SUM(v.montoOper
+			+isnull(htp_comision_bolsa,0)
+			-isnull(lip_retencion,0)
+		) AS saldo,
 		pcp.PCP_NOMBRE AS fondo,
 		v.tvl_nombre AS tipo_inversion,
 		'Colocaciones' AS grupo
