@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE BVQ_BACKOFFICE.SpProvisionInversionesView
 	@i_fechaCorte as datetime,
+	@i_soloDetalle bit = 0, -- NUEVO: 1 = devuelve solo el detalle
 	@i_lga_id int
 AS
 BEGIN
@@ -48,6 +49,17 @@ BEGIN
 				) 
 				END
 			,0)) AS TOTAL_PROVISION
+			-- NUEVO: columnas de PortafolioCorte
+			,MAX(pfc.por_codigo) as por_codigo
+			,MAX(pfc.POR_ORD) as POR_ORD
+			,MAX(pfc.htp_numeracion) as htp_numeracion
+			,MAX(pfc.ems_nombre) as ems_nombre
+			,MAX(pfc.tiv_tasa_interes) as tiv_tasa_interes
+			,MAX(pfc.tiv_plazo) as tiv_plazo
+			,MAX(pfc.dias_al_corte) as dias_al_corte
+			,MAX(pfc.fecha_compra) as fecha_compra
+			,MAX(pfc.latest_inicio) as latest_inicio
+			,MAX(pfc.tiv_fecha_vencimiento) as tiv_fecha_vencimiento
 			FROM (
 				select *,
 				tiv_tasa_interes/100 as 'TASA',		 
@@ -69,6 +81,8 @@ BEGIN
 				,convert(varchar,tiv_fecha_vencimiento,106) as 'FECHAVENCIMIENTO'
 				,capital=salNewValNom
 				,valefectivo=isnull((TPO_COMISION_BOLSA),0) + valEfeOper
+				-- NUEVO: tiv_plazo no está en PortafolioCorte, se toma de TITULO_VALOR
+				,tiv_plazo=(select tv.TIV_PLAZO from BVQ_ADMINISTRACION.TITULO_VALOR tv where tv.tiv_id=i.tiv_id)
 
 				--costo amortizado ---------------------------------------------------------------------------------
 				,costoAmortizado=0
@@ -161,11 +175,33 @@ BEGIN
 			DISTRIBUCION = 0,
 			PROVISION = 0
 			--,null
+			-- NUEVO: mismas columnas en NULL para las combinaciones sin títulos
+			,por_codigo = null
+			,POR_ORD = null
+			,htp_numeracion = null
+			,ems_nombre = null
+			,tiv_tasa_interes = null
+			,tiv_plazo = null
+			,dias_al_corte = null
+			,fecha_compra = null
+			,latest_inicio = null
+			,tiv_fecha_vencimiento = null
 		 from Sicav.BVQ_BACKOFFICE.LISTA_ITEMS_CONTABILIDAD doc INNER JOIN Sicav.BVQ_BACKOFFICE.LISTA_ITEMS_CONTABILIDAD seg
 		 ON seg.estado = doc.estado  AND doc.tipo = 'Documento'  and seg.tipo='Seguro'
 		 WHERE seg.estado='A' AND DOC.estado='A'
 		 )
 		 select orden_doc, orden_seg, Codigo1, por_id1, titulo, nombre_etiqueta,sum(distribucion)  as distribucion, sum(TOTAL_PROVISION) provision--,htp_numeracion
+		 -- NUEVO
+		 ,MAX(por_codigo) as por_codigo
+		 ,MAX(POR_ORD) as POR_ORD
+		 ,MAX(htp_numeracion) as htp_numeracion
+		 ,MAX(ems_nombre) as ems_nombre
+		 ,MAX(tiv_tasa_interes) as tiv_tasa_interes
+		 ,MAX(tiv_plazo) as tiv_plazo
+		 ,MAX(dias_al_corte) as dias_al_corte
+		 ,MAX(fecha_compra) as fecha_compra
+		 ,MAX(latest_inicio) as latest_inicio
+		 ,MAX(tiv_fecha_vencimiento) as tiv_fecha_vencimiento
 		 into #CTE
 		 from cte_provision
 		 group by orden_doc, orden_seg, Codigo1, por_id1, titulo, nombre_etiqueta--,htp_numeracion
@@ -179,6 +215,17 @@ BEGIN
 		cte.nombre_etiqueta, 
 		cte.distribucion, 
 		cte.provision
+		-- NUEVO
+		,cte.por_codigo
+		,cte.POR_ORD
+		,cte.htp_numeracion
+		,cte.ems_nombre
+		,cte.tiv_tasa_interes
+		,cte.tiv_plazo
+		,cte.dias_al_corte
+		,cte.fecha_compra
+		,cte.latest_inicio
+		,cte.tiv_fecha_vencimiento
 		FROM #CTE cte
 		LEFT JOIN BVQ_BACKOFFICE.PERFILES_ISSPOL per1
 		on per1.tipPap = cte.Codigo1 and per1.p_por_id = cte.por_id1 and per1.prefijo='7.1.5.'--acreedora = '7.1.5.90.90'
@@ -186,8 +233,12 @@ BEGIN
 		on per2.tipPap = cte.Codigo1 and per2.p_por_id = cte.por_id1 and per2.prefijo = '7.5.'
 		where RTRIM(cte.TITULO) not IN ('ACCIONES', 'CUOTAS DE PARTICIPACIÓN                 ','VALORES DE TITULARIZACIÓN DE PARTICIPACIÓN')
 		group by cte.orden_doc, cte.orden_seg, per1.acreedora,  per2.acreedora, per1.acreedoraAux, per2.acreedoraAux, cte.TITULO,cte.nombre_etiqueta, cte.distribucion, cte.provision--,htp_numeracion
+		-- NUEVO
+		,cte.por_codigo, cte.POR_ORD, cte.htp_numeracion, cte.ems_nombre, cte.tiv_tasa_interes, cte.tiv_plazo, cte.dias_al_corte, cte.fecha_compra, cte.latest_inicio, cte.tiv_fecha_vencimiento
 		order by orden_doc asc, orden_seg asc 
 
+		IF @i_soloDetalle = 0 -- NUEVO: omite la lista de documentos cuando se pide solo el detalle
+		BEGIN
 		select orden, TITULO = (CASE doc.Nombre_Contabilidad WHEN  NULL THEN DOC.NOMBRE 
 										WHEN '' THEN doC.NOMBRE 
 										ELSE  doc.Nombre_Contabilidad END) 
@@ -202,4 +253,5 @@ BEGIN
        )
 		 order by orden asc
 
+		END
 END
