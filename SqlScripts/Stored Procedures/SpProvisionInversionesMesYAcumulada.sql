@@ -1,4 +1,4 @@
-﻿alter PROCEDURE BVQ_BACKOFFICE.SpProvisionInversionesMesYAcumulada
+﻿CREATE PROCEDURE BVQ_BACKOFFICE.SpProvisionInversionesMesYAcumulada
 	@i_fechaCorte datetime,
 	@i_lga_id int = null
 AS
@@ -30,14 +30,25 @@ BEGIN
 
 	-- Resultado de SpProvisionInversionesView (por documento x seguro)
 	CREATE TABLE #ProvisionDetalle (
-		orden_doc       int,
-		orden_seg       int,
-		cuenta1         nvarchar(max),
-		cuenta2         nvarchar(max),
-		TITULO          nvarchar(250),
-		nombre_etiqueta nvarchar(500),
-		distribucion    float,
-		provision       float
+		orden_doc             int,
+		orden_seg             int,
+		cuenta1               nvarchar(max),
+		cuenta2               nvarchar(max),
+		TITULO                nvarchar(250),
+		nombre_etiqueta       nvarchar(500),
+		distribucion          float,
+		provision             float,
+		-- NUEVO: columnas de PortafolioCorte agregadas en SpProvisionInversionesView
+		por_codigo            varchar(40),
+		POR_ORD               int,
+		htp_numeracion        varchar(250),
+		ems_nombre            varchar(200),
+		tiv_tasa_interes      float,
+		tiv_plazo             int,
+		dias_al_corte         float,
+		fecha_compra          datetime,
+		latest_inicio         datetime,
+		tiv_fecha_vencimiento datetime
 	)
 
 	INSERT INTO #ProvisionTitulos
@@ -79,21 +90,21 @@ BEGIN
 
 		SELECT 
 			'Provisión acumulada' AS origen,
-			POR_CODIGO        = NULL,
-			POR_ORD           = d.orden_seg,
-			htp_numeracion    = NULL,
-			EMISOR            = d.nombre_etiqueta,
+			POR_CODIGO        = d.por_codigo,                              -- NUEVO
+			POR_ORD           = d.POR_ORD,                                 -- NUEVO (antes orden_seg)
+			htp_numeracion    = d.htp_numeracion,                          -- NUEVO
+			EMISOR            = d.ems_nombre,                              -- NUEVO (antes nombre_etiqueta)
 			CODIGO            = d.TITULO,
 			CAPITAL           = d.distribucion,
-			TASA              = NULL,
-			PLAZO             = NULL,
-			DIASINTERES       = NULL,
+			TASA              = d.tiv_tasa_interes / 100,                  -- NUEVO: misma escala que SpProvisionInversiones
+			PLAZO             = d.tiv_plazo,                               -- NUEVO
+			DIASINTERES       = CAST(d.dias_al_corte AS int),              -- NUEVO
 			INTERES           = d.provision,
 			DESDE             = DATEADD(DAY, 1 - DAY(@i_fechaCorte), CONVERT(date, @i_fechaCorte)),
 			HASTA             = CONVERT(datetime, CONVERT(varchar, EOMONTH(@i_fechaCorte), 106) + ' 23:59:59'),
-			FECHACOMPRA       = NULL,
-			FECHAULTIMOCUPON  = NULL,
-			FECHAVENCIMIENTO  = NULL,
+			FECHACOMPRA       = CONVERT(varchar(30), d.fecha_compra, 106), -- NUEVO: mismo formato que SpProvisionInversiones
+			FECHAULTIMOCUPON  = d.latest_inicio,                           -- NUEVO
+			FECHAVENCIMIENTO  = d.tiv_fecha_vencimiento,                   -- NUEVO
 			[VALOR EFECTIVO]  = NULL,
 			d.orden_doc
 		FROM #ProvisionDetalle d

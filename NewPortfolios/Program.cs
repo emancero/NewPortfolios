@@ -13,6 +13,25 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
+
+    /**************************************************************/
+    /* Sp para pivot de provisiones
+    /**************************************************************/
+    // Depende de tablas PAI, tablas de proyecciones y ObtenerDetallePortafolioConLiquidezView
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.SpProvisionInversionesView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("SpProvisionInversionesView", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.SpProvisionInversionesMesYAcumulada'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("SpProvisionInversionesMesYAcumulada", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    conn.Close();
+    scope.Complete();
+    return;
+
     /**************************************************************/
     /* REPORTE DE DISPONIBILIDAD Y PAI
     /**************************************************************/
