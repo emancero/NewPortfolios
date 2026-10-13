@@ -40,6 +40,7 @@ BEGIN
 		left join BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
 			on pcp.PCP_ID = pcpo.PCP_ID
 	WHERE per.fecha_hasta = @fecha
+	and icb.ICB_POR_ID is not null --excluye los que no tienen fondo, es decir la Administradora
 	GROUP BY por.POR_ID, por.POR_CODIGO, pcp.PCP_NOMBRE
 
 	UNION
@@ -61,6 +62,7 @@ BEGIN
 		left join BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
 			on pcp.PCP_ID = pcpo.PCP_ID
 	WHERE c.PDC_ID = @i_pdc_id
+	and icb.ICB_POR_ID is not null --excluye los que no tienen fondo, es decir la Administradora
 
 
 	UNION ALL
