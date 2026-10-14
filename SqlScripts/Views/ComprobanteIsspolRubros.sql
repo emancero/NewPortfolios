@@ -10,6 +10,20 @@
 					select * from BVQ_BACKOFFICE.SIN_INT_TRANS
 					where TPO_NUMERACION=SIT_NUMERACION and convert(varchar,fecha,20)=SIT_FECHA
 				)
+
+				--EMN
+				and (
+					fecha<'20261002'
+					or
+					fecha>='20261002' and
+					not exists(
+						select *
+						from bvq_backoffice.sin_int_trans sit
+						where tpo_numeracion=sit_numeracion
+					)
+				)
+				--fin EMN
+
 				--and htp_tpo_id not in (2408,2409 ,2410,2411,2412 ,2413,2414,2415 ,2417,2418,2419)
 				--and not (isnull(evp_abono,0)=1 and htp_tpo_id in (2409,2410,2411,2412) and pr=0)
 				then isnull(itrans,0) else 0 end
