@@ -372,3 +372,31 @@ GO
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_PAF_PFC_ID' AND object_id = OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA'))
     CREATE INDEX IX_PAF_PFC_ID ON BVQ_BACKOFFICE.PAI_FACTURA (PFC_ID);
 GO
+
+--------------------------------------------------------------------------
+-- 10. BVQ_BACKOFFICE.PAI_FACTURA_FONDO
+-- Reparto por fondo (portafolio) del monto de cada factura del PAI.
+-- La suma de PFF_MONTO por PAF_ID debe ser igual a PAI_FACTURA.PAF_MONTO
+-- (se valida en el popup de ingreso).
+--------------------------------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO') AND type = N'U')
+BEGIN
+    CREATE TABLE BVQ_BACKOFFICE.PAI_FACTURA_FONDO
+    (
+        PFF_ID INT IDENTITY(1,1) NOT NULL,
+        PAF_ID INT NOT NULL,
+        POR_ID INT NOT NULL,               -- Fondo (portafolio)
+        PFF_MONTO FLOAT NOT NULL,
+        CONSTRAINT PK_PAI_FACTURA_FONDO PRIMARY KEY (PFF_ID),
+        CONSTRAINT UQ_PAI_FACTURA_FONDO UNIQUE (PAF_ID, POR_ID),
+        CONSTRAINT FK_PFF_PAI_FACTURA
+            FOREIGN KEY (PAF_ID) REFERENCES BVQ_BACKOFFICE.PAI_FACTURA (PAF_ID),
+        CONSTRAINT FK_PFF_PORTAFOLIO
+            FOREIGN KEY (POR_ID) REFERENCES BVQ_BACKOFFICE.PORTAFOLIO (POR_ID)
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_PFF_POR_ID' AND object_id = OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO'))
+    CREATE INDEX IX_PFF_POR_ID ON BVQ_BACKOFFICE.PAI_FACTURA_FONDO (POR_ID);
+GO

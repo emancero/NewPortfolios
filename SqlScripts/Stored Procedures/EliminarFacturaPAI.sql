@@ -5,6 +5,11 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- Primero los montos por fondo (FK a PAI_FACTURA)
+    EXEC [BVQ_BACKOFFICE].[EliminarFondosFacturaPAI]
+        @i_paf_id = @i_paf_id,
+        @i_lga_id = @i_lga_id;
+
     EXEC [BVQ_SEGURIDAD].[RegistrarAuditoria]
         @i_lga_id = @i_lga_id,
         @i_tabla = N'PAI_FACTURA',

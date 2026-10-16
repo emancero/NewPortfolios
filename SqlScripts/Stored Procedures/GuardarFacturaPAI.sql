@@ -9,8 +9,12 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    DECLARE @v_paf_id INT;
+
     IF EXISTS (SELECT 1 FROM BVQ_BACKOFFICE.PAI_FACTURA WHERE PAF_ID = @i_paf_id)
     BEGIN
+        SET @v_paf_id = @i_paf_id;
+
         EXEC [BVQ_SEGURIDAD].[RegistrarAuditoria]
             @i_lga_id = @i_lga_id,
             @i_tabla = N'PAI_FACTURA',
@@ -38,8 +42,6 @@ BEGIN
     END
     ELSE
     BEGIN
-        DECLARE @v_paf_id INT;
-
         INSERT INTO BVQ_BACKOFFICE.PAI_FACTURA (PFC_ID, PAF_FECHA_FACTURA, PAF_FECHA_CORTE, PAF_MONTO)
         VALUES (@i_pfc_id, @i_fecha_factura, @i_fecha_corte, @i_monto);
 
@@ -54,4 +56,7 @@ BEGIN
             @i_columIdName = N'PAF_ID',
             @i_idAfectado = @v_paf_id;
     END
+
+    -- PAF_ID guardado, para registrar los montos por fondo (PAI_FACTURA_FONDO)
+    SELECT @v_paf_id AS PAF_ID;
 END

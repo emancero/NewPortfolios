@@ -271,6 +271,9 @@
     <None Include="Stored Procedures\ObtenerFacturasPAI.sql" />
     <None Include="Stored Procedures\GuardarFacturaPAI.sql" />
     <None Include="Stored Procedures\EliminarFacturaPAI.sql" />
+    <None Include="Stored Procedures\ObtenerFondosFacturaPAI.sql" />
+    <None Include="Stored Procedures\GuardarFondoFacturaPAI.sql" />
+    <None Include="Stored Procedures\EliminarFondosFacturaPAI.sql" />
     <None Include="Change Scripts\Cambiar nota 3 para Reporte de Cesion Derechos Fiduciarios.sql" />
     <None Include="Stored Procedures\ObtenerCtaContBancosISSPOL.sql" />
     <None Include="Change Scripts\Tablas Proyecciones Disponibilidad ISSPOL.sql" />
