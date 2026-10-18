@@ -111,7 +111,7 @@ BEGIN
 		and (
 			--@i_todos_los_vigentes=1
 			datediff(d,Fecha_transaccion,@i_fechaCorte)=0
-			or tipo_transaccion<>'V'--@i_todos_los_vigentes=0
+			or tipo_transaccion not in ('V','Compra')--@i_todos_los_vigentes=0
 		)
 		--order by aru_opc_via,2
 	end
