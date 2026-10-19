@@ -1,4 +1,4 @@
-﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerSaldosPAI]
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerSaldosPAI]
     @i_fecha DATETIME,
 	@i_pdc_id INT,
     @i_lga_id  INT
@@ -64,7 +64,6 @@ BEGIN
 	WHERE c.PDC_ID = @i_pdc_id
 	and icb.ICB_POR_ID is not null --excluye los que no tienen fondo, es decir la Administradora
 
-
 	UNION ALL
 
 	select sum(monto) AS monto, 
@@ -110,7 +109,51 @@ BEGIN
 		AND v.htp_fecha_operacion BETWEEN @FechaInicioAnio AND @FechaFinAnio
 	GROUP BY pcp.PCP_NOMBRE, v.tvl_nombre, pcpVal.PCP_NOMBRE
 
+	UNION
 
+	/* % EJECUCIÓN */
+	SELECT
+		SUM(v.montoOper
+			+isnull(htp_comision_bolsa,0)
+			-isnull(lip_retencion,0)
+		) / NULLIF(pai.MONTO, 0) AS saldo,
+		'Total' AS fondo,
+		pcpVal.PCP_NOMBRE AS tipo_inversion,
+		'Colocaciones' AS grupo
+	FROM bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
+		LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PORTAFOLIO pcpo
+			ON pcpo.POR_ID = v.por_id
+		LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
+			ON pcp.PCP_ID = pcpo.PCP_ID
+
+		--Unir con tipo de valor
+		LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_TIPO_VALOR pctv
+			JOIN BVQ_ADMINISTRACION.TIPO_VALOR tvl on pctv.TVL_ID=tvl.TVL_ID
+		ON tvl.tvl_codigo=v.tvl_codigo
+		LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcpVal
+			ON pcpVal.PCP_ID = pctv.PCP_ID
+
+		--Unir con el PAI del anio por tipo de inversion
+		LEFT JOIN (
+			SELECT tip.TIP_CODIGO, SUM(pm.PAIM_MONTO) AS MONTO
+			FROM BVQ_BACKOFFICE.PAI_GENERAL pg
+				INNER JOIN BVQ_BACKOFFICE.PAI_TABLA tab
+					ON tab.PAI_ID = pg.PAI_ID
+				INNER JOIN BVQ_BACKOFFICE.PAI_MONTO pm
+					ON pm.TAB_ID = tab.TAB_ID
+				INNER JOIN BVQ_BACKOFFICE.PAI_TIPO_INVERSION tip
+					ON tip.TIP_ID = pm.TIP_ID
+			WHERE pg.PAI_PERIODO = CAST(YEAR(@i_fecha) AS VARCHAR(4))
+			GROUP BY tip.TIP_CODIGO
+		) pai
+			ON pai.TIP_CODIGO = pcpVal.PCP_CODIGO
+
+	WHERE ISNULL(v.IPR_ES_CXC, 0) = 0
+		AND v.oper = 0
+		AND v.compra_htp_id = v.htp_id
+		AND v.htp_fecha_operacion BETWEEN @FechaInicioAnio AND @FechaFinAnio
+	GROUP BY pcpVal.PCP_NOMBRE, pcpVal.PCP_CODIGO, pai.MONTO
+	/* % EJECUCIÓN */
 END
 --go
 --exec [BVQ_BACKOFFICE].[ObtenerSaldosPAI] '20260101',2,null
