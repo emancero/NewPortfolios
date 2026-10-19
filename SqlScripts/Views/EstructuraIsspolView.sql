@@ -382,7 +382,7 @@
 		)
 		--EMN: 2026-oct-18 Colocar 1=1 para retrotraer esta validación pues es mejor reportar estos registros
 		--para cuadrar fácilmente con el valor nominal de los reportes y con la contabilidad del valor nominal
-		or 1=0
+		or 1=1
 	)
 
 	--where cache.valor_mercado is null
