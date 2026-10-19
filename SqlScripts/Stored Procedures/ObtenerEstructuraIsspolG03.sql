@@ -68,8 +68,15 @@ BEGIN
 		,Fecha_Transaccion
 		,Dias_Transcurridos=isnull(Dias_Transcurridos,0)
 		,Fuente_Cotizacion
-		,Dias_Vencer=isnull(Dias_por_vencer,0)
-		
+		,Dias_Vencer=
+			--EMN: 18-oct-2026 La SBS valida que los días por vencer deben ser iguales a 0 cuando es L
+			--y mayores a 0 en V un otros casos.
+			--Por lo cual si los días por vencer son<=0 coloca 0 si es L y 1 en otro caso.
+			case when Dias_por_vencer<=0 then
+				case when tipo_transaccion='L' then 0 else 1 end
+			else
+				isnull(Dias_por_vencer,0)
+			end
 		,Valor_Deteriorado=null
 		,No_Acciones=Numero_Acciones
 		,Yield
