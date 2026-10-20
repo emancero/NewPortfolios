@@ -1,6 +1,6 @@
 ﻿CREATE view BVQ_BACKOFFICE.PagoSB as
 	select
-		evp.fecha
+	 fecha=convert(date,evp.fecha)
 	,montooper=sum(evp.montooper)
 	,itrans=sum(case when evp.es_vencimiento_interes=1 then iamortizacion end)--o sum(itrans)--o sum(TPO_INTERES_TRANSCURRIDO)
 	,evp.tpo_numeracion
