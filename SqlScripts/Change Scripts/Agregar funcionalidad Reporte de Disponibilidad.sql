@@ -31,9 +31,9 @@ BEGIN
     SET @IdDisponibilidad = (SELECT FUN_ID FROM BVQ_SEGURIDAD.FUNCIONALIDAD WHERE FUN_CODIGO = 'ISSPOL_AVAILABILITY');
 
     UPDATE BVQ_SEGURIDAD.FUNCIONALIDAD
-    SET FUN_NOMBRE = N'Disponibilidad'
+    SET FUN_NOMBRE = N'Liquidez'
     WHERE FUN_ID = @IdDisponibilidad
-      AND FUN_NOMBRE <> N'Disponibilidad';
+      AND FUN_NOMBRE <> N'Liquidez';
 END
 
 -- =============================================
