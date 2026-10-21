@@ -121,27 +121,65 @@ BEGIN
 
 		UNION
 
+		select
+			SUM(PFF_MONTO) AS saldo,
+			pcep.PCP_NOMBRE AS fondo,
+			pcet.PCP_NOMBRE AS tipo_inversion,
+			'Colocaciones' AS grupo
+		FROM
+			BVQ_BACKOFFICE.PAI_FACTURA_FONDO pff
+				LEFT JOIN BVQ_BACKOFFICE.PAI_FACTURA pfa ON pff.PAF_ID = pfa.PAF_ID
+				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcep ON pff.PCP_ID_FONDO = pcep.PCP_ID
+				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
+		WHERE
+			YEAR(pfa.PAF_FECHA_FACTURA) = YEAR(@i_fecha)
+		GROUP BY pcep.PCP_NOMBRE, pcet.PCP_NOMBRE
+
+		UNION
+
 		/* SECCION TOTAL*/
 		SELECT
-			SUM(v.montoOper
-				+isnull(htp_comision_bolsa,0)
-				-isnull(lip_retencion,0)
-			) / NULLIF(pai.MONTO, 0) AS saldo,
+			SUM(t.monto) / NULLIF(pai.MONTO, 0) AS saldo,
 			'Total' AS fondo,
-			pcpVal.PCP_NOMBRE AS tipo_inversion,
+			t.tipo_inversion,
 			'Colocaciones' AS grupo
-		FROM bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
-			LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PORTAFOLIO pcpo
-				ON pcpo.POR_ID = v.por_id
-			LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
-				ON pcp.PCP_ID = pcpo.PCP_ID
+		FROM (
+			SELECT
+				v.montoOper
+					+isnull(htp_comision_bolsa,0)
+					-isnull(lip_retencion,0) AS monto,
+				pcpVal.PCP_NOMBRE AS tipo_inversion,
+				pcpVal.PCP_CODIGO AS tip_codigo
+			FROM bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
+				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PORTAFOLIO pcpo
+					ON pcpo.POR_ID = v.por_id
+				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
+					ON pcp.PCP_ID = pcpo.PCP_ID
 
-			--Unir con tipo de valor
-			LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_TIPO_VALOR pctv
-				JOIN BVQ_ADMINISTRACION.TIPO_VALOR tvl on pctv.TVL_ID=tvl.TVL_ID
-			ON tvl.tvl_codigo=v.tvl_codigo
-			LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcpVal
-				ON pcpVal.PCP_ID = pctv.PCP_ID
+				--Unir con tipo de valor
+				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_TIPO_VALOR pctv
+					JOIN BVQ_ADMINISTRACION.TIPO_VALOR tvl on pctv.TVL_ID=tvl.TVL_ID
+				ON tvl.tvl_codigo=v.tvl_codigo
+				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcpVal
+					ON pcpVal.PCP_ID = pctv.PCP_ID
+			WHERE ISNULL(v.IPR_ES_CXC, 0) = 0
+				AND v.oper = 0
+				AND v.compra_htp_id = v.htp_id
+				AND v.htp_fecha_operacion BETWEEN @FechaInicioAnio AND @FechaFinAnio
+
+			UNION ALL
+
+			--Facturas del anio (excepto prestamos, que van en SECCION TOTAL PRESTAMOS)
+			SELECT
+				pff.PFF_MONTO,
+				pcet.PCP_NOMBRE,
+				pcet.PCP_CODIGO
+			FROM BVQ_BACKOFFICE.PAI_FACTURA_FONDO pff
+				INNER JOIN BVQ_BACKOFFICE.PAI_FACTURA pfa ON pff.PAF_ID = pfa.PAF_ID
+				INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
+			WHERE YEAR(pfa.PAF_FECHA_FACTURA) = YEAR(@i_fecha)
+				AND pcet.PCP_CODIGO NOT IN ('PHIP', 'PQUI')
+		) t
 
 			--Unir con el PAI del anio por tipo de inversion
 			LEFT JOIN (
@@ -156,24 +194,37 @@ BEGIN
 				WHERE pg.PAI_PERIODO = CAST(YEAR(@i_fecha) AS VARCHAR(4))
 				GROUP BY tip.TIP_CODIGO
 			) pai
-				ON pai.TIP_CODIGO = pcpVal.PCP_CODIGO
-
-		WHERE ISNULL(v.IPR_ES_CXC, 0) = 0
-			AND v.oper = 0
-			AND v.compra_htp_id = v.htp_id
-			AND v.htp_fecha_operacion BETWEEN @FechaInicioAnio AND @FechaFinAnio
-		GROUP BY pcpVal.PCP_NOMBRE, pcpVal.PCP_CODIGO, pai.MONTO
+				ON pai.TIP_CODIGO = t.tip_codigo
+		GROUP BY t.tipo_inversion, t.tip_codigo, pai.MONTO
 		/* SECCION TOTAL*/
 
 		UNION
 
 		/* SECCION TOTAL PRESTAMOS */
 		SELECT
-			SUM(cr.monto) / NULLIF(pai.MONTO, 0) AS saldo,
+			SUM(t.monto) / NULLIF(pai.MONTO, 0) AS saldo,
 			'Total' AS fondo,
-			case cr.id_segmento when 'HIP' then 'Préstamos Hipotecarios' when 'QUI' then 'Préstamos Quirografarios' end AS tipo_inversion,
+			case t.id_segmento when 'HIP' then 'Préstamos Hipotecarios' when 'QUI' then 'Préstamos Quirografarios' end AS tipo_inversion,
 			'Colocaciones' AS grupo
-		FROM siisspolweb.siisspolweb.credito.credito cr
+		FROM (
+			SELECT
+				cr.monto,
+				cr.id_segmento COLLATE DATABASE_DEFAULT AS id_segmento
+			FROM siisspolweb.siisspolweb.credito.credito cr
+			WHERE year(cr.fecha_otorgamiento) = year(@i_fecha) and cr.id_estado <> 'R'
+
+			UNION ALL
+
+			--Facturas del anio de prestamos: PHIP / PQUI -> HIP / QUI
+			SELECT
+				pff.PFF_MONTO,
+				SUBSTRING(pcet.PCP_CODIGO, 2, 3)
+			FROM BVQ_BACKOFFICE.PAI_FACTURA_FONDO pff
+				INNER JOIN BVQ_BACKOFFICE.PAI_FACTURA pfa ON pff.PAF_ID = pfa.PAF_ID
+				INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
+			WHERE YEAR(pfa.PAF_FECHA_FACTURA) = YEAR(@i_fecha)
+				AND pcet.PCP_CODIGO IN ('PHIP', 'PQUI')
+		) t
 			--Unir con el PAI del anio: los prestamos tienen codigo PHIP / PQUI
 			LEFT JOIN (
 				SELECT tip.TIP_CODIGO, SUM(pm.PAIM_MONTO) AS MONTO
@@ -187,9 +238,8 @@ BEGIN
 				WHERE pg.PAI_PERIODO = CAST(YEAR(@i_fecha) AS VARCHAR(4))
 				GROUP BY tip.TIP_CODIGO
 			) pai
-				ON pai.TIP_CODIGO = 'P' + cr.id_segmento
-		WHERE year(cr.fecha_otorgamiento) = year(@i_fecha) and cr.id_estado <> 'R'
-		GROUP BY cr.id_segmento, pai.MONTO
+				ON pai.TIP_CODIGO = 'P' + t.id_segmento
+		GROUP BY t.id_segmento, pai.MONTO
 		/* SECCION TOTAL PRESTAMOS */
 	) u
 		--Orden de los fondos segun el PAI del anio

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[GuardarFacturaPAI]
     @i_paf_id         INT,
     @i_pfc_id         INT,
+    @i_pfc_nombre     VARCHAR(200) = NULL,
     @i_fecha_factura  DATE,
     @i_fecha_corte    DATE,
     @i_monto          FLOAT,
@@ -10,6 +11,32 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @v_paf_id INT;
+
+    SET @i_pfc_nombre = LTRIM(RTRIM(@i_pfc_nombre));
+
+    IF ISNULL(@i_pfc_id, 0) = 0 AND ISNULL(@i_pfc_nombre, '') <> ''
+    BEGIN
+        SELECT @i_pfc_id = PFC_ID
+        FROM BVQ_BACKOFFICE.PAI_FACTURA_CUSTODIO
+        WHERE LTRIM(RTRIM(PFC_NOMBRE)) = @i_pfc_nombre;
+
+        IF ISNULL(@i_pfc_id, 0) = 0
+        BEGIN
+            INSERT INTO BVQ_BACKOFFICE.PAI_FACTURA_CUSTODIO (PFC_NOMBRE)
+            VALUES (@i_pfc_nombre);
+
+            SET @i_pfc_id = SCOPE_IDENTITY();
+
+            EXEC [BVQ_SEGURIDAD].[RegistrarAuditoria]
+                @i_lga_id = @i_lga_id,
+                @i_tabla = N'PAI_FACTURA_CUSTODIO',
+                @i_esquema = N'BVQ_BACKOFFICE',
+                @i_operacion = N'I',
+                @i_subTipo = N'N',
+                @i_columIdName = N'PFC_ID',
+                @i_idAfectado = @i_pfc_id;
+        END
+    END
 
     IF EXISTS (SELECT 1 FROM BVQ_BACKOFFICE.PAI_FACTURA WHERE PAF_ID = @i_paf_id)
     BEGIN

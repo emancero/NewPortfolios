@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[GuardarFondoFacturaPAI]
     @i_paf_id INT,
-    @i_por_id INT,
-    @i_pcp_id_tipo  INT,
+    @i_pcp_id_fondo INT,
+    @i_pcp_id_tipo INT,
     @i_monto FLOAT,
     @i_lga_id INT
 AS
@@ -10,8 +10,8 @@ BEGIN
 
     DECLARE @v_pff_id INT;
 
-    INSERT INTO BVQ_BACKOFFICE.PAI_FACTURA_FONDO (PAF_ID, POR_ID, PCP_ID_TIPO, PFF_MONTO)
-    VALUES (@i_paf_id, @i_por_id, @i_pcp_id_tipo, @i_monto);
+    INSERT INTO BVQ_BACKOFFICE.PAI_FACTURA_FONDO (PAF_ID, PCP_ID_FONDO, PCP_ID_TIPO, PFF_MONTO)
+    VALUES (@i_paf_id, @i_pcp_id_fondo, @i_pcp_id_tipo, @i_monto);
 
     SET @v_pff_id = SCOPE_IDENTITY();
 
