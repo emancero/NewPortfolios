@@ -157,5 +157,5 @@ BEGIN
 	Errores
 	,e.* from _temp.TempEstructuraIsspolViewG3 e
 	left join @msgs m on e.fon_id=m.fon_id and e.Tipo_Transaccion=m.tipo_transaccion
-	order by FON_ID
+	order by FON_ID,e.tipo_transaccion,e.Fecha_Transaccion
 END
