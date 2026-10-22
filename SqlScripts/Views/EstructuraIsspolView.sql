@@ -1,4 +1,4 @@
-﻿CREATE view BVQ_BACKOFFICE.EstructuraIsspolView as
+﻿alter view BVQ_BACKOFFICE.EstructuraIsspolView as
 	select
 	tiv.tiv_id,
 	tiv.TIV_CODIGO_TITULO_SIC,evp.htp_fecha_operacion,
@@ -116,7 +116,7 @@
 		--caso contrario se reporta un día más de los días transcurridos, para que pase la validación de la SBS
 		else
 			dbo.fnDias(
-			 case when oper=3 then tfltop.TFL_FECHA_INICIO else tfl.TFL_FECHA_INICIO end
+			 case when htp_fecha_operacion>='20240701' then tfltop.TFL_FECHA_INICIO else tfl.TFL_FECHA_INICIO end
 			 --evp.Fecha_Ultimo_Pago
 			,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
 			+ 1 --se aumenta un día porque la SBS no acepta 0 en días transcurridos
@@ -360,7 +360,7 @@
 
 	outer apply (
 		select top 1 tfl.tfl_fecha_inicio from bvq_administracion.TituloFlujoCapitalCache tfl
-		where oper=3 and tiv.tiv_id=tfl.tiv_id and isnull(tfl.tfl_fecha_inicio,0)<evp.htp_fecha_operacion
+		where tiv.tiv_id=tfl.tiv_id and isnull(tfl.tfl_fecha_inicio,0)<evp.htp_fecha_operacion
 		order by tfl.tfl_fecha_inicio desc
 	) tfltop
 --
