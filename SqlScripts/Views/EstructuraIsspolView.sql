@@ -66,7 +66,9 @@
 		,tcacal.TCA_FECHA_DESDE
 		,emical.eca_fecha_resolucion
 		)
-	,[Numero_Acciones]=case when tiv.tiv_tipo_renta=154 and TVL_CODIGO not in ('ENC')  then evp.montooper end
+	,[Numero_Acciones]=case when tiv.tiv_tipo_renta=154 and TVL_CODIGO not in ('ENC')  then
+		case when oper=1 then cache.saldo_valor_nominal else evp.montooper end
+	end
 	,[Valor_Accion]=case when tiv.tiv_tipo_renta=154 and TVL_CODIGO not in ('ENC') then coalesce(VNU_VALOR,tiv.[TIV_VALOR_NOMINAL]) end
 	,[Precio_Mercado]=cache.precio_de_mercado
 		--case when oper=-1 then
@@ -103,17 +105,18 @@
 
 	,[Numero_liquidacion]=iif(oper in (0,1), fon.FON_NUMERO_LIQUIDACION, null)--coalesce(fon.FON_NUMERO_LIQUIDACION,fon.FON_NUMLIQ_TEMP)
 	,[Tipo_transaccion]=case oper when 0 then 'Compra' when 1 then
-		case when isnull(cacheNext.saldo_valor_nominal,0)<0.005 then 'L' else 'P' end
+		case when dividendo_en_acciones>0 or dividendo_en_efectivo>0 then 'U'
+		when isnull(cacheNext.saldo_valor_nominal,0)<0.005 then 'L' else 'P' end
 	when 3 then 'R' when -1 then 'V' end
 	,[Fecha_transaccion]=htp_fecha_operacion
 	,[Dias_transcurridos]=
 		--EMN: 2026-sep-01 Si la fecha es igual a la fecha de compra se reporta 0
-		case when datediff(d,evp.evp_fecha_compra,evp.htp_fecha_operacion)=0
+		case when datediff(d,evp.evp_fecha_compra,evp.htp_fecha_operacion)=0 and isnull(oper,-1)<>3
 		then 0
 		--caso contrario se reporta un día más de los días transcurridos, para que pase la validación de la SBS
 		else
 			dbo.fnDias(
-			 tfl.TFL_FECHA_INICIO
+			 case when oper=3 then tfltop.TFL_FECHA_INICIO else tfl.TFL_FECHA_INICIO end
 			 --evp.Fecha_Ultimo_Pago
 			,evp.htp_fecha_operacion,tiv.TIV_TIPO_BASE)
 			+ 1 --se aumenta un día porque la SBS no acepta 0 en días transcurridos
@@ -127,7 +130,7 @@
 		then cache.liq_rendimiento end
 	,oper
 	,esCxc
-	,valor_pago_capital=iif(oper not in (0,3), 0, valor_pago_capital*errVNFactor.errVNFactor)
+	,valor_pago_capital=iif(oper not in (0), 0, valor_pago_capital*errVNFactor.errVNFactor)
 	,valor_pago_cupon=valor_pago_cupon*errVNFactor.errVNFactor
 	,Fecha_Ultimo_Pago=case oper when 1 then cache.Fecha_Ultimo_Pago end--evp.Fecha_Ultimo_Pago
 	,Saldo_Valor_Nominal=cache.Saldo_Valor_Nominal*errVNFactor.errVNFactor --Saldo_Valor_Nominal=[(1,0)=>sum(evp_saldo), -1=>sum(sal)]
@@ -351,9 +354,15 @@
 	left join bvq_administracion.CALIFICADORA_SB_MAP csm on csm.csm_cal_id=coalesce(emscal.enc_cal_id,tcacal.tca_cal_id,emical.eca_cal_id)
 
 	--TituloFlujoCapital
-	left join bvq_administracion.TituloFlujoCapital tfl
+	left join bvq_administracion.TituloFlujoCapitalCache tfl
 	on tiv.tiv_id=tfl.tiv_id and evp.htp_fecha_operacion>isnull(tfl.tfl_fecha_inicio,0) and evp.htp_fecha_operacion<=tfl.tfl_fecha_vencimiento
 	--Fin TituloFlujoCapital
+
+	outer apply (
+		select top 1 tfl.tfl_fecha_inicio from bvq_administracion.TituloFlujoCapitalCache tfl
+		where oper=3 and tiv.tiv_id=tfl.tiv_id and isnull(tfl.tfl_fecha_inicio,0)<evp.htp_fecha_operacion
+		order by tfl.tfl_fecha_inicio desc
+	) tfltop
 --
 	left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU
 	ON VNU.TIV_ID=tiv.TIV_ID and evp.htp_fecha_operacion>=VNU.VNU_FECHA_INICIO and evp.htp_fecha_operacion<VNU.VNU_FECHA_FIN
@@ -364,7 +373,7 @@
 		, saldo_valor_nominal, liq_rendimiento, Fecha_Ultimo_Pago
 		from BVQ_BACKOFFICE.VALORACION_SB v
 		where v.tpo_numeracion=evp.tpo_numeracion
-		and v.htp_fecha_operacion=case when evp.oper=1 then dateadd(d,-1,evp.htp_fecha_operacion) else evp.htp_fecha_operacion end
+		and v.htp_fecha_operacion=case when evp.oper in (1,3) then dateadd(d,-1,evp.htp_fecha_operacion) else evp.htp_fecha_operacion end
 	) cache
 	outer apply (
 		select top 1 saldo_valor_nominal
@@ -385,6 +394,9 @@
 		or 1=1
 	)
 
+	--EMN: 2026-oct-21 excluir dividendos de fideicomisos de renta variable
+	and not (oper=1 and isnull(tvs.tvs_codigo,-1) in (22))
+	
 	--where cache.valor_mercado is null
 	--where not (oper=1 and isnull(valor_pago_cupon,0)<0.005 and isnull(valor_pago_capital,0)<0.005)
 	--where oper=-1 and datediff(d,htp_fecha_operacion,'20260208')=0
