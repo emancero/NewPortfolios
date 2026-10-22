@@ -360,7 +360,7 @@ BEGIN
         PAF_ID INT IDENTITY(1,1) NOT NULL,
         PFC_ID INT NOT NULL,               -- Custodio
         PAF_FECHA_FACTURA DATE NOT NULL,
-        PAF_FECHA_CORTE DATE NOT NULL,     -- Fecha de corte de portafolio
+        PAF_FECHA_CORTE DATE NULL,         -- Fecha de corte de portafolio (NULL si no aplica)
         PAF_MONTO FLOAT NOT NULL,
         CONSTRAINT PK_PAI_FACTURA PRIMARY KEY (PAF_ID),
         CONSTRAINT FK_PAF_FACTURA_CUSTODIO
@@ -392,7 +392,6 @@ BEGIN
         PCP_ID_TIPO INT NOT NULL,          -- Tipo de inversión (PAI_CODIGO_PRESTABLECIDO)
         PFF_MONTO FLOAT NOT NULL,
         CONSTRAINT PK_PAI_FACTURA_FONDO PRIMARY KEY (PFF_ID),
-        -- Un monto por factura, fondo y tipo de inversión.
         CONSTRAINT UQ_PAI_FACTURA_FONDO UNIQUE (PAF_ID, PCP_ID_FONDO, PCP_ID_TIPO),
         CONSTRAINT FK_PFF_PAI_FACTURA
             FOREIGN KEY (PAF_ID) REFERENCES BVQ_BACKOFFICE.PAI_FACTURA (PAF_ID),
