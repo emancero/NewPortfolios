@@ -375,7 +375,10 @@ GO
 
 --------------------------------------------------------------------------
 -- 10. BVQ_BACKOFFICE.PAI_FACTURA_FONDO
--- Reparto por fondo (portafolio) del monto de cada factura del PAI.
+-- Reparto por fondo y tipo de inversión del monto de cada factura del PAI.
+-- El fondo se guarda como PCP_ID_FONDO = PCP_ID de
+-- BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO con PCP_TIPO = 'FONDO'
+-- (el portafolio se obtiene vía BVQ_BACKOFFICE.PAI_CODIGO_PORTAFOLIO).
 -- La suma de PFF_MONTO por PAF_ID debe ser igual a PAI_FACTURA.PAF_MONTO
 -- (se valida en el popup de ingreso).
 --------------------------------------------------------------------------
@@ -385,18 +388,26 @@ BEGIN
     (
         PFF_ID INT IDENTITY(1,1) NOT NULL,
         PAF_ID INT NOT NULL,
-        POR_ID INT NOT NULL,               -- Fondo (portafolio)
+        PCP_ID_FONDO INT NOT NULL,         -- Fondo (PAI_CODIGO_PRESTABLECIDO, PCP_TIPO = 'FONDO')
+        PCP_ID_TIPO INT NOT NULL,          -- Tipo de inversión (PAI_CODIGO_PRESTABLECIDO)
         PFF_MONTO FLOAT NOT NULL,
         CONSTRAINT PK_PAI_FACTURA_FONDO PRIMARY KEY (PFF_ID),
-        CONSTRAINT UQ_PAI_FACTURA_FONDO UNIQUE (PAF_ID, POR_ID),
+        -- Un monto por factura, fondo y tipo de inversión.
+        CONSTRAINT UQ_PAI_FACTURA_FONDO UNIQUE (PAF_ID, PCP_ID_FONDO, PCP_ID_TIPO),
         CONSTRAINT FK_PFF_PAI_FACTURA
             FOREIGN KEY (PAF_ID) REFERENCES BVQ_BACKOFFICE.PAI_FACTURA (PAF_ID),
-        CONSTRAINT FK_PFF_PORTAFOLIO
-            FOREIGN KEY (POR_ID) REFERENCES BVQ_BACKOFFICE.PORTAFOLIO (POR_ID)
+        CONSTRAINT FK_PFF_PCP_FONDO
+            FOREIGN KEY (PCP_ID_FONDO) REFERENCES BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO (PCP_ID),
+        CONSTRAINT FK_PFF_PCP_TIPO
+            FOREIGN KEY (PCP_ID_TIPO) REFERENCES BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO (PCP_ID)
     );
 END
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_PFF_POR_ID' AND object_id = OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO'))
-    CREATE INDEX IX_PFF_POR_ID ON BVQ_BACKOFFICE.PAI_FACTURA_FONDO (POR_ID);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_PFF_PCP_ID_FONDO' AND object_id = OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO'))
+    CREATE INDEX IX_PFF_PCP_ID_FONDO ON BVQ_BACKOFFICE.PAI_FACTURA_FONDO (PCP_ID_FONDO);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_PFF_PCP_ID_TIPO' AND object_id = OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO'))
+    CREATE INDEX IX_PFF_PCP_ID_TIPO ON BVQ_BACKOFFICE.PAI_FACTURA_FONDO (PCP_ID_TIPO);
 GO
