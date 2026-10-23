@@ -1,6 +1,7 @@
-﻿alter PROCEDURE bvq_backoffice.ObtenerPesoFacturaPAI
+﻿CREATE PROCEDURE bvq_backoffice.ObtenerPesoFacturaPAI
     @fechaCorte DATETIME = '20261022',
-    @i_lga_id INT = null
+    @i_lga_id INT = null,
+    @i_pai_id INT = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -12,8 +13,6 @@ BEGIN
 
     INSERT INTO corteslist (c, cortenum)
     SELECT @fechaEnd, 1;
-
-    DECLARE @anio VARCHAR(100) = CONVERT(VARCHAR(4), YEAR(@fechaCorte));
 
     IF OBJECT_ID('tempdb..#celdas') IS NOT NULL DROP TABLE #celdas;
 
@@ -29,7 +28,7 @@ BEGIN
             ON pf.PCP_TIPO = 'FONDO' AND pf.PCP_CODIGO = fop.FOP_CODIGO
         INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pt
             ON pt.PCP_TIPO = 'TIPO_INVERSION' AND pt.PCP_CODIGO = tip.TIP_CODIGO
-    WHERE pg.PAI_PERIODO = @anio;
+    WHERE pg.PAI_ID = @i_pai_id;
 
     IF OBJECT_ID('tempdb..#saldos') IS NOT NULL DROP TABLE #saldos;
 
@@ -51,9 +50,6 @@ BEGIN
         INNER JOIN #celdas c ON c.F_ID = pcep.PCP_ID AND c.T_ID = pcet.PCP_ID
     WHERE pc.sal > 0 AND ISNULL(pc.IPR_ES_CXC, 0) = 0
     GROUP BY pc.por_id, pcep.PCP_ID, pcep.PCP_NOMBRE, pc.tvl_codigo, pcet.PCP_ID, pcet.PCP_NOMBRE;
-
-    --select * from #celdas
-    --select * from #saldos
 
     DECLARE @totalSaldo FLOAT = (SELECT SUM(saldo) FROM #saldos);
 
@@ -77,4 +73,3 @@ BEGIN
     FROM #saldos
     ORDER BY saldo / @totalSaldo DESC;
 END
-GO

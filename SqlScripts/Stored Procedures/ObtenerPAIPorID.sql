@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerPAIPorAnio]
-    @i_anio    VARCHAR(100),
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerPAIPorID]
+    @i_pai_id  INT,
     @i_lga_id  INT = NULL
 AS
 BEGIN
@@ -22,6 +22,6 @@ BEGIN
         ON tip.TIP_ID = pm.TIP_ID
     INNER JOIN BVQ_BACKOFFICE.PAI_FONDO fop
         ON fop.FOP_ID = pm.FOP_ID
-    WHERE pg.PAI_PERIODO = @i_anio
+    WHERE pg.PAI_ID = @i_pai_id
     ORDER BY tab.TAB_ORDEN, tip.TIP_ORDEN, fop.FOP_ORDEN;
 END

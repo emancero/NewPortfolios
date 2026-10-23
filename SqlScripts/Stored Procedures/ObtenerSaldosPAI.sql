@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerSaldosPAI]
     @i_fecha DATETIME,
 	@i_pdc_id INT,
-    @i_lga_id  INT
+    @i_lga_id  INT,
+	@i_pai_id INT = NULL
 AS
 BEGIN
 	DECLARE @FechaInicioAnio DATE, @FechaFinAnio DATE;
@@ -26,7 +27,7 @@ BEGIN
 		u.fondo,
 		u.tipo_inversion,
 		u.grupo,
-		--Mismo orden de fondos que el PAI del anio (PAI_FONDO.FOP_ORDEN); Total al final
+		--Mismo orden de fondos que el PAI consultado (@i_pai_id) (PAI_FONDO.FOP_ORDEN); Total al final
 		CASE WHEN u.fondo = 'Total' THEN 1000
 			 ELSE ISNULL(fo.FOP_ORDEN, 999)
 		END AS fondo_orden
@@ -132,7 +133,7 @@ BEGIN
 				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcep ON pff.PCP_ID_FONDO = pcep.PCP_ID
 				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
 		WHERE
-			YEAR(pfa.PAF_FECHA_FACTURA) = YEAR(@i_fecha)
+			pfa.PAI_ID = @i_pai_id
 		GROUP BY pcep.PCP_NOMBRE, pcet.PCP_NOMBRE
 
 		UNION
@@ -169,7 +170,7 @@ BEGIN
 
 			UNION ALL
 
-			--Facturas del anio (excepto prestamos, que van en SECCION TOTAL PRESTAMOS)
+			--Facturas del PAI consultado (excepto prestamos, que van en SECCION TOTAL PRESTAMOS)
 			SELECT
 				pff.PFF_MONTO,
 				pcet.PCP_NOMBRE,
@@ -177,11 +178,11 @@ BEGIN
 			FROM BVQ_BACKOFFICE.PAI_FACTURA_FONDO pff
 				INNER JOIN BVQ_BACKOFFICE.PAI_FACTURA pfa ON pff.PAF_ID = pfa.PAF_ID
 				INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
-			WHERE YEAR(pfa.PAF_FECHA_FACTURA) = YEAR(@i_fecha)
+			WHERE pfa.PAI_ID = @i_pai_id
 				AND pcet.PCP_CODIGO NOT IN ('PHIP', 'PQUI')
 		) t
 
-			--Unir con el PAI del anio por tipo de inversion
+			--Unir con el PAI consultado (@i_pai_id) por tipo de inversion
 			LEFT JOIN (
 				SELECT tip.TIP_CODIGO, SUM(pm.PAIM_MONTO) AS MONTO
 				FROM BVQ_BACKOFFICE.PAI_GENERAL pg
@@ -191,7 +192,7 @@ BEGIN
 						ON pm.TAB_ID = tab.TAB_ID
 					INNER JOIN BVQ_BACKOFFICE.PAI_TIPO_INVERSION tip
 						ON tip.TIP_ID = pm.TIP_ID
-				WHERE pg.PAI_PERIODO = CAST(YEAR(@i_fecha) AS VARCHAR(4))
+				WHERE pg.PAI_ID = @i_pai_id
 				GROUP BY tip.TIP_CODIGO
 			) pai
 				ON pai.TIP_CODIGO = t.tip_codigo
@@ -215,17 +216,17 @@ BEGIN
 
 			UNION ALL
 
-			--Facturas del anio de prestamos: PHIP / PQUI -> HIP / QUI
+			--Facturas de prestamos del PAI consultado: PHIP / PQUI -> HIP / QUI
 			SELECT
 				pff.PFF_MONTO,
 				SUBSTRING(pcet.PCP_CODIGO, 2, 3)
 			FROM BVQ_BACKOFFICE.PAI_FACTURA_FONDO pff
 				INNER JOIN BVQ_BACKOFFICE.PAI_FACTURA pfa ON pff.PAF_ID = pfa.PAF_ID
 				INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
-			WHERE YEAR(pfa.PAF_FECHA_FACTURA) = YEAR(@i_fecha)
+			WHERE pfa.PAI_ID = @i_pai_id
 				AND pcet.PCP_CODIGO IN ('PHIP', 'PQUI')
 		) t
-			--Unir con el PAI del anio: los prestamos tienen codigo PHIP / PQUI
+			--Unir con el PAI consultado (@i_pai_id): los prestamos tienen codigo PHIP / PQUI
 			LEFT JOIN (
 				SELECT tip.TIP_CODIGO, SUM(pm.PAIM_MONTO) AS MONTO
 				FROM BVQ_BACKOFFICE.PAI_GENERAL pg
@@ -235,14 +236,14 @@ BEGIN
 						ON pm.TAB_ID = tab.TAB_ID
 					INNER JOIN BVQ_BACKOFFICE.PAI_TIPO_INVERSION tip
 						ON tip.TIP_ID = pm.TIP_ID
-				WHERE pg.PAI_PERIODO = CAST(YEAR(@i_fecha) AS VARCHAR(4))
+				WHERE pg.PAI_ID = @i_pai_id
 				GROUP BY tip.TIP_CODIGO
 			) pai
 				ON pai.TIP_CODIGO = 'P' + t.id_segmento
 		GROUP BY t.id_segmento, pai.MONTO
 		/* SECCION TOTAL PRESTAMOS */
 	) u
-		--Orden de los fondos segun el PAI del anio
+		--Orden de los fondos segun el PAI consultado (@i_pai_id)
 		LEFT JOIN (
 			SELECT fop.FOP_NOMBRE, MIN(fop.FOP_ORDEN) AS FOP_ORDEN
 			FROM BVQ_BACKOFFICE.PAI_GENERAL pg
@@ -250,13 +251,13 @@ BEGIN
 					ON tab.PAI_ID = pg.PAI_ID
 				INNER JOIN BVQ_BACKOFFICE.PAI_FONDO fop
 					ON fop.TAB_ID = tab.TAB_ID
-			WHERE pg.PAI_PERIODO = CAST(YEAR(@i_fecha) AS VARCHAR(4))
+			WHERE pg.PAI_ID = @i_pai_id
 			GROUP BY fop.FOP_NOMBRE
 		) fo
 			ON fo.FOP_NOMBRE = u.fondo
 END
 --go
---exec [BVQ_BACKOFFICE].[ObtenerSaldosPAI] '20260101',2,null
+--exec [BVQ_BACKOFFICE].[ObtenerSaldosPAI] '20260101',2,null,2
 --select * from BVQ_BACKOFFICE.PAI_CODIGO_TIPO_VALOR
 --select * from BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO
 

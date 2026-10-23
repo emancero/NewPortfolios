@@ -5,6 +5,7 @@
     @i_fecha_factura  DATE,
     @i_fecha_corte    DATE = NULL,
     @i_monto          FLOAT,
+    @i_pai_id         INT,
     @i_lga_id         INT
 AS
 BEGIN
@@ -55,7 +56,8 @@ BEGIN
         SET PFC_ID = @i_pfc_id,
             PAF_FECHA_FACTURA = @i_fecha_factura,
             PAF_FECHA_CORTE = @i_fecha_corte,
-            PAF_MONTO = @i_monto
+            PAF_MONTO = @i_monto,
+            PAI_ID = @i_pai_id
         WHERE PAF_ID = @i_paf_id;
 
         EXEC [BVQ_SEGURIDAD].[RegistrarAuditoria]
@@ -69,8 +71,8 @@ BEGIN
     END
     ELSE
     BEGIN
-        INSERT INTO BVQ_BACKOFFICE.PAI_FACTURA (PFC_ID, PAF_FECHA_FACTURA, PAF_FECHA_CORTE, PAF_MONTO)
-        VALUES (@i_pfc_id, @i_fecha_factura, @i_fecha_corte, @i_monto);
+        INSERT INTO BVQ_BACKOFFICE.PAI_FACTURA (PFC_ID, PAF_FECHA_FACTURA, PAF_FECHA_CORTE, PAF_MONTO, PAI_ID)
+        VALUES (@i_pfc_id, @i_fecha_factura, @i_fecha_corte, @i_monto, @i_pai_id);
 
         SET @v_paf_id = SCOPE_IDENTITY();
 

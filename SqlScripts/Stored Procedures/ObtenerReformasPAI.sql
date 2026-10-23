@@ -1,0 +1,15 @@
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerReformasPAI]
+    @i_anio    VARCHAR(100),
+    @i_lga_id  INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        pg.PAI_ID,
+        pg.PAI_REFORMA,
+        ISNULL(pg.PAI_REFORMA, '(Original)') AS REFORMA_TEXTO
+    FROM BVQ_BACKOFFICE.PAI_GENERAL pg
+    WHERE pg.PAI_PERIODO = @i_anio
+    ORDER BY CASE WHEN pg.PAI_REFORMA IS NULL THEN 0 ELSE 1 END, pg.PAI_ID;
+END
