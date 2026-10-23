@@ -327,6 +327,7 @@
     <Build Include="Stored Procedures\ObtenerCreditosCarteraISSPOL.sql" />
     <Build Include="Change Scripts\Tabla FECHA_ULTIMO_CUPON.sql" />
     <None Include="Change Scripts\Menu Pivot Provisiones.sql" />
+    <Build Include="Change Scripts\Create Table LOG_INSERTAR_LIQUIDEZ.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
