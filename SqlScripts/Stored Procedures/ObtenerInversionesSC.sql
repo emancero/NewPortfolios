@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerInversionesSC]
-    @i_fechaOperacion DATE,
-	@i_lga_id int     
+    @i_fechaOperacion DATE='20260930',
+	@i_lga_id int     = null
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -37,7 +37,7 @@ BEGIN
 
         MAX(tipo_operacion)      AS tipo_operacion,
         MAX(tipo_mercado)        AS tipo_mercado,
-		interes_a_recibir,
+		sum(interes_a_recibir)   AS interes_a_recibir,
 		recursos
 
     FROM bvq_backoffice.[DetallePortafolioBursatil]
@@ -52,7 +52,7 @@ BEGIN
 		condicion,
         tasa_cupon,
         tiv_fecha_vencimiento,
-		interes_a_recibir,
+		--interes_a_recibir,
 		recursos
     ORDER BY
 		htp_fecha_operacion,

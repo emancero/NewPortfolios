@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerReporteDisponibilidadISSPOL]
-    @i_fechaFin datetime = '2024-05-31T23:59:59',--null,
-    @i_lga_id int
+    @i_fechaFin datetime = '2024-05-31T23:59:59',
+    @i_lga_id int = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -45,6 +45,14 @@ BEGIN
     END
     --[+] Fin de carga de homologacion de fondos y portafolios
 
+    --[+] Cuentas contables del linked server: una sola lectura remota
+    SELECT cta.id_cuenta,
+           cuenta = cta.cuenta COLLATE DATABASE_DEFAULT
+    INTO #cuenta
+    FROM siisspolweb.siisspolweb.contabilidad.cuenta cta
+
+    CREATE CLUSTERED INDEX ix_cuenta ON #cuenta (cuenta)
+
     exec dropifexists '_temp.avail'
     SELECT *
     INTO _temp.avail
@@ -69,18 +77,21 @@ BEGIN
         estado = NULL,
         valor = NULL,
         abono = NULL,
-        tipo_papel = NULL
+        tipo_papel = NULL,
+        id_asiento
     FROM _temp.isspol_movimiento_contable_fuente fte
         JOIN bvq_backoffice.isspol_cuentas_contables_de_bancos icb ON icb.icb_cuenta = fte.mov_cuenta_contable
-        LEFT JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta ON icb.icb_cuenta = cta.cuenta -- NUEVO JOIN
+        LEFT JOIN #cuenta cta ON icb.icb_cuenta = cta.cuenta
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipMov ON fte.mov_tipo_movimiento = tipMov.ITC_ID
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct ON fte.mov_tipo_actividad = tipAct.ITC_ID
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt ON fte.mov_subtipo = sbt.ITC_ID AND sbt.CAT_ID = 328
-    WHERE DATEDIFF(m, '20230101', mov_fecha) >= 0
-    GROUP BY MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, tipMov.ITC_VALOR
+    WHERE fte.mov_fecha >= '20230101'
+    GROUP BY 
+        MOV_SEC, [ICB_DESCRIPCION], cta.id_cuenta, mov_cuenta_contable, mov_fecha, sbt.itc_valor, 
+        tipAct.ITC_VALOR, tipMov.ITC_VALOR, id_asiento
 
-    UNION
-
+    /*UNION
+	//EMN: 9-oct-2025 se comenta tabla de saldo inicial porque ya se calcula en el C#
     SELECT
         portafolio = ICB_DESCRIPCION,
         NULL,
@@ -97,26 +108,27 @@ BEGIN
         tasa = NULL,
         producto = NULL,
         segmento = NULL,
-		estado = NULL,
+        estado = NULL,
         valor = NULL,
         abono = NULL,
-        tipo_papel = NULL
+        tipo_papel = NULL,
+        id_asiento
     FROM BVQ_BACKOFFICE.isspol_saldo_inicial fte
         JOIN bvq_backoffice.isspol_cuentas_contables_de_bancos icb ON icb_cuenta = mov_cuenta_contable
-        LEFT JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta ON icb.icb_cuenta = cta.cuenta
+        LEFT JOIN #cuenta cta ON icb.icb_cuenta = cta.cuenta
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipMov ON fte.mov_tipo_movimiento = tipMov.ITC_ID
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] tipAct ON fte.mov_tipo_actividad = tipAct.ITC_ID
         LEFT JOIN [BVQ_ADMINISTRACION].[ITEM_CATALOGO] sbt ON fte.mov_subtipo = sbt.ITC_ID AND sbt.CAT_ID = 328
-    WHERE DATEDIFF(m, '20230101', mov_fecha) >= 0
-    GROUP BY [ICB_DESCRIPCION], mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, cta.id_cuenta
-
+    WHERE fte.mov_fecha >= '20230101'
+    GROUP BY [ICB_DESCRIPCION], mov_fecha, sbt.itc_valor, tipAct.ITC_VALOR, cta.id_cuenta, id_asiento
+	*/
     UNION ALL
-
+	
     SELECT DISTINCT
         portafolio = ISNULL(icb.ICB_DESCRIPCION, 'N/A'),
         NULL,
         fecha_vencimiento = CONVERT(date, HTP_FECHA_OPERACION),
-        cupon = SUM(TOTAL),
+        cupon = SUM(case when dpf.es_vencimiento_interes=0 then htp_venta when dpf.es_vencimiento_interes=1 then idiff else 0 end),
         origen = 'Proyectado',
         [real] = 0,
         [itc_valor] = 'REDENCIÓN NO PRIVATIVAS',
@@ -131,35 +143,18 @@ BEGIN
         estado = NULL,
         valor = NULL,
         abono = NULL,
-        tipo_papel = TVL_NOMBRE
+        tipo_papel = TVL_NOMBRE,
+        id_asiento = NULL
     FROM bvq_backoffice.DetallePortafolio dpf
         LEFT JOIN [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd ON fnd.POR_ID = dpf.por_id
-        left join BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb on fnd.por_id = icb.ICB_POR_ID
-        LEFT JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta ON cta.cuenta = icb.icb_cuenta
+        LEFT JOIN BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb ON fnd.por_id = icb.ICB_POR_ID
+        LEFT JOIN #cuenta cta ON cta.cuenta = icb.icb_cuenta
         LEFT JOIN BVQ_ADMINISTRACION.TITULO_VALOR tiv ON tiv.TIV_ID = dpf.tiv_id
         LEFT JOIN BVQ_ADMINISTRACION.TIPO_VALOR tvl ON tvl.TVL_ID = tiv.TIV_TIPO_VALOR
     WHERE (idiff > 0.05e OR total > 0.05e)
-        AND DATEDIFF(d, @i_fechaFin, dpf.htp_fecha_operacion) >= 1 --  >=@i_fechaFin / >='20230101' and datediff(d,dpf.htp_fecha_operacion,@i_fechaFin)<0
+        AND DATEDIFF(d, @i_fechaFin, dpf.htp_fecha_operacion) >= 0 --EMN: 10-oct-2026 debe incluir el primer día
         AND (@v_oper IS NULL OR oper = @v_oper)
     GROUP BY fnd.descripcion, CONVERT(date, HTP_FECHA_OPERACION), fnd.id_cuenta, tvl.TVL_NOMBRE, cta.id_cuenta, icb.ICB_DESCRIPCION
-
-    /*
-    UNION
-
-    SELECT DISTINCT
-        fon.fon_homologado,
-        ccm.fecha_vencimiento,
-        cupon = SUM(ccm.total),
-        origen = 'Privativas',
-        [real] = 0,
-        [itc_valor] = '',
-        NULL
-    FROM [BVQ_BACKOFFICE].[CREDITOS_CARTERA_MES] ccm
-        LEFT JOIN [credito].[FONDO_HOMOLOGACION] fon ON LTRIM(RTRIM(ccm.por_codigo)) = LTRIM(RTRIM(fon.fon_descripcion_credito))
-    WHERE (ccm.total > 0.05e)
-        AND DATEDIFF(d, @i_fechaFin, ccm.fecha_vencimiento) >= 1 -- ccm.fecha_vencimiento>=@i_fechaFin / '20230101' and datediff(d,ccm.fecha_vencimiento,@i_fechaFin)>=0
-    GROUP BY fon.fon_homologado, CONVERT(date, ccm.fecha_vencimiento)
-    */
 
     UNION
 
@@ -183,11 +178,13 @@ BEGIN
         NULL, --estado
         SUM(ccc.total),
         SUM(CASE WHEN ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date)) THEN ccc.total ELSE 0 END),
-        tipo_papel = NULL
+        tipo_papel = NULL,
+        id_asiento = NULL
     FROM [BVQ_BACKOFFICE].[CREDITO_CARTERA_CUOTA_2] ccc
+		join (select top 1 fcrc_fecha from bvq_backoffice.fechas_cierre_creditos_cartera where fcrc_fecha<@i_fechaFin order by fcrc_fecha desc) fcc on ccc.fecha_corte = fcc.fcrc_fecha
         LEFT JOIN [BVQ_BACKOFFICE].[FONDO_HOMOLOGACION] fnd ON fnd.id_cuenta = ccc.id_cuenta
-        left join BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb on icb.ICB_POR_ID = fnd.por_id
-        LEFT JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta ON cta.cuenta = icb.icb_cuenta
+        LEFT JOIN BVQ_BACKOFFICE.ISSPOL_CUENTAS_CONTABLES_DE_BANCOS icb ON icb.ICB_POR_ID = fnd.por_id
+        LEFT JOIN #cuenta cta ON cta.cuenta = icb.icb_cuenta
     WHERE ccc.total > 0.05
         AND ccc.fecha_vencimiento >= DATEADD(day, 1, CAST(@i_fechaFin AS date))
     GROUP BY ccc.por_codigo, ccc.fecha_vencimiento, ccc.id_cuenta, id_rubro, tasa, producto, segmento, cta.id_cuenta, icb.ICB_DESCRIPCION
@@ -213,9 +210,19 @@ BEGIN
         estado,
         valor,
         abono,
-        tipo_papel
+        tipo_papel,
+        id_asiento = NULL
     FROM BVQ_BACKOFFICE.PensionesProyectadas
     ) AS A
+
+    --[+] Saldos del linked server: una sola lectura remota, solo las cuentas del reporte
+    SELECT sal.id_cuenta, sal.saldo_ini, per.fecha_desde, per.fecha_hasta
+    INTO #saldo
+    FROM siisspolweb.siisspolweb.contabilidad.saldo sal
+        INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per ON sal.id_periodo = per.id_periodo
+    WHERE sal.id_cuenta IN (SELECT DISTINCT id_cuenta FROM _temp.avail WHERE id_cuenta IS NOT NULL)
+
+    CREATE CLUSTERED INDEX ix_saldo ON #saldo (id_cuenta, fecha_hasta DESC)
 
     SELECT
         saldo_ini = b.saldo_ini,
@@ -227,17 +234,9 @@ BEGIN
         av.*
     FROM _temp.avail av
     OUTER APPLY (
-        SELECT TOP 1
-             s.*
-            ,CASE WHEN av.fecha_vencimiento BETWEEN s.fecha_desde AND s.fecha_hasta
-                  THEN 'EXACTO' ELSE 'ULTIMO_PERIODO' END AS match_tipo
-        FROM (
-            SELECT sal.*, per.fecha_desde, per.fecha_hasta, sal.id_cuenta AS id_cta, cta.descripcion
-            FROM siisspolweb.siisspolweb.contabilidad.saldo sal
-            INNER JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta ON sal.id_cuenta = cta.id_cuenta
-            INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per ON sal.id_periodo = per.id_periodo
-        ) s
-        WHERE s.id_cta = av.id_cuenta
+        SELECT TOP 1 s.saldo_ini
+        FROM #saldo s
+        WHERE s.id_cuenta = av.id_cuenta
         ORDER BY
             CASE WHEN av.fecha_vencimiento BETWEEN s.fecha_desde AND s.fecha_hasta THEN 0 ELSE 1 END,
             s.fecha_hasta DESC

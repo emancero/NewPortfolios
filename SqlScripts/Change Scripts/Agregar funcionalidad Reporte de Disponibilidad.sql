@@ -11,7 +11,7 @@ DECLARE @IdDisponibilidad    INT;
 
 -- Créditos (nodo padre)
 SET @ModuloId = ISNULL((SELECT MOD_ID FROM BVQ_SEGURIDAD.MODULO WHERE MOD_CODIGO = 'CRED'), 0);
-SET @IdPadre = ISNULL((SELECT FUN_ID FROM BVQ_SEGURIDAD.FUNCIONALIDAD WHERE FUN_NOMBRE = 'PAI' and fun_padre is null), 0);
+SET @IdPadre = ISNULL((SELECT FUN_ID FROM BVQ_SEGURIDAD.FUNCIONALIDAD WHERE FUN_NOMBRE = 'PAI' AND FUN_PADRE IS NULL), 0);
 
 SET @NextId = ISNULL((SELECT MAX(FUN_ID) FROM BVQ_SEGURIDAD.FUNCIONALIDAD), 0) + 1;
 
@@ -23,11 +23,18 @@ BEGIN
         (FUN_ID, MOD_ID, FUN_NOMBRE, FUN_TIPO, FUN_CODIGO, FUN_ESTADO,
          FUN_NOMBRE_DLL, FUN_NOMBRE_CLASE, FUN_PADRE, FUN_AUDITAR, FUN_ORDEN, FUN_ES_VERSION2)
     VALUES
-        (@IdDisponibilidad, @ModuloId, N'Reporte de disponibilidad', 89, 'ISSPOL_AVAILABILITY', 82,
+        (@IdDisponibilidad, @ModuloId, N'Disponibilidad', 89, 'ISSPOL_AVAILABILITY', 82,
          'Bvq.Sipla.Isspol.Module.dll', 'Bvq.Sipla.Isspol.Module.AvailabilityReportView', @IdPadre, 1, 1, NULL);
 END
 ELSE
+BEGIN
     SET @IdDisponibilidad = (SELECT FUN_ID FROM BVQ_SEGURIDAD.FUNCIONALIDAD WHERE FUN_CODIGO = 'ISSPOL_AVAILABILITY');
+
+    UPDATE BVQ_SEGURIDAD.FUNCIONALIDAD
+    SET FUN_NOMBRE = N'Liquidez'
+    WHERE FUN_ID = @IdDisponibilidad
+      AND FUN_NOMBRE <> N'Liquidez';
+END
 
 -- =============================================
 -- Inserta Perfil-Funcionalidad (Perfil 41 → Funcionalidades de Créditos)

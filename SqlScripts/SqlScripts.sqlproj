@@ -267,6 +267,13 @@
     <None Include="Stored Procedures\GuardarCodigoPrestablecidoPAI.sql" />
     <None Include="Stored Procedures\ObtenerSaldosPAI.sql" />
     <None Include="Stored Procedures\ObtenerPAIPorAnio.sql" />
+    <None Include="Stored Procedures\ObtenerCustodiosFacturaPAI.sql" />
+    <None Include="Stored Procedures\ObtenerFacturasPAI.sql" />
+    <None Include="Stored Procedures\GuardarFacturaPAI.sql" />
+    <None Include="Stored Procedures\EliminarFacturaPAI.sql" />
+    <None Include="Stored Procedures\ObtenerFondosFacturaPAI.sql" />
+    <None Include="Stored Procedures\GuardarFondoFacturaPAI.sql" />
+    <None Include="Stored Procedures\EliminarFondosFacturaPAI.sql" />
     <None Include="Change Scripts\Cambiar nota 3 para Reporte de Cesion Derechos Fiduciarios.sql" />
     <None Include="Stored Procedures\ObtenerCtaContBancosISSPOL.sql" />
     <None Include="Change Scripts\Tablas Proyecciones Disponibilidad ISSPOL.sql" />
@@ -282,6 +289,11 @@
     <None Include="Stored Procedures\ActualizarProyeccionDispCabISSPOL.sql" />
     <None Include="Change Scripts\cambio_de_patrimonio_retrasado.sql" />
     <None Include="Change Scripts\Menú de pivot de provisiones.sql" />
+    <None Include="Change Scripts\Parametro CALC_STRUCT.sql" />
+    <None Include="Stored Procedures\SpProvisionInversionesMesYAcumulada.sql" />
+    <None Include="Stored Procedures\EliminarCapitalSuscritoEmisor.sql" />
+    <None Include="Stored Procedures\ObtenerFondosTitulosPAI.sql" />
+    <None Include="Stored Procedures\ObtenerPesoFacturaPAI.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

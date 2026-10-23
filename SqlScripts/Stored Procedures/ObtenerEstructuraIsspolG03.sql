@@ -68,12 +68,19 @@ BEGIN
 		,Fecha_Transaccion
 		,Dias_Transcurridos=isnull(Dias_Transcurridos,0)
 		,Fuente_Cotizacion
-		,Dias_Vencer=isnull(Dias_por_vencer,0)
-		
+		,Dias_Vencer=
+			--EMN: 18-oct-2026 La SBS valida que los días por vencer deben ser iguales a 0 cuando es L
+			--y mayores a 0 en V un otros casos.
+			--Por lo cual si los días por vencer son<=0 coloca 0 si es L y 1 en otro caso.
+			case when Dias_por_vencer<=0 then
+				case when tipo_transaccion='L' then 0 else 1 end
+			else
+				isnull(Dias_por_vencer,0)
+			end
 		,Valor_Deteriorado=null
 		,No_Acciones=Numero_Acciones
 		,Yield
-		,Valor_Capital=case when tipo_transaccion='P' then 0 else isnull(valor_pago_cupon,0) end
+		,Valor_Capital=case when tipo_transaccion='P' then 0 when tipo_transaccion='R' then saldo_valor_nominal else isnull(valor_pago_cupon,0) end
 		,Valor_Pago_Cupon=case when tipo_transaccion='P' then isnull(valor_pago_cupon,0) else 0 end
 		,Fecha_Ultimo_Pago=iif(Fecha_Ultimo_Pago is not null and tipo_transaccion<>'L', convert(date,@i_fechaCorte), null)
 		,Saldo_Valor_Nominal=isnull(Saldo_Valor_Nominal,0)
@@ -104,14 +111,16 @@ BEGIN
 		-- +case when Tipo_Instrumento not in (20,21,22,23,24,26) and fecha_ultimo_pago is null then
 		--	'Renta fija sin fecha de último pago.' else '' end
 		from BVQ_BACKOFFICE.EstructuraIsspolView
-		left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
+		left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=
+			case when Calificacion_Riesgo_Emision like '%CW' then rtrim(left(Calificacion_Riesgo_Emision,len(Calificacion_Riesgo_Emision)-2))
+			else Calificacion_Riesgo_Emision end
 		--where oper=0
 		where esCxc=0
 		and Fecha_transaccion between @i_fechaIni and @i_fechaCorte
 		and (
 			--@i_todos_los_vigentes=1
 			datediff(d,Fecha_transaccion,@i_fechaCorte)=0
-			or tipo_transaccion<>'V'--@i_todos_los_vigentes=0
+			or tipo_transaccion not in ('V','Compra')--@i_todos_los_vigentes=0
 		)
 		--order by aru_opc_via,2
 	end
@@ -150,5 +159,5 @@ BEGIN
 	Errores
 	,e.* from _temp.TempEstructuraIsspolViewG3 e
 	left join @msgs m on e.fon_id=m.fon_id and e.Tipo_Transaccion=m.tipo_transaccion
-	order by FON_ID
+	order by FON_ID,e.tipo_transaccion,e.Fecha_Transaccion
 END

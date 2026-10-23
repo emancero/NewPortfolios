@@ -1,5 +1,18 @@
 ﻿CREATE procedure bvq_administracion.GenerarVectores as
 begin
+	
+	--EMN: 3-oct-2026 transmitir vectores de tablas variables de un mismo títulos
+	declare @vprid int =(select max(vpr_id) from bvq_administracion.vector_precio)
+	insert into bvq_administracion.vector_precio
+	(VPR_ID,TIV_ID,VPR_PRECIO,VPR_FECHA,VPR_FECHA_ACTUALIZACION,vpr_duracion_efectiva_anual,vpr_duracion_modificada_anual,vpr_tasa_descuento,vpr_tasa_referencia,vpr_codigo,vpr_rendimiento_equivalente,vpr_margen)
+	select @vprId+(row_number() over (order by vpr.vpr_fecha))
+	,vpr.TIV_ID,VPR_PRECIO,vpr.VPR_FECHA,VPR_FECHA_ACTUALIZACION,vpr_duracion_efectiva_anual,vpr_duracion_modificada_anual,vpr_tasa_descuento,vpr_tasa_referencia,vpr_codigo,vpr_rendimiento_equivalente,vpr_margen
+	from bvq_administracion.vector_precio vpr
+	---left join bvq_administracion.
+	where not exists (select * from bvq_administracion.vector_precio v where vpr.tiv_id=v.tiv_id and vpr.vpr_fecha=v.vpr_fecha)
+	and exists (select * from bvq_administracion.valoracion_tabla_variable vtv where vpr.tiv_id=vtv.tiv_id and vpr.vpr_fecha=vtv.vpr_fecha)
+
+
 	truncate table bvq_administracion.VprPortafolio
 
 	insert into bvq_administracion.VprPortafolio

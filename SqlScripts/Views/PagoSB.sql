@@ -1,6 +1,6 @@
-﻿CREATE view BVQ_BACKOFFICE.PagoSB as
+﻿create view BVQ_BACKOFFICE.PagoSB as
 	select
-		evp.fecha
+	 fecha=convert(date,evp.fecha)
 	,montooper=sum(evp.montooper)
 	,itrans=sum(case when evp.es_vencimiento_interes=1 then iamortizacion end)--o sum(itrans)--o sum(TPO_INTERES_TRANSCURRIDO)
 	,evp.tpo_numeracion
@@ -64,7 +64,7 @@
 			,-evp.montooper
 		)
 	),0)
-	,Fecha_Ultimo_Pago=evp.fecha
+	,Fecha_Ultimo_Pago=convert(date,evp.fecha)
 	,Saldo_Valor_Nominal=sum(evp.saldo)-- --Activar en el caso de que sea antes: -isnull(sum(case when es_vencimiento_interes=0 then amount end),0)
 	,Precio_de_mercado=null
 	,Valor_Mercado=null
@@ -93,5 +93,5 @@
 	where (oper=1 or htp_dividendo=1)
 	--and fecha between '20240101' and '20240131'
 	
-	group by evp.tpo_numeracion,oper,fecha,tpo.tiv_id--,htp_fecha_operacion
+	group by evp.tpo_numeracion,oper,convert(date,evp.fecha),tpo.tiv_id--,htp_fecha_operacion
 	
