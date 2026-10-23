@@ -14,6 +14,23 @@
 		@i_lga_id	   INT = NULL
 AS
 	BEGIN
+
+			INSERT INTO BVQ_PREVENCION.LOG_INSERTAR_LIQUIDEZ
+		(
+			LIL_evt_id, LIL_fecha_cobro, LIL_tipo, LIL_monto, LIL_dpl_abono,
+			LIL_evp_uso_fondos, LIL_evp_rendimiento, LIL_evp_costas_judiciales,
+			LIL_evp_costas_judiciales_referencia, LIL_fecha_default_a_restaurar,
+			LIL_evp_fecha_liq_interes, LIL_lga_id
+		)
+		VALUES
+		(
+			@i_evt_id, @i_fecha_cobro, @i_tipo, @i_monto, @i_dpl_abono,
+			@i_evp_uso_fondos, @i_evp_rendimiento, @i_evp_costas_judiciales,
+			@i_evp_costas_judiciales_referencia, @i_fecha_default_a_restaurar,
+			@i_evp_fecha_liq_interes, @i_lga_id
+		);
+
+
 		DECLARE @v_evt_id INT,
 				@o_vep_id INT,
 				@o_cta_id INT,

@@ -3,7 +3,7 @@
     @i_pfc_id         INT,
     @i_pfc_nombre     VARCHAR(200) = NULL,
     @i_fecha_factura  DATE,
-    @i_fecha_corte    DATE,
+    @i_fecha_corte    DATE = NULL,
     @i_monto          FLOAT,
     @i_lga_id         INT
 AS

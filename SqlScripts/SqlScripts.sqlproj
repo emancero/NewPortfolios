@@ -293,6 +293,7 @@
     <None Include="Stored Procedures\SpProvisionInversionesMesYAcumulada.sql" />
     <None Include="Stored Procedures\EliminarCapitalSuscritoEmisor.sql" />
     <None Include="Stored Procedures\ObtenerFondosTitulosPAI.sql" />
+    <None Include="Stored Procedures\ObtenerPesoFacturaPAI.sql" />
     <None Include="Change Scripts\TituloFlujoCapitalCache.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -338,6 +339,8 @@
     <Build Include="Views\RendimientoPorPlazoPrivativasMora.sql" />
     <Build Include="Stored Procedures\ObtenerCreditosCarteraISSPOL.sql" />
     <Build Include="Change Scripts\Tabla FECHA_ULTIMO_CUPON.sql" />
+    <None Include="Change Scripts\Menu Pivot Provisiones.sql" />
+    <Build Include="Change Scripts\Create Table LOG_INSERTAR_LIQUIDEZ.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
