@@ -293,6 +293,7 @@
     <None Include="Stored Procedures\SpProvisionInversionesMesYAcumulada.sql" />
     <None Include="Stored Procedures\EliminarCapitalSuscritoEmisor.sql" />
     <None Include="Stored Procedures\ObtenerFondosTitulosPAI.sql" />
+    <None Include="Stored Procedures\ObtenerPesoFacturaPAI.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
