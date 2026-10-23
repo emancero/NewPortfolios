@@ -64,7 +64,7 @@
 			,-evp.montooper
 		)
 	),0)
-	,Fecha_Ultimo_Pago=convert(date,evp.fecha)
+	,Fecha_Ultimo_Pago=convert(datetime,convert(date,evp.fecha))
 	,Saldo_Valor_Nominal=sum(evp.saldo)-- --Activar en el caso de que sea antes: -isnull(sum(case when es_vencimiento_interes=0 then amount end),0)
 	,Precio_de_mercado=null
 	,Valor_Mercado=null
@@ -90,8 +90,15 @@
 
 	join bvq_backoffice.titulos_portafolio tpo on tpo.tpo_id=evp.htp_tpo_id
 	left join (select valnomCompraAnterior=tpo_cantidad, precioCompraAnterior=tpo_precio_ingreso, tpo_id from BVQ_BACKOFFICE.titulos_portafolio) tpo2 on tpo2.tpo_id=tpo.tpo_id_anterior
-	where (oper=1 or htp_dividendo=1)
+	left join
+		bvq_backoffice.EXCEPCION_ABONO_INTERES_SB exAbonoInt
+		on evp.evp_id=exAbonoInt.eai_evp_id
+		--(values (3852))
+		--exAbonoInt(evpId) on evp.evp_id=exAbonoInt.evpId
+	where
+	exAbonoInt.eai_evp_id is null
+	and
+	(oper=1 or htp_dividendo=1)
 	--and fecha between '20240101' and '20240131'
 	
 	group by evp.tpo_numeracion,oper,convert(date,evp.fecha),tpo.tiv_id--,htp_fecha_operacion
-	
