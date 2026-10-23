@@ -1,29 +1,81 @@
-﻿	IF OBJECT_ID('BVQ_PREVENCION.LOG_INSERTAR_LIQUIDEZ', 'U') IS NULL
+﻿CREATE PROCEDURE BVQ_BACKOFFICE.InsertarLiquidezTitulo
+		@i_evt_id	   BIGINT,
+		--@i_htp_numero  VARCHAR(100),
+		@i_fecha_cobro DATETIME,
+		@i_tipo		   INT,
+		@i_monto	   FLOAT,
+		@i_dpl_abono   BIT = NULL,
+		@i_evp_uso_fondos float = NULL,
+		@i_evp_rendimiento float = NULL,
+		@i_evp_costas_judiciales float = NULL,
+		@i_evp_costas_judiciales_referencia varchar(100) = NULL,
+		@i_fecha_default_a_restaurar datetime=NULL,
+		@i_evp_fecha_liq_interes date = NULL,
+		@i_lga_id	   INT = NULL
+AS
 	BEGIN
 
-		CREATE TABLE BVQ_PREVENCION.LOG_INSERTAR_LIQUIDEZ
+			INSERT INTO BVQ_PREVENCION.LOG_INSERTAR_LIQUIDEZ
 		(
-			LIL_ID                              BIGINT IDENTITY(1,1) NOT NULL,
-			LIL_FECHA_LOG		               DATETIME       NOT NULL CONSTRAINT DF_LOG_INS_LIQ_fecha   DEFAULT (GETDATE()),
-
-			-- Parámetros recibidos por BVQ_BACKOFFICE.InsertarLiquidezTitulo
-			LIL_evt_id                            BIGINT         NULL,
-			LIL_fecha_cobro                       DATETIME       NULL,
-			LIL_tipo                              INT            NULL,
-			LIL_monto                             FLOAT          NULL,
-			LIL_dpl_abono                         BIT            NULL,
-			LIL_evp_uso_fondos                    FLOAT          NULL,
-			LIL_evp_rendimiento                   FLOAT          NULL,
-			LIL_evp_costas_judiciales             FLOAT          NULL,
-			LIL_evp_costas_judiciales_referencia  VARCHAR(100)   NULL,
-			LIL_fecha_default_a_restaurar         DATETIME       NULL,
-			LIL_evp_fecha_liq_interes             DATE           NULL,
-			LIL_lga_id                            INT            NULL,
-
-			CONSTRAINT PK_LOG_INSERTAR_LIQUIDEZ PRIMARY KEY CLUSTERED (LIL_ID)
+			LIL_evt_id, LIL_fecha_cobro, LIL_tipo, LIL_monto, LIL_dpl_abono,
+			LIL_evp_uso_fondos, LIL_evp_rendimiento, LIL_evp_costas_judiciales,
+			LIL_evp_costas_judiciales_referencia, LIL_fecha_default_a_restaurar,
+			LIL_evp_fecha_liq_interes, LIL_lga_id
+		)
+		VALUES
+		(
+			@i_evt_id, @i_fecha_cobro, @i_tipo, @i_monto, @i_dpl_abono,
+			@i_evp_uso_fondos, @i_evp_rendimiento, @i_evp_costas_judiciales,
+			@i_evp_costas_judiciales_referencia, @i_fecha_default_a_restaurar,
+			@i_evp_fecha_liq_interes, @i_lga_id
 		);
 
-		CREATE NONCLUSTERED INDEX IX_LOG_INSERTAR_LIQUIDEZ_evt_id
-			ON BVQ_PREVENCION.LOG_INSERTAR_LIQUIDEZ (LIL_evt_id, LIL_ID);
 
+		DECLARE @v_evt_id INT,
+				@o_vep_id INT,
+				@o_cta_id INT,
+				@o_com_id INT
+		EXEC BVQ_BACKOFFICE.InsertarLiquidezPortafolio
+			@i_evp_id = NULL,
+			@i_evt_id = @i_evt_id,
+			@i_oper_id = 1,
+			@i_es_vencimiento_interes = @i_tipo,
+			@i_por_id = NULL,
+			@i_cobrado = 1,
+			@i_fecha = @i_fecha_cobro,
+			@i_monto = @i_monto,
+			@i_renovacion = 0,
+			@i_observaciones = NULL,
+			@i_numero_documento = NULL,
+			@i_ttl_id = NULL,
+			@i_cuenta = NULL,
+			@i_retencion = NULL,
+			@i_delete = NULL,
+			@i_vep_id = NULL,
+			@i_cliente_id = NULL,
+			@i_inLiquidity = NULL,
+			@o_vep_id = @o_vep_id OUT,
+			@o_cta_id = @o_cta_id OUT,
+			@o_com_id = @o_com_id OUT,
+			--Asignar Interés al vencimiento/provisión en Ajuste provisión------------------------
+			--EMN: 30-jul-2026 Se incluye la siguiente línea, pues los rubros de interes efectivo y provisión requieren que
+			--también se escriba lo ingresado en el texto de rendimiento/provisión dentro del campo evp_ajuste_provision.
+			--Era un issue que había estado por mucho tiempo.
+			@i_ajuste_provision = @i_evp_rendimiento,
+			--Fin "Asignar Interés al vencimiento/provisión" en Ajuste provisión------------------
+
+			@i_duplica = @i_dpl_abono,
+			@i_evp_uso_fondos = @i_evp_uso_fondos,
+			@i_evp_rendimiento = @i_evp_rendimiento,
+			@i_lga_id = @i_lga_id,
+			@i_evp_costas_judiciales = @i_evp_costas_judiciales,
+			@i_evp_costas_judiciales_referencia = @i_evp_costas_judiciales_referencia,
+			@i_evp_fecha_liq_interes = @i_evp_fecha_liq_interes
+		--recuperar default borrado temporalmente si existe (es decir si es cxc)
+		update d set fecha=convert(date,@i_fecha_default_a_restaurar)
+		--,tiv_id=-abs(tiv_id) --desactivar
+		from bvq_backoffice.EventoPortafolioDefaults d
+		where d.htp_id=@i_evt_id and fecha='29991231'
+
+		exec BVQ_BACKOFFICE.AjustarAbonoFI @i_evt_id
 	END
