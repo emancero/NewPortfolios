@@ -13,6 +13,12 @@ BEGIN
 
 	if exists(select * from bvq_administracion.parametro where par_codigo='CALC_STRUCT' and par_valor='SI')
 	begin
+		exec dropifexists 'bvq_administracion.TituloFlujoCapitalCache'
+
+		--Caché
+		select * into bvq_administracion.TituloFlujoCapitalCache
+		from BVQ_ADMINISTRACION.TituloFlujoCapital
+
 		exec bvq_backoffice.ObtenerDetallePortafolioConLiquidez 1,@i_fechaIni,@i_fechaCorte,null
 		exec dropifexists '_temp.TempEstructuraIsspolViewG3'
 		select
