@@ -161,6 +161,7 @@
 				-round(isnull(e.vn,0),2)--vn
 			else
 				coalesce(nullif(e.vep_valor_efectivo,0),amount)
+				+case when e.fecha>='20250101' then isnull(ufo_uso_fondos,0) else 0 end
 			end
 		end
 				--in=ve+ie+pr+uf-vn; in-pr-uf=ie-(vn-ve);
