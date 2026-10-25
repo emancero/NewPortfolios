@@ -1,7 +1,4 @@
-﻿sp_helptext 'bvq_backoffice.actualizartitulosportafolioliquidacion'
-select * from sys.tables where name like 'dividendo%'
-select 1
-CREATE procedure [BVQ_ADMINISTRACION].[ActualizarCapitalSuscritoEmisor]
+﻿CREATE procedure [BVQ_ADMINISTRACION].[ActualizarCapitalSuscritoEmisor]
 	@i_ccaId int,
 	@i_emsId int,
 	@i_tipo varchar(2) = null,

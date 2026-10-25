@@ -1,4 +1,4 @@
-﻿create view BVQ_BACKOFFICE.PagoSB as
+﻿alter view BVQ_BACKOFFICE.PagoSB as
 	select
 	 fecha=convert(date,evp.fecha)
 	,montooper=sum(evp.montooper)
@@ -60,7 +60,7 @@
 				case when evp_abono=1 and es_vencimiento_interes=0 then
 					vep_valor_efectivo
 				end
-			,capMonto
+			,coalesce(case when fecha>='20250101' then EVP_AJUSTE_VALOR_EFECTIVO/prEfectivo end, capMonto)
 			,-evp.montooper
 		)
 	),0)

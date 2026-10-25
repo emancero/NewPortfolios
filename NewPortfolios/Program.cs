@@ -98,6 +98,12 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("TituloFlujoCapital", "View", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = (new GetObjectCode()).GetCode("TituloFlujoCapitalCache", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("EXCEPCION_ABONO_INTERES_SB", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PagoSB'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("PagoSB", "View", suffix: false);
@@ -212,7 +218,7 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
 
     //3-oct-2026
-    comm.CommandText = (new GetObjectCode()).GetCode("Parámetro CALC_STRUCT", "Change Script", suffix: false);
+    comm.CommandText = (new GetObjectCode()).GetCode("Parametro CALC_STRUCT", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.ActualizarCapitalSuscritoEmisor'";
@@ -223,7 +229,7 @@ using (TransactionScope scope = new TransactionScope())
 
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.InsertarCapitalSuscritoEmisor'";
     comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("InsertarCapitalSuscritoEmisor ", "Stored Procedure", suffix: false);
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarCapitalSuscritoEmisor", "Stored Procedure", suffix: false);
     comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
     comm.ExecuteNonQuery();
 
