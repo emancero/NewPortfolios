@@ -1,13 +1,15 @@
-﻿CREATE PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
+﻿alter PROCEDURE BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
 --declare
 	@i_fechaCorte DateTime='20251130',
 	@i_todos_los_vigentes bit=1,
-	@i_lga_id int
+	@i_fechaIni datetime=null,
+	@i_lga_id int=null
 AS
 BEGIN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	SET NOCOUNT ON;
-	declare @i_fechaIni DateTime=DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
+	if @i_fechaIni is null
+		set @i_fechaIni =DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
 	if not exists (select * from bvq_administracion.parametro where par_codigo='CALC_STRUCT')
 		raiserror('Error: No existe parámetro CALC_STRUCT que define si traer estructura del caché',16,1)
 
@@ -80,6 +82,9 @@ BEGIN
 			--Por lo cual si los días por vencer son<=0 coloca 0 si es L y 1 en otro caso.
 			case when Dias_por_vencer<=0 then
 				case when tipo_transaccion='L' then 0 else 1 end
+			--EMN: 22-oct-2026 La SBS valida que si faltan días por vencer en la liquidación se reporte 0
+			when Dias_por_vencer>0 and tipo_transaccion='L' and Fecha_transaccion>='20241201' then
+				0
 			else
 				isnull(Dias_por_vencer,0)
 			end
@@ -127,6 +132,7 @@ BEGIN
 			--@i_todos_los_vigentes=1
 			datediff(d,Fecha_transaccion,@i_fechaCorte)=0
 			or tipo_transaccion not in ('V','Compra')--@i_todos_los_vigentes=0
+			--or @i_fechaIni is not null
 		)
 		--order by aru_opc_via,2
 	end
