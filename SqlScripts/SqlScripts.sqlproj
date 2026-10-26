@@ -298,6 +298,7 @@
     <None Include="Stored Procedures\ObtenerPesoFacturaPAI.sql" />
     <None Include="Change Scripts\TituloFlujoCapitalCache.sql" />
     <None Include="Change Scripts\EXCEPCION_ABONO_INTERES_SB.sql" />
+    <None Include="Change Scripts\CerrarPeriodoContable.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

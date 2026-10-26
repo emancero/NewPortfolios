@@ -1,0 +1,37 @@
+
+DECLARE @v_idEstado			int
+	   ,@v_anioMesActual	int = YEAR(GETDATE()) * 100 + MONTH(GETDATE())
+	   ,@v_idPeriodo		int;
+
+-- 1. Estado CONTABILIZADO desde el catálogo
+SELECT @v_idEstado = ITC_ID
+FROM BVQ_ADMINISTRACION.CatalogoItemCatalogo
+WHERE cat_codigo = 'BCK_ES_PERIODO_CONT'
+  AND ITC_CODIGO = 'C';
+
+
+-- 2. Periodos a actualizar
+DECLARE @periodos TABLE (PERIODO_ID int, EJERCICIO_ID int);
+
+INSERT INTO @periodos (PERIODO_ID, EJERCICIO_ID)
+SELECT pc.PERIODO_ID, pc.EJERCICIO_ID
+FROM [BVQ_BACKOFFICE].[PERIODO_CONTABLE] pc
+INNER JOIN [BVQ_BACKOFFICE].[EJERCICIO_CONTABLE] e
+	ON e.EJERCICIO_ID = pc.EJERCICIO_ID
+INNER JOIN BVQ_ADMINISTRACION.CatalogoItemCatalogo m
+	ON  m.ITC_ID     = pc.PERIODO_MES
+	AND m.cat_codigo = 'MES'
+WHERE ISNULL(pc.PERIODO_ESTADO, -1) <> @v_idEstado
+  AND TRY_CAST(m.ITC_VALOR AS int) BETWEEN 1 AND 13
+  AND e.EJERCICIO_ANIO * 100 + TRY_CAST(m.ITC_VALOR AS int) < @v_anioMesActual;
+
+
+-- 3. Actualizar Periodos
+UPDATE pc
+	SET pc.PERIODO_ESTADO = @v_idEstado
+	FROM [BVQ_BACKOFFICE].[PERIODO_CONTABLE] pc
+	INNER JOIN @periodos p
+	ON  p.PERIODO_ID   = pc.PERIODO_ID
+	AND p.EJERCICIO_ID = pc.EJERCICIO_ID;
+
+
