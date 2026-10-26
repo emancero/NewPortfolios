@@ -3,7 +3,7 @@ DECLARE @v_idEstado			int
 	   ,@v_anioMesActual	int = YEAR(GETDATE()) * 100 + MONTH(GETDATE())
 	   ,@v_idPeriodo		int;
 
--- 1. Estado CONTABILIZADO desde el catálogo
+-- 1. Estado cerrado desde el catálogo
 SELECT @v_idEstado = ITC_ID
 FROM BVQ_ADMINISTRACION.CatalogoItemCatalogo
 WHERE cat_codigo = 'BCK_ES_PERIODO_CONT'
