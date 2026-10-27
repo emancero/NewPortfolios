@@ -1,7 +1,7 @@
-﻿CREATE procedure [BVQ_BACKOFFICE].[ObtenerUltimoVencimientoPagado]
+﻿Create procedure [BVQ_BACKOFFICE].[ObtenerUltimoVencimientoPagado]
 	@i_numeracion varchar(250), 
 	@i_tiv_id int, 
-	@i_fecha datetime, 
+	@i_fecha datetime,
 	@i_fecha_gen datetime,
 	@i_lga_id int
 as
@@ -49,8 +49,7 @@ begin
 		exec bvq_backoffice.GenerarCompraVentaFlujo
 		exec bvq_backoffice.prepararliquidezcache null
 	end
- 
- 
+
 	declare @anyTpoId int=(select top 1 tpo_id from bvq_backoffice.titulos_portafolio where tpo_numeracion=@i_numeracion)
 	declare @v_fechaOriginal datetime
 	;with a as(
@@ -66,14 +65,27 @@ begin
 	)
 	select @v_fechaOriginal=fecha_original from b where r=1
 	and htp_tpo_id=@anyTpoId
- 
+
 	select distinct
-		 htp_id=case when v.oper=0 and tiv_tipo_renta=153 then (
+		 htp_id=case when 
+		 --v.oper=0 and 
+		 tiv_tipo_renta=153 then (
 			--select top 1 htp_id from bvq_backoffice.liquidez_cache where htp_tpo_id=v.htp_tpo_id and oper=1)
 		 --else (
-			select top 1 htp_id from bvq_backoffice.liquidez_cache where htp_tpo_id=v.htp_tpo_id and oper=1
-			and fecha<'99991231'
+			select top 1 htp_id
+			from bvq_backoffice.liquidez_cache lc
+			join BVQ_BACKOFFICE.EJERCICIO_CONTABLE e
+				 on e.EJERCICIO_ANIO = year(lc.fecha)
+			join BVQ_BACKOFFICE.PERIODO_CONTABLE p
+				 on p.EJERCICIO_ID = e.EJERCICIO_ID
+				and p.PERIODO_ESTADO = 223   -- Abierto
+			join BVQ_ADMINISTRACION.CatalogoItemCatalogo m
+				 on m.ITC_ID = p.PERIODO_MES
+				and cast(m.ITC_VALOR as int) = month(lc.fecha)
+			where lc.htp_tpo_id = v.htp_tpo_id
+			  and lc.oper = 1
 			order by fecha desc)
+
 			--v.htp_id
 		 end
 		,v.fecha_original
@@ -86,4 +98,3 @@ begin
 	and fecha_original=@v_fechaOriginal
 	and isnull(evp_abono,0)=0
 end
- 
