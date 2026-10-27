@@ -409,6 +409,11 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_PAF_PAI_ID' AND object
     CREATE INDEX IX_PAF_PAI_ID ON BVQ_BACKOFFICE.PAI_FACTURA (PAI_ID);
 GO
 
+-- PAF_FECHA_CORTE pasó a ser opcional
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA') AND name = 'PAF_FECHA_CORTE' AND is_nullable = 0)
+    ALTER TABLE BVQ_BACKOFFICE.PAI_FACTURA ALTER COLUMN PAF_FECHA_CORTE DATE NULL;
+GO
+
 --------------------------------------------------------------------------
 -- 10. BVQ_BACKOFFICE.PAI_FACTURA_FONDO
 -- Reparto por fondo y tipo de inversión del monto de cada factura del PAI.
@@ -418,6 +423,14 @@ GO
 -- La suma de PFF_MONTO por PAF_ID debe ser igual a PAI_FACTURA.PAF_MONTO
 -- (se valida en el popup de ingreso).
 --------------------------------------------------------------------------
+-- Versiones anteriores de la tabla guardaban el fondo en POR_ID y no tenían
+-- PCP_ID_FONDO/PCP_ID_TIPO; esos registros no se pueden migrar, se recrea.
+IF OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO', N'U') IS NOT NULL
+    AND (COL_LENGTH(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO', N'PCP_ID_FONDO') IS NULL
+      OR COL_LENGTH(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO', N'PCP_ID_TIPO') IS NULL)
+    DROP TABLE BVQ_BACKOFFICE.PAI_FACTURA_FONDO;
+GO
+
 IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'BVQ_BACKOFFICE.PAI_FACTURA_FONDO') AND type = N'U')
 BEGIN
     CREATE TABLE BVQ_BACKOFFICE.PAI_FACTURA_FONDO

@@ -30,37 +30,39 @@ BEGIN
 		--Mismo orden de fondos que el PAI consultado (@i_pai_id) (PAI_FONDO.FOP_ORDEN); Total al final
 		CASE WHEN u.fondo = 'Total' THEN 1000
 			 ELSE ISNULL(fo.FOP_ORDEN, 999)
-		END AS fondo_orden
+		END AS fondo_orden,
+		--Mismo orden de tipos de inversion que el PAI consultado (@i_pai_id) (PAI_TIPO_INVERSION.TIP_ORDEN); los que no estan, al final
+		ISNULL(ti.TIP_ORDEN, 999) AS tipo_inversion_orden
 	FROM (
-		SELECT
-			sum(sal.saldo) AS saldo, 
-			pcp.PCP_NOMBRE as fondo,
-			'BCE' AS tipo_inversion,
-			'Bancos' AS grupo
-		FROM siisspolweb.siisspolweb.contabilidad.saldo sal
-			INNER JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta
-				ON cta.id_cuenta = sal.id_cuenta
-			INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per 
-				ON per.id_periodo = sal.id_periodo
-			inner JOIN bvq_backoffice.isspol_cuentas_contables_de_bancos icb
-				on icb.ICB_CUENTA = cta.cuenta
-			left JOIN bvq_backoffice.portafolio por
-				on por.por_id = icb.ICB_POR_ID
-			left join BVQ_BACKOFFICE.PAI_CODIGO_PORTAFOLIO pcpo
-				on pcpo.POR_ID = por.por_id
-			left join BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
-				on pcp.PCP_ID = pcpo.PCP_ID
-		WHERE per.fecha_hasta = @fecha
-		and icb.ICB_POR_ID is not null --excluye los que no tienen fondo, es decir la Administradora
-		GROUP BY por.POR_ID, por.POR_CODIGO, pcp.PCP_NOMBRE
+		--SELECT
+		--	sum(sal.saldo) AS saldo, 
+		--	pcp.PCP_NOMBRE as fondo,
+		--	'BCE' AS tipo_inversion,
+		--	'Bancos' AS grupo
+		--FROM siisspolweb.siisspolweb.contabilidad.saldo sal
+		--	INNER JOIN siisspolweb.siisspolweb.contabilidad.cuenta cta
+		--		ON cta.id_cuenta = sal.id_cuenta
+		--	INNER JOIN siisspolweb.siisspolweb.contabilidad.periodo per 
+		--		ON per.id_periodo = sal.id_periodo
+		--	inner JOIN bvq_backoffice.isspol_cuentas_contables_de_bancos icb
+		--		on icb.ICB_CUENTA = cta.cuenta
+		--	left JOIN bvq_backoffice.portafolio por
+		--		on por.por_id = icb.ICB_POR_ID
+		--	left join BVQ_BACKOFFICE.PAI_CODIGO_PORTAFOLIO pcpo
+		--		on pcpo.POR_ID = por.por_id
+		--	left join BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
+		--		on pcp.PCP_ID = pcpo.PCP_ID
+		--WHERE per.fecha_hasta = @fecha
+		--and icb.ICB_POR_ID is not null --excluye los que no tienen fondo, es decir la Administradora
+		--GROUP BY por.POR_ID, por.POR_CODIGO, pcp.PCP_NOMBRE
 
-		UNION
+		--UNION
 
 		select 
-			s.PDS_SALDO_FINAL,
+			s.PDS_SALDO_FINAL AS saldo,
 			pcp.PCP_NOMBRE as fondo,
-			c.PDC_NOMBRE,
-			'Disponibilidad' AS grupo
+			c.PDC_NOMBRE AS tipo_inversion,
+			'Liquidez' AS grupo
 		from BVQ_BACKOFFICE.ISSPOL_PROYECCION_DISP_SAL s
 			LEFT JOIN BVQ_BACKOFFICE.ISSPOL_PROYECCION_DISP_CAB c
 				ON c.PDC_ID = s.PDS_PDC_ID
@@ -255,6 +257,18 @@ BEGIN
 			GROUP BY fop.FOP_NOMBRE
 		) fo
 			ON fo.FOP_NOMBRE = u.fondo
+		--Orden de los tipos de inversion segun el PAI consultado (@i_pai_id)
+		LEFT JOIN (
+			SELECT tip.TIP_NOMBRE, MIN(tip.TIP_ORDEN) AS TIP_ORDEN
+			FROM BVQ_BACKOFFICE.PAI_GENERAL pg
+				INNER JOIN BVQ_BACKOFFICE.PAI_TABLA tab
+					ON tab.PAI_ID = pg.PAI_ID
+				INNER JOIN BVQ_BACKOFFICE.PAI_TIPO_INVERSION tip
+					ON tip.TAB_ID = tab.TAB_ID
+			WHERE pg.PAI_ID = @i_pai_id
+			GROUP BY tip.TIP_NOMBRE
+		) ti
+			ON ti.TIP_NOMBRE = u.tipo_inversion
 END
 --go
 --exec [BVQ_BACKOFFICE].[ObtenerSaldosPAI] '20260101',2,null,2

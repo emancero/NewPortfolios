@@ -13,6 +13,193 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
+    /**************************************************************/
+    /* REPORTE DE DISPONIBILIDAD Y PAI
+    /**************************************************************/
+
+    // Menús / funcionalidades
+    comm.CommandText = (new GetObjectCode()).GetCode("Agregar modulo y funcionalidad PAI", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("Agregar funcionalidad Reporte de Disponibilidad", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // Tablas
+    ExecuteBatches(comm, (new GetObjectCode()).GetCode("Crear tablas de PAI - ISSPOL", "Change Script", suffix: false));
+    comm.CommandText = (new GetObjectCode()).GetCode("Tablas Proyecciones Disponibilidad ISSPOL", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("Agregar campos a CREDITO_CARTERA_CUOTA_2", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // Vistas
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PensionesProyectadas'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("PensionesProyectadas", "View", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+
+    // Reporte de disponibilidad
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.RecargarCarteraCuotaISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("RecargarCarteraCuotaISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerReporteDisponibilidadISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerReporteDisponibilidadISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerMovimientosDrilldown'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerMovimientosDrilldown", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerCtaContBancosISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCtaContBancosISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // Proyecciones del reporte de disponibilidad
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarProyeccionDispCabISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarProyeccionDispCabISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarProyeccionDispCabISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ActualizarProyeccionDispCabISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarProyeccionDispDetISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarProyeccionDispDetISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarProyeccionDispSalISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("InsertarProyeccionDispSalISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerProyeccionDispCabISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerProyeccionDispCabISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerProyeccionDispDetISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerProyeccionDispDetISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerFondosProyeccionDispISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerFondosProyeccionDispISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerSubtiposProyeccionDispISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSubtiposProyeccionDispISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerTiposPapelProyeccionDispISSPOL'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerTiposPapelProyeccionDispISSPOL", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // PAI
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GuardarCodigoPrestablecidoPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("GuardarCodigoPrestablecidoPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerCodigosPrestablecidosPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCodigosPrestablecidosPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GuardarPAIMonto'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("GuardarPAIMonto", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // ObtenerPAIPorAnio fue renombrado a ObtenerPAIPorID
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerPAIPorAnio'";
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerPAIPorID'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerPAIPorID", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // Reformas del PAI
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerReformasPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerReformasPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.LimpiarPAIReforma'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("LimpiarPAIReforma", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // Facturas del PAI
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerCustodiosFacturaPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCustodiosFacturaPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GuardarFacturaPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("GuardarFacturaPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerFacturasPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerFacturasPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GuardarFondoFacturaPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("GuardarFondoFacturaPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerFondosFacturaPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerFondosFacturaPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EliminarFondosFacturaPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("EliminarFondosFacturaPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // Llama a EliminarFondosFacturaPAI
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.EliminarFacturaPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("EliminarFacturaPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerFondosTitulosPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerFondosTitulosPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerPesoFacturaPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerPesoFacturaPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    // Depende de tablas PAI (incluye facturas), tablas de proyecciones y ObtenerDetallePortafolioConLiquidezView
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerSaldosPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSaldosPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+
+    conn.Close();
+    scope.Complete();
+    return;
+
+    /**************************************************************/
+    // Fin REPORTE DE DISPONIBILIDAD Y PAI
+    /**************************************************************/
 
     /************************************************************/
     //Paso a producción de estructuras
@@ -249,7 +436,7 @@ using (TransactionScope scope = new TransactionScope())
     /**************************************************************/
     /* Sp para pivot de provisiones
     /**************************************************************/
-    // Depende de tablas PAI, tablas de proyecciones y ObtenerDetallePortafolioConLiquidezView
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.SpProvisionInversionesView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("SpProvisionInversionesView", "Stored Procedure", suffix: false);
@@ -263,132 +450,6 @@ using (TransactionScope scope = new TransactionScope())
     conn.Close();
     scope.Complete();
     return;
-
-    /**************************************************************/
-    /* REPORTE DE DISPONIBILIDAD Y PAI
-    /**************************************************************/
-
-    // Menús / funcionalidades
-    comm.CommandText = (new GetObjectCode()).GetCode("Agregar modulo y funcionalidad PAI", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("Agregar funcionalidad Reporte de Disponibilidad", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-
-    // Tablas
-    ExecuteBatches(comm, (new GetObjectCode()).GetCode("Crear tablas de PAI - ISSPOL", "Change Script", suffix: false));
-    comm.CommandText = (new GetObjectCode()).GetCode("Tablas Proyecciones Disponibilidad ISSPOL", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("Agregar campos a CREDITO_CARTERA_CUOTA_2", "Change Script", suffix: false);
-    comm.ExecuteNonQuery();
-
-    // Vistas
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PensionesProyectadas'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("PensionesProyectadas", "View", suffix: false);
-    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
-    comm.ExecuteNonQuery();
-
-    // Reporte de disponibilidad
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.RecargarCarteraCuotaISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("RecargarCarteraCuotaISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerReporteDisponibilidadISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerReporteDisponibilidadISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerMovimientosDrilldown'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerMovimientosDrilldown", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerCtaContBancosISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCtaContBancosISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    // Proyecciones del reporte de disponibilidad
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarProyeccionDispCabISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("InsertarProyeccionDispCabISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ActualizarProyeccionDispCabISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ActualizarProyeccionDispCabISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarProyeccionDispDetISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("InsertarProyeccionDispDetISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.InsertarProyeccionDispSalISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("InsertarProyeccionDispSalISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerProyeccionDispCabISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerProyeccionDispCabISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerProyeccionDispDetISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerProyeccionDispDetISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerFondosProyeccionDispISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerFondosProyeccionDispISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerSubtiposProyeccionDispISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSubtiposProyeccionDispISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerTiposPapelProyeccionDispISSPOL'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerTiposPapelProyeccionDispISSPOL", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    // PAI
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GuardarCodigoPrestablecidoPAI'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("GuardarCodigoPrestablecidoPAI", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerCodigosPrestablecidosPAI'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCodigosPrestablecidosPAI", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.GuardarPAIMonto'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("GuardarPAIMonto", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerPAIPorAnio'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerPAIPorAnio", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    // Depende de tablas PAI, tablas de proyecciones y ObtenerDetallePortafolioConLiquidezView
-    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerSaldosPAI'";
-    comm.ExecuteNonQuery();
-    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSaldosPAI", "Stored Procedure", suffix: false);
-    comm.ExecuteNonQuery();
-
-    conn.Close();
-    scope.Complete();
-    return;
-
-    /**************************************************************/
-    // Fin REPORTE DE DISPONIBILIDAD Y PAI
-    /**************************************************************/
 
     /**************************************************************/
     // Campo EVP_FECHA_LIQ_INTERES
