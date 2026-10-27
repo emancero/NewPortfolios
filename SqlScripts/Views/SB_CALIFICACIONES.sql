@@ -28,4 +28,5 @@
 	,(2,  'CC',   'Ca',   'CC')
 	,(1,  'C',    'C',    'C')
 	,(0,  'D',    'D',    'D')
+	,(0,  'D-',    'D-',    'D-')
 	) v(codigo,sandp,moodys,fitch)
