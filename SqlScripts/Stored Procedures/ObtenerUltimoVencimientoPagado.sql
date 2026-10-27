@@ -2,6 +2,7 @@
 	@i_numeracion varchar(250), 
 	@i_tiv_id int, 
 	@i_fecha datetime, 
+	@i_fecha_gen datetime,
 	@i_lga_id int
 as
 begin
