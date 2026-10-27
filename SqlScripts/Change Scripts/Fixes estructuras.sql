@@ -8,7 +8,7 @@
 --exec dropifexists '_temp.tivCodigoTituloSicErr'
 --go
 --Comprobar que son títulos vencidos hace mucho tiempo (vencen máximo a SEP-2024)
---son papeles comerciales que no tienen calificación del emisor
+--son papeles comerciales que no tienen calificación del emisor y vencieron SEP-2024
 select distinct tiv_fecha_vencimiento,tiv_tipo_valor,eca.eca_id,ems.ems_id,ems_codigo,tiv.tiv_id,ems.ems_nombre--,enc.*
 from
 bvq_administracion.titulo_valor tiv
@@ -44,12 +44,13 @@ _temp.tivCodigoTituloSicErr v
 on tiv.tiv_numero_rmv=v.inscripcion_cpmv
 and tiv.tiv_fecha_vencimiento=convert(date,v.fecha_vencimiento,105)
 where tiv_codigo_titulo_sic='0206258'
+and 1=0 --desactivar pues ya se reportó (volver a activar para mantener consistencia)
 --Fin sin calificación por código sic errado
 --------------------------------------------------------------------------------------
 
 
 --Calificación de la emisión 02.003866 de Pharmabrand
---Se obtuvo de la web de la bvq, emisiones, fecha de aprobación, calificación y calificadora inicial. Pharmabrand
+--Se obtuvo de la web de la bvq, emisiones, fecha de aprobación, calificación y calificadora inicial. Pharmabrand (venció nov-2024)
 if not exists(
 	select * from bvq_administracion.EMISION_CALIFICACION where enc_numero_emision='2023.Q.02.003866' and enc_fecha_desde='20231031'
 )
@@ -64,12 +65,12 @@ if not exists(
 update vba set vba_fecha_hasta='20231108'
 --select *
 from bvq_administracion.variables_balance vba where ems_id=59 and vba_fecha_hasta='20231231'
+and 1=0 --desactivar pues ya se reportó
 
 
 
 
-
---Lo siguientes, no se debe discutir con inversiones, pues no les afecta, en estos se coloca No prob.
+--Los siguientes cambios no se debe discutir con inversiones, pues no les afecta, en estos se coloca No prob.
 ------------------------------------------------------------------------------------------------------
 
 --Cambiar tiv_emisor a 913.
