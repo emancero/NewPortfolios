@@ -128,10 +128,11 @@ BEGIN
 		--where oper=0
 		where esCxc=0
 		and Fecha_transaccion between @i_fechaIni and @i_fechaCorte
+		and tipo_transaccion not in ('Compra')
 		and (
 			--@i_todos_los_vigentes=1
 			datediff(d,Fecha_transaccion,@i_fechaCorte)=0
-			or tipo_transaccion not in ('V','Compra')--@i_todos_los_vigentes=0
+			or tipo_transaccion not in ('V')--@i_todos_los_vigentes=0
 			--or @i_fechaIni is not null
 		)
 		--order by aru_opc_via,2
