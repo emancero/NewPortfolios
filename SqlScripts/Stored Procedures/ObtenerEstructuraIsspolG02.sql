@@ -97,7 +97,10 @@ BEGIN
 			,TPO_COMISION_BOLSA
 			into _temp.TempEstructuraIsspolViewG2
 			from BVQ_BACKOFFICE.EstructuraIsspolView
-			left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
+			left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=
+				--Calificacion_Riesgo_Emision
+				case when Calificacion_Riesgo_Emision like '%CW' then rtrim(left(Calificacion_Riesgo_Emision,len(Calificacion_Riesgo_Emision)-2))
+				else Calificacion_Riesgo_Emision end
 			where esCxc=0
 			and oper=0
 			and (
@@ -168,7 +171,10 @@ BEGIN
 			,TPO_COMISION_BOLSA
 			into _temp.TempEstructuraIsspolViewG2
 			from BVQ_BACKOFFICE.EstructuraIsspolView
-			left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=Calificacion_Riesgo_Emision
+			left join BVQ_ADMINISTRACION.SB_CALIFICACIONES sbc on sbc.sandp=
+				--Calificacion_Riesgo_Emision
+				case when Calificacion_Riesgo_Emision like '%CW' then rtrim(left(Calificacion_Riesgo_Emision,len(Calificacion_Riesgo_Emision)-2))
+				else Calificacion_Riesgo_Emision end
 			where esCxc=0
 			and oper=-1
 			and datediff(d,fecha_transaccion,@fecha)=0 -- 1 para T-1
