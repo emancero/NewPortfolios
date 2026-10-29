@@ -345,6 +345,8 @@
     <Build Include="Change Scripts\Tabla FECHA_ULTIMO_CUPON.sql" />
     <None Include="Change Scripts\Menu Pivot Provisiones.sql" />
     <Build Include="Change Scripts\Create Table LOG_INSERTAR_LIQUIDEZ.sql" />
+    <Build Include="Stored Procedures\VerificarSaldosUltimoPeriodo.sql" />
+    <Build Include="Views\SaldosUltimoPeriodoView.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
