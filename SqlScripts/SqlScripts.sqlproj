@@ -347,6 +347,7 @@
     <Build Include="Change Scripts\Create Table LOG_INSERTAR_LIQUIDEZ.sql" />
     <Build Include="Stored Procedures\VerificarSaldosUltimoPeriodo.sql" />
     <Build Include="Views\SaldosUltimoPeriodoView.sql" />
+    <Build Include="Views\SaldosPeriodosCerradosView.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
