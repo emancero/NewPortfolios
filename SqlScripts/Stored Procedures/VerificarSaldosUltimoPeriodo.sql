@@ -1,10 +1,14 @@
-ALTER PROCEDURE BVQ_BACKOFFICE.VerificarSaldosUltimoPeriodo
+ALTER PROCEDURE [BVQ_BACKOFFICE].[VerificarSaldosUltimoPeriodo]
 	@i_lga_id int = null
 AS
 BEGIN
 	DECLARE @anio int, @mes int, @fecha_corte datetime
 
-	--Saldos contables del ultimo periodo cerrado (una sola consulta al linked server)
+	IF OBJECT_ID('tempdb..#vista') IS NOT NULL
+	DROP TABLE #vista;
+
+	SELECT * INTO #vista FROM BVQ_BACKOFFICE.SaldosUltimoPeriodoView
+
 	IF OBJECT_ID('tempdb..#cont') IS NOT NULL
 	DROP TABLE #cont;
 
@@ -12,7 +16,7 @@ BEGIN
 		v.EJERCICIO_ANIO, v.mes, v.PERIODO_ID, v.periodo_siisspol, v.estado_sicav_desc,
 		saldo_contable = SUM(v.saldo)
 	INTO #cont
-	FROM BVQ_BACKOFFICE.SaldosUltimoPeriodoView v
+	FROM #vista v
 	GROUP BY v.EJERCICIO_ANIO, v.mes, v.PERIODO_ID, v.periodo_siisspol, v.estado_sicav_desc
 
 	--Fecha de corte: ultimo dia laborable del mes del periodo
@@ -86,25 +90,45 @@ BEGIN
 	INSERT INTO #InfoPortfolios
 	EXEC BVQ_BACKOFFICE.ObtenerInfoPortfoliosPorFecha @i_fechaCorte = @fecha_corte, @i_lga_id = @i_lga_id;
 
-	--Ambos lados son del mismo periodo
-	;WITH port AS (
+	--Cuadre por tipo de renta
+	--La renta de la cuenta contable sale de su cuenta padre:
+	--7.1.2 (inversiones a valor justo) = renta variable, 7.1.3 (inversiones al costo amortizado) = renta fija
+	;WITH ren AS (
+		SELECT r.prefijo, itc.ITC_ID, itc.ITC_CODIGO, itc.ITC_DESCRIPCION
+		FROM (VALUES ('7.1.2', 'REN_VARIABLE'), ('7.1.3', 'REN_FIJA')) r(prefijo, codigo)
+			INNER JOIN BVQ_ADMINISTRACION.ITEM_CATALOGO itc
+				ON itc.ITC_CODIGO = r.codigo
+	), port AS (
 		SELECT
-			saldo_portafolio = SUM(pc.sal),
-			saldo_valor_efectivo = SUM(pc.VALOR_EFECTIVO)
-		FROM #InfoPortfolios pc
-		WHERE ISNULL(pc.ipr_es_cxc, 0) = 0
+			renta,
+			saldo_valor_efectivo = SUM(VALOR_EFECTIVO)
+		FROM #InfoPortfolios
+		WHERE ISNULL(ipr_es_cxc, 0) = 0
+		GROUP BY renta
+	), cont AS (
+		SELECT
+			prefijo = LEFT(cuenta_formato, 5),
+			saldo_contable = SUM(saldo)
+		FROM #vista
+		GROUP BY LEFT(cuenta_formato, 5)
 	)
 	SELECT
 		fecha_corte = @fecha_corte,
-		cont.PERIODO_ID,
-		cont.periodo_siisspol,
-		cont.estado_sicav_desc,
-		port.saldo_portafolio,
+		c.PERIODO_ID,
+		c.periodo_siisspol,
+		tipo_renta = ren.ITC_ID,	--= tiv_tipo_renta (153 renta fija, 154 renta variable)
+		tipo_renta_codigo = ren.ITC_CODIGO,
+		renta = ren.ITC_DESCRIPCION,
 		port.saldo_valor_efectivo,
 		cont.saldo_contable,
 		diferencia = ISNULL(cont.saldo_contable, 0) - ISNULL(port.saldo_valor_efectivo, 0)
-	FROM port
-		CROSS JOIN #cont cont
+	FROM ren
+		CROSS JOIN (SELECT TOP 1 PERIODO_ID, periodo_siisspol FROM #cont) c
+		LEFT JOIN port
+			ON port.renta COLLATE DATABASE_DEFAULT = ren.ITC_DESCRIPCION
+		LEFT JOIN cont
+			ON cont.prefijo = ren.prefijo
+	ORDER BY ren.ITC_DESCRIPCION
 END
 GO
 
