@@ -1,4 +1,4 @@
-﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG04]
+﻿CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerEstructuraIsspolG04]
     @i_fechaCorte DATETIME,
     @i_lga_id     INT
 AS
@@ -6,9 +6,9 @@ BEGIN
     SET NOCOUNT ON;
 
     exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
-          @i_fechaCorte
-        , 0
-        , @i_lga_id
+          @i_fechaCorte=@i_fechaCorte
+        , @i_todos_los_vigentes=0
+        , @i_lga_id=@i_lga_id
     /*
     SELECT
         Tipo_Id_Emisor,
