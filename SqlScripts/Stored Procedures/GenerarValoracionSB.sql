@@ -73,7 +73,7 @@ BEGIN
 	,Valor_Mercado=sum(VALOR_NOMINAL)/max(VALOR_UNITARIO)
 		--EMN: 29-oct-2026 en acciones la SBS está redondeando el precio a 2 decimales antes de multiplicarlo
 		--el ISSPOL no lo redondea, va a causar un descuadre mínimo
-		*case when tfcorte>='20250601' and tiv_tipo_renta=154 and tvl_codigo not in ('CDP','VTP') then round(max(PRECIO_DE_HOY),2) else max(PRECIO_DE_HOY) end
+		*case when tfcorte>='20250601' and max(tiv_tipo_renta)=154 and max(tvl_codigo) not in ('CDP','VTP') then round(max(PRECIO_DE_HOY),2) else max(PRECIO_DE_HOY) end
 		--+sum(INTERES_GANADO)
 	,TPO_MANTIENE_VECTOR_PRECIO=max(convert(int,pc.TPO_MANTIENE_VECTOR_PRECIO))
 	,evp_fecha_compra=min(pc.fecha_compra)
