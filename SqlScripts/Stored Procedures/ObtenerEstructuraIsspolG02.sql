@@ -24,8 +24,10 @@ BEGIN
 		begin
 			--update bvq_administracion.ct_tables set ctt_ultima_version=change_tracking_current_version()
 			exec bvq_backoffice.GenerarCompraVentaFlujo
-
-			exec GenerarCortesListPorRango @i_fechaIni, @fecha
+			declare @v_fechaIni datetime = @i_fechaIni
+			if @fecha>='20250630'
+				set @v_fechaIni=dateadd(s,86399,@i_fechaIni)
+			exec GenerarCortesListPorRango @v_fechaIni, @fecha
 			exec BVQ_ADMINISTRACION.GenerarVectores
 			exec bvq_administracion.PrepararValoracionLinealCache
 			if 1=1
