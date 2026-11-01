@@ -3,6 +3,7 @@
 	@i_fechaCorte DateTime='20251130',
 	@i_todos_los_vigentes bit=1,
 	@i_fechaIni datetime=null,
+	@i_valorar_solo_en_cierre varchar(100)='valorar_solo_en_cierre',
 	@i_lga_id int=null
 AS
 BEGIN
@@ -10,6 +11,7 @@ BEGIN
 	SET NOCOUNT ON;
 	if @i_fechaIni is null
 		set @i_fechaIni =DATEADD(month, DATEDIFF(month, 0, @i_fechaCorte), 0);
+
 	if not exists (select * from bvq_administracion.parametro where par_codigo='CALC_STRUCT')
 		raiserror('Error: No existe parámetro CALC_STRUCT que define si traer estructura del caché',16,1)
 
@@ -131,9 +133,12 @@ BEGIN
 		and tipo_transaccion not in ('Compra')
 		and (
 			--@i_todos_los_vigentes=1
-			datediff(d,Fecha_transaccion,@i_fechaCorte)=0
-			or tipo_transaccion not in ('V')--@i_todos_los_vigentes=0
-			--or @i_fechaIni is not null
+			@i_valorar_solo_en_cierre='valorar_solo_en_cierre'
+			and (
+				datediff(d,Fecha_transaccion,@i_fechaCorte)=0
+				or tipo_transaccion not in ('V')--@i_todos_los_vigentes=0
+			)			
+			or @i_valorar_solo_en_cierre='valorar_siempre'
 		)
 		--order by aru_opc_via,2
 	end

@@ -8,6 +8,7 @@ BEGIN
     exec BVQ_BACKOFFICE.ObtenerEstructuraIsspolG03
           @i_fechaCorte=@i_fechaCorte
         , @i_todos_los_vigentes=0
+        , @i_valorar_solo_en_cierre='valorar_solo_en_cierre'
         , @i_lga_id=@i_lga_id
     /*
     SELECT
