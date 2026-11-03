@@ -301,6 +301,7 @@
     <None Include="Change Scripts\CerrarPeriodoContable.sql" />
     <None Include="Functions\InteresGanadoCalculation_Calculate.sql" />
     <None Include="Stored Procedures\GenerarCortesListPorRangoMes.sql" />
+    <None Include="Stored Procedures\ObtenerEmisoresPorId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
