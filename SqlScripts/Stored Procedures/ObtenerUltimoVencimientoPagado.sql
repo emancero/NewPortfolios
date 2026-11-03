@@ -1,8 +1,8 @@
 ﻿Create procedure [BVQ_BACKOFFICE].[ObtenerUltimoVencimientoPagado]
 	@i_numeracion varchar(250), 
 	@i_tiv_id int, 
-	@i_fecha datetime,
-	@i_fecha_gen datetime,
+	@i_fecha datetime, 
+	--@i_fecha_gen datetime,
 	@i_lga_id int
 as
 begin
@@ -28,12 +28,13 @@ begin
 		and tpo_numeracion=@i_numeracion
 		return
 	end
- 
+
 	--borrar temporalmente el default que hace que un título vencido
 	--aparezca en cuentas por cobrar
 	update d set fecha='29991231'
 	from bvq_backoffice.EventoPortafolioDefaults d
 	where datediff(hh,htp_fecha_operacion,@i_fecha)=0 and tpo_numeracion=@i_numeracion
+	
 	--EMN: 5-jun-2026 se cambió htp_fecha_operacion->fecha pues cuando hay default
 	--no hay una fecha de operación con la fecha de vencimiento
 	update d set fecha='29991231'
@@ -44,6 +45,7 @@ begin
 		and datediff(hh,retr_fecha_esperada,@i_fecha)=0
 	join bvq_backoffice.defaults d on d.tiv_id=tpo.tiv_id and d.por_id=tpo.por_id
 	where tpo_numeracion=@i_numeracion
+
 	if @@ROWCOUNT>0
 	begin
 		exec bvq_backoffice.GenerarCompraVentaFlujo
@@ -67,13 +69,14 @@ begin
 	and htp_tpo_id=@anyTpoId
 
 	select distinct
-		 htp_id=case when 
+		 htp_id=case when
 		 --v.oper=0 and 
 		 tiv_tipo_renta=153 then (
 			--select top 1 htp_id from bvq_backoffice.liquidez_cache where htp_tpo_id=v.htp_tpo_id and oper=1)
 		 --else (
 			select top 1 htp_id
 			from bvq_backoffice.liquidez_cache lc
+			/*
 			join BVQ_BACKOFFICE.EJERCICIO_CONTABLE e
 				 on e.EJERCICIO_ANIO = year(lc.fecha)
 			join BVQ_BACKOFFICE.PERIODO_CONTABLE p
@@ -82,8 +85,10 @@ begin
 			join BVQ_ADMINISTRACION.CatalogoItemCatalogo m
 				 on m.ITC_ID = p.PERIODO_MES
 				and cast(m.ITC_VALOR as int) = month(lc.fecha)
+			*/
 			where lc.htp_tpo_id = v.htp_tpo_id
-			  and lc.oper = 1
+			and lc.oper = 1
+			and fecha<'99991231'
 			order by fecha desc)
 
 			--v.htp_id
