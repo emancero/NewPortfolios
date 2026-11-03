@@ -88,7 +88,7 @@ begin
 			*/
 			where lc.htp_tpo_id = v.htp_tpo_id
 			and lc.oper = 1
-			and fecha<'99991231'
+			--and fecha<'99991231'
 			order by fecha desc)
 
 			--v.htp_id
