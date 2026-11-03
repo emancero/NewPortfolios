@@ -408,6 +408,12 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("Parametro CALC_STRUCT", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
+    comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.ObtenerEmisoresPorId'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEmisoresPorId", "Stored Procedure", suffix: false);
+    comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+
     comm.CommandText = "dropifexists 'BVQ_ADMINISTRACION.ObtenerCapitalSuscritoEmisor'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCapitalSuscritoEmisor", "Stored Procedure", suffix: false);
