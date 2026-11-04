@@ -137,7 +137,5 @@ BEGIN
 			AND cont.prefijo = ren.prefijo
 	ORDER BY p.fecha_corte DESC, ren.ITC_DESCRIPCION
 END
-GO
-
 --exec BVQ_BACKOFFICE.VerificarSaldosUltimoPeriodo
 --exec BVQ_BACKOFFICE.VerificarSaldosUltimoPeriodo @i_anteriores = 1

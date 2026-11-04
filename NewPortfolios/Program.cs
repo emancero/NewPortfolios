@@ -14,6 +14,31 @@ using (TransactionScope scope = new TransactionScope())
     conn.Open();
 
     /**************************************************************/
+    /* COMPROBACIÓN DE SALDOS
+    /**************************************************************/
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.SaldosPeriodosCerradosView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("SaldosPeriodosCerradosView", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.SaldosUltimoPeriodoView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("SaldosUltimoPeriodoView", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.VerificarSaldosUltimoPeriodo'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("VerificarSaldosUltimoPeriodo", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    /**************************************************************/
+    // Fin COMPROBACIÓN DE SALDOS
+    /**************************************************************/
+    conn.Close();
+    scope.Complete();
+    return;
+
+
+    /**************************************************************/
     /* ERRORES DE ABONOS
     /**************************************************************/
     comm.CommandText = (new GetObjectCode()).GetCode("Tablas de log de UltimoVencimientoPagado log_ultimo_vencimiento_pagado_def y log_ultimo_vencimiento_pagado_evp_def", "Change Script", suffix: false);
