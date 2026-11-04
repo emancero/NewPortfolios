@@ -32,12 +32,14 @@ begin
 	--borrar temporalmente el default que hace que un título vencido
 	--aparezca en cuentas por cobrar
 	update d set fecha='29991231'
+	output deleted.fecha, deleted.htp_id, @i_lga_id, getdate() into bvq_backoffice.log_ultimo_vencimiento_pagado_evp_def
 	from bvq_backoffice.EventoPortafolioDefaults d
 	where datediff(hh,htp_fecha_operacion,@i_fecha)=0 and tpo_numeracion=@i_numeracion
 	
 	--EMN: 5-jun-2026 se cambió htp_fecha_operacion->fecha pues cuando hay default
 	--no hay una fecha de operación con la fecha de vencimiento
 	update d set fecha='29991231'
+	output deleted.def_id, deleted.fecha, @i_lga_id, getdate() into bvq_backoffice.log_ultimo_vencimiento_pagado_def
 	from bvq_backoffice.titulos_portafolio tpo
 	join bvq_backoffice.retraso retr on retr_tpo_id=tpo.tpo_id
 		and retr_fecha_cobro='29991231'

@@ -302,6 +302,7 @@
     <None Include="Functions\InteresGanadoCalculation_Calculate.sql" />
     <None Include="Stored Procedures\GenerarCortesListPorRangoMes.sql" />
     <None Include="Stored Procedures\ObtenerEmisoresPorId.sql" />
+    <None Include="Change Scripts\Tablas de log de UltimoVencimientoPagado log_ultimo_vencimiento_pagado_def y log_ultimo_vencimiento_pagado_evp_def.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />

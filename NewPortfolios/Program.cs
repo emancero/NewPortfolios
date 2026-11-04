@@ -14,6 +14,23 @@ using (TransactionScope scope = new TransactionScope())
     conn.Open();
 
     /**************************************************************/
+    /* ERRORES DE ABONOS
+    /**************************************************************/
+    comm.CommandText = (new GetObjectCode()).GetCode("Tablas de log de UltimoVencimientoPagado log_ultimo_vencimiento_pagado_def y log_ultimo_vencimiento_pagado_evp_def", "Change Script", suffix: false);
+    comm.ExecuteNonQuery();
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerUltimoVencimientoPagado'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerUltimoVencimientoPagado", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    /**************************************************************/
+    // Fin ERRORES DE ABONOS
+    /**************************************************************/
+    conn.Close();
+    scope.Complete();
+    return;
+
+
+    /**************************************************************/
     /* REPORTE DE DISPONIBILIDAD Y PAI
     /**************************************************************/
 
