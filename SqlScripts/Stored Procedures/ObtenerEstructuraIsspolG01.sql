@@ -48,10 +48,10 @@ BEGIN
 		from bvq_backoffice.EmisorEstructuraIsspolView e
 		left join bvq_backoffice.isspolRentaFijaViewNew i on i.id_emisor=e.ems_id
 			and @fecha<
-			'20250801'
+			(select tpor_tiempo from bvq_backoffice.tiempos_portafolio where tpor_codigo='EMISOR_G01_DESDE_PORTAFOLIO_CORTE')--20250801
 		left join bvq_backoffice.portafoliocorte pc on pc.tiv_emisor=e.ems_id and pc.sal>0
 			and @fecha>=
-			'20250801'
+			(select tpor_tiempo from bvq_backoffice.tiempos_portafolio where tpor_codigo='EMISOR_G01_DESDE_PORTAFOLIO_CORTE')--20250801
 		outer apply(
 				select top 1 EMI_ID, ECA_VALOR, eca.CAL_ID
 				, Calificacion_Codigo=sbc.codigo, Calificadora_Codigo=csm.CSM_CODIGO

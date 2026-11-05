@@ -303,6 +303,7 @@
     <None Include="Stored Procedures\GenerarCortesListPorRangoMes.sql" />
     <None Include="Stored Procedures\ObtenerEmisoresPorId.sql" />
     <None Include="Change Scripts\Tablas de log de UltimoVencimientoPagado log_ultimo_vencimiento_pagado_def y log_ultimo_vencimiento_pagado_evp_def.sql" />
+    <None Include="Change Scripts\EMISOR_G01_DESDE_PORTAFOLIO_CORTE en tiempos_portafolio.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
