@@ -46,7 +46,8 @@ BEGIN
 		, cca.cca_fecha_desde
 		, vba.vba_fecha_desde
 		from bvq_backoffice.EmisorEstructuraIsspolView e
-		join bvq_backoffice.isspolRentaFijaViewNew i on i.id_emisor=e.ems_id-- and e.fecha_transaccion=i.tfcorte
+		left join bvq_backoffice.isspolRentaFijaViewNew i on i.id_emisor=e.ems_id and @fecha<'20250801'-- and e.fecha_transaccion=i.tfcorte
+		left join bvq_backoffice.portafoliocorte pc on pc.tiv_emisor=e.ems_id and pc.sal>0 and @fecha>='20250801' -- and e.fecha_transaccion=i.tfcorte
 		outer apply(
 				select top 1 EMI_ID, ECA_VALOR, eca.CAL_ID
 				, Calificacion_Codigo=sbc.codigo, Calificadora_Codigo=csm.CSM_CODIGO
@@ -86,8 +87,9 @@ BEGIN
 		--left join (select max(fecha) f, emiid from #x group by emiid) x on x.emiid=ems.ems_id
 		where
 		e.vigentes=0
+		and coalesce(i.FECHA_VALOR_DE_COMPRA,pc.fecha_compra) is not null
 		and (
-			i.FECHA_VALOR_DE_COMPRA between @i_fechaIni and @fecha
+			coalesce(i.FECHA_VALOR_DE_COMPRA,pc.fecha_compra) between @i_fechaIni and @fecha
 			or
 			eca.fecha_desde between @i_fechaIni and @fecha
 			or
