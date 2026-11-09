@@ -1,10 +1,17 @@
 ﻿CREATE PROCEDURE bvq_backoffice.ObtenerPesoFacturaPAI
     @fechaCorte DATETIME = '20261022',
     @i_lga_id INT = null,
-    @i_pai_id INT = NULL
+    @i_pai_id INT = NULL,
+    @i_pfc_id INT = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    -- Cámara por la que se filtran los títulos: solo aplica al custodio DCV-BCE.
+    DECLARE @camara VARCHAR(50) = NULL;
+    IF EXISTS (SELECT 1 FROM BVQ_BACKOFFICE.PAI_FACTURA_CUSTODIO
+               WHERE PFC_ID = @i_pfc_id AND LTRIM(RTRIM(PFC_NOMBRE)) = 'DCV-BCE')
+        SET @camara = 'DCV-BCE';
 
     DECLARE @fechaEnd DATETIME;
     SET @fechaEnd = DATEADD(s, -1, DATEADD(dd, 1, DATEDIFF(dd, 0, @fechaCorte)));
@@ -48,7 +55,9 @@ BEGIN
         INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_TIPO_VALOR pct ON pct.TVL_ID = tvl.TVL_ID
         INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pcet.PCP_ID = pct.PCP_ID
         INNER JOIN #celdas c ON c.F_ID = pcep.PCP_ID AND c.T_ID = pcet.PCP_ID
+        INNER JOIN BVQ_ADMINISTRACION.TITULO_VALOR tiv ON tiv.TIV_ID = pc.tiv_id
     WHERE pc.sal > 0 AND ISNULL(pc.IPR_ES_CXC, 0) = 0
+        AND (@camara IS NULL OR LTRIM(RTRIM(tiv.TIV_CAMARA)) = @camara)
     GROUP BY pc.por_id, pcep.PCP_ID, pcep.PCP_NOMBRE, pc.tvl_codigo, pcet.PCP_ID, pcet.PCP_NOMBRE;
 
     DECLARE @totalSaldo FLOAT = (SELECT SUM(saldo) FROM #saldos);
