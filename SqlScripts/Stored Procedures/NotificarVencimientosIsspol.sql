@@ -67,6 +67,7 @@ BEGIN
       AND (ABS(ROUND(e.amount, 2)) > 0.05 OR e.oper = 2 OR e.evp_abono = 1)
       AND e.htp_id IS NOT NULL
       AND oper=1
+      AND isnull(e.ipr_es_cxc,0)=0
     GROUP BY e.tpo_numeracion;
 
     ------------------------------------------------------------------
