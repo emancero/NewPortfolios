@@ -24,12 +24,12 @@ BEGIN
               pc.htp_numeracion
 
     SELECT 
-        SECTOR_DETALLADO=CASE [sector_general]
+        CASE [sector_general]
 			WHEN 'SEC_PRI_FIN' THEN sector_detallado--'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA'
 			WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO'
 			WHEN 'SEC_PUB_FIN' THEN 'PUBLICO'
 			WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO'
-		END,
+		END collate modern_spanish_ci_ai AS titulo,
         SUM(sal) AS monto,
         SUM(CASE
                 WHEN pc.[tvl_codigo] IN ('FAC','PCO','OBL','OCA','VCC')
