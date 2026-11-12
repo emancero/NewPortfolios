@@ -57,7 +57,8 @@ BEGIN
         INNER JOIN #celdas c ON c.F_ID = pcep.PCP_ID AND c.T_ID = pcet.PCP_ID
         INNER JOIN BVQ_ADMINISTRACION.TITULO_VALOR tiv ON tiv.TIV_ID = pc.tiv_id
     WHERE pc.sal > 0 AND ISNULL(pc.IPR_ES_CXC, 0) = 0
-        AND (@camara IS NULL OR LTRIM(RTRIM(tiv.TIV_CAMARA)) = @camara)
+        AND (@camara IS NULL
+             OR (LTRIM(RTRIM(tiv.TIV_CAMARA)) = @camara AND LTRIM(RTRIM(pc.TPO_RECURSOS)) = 'PAI'))
     GROUP BY pc.por_id, pcep.PCP_ID, pcep.PCP_NOMBRE, pc.tvl_codigo, pcet.PCP_ID, pcet.PCP_NOMBRE;
 
     DECLARE @totalSaldo FLOAT = (SELECT SUM(saldo) FROM #saldos);
