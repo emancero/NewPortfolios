@@ -104,8 +104,14 @@ begin
 		,TIPO_RENTA=tiv_tipo_renta
 		--,sector_general
 		,SECTOR=
-			case when sector_general like 'SEC[_]PUB[_]%' and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153) then 'ESTADO'
-			when sector_general like '%[_]FIN' and tvl_codigo not in ('OCA') and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153) then 'FINANCIERO'
+			case when sector_general like 'SEC[_]PUB[_]%'
+				and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153) --No clasificar renta variable como "Estado"
+			then
+				'ESTADO'
+			when sector_general like '%[_]FIN' and tvl_codigo not in ('OCA')
+				and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153) --No clasificar renta variable como "Financiero"
+			then
+				'FINANCIERO'
 			when tvl_codigo in ('OBL','PCO','OCA') then 'OBLIGACIONES Y PAPEL COMERCIAL'
 			when tvl_codigo in ('REP') then 'REPORTOS'
 			when tvl_codigo in ('VCC') then 'TITULARIZACIONES'
