@@ -1,4 +1,4 @@
-﻿alter procedure BVQ_BACKOFFICE.ObtenerPoliticaLimites
+﻿CREATE procedure BVQ_BACKOFFICE.ObtenerPoliticaLimites
 	 @i_fecha_corte datetime = '2025-06-30T23:59:59'
 	,@i_lga_id int = null
 as
@@ -6,8 +6,14 @@ begin
 
 
 	declare @v_fecha_base datetime = dateadd(s,-1,dateadd(d,1,convert(datetime,EOMONTH(@i_fecha_corte,-1))))
+	if @i_fecha_corte>='20260501'
+		select @v_fecha_base=ultimo from BVQ_BACKOFFICE.UltimoDiaHabil where datediff(d,fecha,@v_fecha_base)=0
 	if exists(select * from bvq_administracion.parametro where par_codigo='POLITICA_MES' and par_valor='NO')
 		set @v_fecha_base=DATEADD(yy, DATEDIFF(yy, 0, @i_fecha_corte), -1)
+	
+	--EMN: 12-jun-2026 estaba obteniendo el portafolio base, al inicio del día
+	if @i_fecha_corte>='20260601'
+		set @v_fecha_base=dateadd(s,-1,dateadd(d,1,@v_fecha_base))
 	
 	--exec bvq_backoffice.generarcompraventaflujo
 
@@ -98,16 +104,16 @@ begin
 		,TIPO_RENTA=tiv_tipo_renta
 		--,sector_general
 		,SECTOR=
-		case when sector_general like 'SEC[_]PUB[_]%' then 'ESTADO'
-		when sector_general like '%[_]FIN' and tvl_codigo not in ('OCA') then 'FINANCIERO'
-		when tvl_codigo in ('OBL','PCO','OCA') then 'OBLIGACIONES Y PAPEL COMERCIAL'
-		when tvl_codigo in ('REP') then 'REPORTOS'
-		when tvl_codigo in ('VCC') then 'TITULARIZACIONES'
-		when tvl_codigo in ('FAC') then 'FACTURAS COMERCIALES'
-		when tvl_codigo in ('ACC','ENC') then 'ACCIONES Y ENCARGO FID'
-		when tvl_codigo in ('FI') or tfcorte>='20251126' and tvl_codigo='CDP' then 'FONDOS DE INVERSIÓN COLECTIVO / COTIZADO'
-		when tvl_codigo in ('CDP','VTP') then 'VALORES DE PARTICIPACIÓN'
-		end--,*
+			case when sector_general like 'SEC[_]PUB[_]%' and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153) then 'ESTADO'
+			when sector_general like '%[_]FIN' and tvl_codigo not in ('OCA') and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153) then 'FINANCIERO'
+			when tvl_codigo in ('OBL','PCO','OCA') then 'OBLIGACIONES Y PAPEL COMERCIAL'
+			when tvl_codigo in ('REP') then 'REPORTOS'
+			when tvl_codigo in ('VCC') then 'TITULARIZACIONES'
+			when tvl_codigo in ('FAC') then 'FACTURAS COMERCIALES'
+			when tvl_codigo in ('ACC','ENC') then 'ACCIONES Y ENCARGO FID'
+			when tvl_codigo in ('FI') or tfcorte>='20251126' and tvl_codigo='CDP' then 'FONDOS DE INVERSIÓN COLECTIVO / COTIZADO'
+			when tvl_codigo in ('CDP','VTP') then 'VALORES DE PARTICIPACIÓN'
+			end--,*
 		--when
 		from bvq_backoffice.portafoliocorte pc
 		left join BVQ_BACKOFFICE.VALOR_NOMINAL_UNITARIO VNU ON VNU.TIV_ID=pc.TIV_ID and pc.tfcorte>=VNU.VNU_FECHA_INICIO and pc.tfcorte<VNU.VNU_FECHA_FIN
