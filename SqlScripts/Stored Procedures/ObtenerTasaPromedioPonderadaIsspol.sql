@@ -20,16 +20,17 @@ BEGIN
     FROM   bvq_backoffice.portafoliocorte pc
     WHERE  Isnull(ipr_es_cxc, 0) = 0
            AND sal > 0
+           and TPO_RECURSOS = 'PAI'
     GROUP  BY pc.ems_nombre,
               pc.htp_numeracion
 
     SELECT 
-        SECTOR_DETALLADO=CASE [sector_general]
+        CASE [sector_general]
 			WHEN 'SEC_PRI_FIN' THEN sector_detallado--'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA'
 			WHEN 'SEC_PRI_NFIN' THEN 'PRIVADO NO FINANCIERO'
 			WHEN 'SEC_PUB_FIN' THEN 'PUBLICO'
 			WHEN 'SEC_PUB_NFIN' THEN 'PUBLICO'
-		END,
+		END collate modern_spanish_ci_ai AS titulo,
         SUM(sal) AS monto,
         SUM(CASE
                 WHEN pc.[tvl_codigo] IN ('FAC','PCO','OBL','OCA','VCC')
@@ -42,6 +43,7 @@ BEGIN
     WHERE  ISNULL(ipr_es_cxc, 0) = 0
            AND sal > 0 
            and tiv_tipo_renta = 153
+           and TPO_RECURSOS = 'PAI'
     GROUP BY 
         CASE [sector_general]
 			WHEN 'SEC_PRI_FIN' THEN sector_detallado--'PRIVADO FINANCIERO Y ECONOMÍA POPULAR SOLIDARIA'
@@ -63,5 +65,6 @@ BEGIN
     WHERE  Isnull(ipr_es_cxc, 0) = 0
            AND sal > 0
            AND tiv_tipo_renta = 153
+           AND TPO_RECURSOS = 'PAI'
     ORDER  BY 1 
 END
