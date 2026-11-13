@@ -4,4 +4,5 @@
 	where tpor_codigo='EMISOR_G01_DESDE_PORTAFOLIO_CORTE'
 )
 	insert into bvq_backoffice.tiempos_portafolio values
-	('EMISOR_G01_DESDE_PORTAFOLIO_CORTE','Obtiene los emisores de portafoliocorte y no desde isspolrentafijaview','20250501')
+	('EMISOR_G01_DESDE_PORTAFOLIO_CORTE','Obtiene los emisores de portafoliocorte y no desde isspolrentafijaview','20250801')
+	

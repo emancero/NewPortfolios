@@ -73,20 +73,15 @@ and 1=0 --desactivar pues ya se reportó
 --Los siguientes cambios no se debe discutir con inversiones, pues no les afecta, en estos se coloca No prob.
 ------------------------------------------------------------------------------------------------------
 
---Cambiar tiv_emisor a 913.
---Cacpeco: EMS_ID=85 tiene EMS_ESTADO=22, EMS_ID=913 tiene EMS_ESTADO=21
---El nombre es idéntico, solo que el nuevo tiene un espacio más
---Decisión:Publicar
---No prob, porque el nombre es idéntico, no debe haber cambios
-update tiv set tiv_emisor=913
---select *
-from bvq_administracion.titulo_valor tiv where tiv_id=1e7+85 and tiv_emisor=85
+
 
 
 --18/feb/2026
 --"Más Valores" es CAVAMASA
 --No prob. pues cva_codigo_sb solo aplica en estructuras
-update cva set cva_codigo_sb='CV08' from bvq_administracion.casa_valores cva where cva_siglas='msv'
+update cva set cva_codigo_sb='CV08'
+from bvq_administracion.casa_valores cva where cva_siglas='msv'
+and cva_codigo_sb is null
 
 
 
@@ -101,7 +96,8 @@ update fon set FON_NUMERO_RESOLUCION='SN'--,FON_PROCEDENCIA='N'
 from bvq_backoffice.portafoliocorte pc
 join bvq_backoffice.titulos_portafolio tpo on pc.httpo_id=tpo.tpo_id
 join bvq_backoffice.fondo fon on fon.fon_id=tpo.fon_id
-where tvl_codigo='enc' and fon_numero_resolucion is null
+where tvl_codigo='enc'
+and fon_numero_resolucion is null
 --select * from _temp.g3sh where idemi='0993121401001'
 --SCVS.INMV.DNNF.2019.1811
 
