@@ -306,6 +306,7 @@
     <None Include="Change Scripts\EMISOR_G01_DESDE_PORTAFOLIO_CORTE en tiempos_portafolio.sql" />
     <None Include="Change Scripts\000 Agregar custodio DCV-BCE.sql" />
     <None Include="Change Scripts\Script Titulos Sin Camaras.sql" />
+    <None Include="Views\PAIColocacionesView.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
