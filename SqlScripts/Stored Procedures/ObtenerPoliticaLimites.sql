@@ -105,11 +105,13 @@ begin
 		--,sector_general
 		,SECTOR=
 			case when sector_general like 'SEC[_]PUB[_]%'
-				and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153) --No clasificar renta variable como "Estado"
+				and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153)     --No clasificar renta variable como "Estado"
+				and not (@i_fecha_corte>='20261101' and tvl_codigo='OBL') --No clasificar obligaciones como "Estado"
 			then
 				'ESTADO'
 			when sector_general like '%[_]FIN' and tvl_codigo not in ('OCA')
 				and (@i_fecha_corte<'20261027' or tiv_tipo_renta=153) --No clasificar renta variable como "Financiero"
+				and not (@i_fecha_corte>='20261101' and tvl_codigo='OBL') --No clasificar obligaciones como "Estado"
 			then
 				'FINANCIERO'
 			when tvl_codigo in ('OBL','PCO','OCA') then 'OBLIGACIONES Y PAPEL COMERCIAL'
