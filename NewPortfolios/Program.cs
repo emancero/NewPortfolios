@@ -13,9 +13,6 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
-    /**************************************************************/
-    /* COMPROBACIÓN DE SALDOS
-    /**************************************************************/
     string? dbText;
 
     comm.CommandText = "select object_definition(object_id('dbo.InteresGanadoCalculation_Calculate'))";
@@ -120,6 +117,10 @@ using (TransactionScope scope = new TransactionScope())
 
 
     //comm.ExecuteNonQuery();
+
+    /**************************************************************/
+    /* COMPROBACIÓN DE SALDOS
+    /**************************************************************/
     /*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.SaldosUltimoPeriodoView'";
     comm.ExecuteNonQuery();
