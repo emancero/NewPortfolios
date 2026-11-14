@@ -1,4 +1,4 @@
-﻿/*IF OBJECT_ID('tempdb..#TitulosSinCamaraProd') IS NOT NULL
+﻿IF OBJECT_ID('tempdb..#TitulosSinCamaraProd') IS NOT NULL
     DROP TABLE #TitulosSinCamaraProd;
 
 delete from [192.168.2.225].sicav.dbo.corteslist;
@@ -17,18 +17,9 @@ INTO #TitulosSinCamaraEst
 from bvq_backoffice.portafoliocorte pc
 join bvq_administracion.titulo_valor tiv on pc.tiv_id=tiv.tiv_id
 where isnull(ipr_es_cxc,0)=0 and sal>0 --and tiv_camara IS NULL
-*/
----- EST con tiv_camara NULL que en PROD no está NULL
---SELECT 'EST null / PROD no null' AS caso, e.httpo_id, e.tiv_codigo,
---       e.tiv_camara AS est_camara, p.tiv_camara AS prod_camara
---FROM #TitulosSinCamaraEst e
---LEFT JOIN #TitulosSinCamaraProd p ON p.httpo_id = e.httpo_id
---WHERE e.tiv_camara IS NULL
---  AND NOT EXISTS (SELECT 1 FROM #TitulosSinCamaraProd p2
---                  WHERE p2.httpo_id = e.httpo_id AND p2.tiv_camara IS NULL)
 
--- PROD con tiv_camara NULL que en EST no está NULL
-with a as(
+
+;with a as(
     SELECT e.tiv_camara, p.fecha_compra as fc, 'PROD null / EST no null' AS caso, p.httpo_id, p.tiv_codigo
     FROM #TitulosSinCamaraProd p
     LEFT JOIN #TitulosSinCamaraEst e ON e.httpo_id = p.httpo_id
@@ -58,11 +49,11 @@ with a as(
         AND year(TPO_FECHA_INGRESO) = OPC_ANO_OPE
     where opc_via is not null
 ) select distinct
-    Emisor=ems_nombre,Tipo=tvl_nombre,[Fecha de compra]=tpo_fecha_ingreso,Custodio=a.tiv_camara from a
+    Emisor=ems_nombre,Tipo=tvl_nombre,[Fecha de compra]=tpo_fecha_ingreso,Custodio=a.tiv_camara
+from a
 join bvq_backoffice.titulos_portafolio tpo on tpo.tpo_id=a.httpo_id
 join bvq_administracion.titulo_valor tiv on tpo.tiv_id=tiv.tiv_id
 join bvq_administracion.tipo_valor tvl on tiv.tiv_tipo_valor=tvl.tvl_id
 join bvq_administracion.emisor ems on tiv_emisor=ems_id
-order by custodio,ems_nombre,tipo--,custodio
+order by custodio,ems_nombre,tipo
 
-sp_helptext 'bvq_backoffice.ObtenerPesoFacturaPAI'
