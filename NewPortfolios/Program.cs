@@ -13,6 +13,31 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
 
+    /**************************************************************/
+    /* VISTA PAIColocacionesView
+    /**************************************************************/
+    
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PAIColocacionesView'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("PAIColocacionesView", "View", suffix: false);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerSaldosPAI'";
+    comm.ExecuteNonQuery();
+    comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSaldosPAI", "Stored Procedure", suffix: false);
+    comm.ExecuteNonQuery();
+    
+    /**************************************************************/
+    // FIN VISTA PAIColocacionesView
+    /**************************************************************/
+    conn.Close();
+    scope.Complete();
+    return;
+
+    /**************************************************************/
+    /* LEER DESDE LA BD LOS OBJETOS DE ESTRUCTURAS
+    /**************************************************************/
+
     string? dbText;
 
     comm.CommandText = "select object_definition(object_id('dbo.InteresGanadoCalculation_Calculate'))";
@@ -112,6 +137,9 @@ using (TransactionScope scope = new TransactionScope())
     comm.CommandText = (new GetObjectCode()).GetCode("PagoSB", "View", suffix: false);
     if (dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("PagoSB", "View", dbText, suffix: false);
+    /**************************************************************/
+    /* FIN LEER DESDE LA BD LOS OBJETOS DE ESTRUCTURAS
+    /**************************************************************/
 
     conn.Close();return;
 
