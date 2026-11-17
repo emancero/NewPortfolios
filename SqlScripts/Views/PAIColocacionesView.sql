@@ -32,5 +32,6 @@ CREATE view BVQ_BACKOFFICE.PAIColocacionesView as
 				ON pcpVal.PCP_ID = pctv.PCP_ID
 
 		WHERE ISNULL(v.IPR_ES_CXC, 0) = 0
-			AND v.oper = 0
+			AND (v.oper = 0 or v.evp_abono=1)
 			AND v.compra_htp_id = v.htp_id
+			AND (v.evp_id is null or v.evp_id not in (8921,9722))
