@@ -266,6 +266,7 @@
     <None Include="Stored Procedures\ObtenerCodigosPrestablecidosPAI.sql" />
     <None Include="Stored Procedures\GuardarCodigoPrestablecidoPAI.sql" />
     <None Include="Stored Procedures\ObtenerSaldosPAI.sql" />
+    <None Include="Stored Procedures\ObtenerDetalleColocacionesPAI.sql" />
     <None Include="Stored Procedures\ObtenerPAIPorID.sql" />
     <None Include="Stored Procedures\ObtenerReformasPAI.sql" />
     <None Include="Stored Procedures\LimpiarPAIReforma.sql" />
