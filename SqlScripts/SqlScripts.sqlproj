@@ -307,6 +307,7 @@
     <None Include="Change Scripts\000 Agregar custodio DCV-BCE.sql" />
     <None Include="Change Scripts\Script Titulos Sin Camaras.sql" />
     <None Include="Views\PAIColocacionesView.sql" />
+    <None Include="Functions\tfObtenerRetencionPorFecha.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
