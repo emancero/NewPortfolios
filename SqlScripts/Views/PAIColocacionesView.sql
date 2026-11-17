@@ -1,4 +1,4 @@
-﻿alter view BVQ_BACKOFFICE.PAIColocacionesView as
+CREATE view BVQ_BACKOFFICE.PAIColocacionesView as
 		SELECT
 			v.valefeoper
 				+isnull(htp_comision_bolsa,0)

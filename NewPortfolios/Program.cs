@@ -3,8 +3,8 @@ using Microsoft.Data.SqlClient;
 using System.Transactions;
 
 //return; //prevenir ejecución accidental
-//string connStr = "Data Source=192.168.2.114;Initial Catalog=sicavbak2;Persist Security Info=True;User ID=usrsicav;Password=$icav2012*;TrustServerCertificate=True";
-string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
+string connStr = "Data Source=192.168.2.225;Initial Catalog=sicav;Persist Security Info=True;User ID=usrsicav;Password=$icav2012*;TrustServerCertificate=True";
+//string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
 {
 
@@ -16,7 +16,20 @@ using (TransactionScope scope = new TransactionScope())
     /**************************************************************/
     /* VISTA PAIColocacionesView
     /**************************************************************/
+    /*string objectName, objectType, objectSchema;
     
+    objectName = "ObtenerSaldosPAI";
+    objectType = "StoredProcedure";
+    objectSchema = "BVQ_BACKOFFICE";
+    comm.CommandText = "select object_definition(object_id("+objectSchema+"."+objectName+"'))";
+    string? dbText = comm.ExecuteScalar().ToString();
+    comm.CommandText = (new GetObjectCode()).GetCode(objectName, objectType, suffix: false);
+    if (dbText!=null && dbText.Length != comm.CommandText.Length)
+        (new GetObjectCode()).WriteCode(objectName, objectType, dbText, suffix: false);
+    conn.Close();
+    scope.Complete();
+    return;*/
+
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PAIColocacionesView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("PAIColocacionesView", "View", suffix: false);

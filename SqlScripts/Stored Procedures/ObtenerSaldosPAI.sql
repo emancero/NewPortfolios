@@ -1,4 +1,4 @@
-﻿alter PROCEDURE [BVQ_BACKOFFICE].[ObtenerSaldosPAI]
+CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerSaldosPAI]
     @i_fecha DATETIME,
 	@i_pdc_id INT,
     @i_lga_id  INT,
