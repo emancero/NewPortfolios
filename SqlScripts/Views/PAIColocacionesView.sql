@@ -20,6 +20,7 @@ CREATE view BVQ_BACKOFFICE.PAIColocacionesView as
 				THEN isnull(ret.CRL_VALOR, 0) / 100 * isnull(v.htp_comision_bolsa, 0) END AS lip_retencion
 			,v.ems_nombre
 			,v.tiv_fecha_vencimiento
+			,v.tpo_numeracion AS numeracion
 		FROM bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
 			LEFT JOIN BVQ_BACKOFFICE.FONDO fnd
 				ON fnd.FON_ID = v.FON_ID
