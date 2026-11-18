@@ -15,10 +15,15 @@ CREATE view BVQ_BACKOFFICE.PAIColocacionesView as
 			,v.htp_fecha_operacion
 			,v.valefeoper
 			,v.htp_comision_bolsa
-			,v.lip_retencion
+			--,v.lip_retencion
+			,CASE WHEN isnull(fnd.FON_PROCEDENCIA, '') <> 'N'
+				THEN isnull(ret.CRL_VALOR, 0) / 100 * isnull(v.htp_comision_bolsa, 0) END AS lip_retencion
 			,v.ems_nombre
 			,v.tiv_fecha_vencimiento
 		FROM bvq_backoffice.ObtenerDetallePortafolioConLiquidezView v
+			LEFT JOIN BVQ_BACKOFFICE.FONDO fnd
+				ON fnd.FON_ID = v.FON_ID
+			OUTER APPLY BVQ_BACKOFFICE.tfObtenerRetencionPorFecha(v.htp_fecha_operacion) ret
 			LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PORTAFOLIO pcpo
 				ON pcpo.POR_ID = v.por_id
 			LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp

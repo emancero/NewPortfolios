@@ -2,12 +2,18 @@ CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerSaldosPAI]
     @i_fecha DATETIME,
 	@i_pdc_id INT,
     @i_lga_id  INT,
-	@i_pai_id INT = NULL
+	@i_pai_id INT = NULL,
+	@i_fecha_corte DATETIME = NULL --NULL = 31 de diciembre del año de @i_fecha
 AS
 BEGIN
 	DECLARE @FechaInicioAnio DATE, @FechaFinAnio DATE;
 	SET @FechaInicioAnio = DATETIMEFROMPARTS(YEAR(@i_fecha), 1, 1, 0, 0, 0, 0);
 	SET @FechaFinAnio = DATETIMEFROMPARTS(YEAR(@i_fecha), 12, 1,23,59,59,0);
+
+	--Fecha de corte inclusive (fin del dia). Colocaciones, prestamos y facturas desde el 1 de enero del año de @i_fecha hasta esta fecha
+	DECLARE @FechaCorte DATETIME;
+	SET @FechaCorte = ISNULL(@i_fecha_corte, DATETIMEFROMPARTS(YEAR(@i_fecha), 12, 31, 0, 0, 0, 0));
+	SET @FechaCorte = DATEADD(SECOND, -1, DATEADD(DAY, DATEDIFF(DAY, 0, @FechaCorte) + 1, 0));
 
 	DECLARE @fecha DATETIME;
 	SET @fecha = (
@@ -89,7 +95,7 @@ BEGIN
 			ON pcpo.POR_ID = fh.por_id
 		LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcp
 			ON pcp.PCP_ID = pcpo.PCP_ID
-		where year(fecha_otorgamiento)=year(@i_fecha) and id_estado<>'R'
+		where fecha_otorgamiento BETWEEN @FechaInicioAnio AND @FechaCorte and id_estado<>'R'
 		group by pcp.pcp_nombre,id_segmento
 
 		UNION
@@ -101,7 +107,7 @@ BEGIN
 			v.tipo_inversion,
 			'Colocaciones' AS grupo
 		FROM bvq_backoffice.PAIColocacionesView v
-		WHERE v.htp_fecha_operacion BETWEEN @FechaInicioAnio AND @FechaFinAnio
+		WHERE v.htp_fecha_operacion BETWEEN @FechaInicioAnio AND @FechaCorte
 		GROUP BY v.fondo, v.tvl_nombre, v.tipo_inversion
 
 		UNION
@@ -118,6 +124,7 @@ BEGIN
 				LEFT JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
 		WHERE
 			pfa.PAI_ID = @i_pai_id
+			AND pfa.PAF_FECHA_FACTURA <= @FechaCorte
 		GROUP BY pcep.PCP_NOMBRE, pcet.PCP_NOMBRE
 
 		UNION
@@ -138,7 +145,7 @@ BEGIN
 				v.tip_codigo
 				--'Colocaciones' AS grupo
 			FROM bvq_backoffice.PAIColocacionesView v
-			WHERE v.htp_fecha_operacion BETWEEN @FechaInicioAnio AND @FechaFinAnio
+			WHERE v.htp_fecha_operacion BETWEEN @FechaInicioAnio AND @FechaCorte
 
 
 			UNION ALL
@@ -152,6 +159,7 @@ BEGIN
 				INNER JOIN BVQ_BACKOFFICE.PAI_FACTURA pfa ON pff.PAF_ID = pfa.PAF_ID
 				INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
 			WHERE pfa.PAI_ID = @i_pai_id
+				AND pfa.PAF_FECHA_FACTURA <= @FechaCorte
 				AND pcet.PCP_CODIGO NOT IN ('PHIP', 'PQUI')
 		) t
 
@@ -185,7 +193,7 @@ BEGIN
 				cr.monto,
 				cr.id_segmento COLLATE DATABASE_DEFAULT AS id_segmento
 			FROM siisspolweb.siisspolweb.credito.credito cr
-			WHERE year(cr.fecha_otorgamiento) = year(@i_fecha) and cr.id_estado <> 'R'
+			WHERE cr.fecha_otorgamiento BETWEEN @FechaInicioAnio AND @FechaCorte and cr.id_estado <> 'R'
 
 			UNION ALL
 
@@ -197,6 +205,7 @@ BEGIN
 				INNER JOIN BVQ_BACKOFFICE.PAI_FACTURA pfa ON pff.PAF_ID = pfa.PAF_ID
 				INNER JOIN BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO pcet ON pff.PCP_ID_TIPO = pcet.PCP_ID
 			WHERE pfa.PAI_ID = @i_pai_id
+				AND pfa.PAF_FECHA_FACTURA <= @FechaCorte
 				AND pcet.PCP_CODIGO IN ('PHIP', 'PQUI')
 		) t
 			--Unir con el PAI consultado (@i_pai_id): los prestamos tienen codigo PHIP / PQUI
@@ -242,7 +251,7 @@ BEGIN
 			ON ti.TIP_NOMBRE = u.tipo_inversion
 END
 --go
---exec [BVQ_BACKOFFICE].[ObtenerSaldosPAI] '20260101',2,null,2
+--exec [BVQ_BACKOFFICE].[ObtenerSaldosPAI] '20260101',2,null,2,'20261117' --año de @i_fecha, fecha de corte
 --select * from BVQ_BACKOFFICE.PAI_CODIGO_TIPO_VALOR
 --select * from BVQ_BACKOFFICE.PAI_CODIGO_PRESTABLECIDO
 

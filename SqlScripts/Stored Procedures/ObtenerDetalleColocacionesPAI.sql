@@ -1,14 +1,17 @@
 CREATE PROCEDURE [BVQ_BACKOFFICE].[ObtenerDetalleColocacionesPAI]
 	@i_fecha DATETIME,
 	@i_tipo_inversion VARCHAR(200) = NULL, --NULL = todos, '' = tipo_inversion IS NULL
-	@i_fondo VARCHAR(200) = NULL           --NULL = todos los fondos (columna Total), '' = fondo IS NULL
+	@i_fondo VARCHAR(200) = NULL,          --NULL = todos los fondos (columna Total), '' = fondo IS NULL
+	@i_fecha_corte DATETIME = NULL,         --NULL = 31 de diciembre del año de @i_fecha
+	@i_lga_id  INT = NULL
 AS
 BEGIN
 	--Detalle (drilldown) de la seccion Colocaciones de ObtenerSaldosPAI que viene de PAIColocacionesView
 	DECLARE @FechaInicioAnio DATETIME, @FechaFinAnio DATETIME;
 	SET @FechaInicioAnio = DATETIMEFROMPARTS(YEAR(@i_fecha), 1, 1, 0, 0, 0, 0);
-	--Mismo rango que ObtenerSaldosPAI, para que el detalle cuadre con la celda
-	SET @FechaFinAnio = DATETIMEFROMPARTS(YEAR(@i_fecha), 12, 1, 23, 59, 59, 0);
+	--Mismo rango que ObtenerSaldosPAI (1 de enero del año de @i_fecha hasta la fecha de corte inclusive), para que el detalle cuadre con la celda
+	SET @FechaFinAnio = ISNULL(@i_fecha_corte, DATETIMEFROMPARTS(YEAR(@i_fecha), 12, 31, 0, 0, 0, 0));
+	SET @FechaFinAnio = DATEADD(SECOND, -1, DATEADD(DAY, DATEDIFF(DAY, 0, @FechaFinAnio) + 1, 0));
 
 	SELECT
 		v.fondo,
@@ -32,4 +35,4 @@ BEGIN
 	ORDER BY v.fondo, v.htp_fecha_operacion
 END
 --go
---exec [BVQ_BACKOFFICE].[ObtenerDetalleColocacionesPAI] '20260101', null, null
+--exec [BVQ_BACKOFFICE].[ObtenerDetalleColocacionesPAI] '20260101', null, null, '20261117' --año de @i_fecha, fecha de corte
