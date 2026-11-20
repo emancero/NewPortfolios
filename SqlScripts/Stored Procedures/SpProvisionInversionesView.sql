@@ -156,7 +156,7 @@ BEGIN
 				on seg.nombre = pfc.por_codigo
 			where isnull(ipr_es_cxc,0)=0
 			GROUP BY doc.orden, seg.orden,DOC.Codigo, seg.por_id, DOC.NOMBRE, doc.etiqueta, seg.nombre_contabilidad,pfc.TVL_CODIGO, DOC.NOMBRE_CONTABILIDAD,tvd.TVL_NOMBRE, pfc.sector_general, pfc.por_codigo, seg.nombre--,htp_numeracion
-			,case when @i_soloDetalle=1 then pfc.htp_numeracion else 'NoDesglosarOperacion' end
+	  
 			  union
 
 		 select doc.orden as orden_doc, 
