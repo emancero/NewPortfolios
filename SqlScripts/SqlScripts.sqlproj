@@ -309,6 +309,7 @@
     <None Include="Change Scripts\Script Titulos Sin Camaras.sql" />
     <None Include="Views\PAIColocacionesView.sql" />
     <None Include="Functions\tfObtenerRetencionPorFecha.sql" />
+    <None Include="Functions\Days360Nasd.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Change Scripts\Tabla titulo_flujo_comun.sql" />
