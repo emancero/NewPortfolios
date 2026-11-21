@@ -76,7 +76,7 @@ begin tran
 
 /*	 select * from ##tablaInversionesIsspol	 	 
 end*/
-
+/*
 	select
 		   --htp_numeracion,
 		   --FECHA_INTERES,
@@ -113,6 +113,7 @@ end*/
 		   ,VALEFECTIVO AS 'VALOR EFECTIVO'
 		   --,ver=2
 	from ##tablaInversionesIsspol
+*/
 
 
 
