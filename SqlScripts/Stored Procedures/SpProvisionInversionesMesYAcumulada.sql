@@ -22,10 +22,11 @@ BEGIN
 		INTERES           float,
 		DESDE             datetime,
 		HASTA             datetime,
-		FECHACOMPRA       varchar(30),
+		FECHACOMPRA       datetime,
 		FECHAULTIMOCUPON  datetime,
 		FECHAVENCIMIENTO  datetime,
-		[VALOR EFECTIVO]  float
+		[VALOR EFECTIVO]  float,
+		originalProvision float
 	)
 
 	-- Resultado de SpProvisionInversionesView (por documento x seguro)
@@ -64,6 +65,7 @@ BEGIN
 
 	SELECT origen, POR_CODIGO, POR_ORD, htp_numeracion, EMISOR, CODIGO, CAPITAL, TASA, PLAZO,
 		DIASINTERES, INTERES, DESDE, HASTA, FECHACOMPRA, FECHAULTIMOCUPON, FECHAVENCIMIENTO, [VALOR EFECTIVO]
+		,originalProvision
 	FROM (
 		SELECT 
 			'Provisión del mes' AS origen, 
@@ -83,9 +85,10 @@ BEGIN
 			FECHAULTIMOCUPON, 
 			FECHAVENCIMIENTO, 
 			[VALOR EFECTIVO],
-			0 AS orden_doc
+			0 AS orden_doc,
+			originalProvision
 		FROM #ProvisionTitulos
-
+		/*
 		UNION ALL
 
 		SELECT 
@@ -108,6 +111,7 @@ BEGIN
 			[VALOR EFECTIVO]  = NULL,
 			d.orden_doc
 		FROM #ProvisionDetalle d
+		*/
 	) u
 	ORDER BY origen, POR_ORD, orden_doc, CODIGO
 

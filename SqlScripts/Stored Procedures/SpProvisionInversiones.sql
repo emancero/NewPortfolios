@@ -26,7 +26,7 @@ begin tran
 
 	  --   tvl_codigo as 'CODIGO',
 	--ignorar retraso de fin de mes
-	update BVQ_BACKOFFICE.IGNORAR_RETR_NO_INGRESADO_ESTE_MES set IRN_IGNORAR=1
+	/*update BVQ_BACKOFFICE.IGNORAR_RETR_NO_INGRESADO_ESTE_MES set IRN_IGNORAR=1
 
 	select
 		   htp_numeracion,
@@ -72,6 +72,7 @@ begin tran
 	 order by tvl_codigo
 	--ignorar retraso de fin de mes
 	update BVQ_BACKOFFICE.IGNORAR_RETR_NO_INGRESADO_ESTE_MES set IRN_IGNORAR=0
+	*/
 
 
 /*	 select * from ##tablaInversionesIsspol	 	 
@@ -150,7 +151,7 @@ end*/
 		   0 as 'INTERES',
 		   (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde)) as 'DESDE',
 		   (SELECT (CONVERT(datetime,Convert(varchar,EOMONTH(@i_fechaCorte),106) +' 23:59:59'))) as 'HASTA',
-		   convert(varchar,fecha_compra,106) as 'FECHACOMPRA',		
+		   fecha_compra as 'FECHACOMPRA',		--convert(varchar,fecha_compra,106)
 		   coalesce(tfl_fecha_inicio_orig2,max(latest_inicio)) as 'FECHAULTIMOCUPON',
 		   FECHA_INTERES = (CASE WHEN fecha_compra BETWEEN (SELECT DATEADD(DAY, 1 - DAY(@v_fechaDesde), @v_fechaDesde))   AND (SELECT EOMONTH(@v_fechaCorte))  and fecha_compra>coalesce(tfl_fecha_inicio_orig2,max(latest_inicio)) THEN fecha_compra ELSE coalesce(tfl_fecha_inicio_orig2,max(latest_inicio)) END)
 
@@ -212,6 +213,30 @@ end*/
 		   FECHAULTIMOCUPON,
 		   FECHAVENCIMIENTO
 		   ,VALEFECTIVO AS 'VALOR EFECTIVO'
+
+		   ,originalProvision =
+				dbo.CalculateProvision(
+					 CAPITAL--saldo
+					,FECHA_INTERES--tfl_fecha_inicio_orig
+					,dateadd(m,1,HASTA)--?fecha
+					,TASA*100--?tasa_cupon
+					,354
+					,FECHACOMPRA--?tpo_fecha_ingreso
+					,0
+					,case when TASA=0 then dbo.fnDias(FECHACOMPRA,FECHAVENCIMIENTO,355) else 0 end
+					--?case when tasa_cupon=0 then dbo.fnDias(tpo_fecha_ingreso,tiv_fecha_vencimiento,tiv_tipo_base) else 0 end
+					,VALEFECTIVO/nullif(CAPITAL,0)--evt.prEfectivo
+					,0
+				)
+			/*
+			,CAPITAL
+			,FECHA_INTERES
+			,dateEnd=dateadd(m,1,HASTA)
+			,TASA
+			,FECHACOMPRA
+			,TERM=case when TASA=0 then dbo.fnDias(FECHACOMPRA,FECHAVENCIMIENTO,355) else 0 end
+			,VALEFECTIVO/nullif(CAPITAL,0)
+			*/
 	from ##tablaInversionesIsspol2
 commit tran
 END
