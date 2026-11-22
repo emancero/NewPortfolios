@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 class GetObjectCode
 {
@@ -12,7 +13,7 @@ class GetObjectCode
     public void WriteCode(string fullName, string type, string text, bool suffix = true, bool plural = true)
     {
         string folderName = (type == "StoredProcedure") ? "Stored Procedure" : type;
-        File.WriteAllText(GetFilePath(fullName, type, suffix, plural, folderName), text);
+        File.WriteAllText(GetFilePath(fullName, type, suffix, plural, folderName), text,new UTF8Encoding(true));
     }
 
     public string GetFilePath(string fullName, string type, bool suffix, bool plural, string folderName)
