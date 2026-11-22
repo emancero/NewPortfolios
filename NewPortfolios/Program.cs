@@ -3,33 +3,63 @@ using Microsoft.Data.SqlClient;
 using System.Transactions;
 
 //return; //prevenir ejecución accidental
-string connStr = "Data Source=192.168.2.225;Initial Catalog=sicav;Persist Security Info=True;User ID=usrsicav;Password=$icav2012*;TrustServerCertificate=True";
+string connStr = "Data Source=192.168.2.114;Initial Catalog=sicavest;Persist Security Info=True;User ID=usrsicav;Password=$icav2012*;TrustServerCertificate=True";
 //string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SIPLAConnectionString"].ToString();
 using (TransactionScope scope = new TransactionScope())
 {
 
     SqlConnection conn = new SqlConnection(connStr);
     SqlCommand comm = conn.CreateCommand();
+
+    void WriteCode(string objectSchema, string objectName, string objectType)
+    {
+        comm.CommandText = "select object_definition(object_id('" + objectSchema + "." + objectName + "'))";
+        string? dbText = comm.ExecuteScalar().ToString();
+        dbText = comm.ExecuteScalar().ToString();
+        string path = (new GetObjectCode()).GetFilePath(objectName, objectType, suffix: false, plural: true, objectType);
+        if (File.Exists(path))
+        {
+            comm.CommandText = (new GetObjectCode()).GetCode(objectName, objectType, suffix: false);
+        } else
+        {
+            System.Diagnostics.Debug.WriteLine("No path:" + path);
+        }
+        //if(dbText!=null && !dbText.Equals(comm.CommandText) && dbText.Substring(6).Trim().Equals(comm.CommandText.Substring(6).Trim()))
+            //(new GetObjectCode()).WriteCode(objectName, objectType, dbText, suffix: false);
+        if (dbText != null && (
+                !dbText.Substring(6).Trim().Equals(comm.CommandText.Substring(6).Trim())
+                || !File.Exists(path)
+                )
+            )
+            (new GetObjectCode()).WriteCode(objectName, objectType, dbText, suffix: false);
+    }
     comm.CommandType = System.Data.CommandType.Text;
     conn.Open();
+    WriteCode("BVQ_ADMINISTRACION", "ObtenerCapitalSuscritoEmisor", "Stored Procedure");
+    WriteCode("BVQ_ADMINISTRACION", "ActualizarCapitalSuscritoEmisor", "Stored Procedure");
+    WriteCode("BVQ_ADMINISTRACION", "InsertarCapitalSuscritoEmisor", "Stored Procedure");
+    WriteCode("BVQ_BACKOFFICE", "EstructuraIsspolView", "View");
+    WriteCode("BVQ_BACKOFFICE", "PagoSB", "View");
+    WriteCode("BVQ_BACKOFFICE", "LiqIntProv", "View");
+    WriteCode("BVQ_BACKOFFICE", "GenerarValoracionSB", "Stored Procedure");
+    WriteCode("dbo", "GenerarCortesListPorRangoMes", "Stored Procedure");
+    WriteCode("BVQ_BACKOFFICE", "ObtenerEstructuraIsspolG02", "Stored Procedure");
+    WriteCode("BVQ_BACKOFFICE", "ObtenerEstructuraIsspolG03", "Stored Procedure");
+    WriteCode("BVQ_BACKOFFICE", "ObtenerEstructuraIsspolG04", "Stored Procedure");
+    WriteCode("dbo", "InteresGanadoCalculation_Calculate", "Function");
+    WriteCode("BVQ_BACKOFFICE", "GenerarInfoPortfoliosPorFecha", "Stored Procedure");
+    WriteCode("BVQ_ADMINISTRACION", "ObtenerEmisoresPorId", "Stored Procedure");
+    WriteCode("BVQ_BACKOFFICE", "ObtenerUltimoVencimientoPagado", "Stored Procedure");
+    WriteCode("BVQ_BACKOFFICE", "ObtenerEstructuraIsspolG01", "Stored Procedure");
 
+    conn.Close();
+    scope.Complete();
+    return;
     /**************************************************************/
     /* VISTA PAIColocacionesView
     /**************************************************************/
-    /*string objectName, objectType, objectSchema;
-    
-    objectName = "ObtenerSaldosPAI";
-    objectType = "StoredProcedure";
-    objectSchema = "BVQ_BACKOFFICE";
-    comm.CommandText = "select object_definition(object_id("+objectSchema+"."+objectName+"'))";
-    string? dbText = comm.ExecuteScalar().ToString();
-    comm.CommandText = (new GetObjectCode()).GetCode(objectName, objectType, suffix: false);
-    if (dbText!=null && dbText.Length != comm.CommandText.Length)
-        (new GetObjectCode()).WriteCode(objectName, objectType, dbText, suffix: false);
-    conn.Close();
-    scope.Complete();
-    return;*/
 
+    /*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.PAIColocacionesView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("PAIColocacionesView", "View", suffix: false);
@@ -39,84 +69,84 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerSaldosPAI", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
-    
+    */
     /**************************************************************/
     // FIN VISTA PAIColocacionesView
     /**************************************************************/
-    conn.Close();
-    scope.Complete();
-    return;
+    //conn.Close();
+    //scope.Complete();
+    //return;
 
     /**************************************************************/
     /* LEER DESDE LA BD LOS OBJETOS DE ESTRUCTURAS
     /**************************************************************/
-
-    string? dbText;
+    /*
+    string? dbText="";
 
     comm.CommandText = "select object_definition(object_id('dbo.InteresGanadoCalculation_Calculate'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("InteresGanadoCalculation_Calculate", "Function", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("InteresGanadoCalculation_Calculate", "Function", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_ADMINISTRACION.ObtenerCapitalSuscritoEmisor'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerCapitalSuscritoEmisor", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("ObtenerCapitalSuscritoEmisor", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_ADMINISTRACION.ObtenerEmisoresPorId'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEmisoresPorId", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("ObtenerEmisoresPorId", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_ADMINISTRACION.InsertarCapitalSuscritoEmisor'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("InsertarCapitalSuscritoEmisor", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("InsertarCapitalSuscritoEmisor", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_ADMINISTRACION.ActualizarCapitalSuscritoEmisor'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("ActualizarCapitalSuscritoEmisor", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("ActualizarCapitalSuscritoEmisor", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_backoffice.ObtenerUltimoVencimientoPagado'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerUltimoVencimientoPagado", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("ObtenerUltimoVencimientoPagado", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_backoffice.ObtenerEstructuraIsspolG01'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG01", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("ObtenerEstructuraIsspolG01", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_backoffice.ObtenerEstructuraIsspolG04'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG04", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("ObtenerEstructuraIsspolG04", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_backoffice.ObtenerEstructuraIsspolG03'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG03", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("ObtenerEstructuraIsspolG03", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_backoffice.ObtenerEstructuraIsspolG02'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerEstructuraIsspolG02", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("ObtenerEstructuraIsspolG02", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('BVQ_backoffice.GenerarValoracionSB'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("GenerarValoracionSB", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("GenerarValoracionSB", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('GenerarInfoPortfoliosPorFecha'))";
@@ -124,37 +154,38 @@ using (TransactionScope scope = new TransactionScope())
     string path = (new GetObjectCode()).GetFilePath("GenerarInfoPortfoliosPorFecha", "Stored Procedure", suffix: false, plural: true, "Stored Procedure");
     if(File.Exists(path))
         comm.CommandText = (new GetObjectCode()).GetCode("GenerarInfoPortfoliosPorFecha", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("GenerarInfoPortfoliosPorFecha", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('dbo.GenerarCortesListPorRangoMes'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("GenerarCortesListPorRangoMes", "Stored Procedure", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("GenerarCortesListPorRangoMes", "Stored Procedure", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('bvq_backoffice.EstructuraIsspolView'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("EstructuraIsspolView", "View", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("EstructuraIsspolView", "View", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('bvq_backoffice.LiqIntProv'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("LiqIntProv", "View", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("LiqIntProv", "View", dbText, suffix: false);
 
     comm.CommandText = "select object_definition(object_id('bvq_backoffice.PagoSB'))";
     dbText = comm.ExecuteScalar().ToString();
     comm.CommandText = (new GetObjectCode()).GetCode("PagoSB", "View", suffix: false);
-    if (dbText.Length != comm.CommandText.Length)
+    if (dbText != null && dbText.Length != comm.CommandText.Length)
         (new GetObjectCode()).WriteCode("PagoSB", "View", dbText, suffix: false);
+    conn.Close(); return;
+    */
     /**************************************************************/
     /* FIN LEER DESDE LA BD LOS OBJETOS DE ESTRUCTURAS
     /**************************************************************/
 
-    conn.Close();return;
 
 
     //comm.ExecuteNonQuery();
@@ -172,17 +203,20 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("VerificarSaldosUltimoPeriodo", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
-    */
-    /**************************************************************/
-    // Fin COMPROBACIÓN DE SALDOS
-    /**************************************************************/
+
     conn.Close();
     scope.Complete();
     return;
+     */
+    /**************************************************************/
+    // Fin COMPROBACIÓN DE SALDOS
+    /**************************************************************/
 
     /**************************************************************/
     /* COMPROBACIÓN DE SALDOS
     /**************************************************************/
+
+    /*
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.SaldosPeriodosCerradosView'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("SaldosPeriodosCerradosView", "View", suffix: false);
@@ -197,35 +231,41 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("VerificarSaldosUltimoPeriodo", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
-    /**************************************************************/
-    // Fin COMPROBACIÓN DE SALDOS
-    /**************************************************************/
+
     conn.Close();
     scope.Complete();
     return;
+    */
+
+    /**************************************************************/
+    // Fin COMPROBACIÓN DE SALDOS
+    /**************************************************************/
 
 
     /**************************************************************/
     /* ERRORES DE ABONOS
     /**************************************************************/
+    /*
     comm.CommandText = (new GetObjectCode()).GetCode("Tablas de log de UltimoVencimientoPagado log_ultimo_vencimiento_pagado_def y log_ultimo_vencimiento_pagado_evp_def", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerUltimoVencimientoPagado'";
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("ObtenerUltimoVencimientoPagado", "Stored Procedure", suffix: false);
     comm.ExecuteNonQuery();
-    /**************************************************************/
-    // Fin ERRORES DE ABONOS
-    /**************************************************************/
+
     conn.Close();
     scope.Complete();
     return;
+    */
+    /**************************************************************/
+    // Fin ERRORES DE ABONOS
+    /**************************************************************/
 
 
     /**************************************************************/
     /* REPORTE DE DISPONIBILIDAD Y PAI
     /**************************************************************/
-
+    /*
     // Menús / funcionalidades
     comm.CommandText = (new GetObjectCode()).GetCode("Agregar modulo y funcionalidad PAI", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
@@ -405,7 +445,7 @@ using (TransactionScope scope = new TransactionScope())
     conn.Close();
     scope.Complete();
     return;
-
+    */
     /**************************************************************/
     // Fin REPORTE DE DISPONIBILIDAD Y PAI
     /**************************************************************/
@@ -520,6 +560,9 @@ using (TransactionScope scope = new TransactionScope())
     comm.ExecuteNonQuery();
     comm.CommandText = (new GetObjectCode()).GetCode("EmisorEstructuraIsspolView", "View", suffix: false);
     comm.CommandText = (new GetObjectCode()).ChangeAlterToCreate(comm.CommandText);
+    comm.ExecuteNonQuery();
+
+    comm.CommandText = (new GetObjectCode()).GetCode("EMISOR_G01_DESDE_PORTAFOLIO_CORTE en tiempos_portafolio", "Change Script", suffix: false);
     comm.ExecuteNonQuery();
 
     comm.CommandText = "dropifexists 'BVQ_BACKOFFICE.ObtenerEstructuraIsspolG01'";
